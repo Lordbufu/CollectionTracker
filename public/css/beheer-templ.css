@@ -1,0 +1,284 @@
+/* De Content Container voor de inhoud */
+.content-container {
+    display: grid;
+    margin: 0.1EM 0.2EM;
+}
+
+/* De Title Inhoud */
+.title-banner {
+    display: grid;
+    background: var(--main-banner-color);
+    border-radius: 0.2EM;
+}
+  
+.title-text {
+    position: inherit;
+    font-size: 2.2EM;
+    justify-self: center;
+}
+
+.title-buttons {
+    background: var(--main-banner-color);
+    z-index: 1;
+    margin: 0.2em;
+    padding: 0.1em;
+}
+
+.ww-reset-butt {
+    font-size: medium;
+    font-weight: bold;
+    background: var(--main-butt-color);
+    border: solid 0.1em;
+    border-radius: 0.4em;
+    border-color: black;
+    cursor: pointer;
+    width: 10em;
+    margin: 0.1em;
+}
+.ww-reset-butt:hover {
+    background: var(--main-butt-hover);
+}
+
+.logoff-butt {
+    font-size: medium;
+    font-weight: bold;
+    background: var(--main-butt-color);
+    border: solid 0.1em;
+    border-radius: 0.4EM;
+    border-color: black;
+    cursor: pointer;
+    width: 10em;
+    margin: 0.1em;
+}
+.logoff-butt:hover {
+    background: var(--main-butt-hover);
+}
+
+.beheer-back-butt {
+    font-size: medium;
+    font-weight: bold;
+    background: var(--main-butt-color);
+    border: solid 0.1em;
+    border-radius: 0.4em;
+    border-color: black;
+    cursor: pointer;
+    width: 10em;
+    margin: 0.1em;
+}
+.beheer-back-butt:hover {
+    background-color: var(--main-butt-hover);
+}
+
+/* Controller Content */
+.contr-cont {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding:0.5em;
+}
+
+/* Serie Maken controller */
+.serie-maken-cont {
+    border: 0.15em;
+    border-style: solid;
+    width: 12em;
+    height: 6em;
+    padding: 0.1em;
+    margin-right: 2em;
+}
+
+.serie-maken-form {
+    display: inline-grid;
+    justify-content: center;
+    margin: 0.1em;
+    padding: 0.1em;
+}
+
+.serie-maken-lab {
+    font-weight: bold;
+    padding: 0.1em;
+}
+
+.serie-maken-subm {
+    background: var(--main-butt-color);
+    border: 0.15em;
+    border-radius: 0.4EM;
+    cursor: pointer;
+}
+.serie-maken-subm:hover {
+    background: var(--main-butt-hover);
+}
+
+/* Album Toevoegen Controller */
+.album-toev-cont {
+    display: inline-table;
+    border: 0.15em;
+    border-style: solid;
+    width: 12em;
+    height: 6em;
+    padding: 0.1em;
+    margin-right: 2em;
+}
+
+.album-toev-form {
+    display: inline-grid;
+    justify-content: center;
+    margin: 0.1em;
+    padding: 0.1em;
+}
+
+.album-toev-lab {
+    font-weight: bold;
+    padding: 0.1em;
+}
+
+.album-toev {
+    text-align: center;
+    margin: 0.2em;
+    padding: 0.2em;
+}
+
+.album-toev-subm {
+    background: var(--main-butt-color);
+    border: 0.15em;
+    border-radius: 0.4EM;
+    cursor: pointer;
+}
+.album-toev-subm:hover {
+    background: var(--main-butt-hover);
+}
+
+/* Weergave Content */
+.beheer-weerg-cont {
+    display: inline-block;
+    padding: 0.1em;
+}
+
+.beheer-weerg-header {
+    font-size: x-large;
+    margin: 0.1em;
+}
+
+.serie-tafel {
+    display: inline-table;
+}
+
+th {
+    border: 0.15em solid black;
+    padding: 0.2em;
+}
+
+.album-bewerken, .album-verwijderen {
+    border: 0px;
+}
+
+.serie-bewerken, .serie-bekijken, .serie-verwijderen {
+    border: 0px;
+}
+
+.serie-maker, .serie-opmerk, .serie-naam, .serie-albums, .serie-gebruikers {
+    font-weight: normal;
+    font-size: medium;
+}
+
+/* Footer Content */
+.footer {
+    display: flex;
+    justify-content: center;
+    background: var(--main-banner-color);
+    border-radius: 0.2em;
+    margin: 0.1EM 0.2EM;
+}
+
+.footer-content {
+    margin: 0.625em;
+}
+
+.footer-autheur, .footer-date, .footer-madefor {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 0.875em;
+    padding: 1em;
+}
+
+/* Late toevoegingen */
+/* Album Bewerken Button */
+.album-bewerken-butt {
+    background-image: url('/images/edit.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    border: unset;
+}
+.album-bewerken-butt:hover {
+    cursor: pointer;
+}
+
+/* Album Verwijderen Button */
+.album-verwijderen-butt {
+    background-image: url('/images/delete.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    border: unset;
+}
+.album-verwijderen-butt:hover {
+    cursor: pointer;
+}
+
+/* Serie Bekijken Button */
+.serie-bekijken-butt {
+    background-image: url('/images/view.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    border: unset;
+}
+.serie-bekijken-butt:hover {
+    cursor: pointer;
+}
+
+/* Serie Bewerken Button */
+.serie-bewerken-butt {
+    background-image: url('/images/edit.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    border: unset;
+}
+.serie-bewerken-butt:hover {
+    cursor: pointer;
+}
+
+/* Serie Verwijderen Button */
+.serie-verwijderen-butt {
+    background-image: url('/images/delete.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    border: unset;
+}
+.serie-verwijderen-butt:hover {
+    cursor: pointer;
+}
+
+/* De header text voor de album weergave */
+.beheer-weerg-header-text {
+    font-size: x-large;
+    margin: 0.1em;
+}
+
+/* En de albums tafel die er ingeplakt word, moet ook inline gezet worden. */
+.beheer-albums-tafel {
+    display: inline-table;
+}

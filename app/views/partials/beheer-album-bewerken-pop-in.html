@@ -1,0 +1,26 @@
+      <!-- album bewerken pop-in -->
+      <div id="albumb-pop-in" class="modal-container">
+        <div class="modal-content-container">
+          
+          <div class="modal-header">  
+            <h1 class="modal-header-text"> Album Bewerken </h1>
+            <a class="modal-header-close" onclick="popInClose()">&times;</a>
+          </div>
+          
+          <div class="modal-body">
+            <form class="modal-form" id="albumb-form" enctype="multipart/form-data">
+              <input type="text" class="modal-form-indexT" id="albumb-form-indexT" name="album-index" hidden />
+              <input type="text" class="modal-form-alb-naam" id="albumb-form-alb-naam" name="album-naam" placeholder="Album Naam" autocomplete="on" required />
+              <input type="number" min="0" class="modal-form-alb-nr" id="albumb-form-alb-nr" name="album-nummer" placeholder="Album Uitgave Nummer" autocomplete="on" />
+              <input type="date" class="modal-form-alb-date" id="albumb-form-alb-date" name="album-datum" placeholder="Album Uitgave Datum" autocomplete="on" />
+              <div id="albumb-cover"> </div>
+              <label class="modal-form-alb-cov-lab" id="modal-form-albumB-cov-lab" for="albumb-form-alb-cov">
+                <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-alb-cov" id="albumb-form-alb-cov" name="album-cover" />
+              </label>
+              <input class="modal-form-alb-isbn" id="albumb-form-alb-isbn" name="album-isbn" placeholder="Album ISBN" autocomplete="on" required />
+              <input clas="modal-form-alb-opm" id="albumb-form-alb-opm" name="album-opm" placeholder="Album Opmerking" autocomplete="on" hidden />
+              <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" onclick="albumBewSubm(event)" />
+            </form>
+          </div>
+        </div>
+      </div>

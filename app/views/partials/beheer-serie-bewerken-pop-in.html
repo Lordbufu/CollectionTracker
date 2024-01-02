@@ -1,0 +1,20 @@
+<!-- serie bewerken pop-in -->
+<div id="serieb-pop-in" class="modal-container">
+    <div class="modal-content-container">
+          
+        <div class="modal-header">  
+            <h1 class="modal-header-text"> Serie Bewerken </h1>
+            <a class="modal-header-close" onclick="popInClose()">&times;</a>
+        </div>
+          
+        <div class="modal-body">
+            <form class="modal-form" id="serieb-form">
+                <input type="text" class="modal-form-serieNaamB" id="serieb-form-serieNaamB" name="naam" placeholder="Serie Naam" autocomplete="on" required />
+                <input type="text" class="modal-form-indexB" id="serieb-form-indexB" name="index" value="" hidden />
+                <input type="text" class="modal-form-makers" id="serieb-form-makersB" name="makers" placeholder="Makers/Artiesten" autocomplete="on" />
+                <input type="text" class="modal-form-opmerking" id="serieb-form-opmerkingB" name="opmerking" placeholder="Opmerking/Notitie" autocomplete="on" />
+                <input class="modal-form-button" id="serieb-form-button" type="submit" value="Bevestigen" onclick="serieBewSubm(event)"/>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,202 @@
+/* De top-level van alle Pop-In's, die via de id naam in beeld komt */
+.modal-container {
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0,0,0);
+    background-color: var(--main-fade-background-color);
+    visibility: hidden;
+    overflow: auto;
+}
+.modal-container:target {
+    visibility: visible;
+}
+
+/* De Content Container voor de eerste positionering van de inhoud */
+.modal-content-container {
+    display: inline-flex;
+    flex-direction: column;
+    top: 5em;
+    background-color: var(--main-background-color);
+    min-width: 15em;
+    max-width: 20em;
+    min-height: 15em;
+    border-radius: 1em;
+}
+
+/* De Header Content */
+.modal-header {
+    display: inline-flex;
+    justify-content: center;
+    border-radius: 1em;
+    margin: 0.15em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: var(--main-banner-color);
+}
+
+.modal-header-text {
+    font-size: 1.6em;
+    color: var(--main-text-color);
+}
+  
+.modal-header-close {
+    position: relative;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--main-text-color);
+    padding-left: 0.3em;
+    padding-top: 0.6em;
+}
+.modal-header-close:hover {
+    color: var(--main-link-hover);
+    cursor: pointer;
+}
+  
+.modal-header-text-overk {
+    position: inherit;
+    font-size: 1.8em;
+    bottom: 0.1em;
+    color: var(--main-text-color);
+    margin: 0.2em;
+}
+
+/* De Body Container en de bijbehorende inhoud */
+.modal-body {
+    display: contents;
+    top: 0.1em;
+}
+
+.modal-body-p {
+    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.modal-form {
+    display: inline-grid;
+    justify-content: center;
+    margin: 0.1em;
+}
+
+/* Alle opmaak voor alles van de gebruikers overeenkomst */
+.modal-agree-container {
+    display: inline-grid;
+    justify-content: center;
+    padding-top: 0.1em;
+    padding-bottom: 0.3em;
+}
+  
+.modal-form-checkbox {
+    display: inline;
+    position: inherit;
+    top: 0.15em;
+}
+.modal-form-checkbox:hover {
+    cursor: pointer;
+}
+  
+.modal-form-agree-text {
+    font-size: 0.8em;
+}
+
+.modal-form-link {
+    font-size: 0.8em;
+    text-decoration: none;
+}
+.modal-form-link:hover {
+    color: var(--main-link-hover);
+    cursor: pointer;
+}
+
+/* De Form Submit knop & hover */
+.modal-form-button {
+    background-color: var(--main-butt-color);
+    text-align: center;
+    height: 2.5em;
+    font-size: 1em;
+    border-radius: 0.5em;
+}
+.modal-form-button:hover {
+    background-color: var(--main-butt-hover);
+    cursor: pointer;
+}
+
+/* Tekst, lijsten en markers voor de gebruikers overeenkomst */
+.modal-para-1 {
+    font-size: 1em;
+}
+  
+.modal-ord-list {
+    font-size: 0.8em;
+    margin: 0.1em;
+}
+  
+.modal-list-i1, .modal-list-i2, .modal-list-i3 {
+    margin: 0.1em;
+    padding: 0.1em;
+}
+.modal-list-i1::marker, .modal-list-i2::marker, .modal-list-i3::marker {
+    font-style: italic;
+    font-weight: bold;
+}
+
+/* Extra opmaak voor de bestand input van alle beheer pop-in's:
+        Dit heeft specifiek te maken met de bestandsnaam, die achter het toevoegen knopje komt te staan.
+        Die tekst kan ik met CSS veder niks mee (voor zover ik kon vinden), en dus is de input knop verstopt.
+        En gebruik ik een label met opmaak, om het als een knop te doen laten lijken.
+        Ook zit het weergeven van de huidige cover erbij in, zodat je kan zien of die er is en hoe die eruit ziet.
+ */
+ #albumt-form-alb-cov {
+    display: none;
+}
+
+#albumb-form-alb-cov {
+    display: none;
+}
+
+.modal-form-alb-cov-lab {
+    background-color: var(--main-butt-color);
+    font-size: small;
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    display: inline-block;
+    padding: 0.4em;
+    margin-bottom: 0.3em;
+    cursor: pointer;
+}
+.modal-form-alb-cov-lab:hover {
+    background-color: var(--main-butt-hover);
+    cursor: pointer;
+}
+
+#albumb-cover {
+    left: 2em;
+    height: 9em;
+    width: 7em;
+}
+
+/*  Extra opmaak voor de serie bekijken pop-in.
+    Zodat de tafel in de pop-in past, en er niet buiten valt.
+ */
+#beheer-albView-content-container {
+    max-width: 100%;
+}
+
+/*  Album-Cover opmaak voor de serie-weergeven pop-in.
+    Deze zorgt ervoor dat de cover in het klein in de tabel komt te staan.
+ */
+.album-cover {
+    height: 5em;
+    width: 5em;
+}
+
+#album-cover-img {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}

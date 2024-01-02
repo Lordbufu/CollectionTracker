@@ -1,0 +1,96 @@
+/* De globale CSS variable, voor alle opmaak kleuren */
+:root {
+  --main-background-color: rgba(255, 255, 255, 1);
+  --main-fade-background-color: rgba(0, 0, 0, 0.4);
+  --main-fade-fallback-color: rgb(0, 0, 0);
+  --main-banner-color: rgb(94, 158, 255);
+  --main-text-color: rgb(0, 0, 0);
+  --main-butt-color: rgb(94, 125, 255);
+  --main-butt-hover: rgb(59, 185, 42);
+  --main-butt-img-hover: rgba(59, 185, 42, 0.2);
+  --main-link-hover: rgba(199, 37, 37, 0.801);
+}
+
+/*  De Basis opmaak van een pagina:
+      Op een paar dingen naar, zijn de meeste waardes, het zelfde als een default user agent (in dit geval van Chrome, maar zit niet veel verschil in lijkt het).
+      Deze word gebruikt door de meeste web-browsers, maar voor het geval dat, wil ik toch een soort fallback hebben.
+      De hoofd-opmaak staat appart per pagina, en is te vinden in andere css bestanden.
+      Voor mobile devices, zijn er apparte css bestanden, per apparaat groep (ook voor de Desktop, zie verwijzingen in de header).
+ */
+body {
+  font-family: Arial, sans-serif;
+  display: block;
+  margin: 0em;
+  padding: 0em;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  height: -webkit-fill-available;
+  height: -moz-available;
+}
+
+h1, h2, h3, h4 {
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0em;
+  margin-inline-end: 0em;
+  font-weight: bold;
+}
+
+p {
+  font-size: 0.8em;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0em;
+  margin-inline-end: 0em;
+}
+
+div {
+  display: block;
+  position: relative;
+  text-align: center;
+}
+
+form {
+  display: block;
+  margin-block-end: 0.1em;
+}
+
+input {
+  text-align: center;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  padding: 0.2em;
+}
+
+img {
+  overflow: clip;
+  overflow-clip-margin: content-box;
+  width: 15em;
+  height: 15em;
+  margin: 1em;
+}
+
+footer {
+  display: block;
+}
+
+/* Extra dingen die standaard zijn op alle pagina's, vnml animaties etc voor korte berichten van database handelingen. */
+/* Container voor xhr meldingen */
+.message-container {
+  z-index: 2;
+  display: none;
+  position: fixed;
+  text-align: center;
+  background-color: var(--main-butt-hover);
+  width: fit-content;
+  top: -10%;
+  left: 40%;
+  right: 40%;
+  margin: 0.2em;
+  padding: 0.2em;
+}
+
+/* De xhr meldingen */
+.response-message {
+  font-size: smaller;
+}
