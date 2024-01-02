@@ -4,20 +4,23 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-/*  TODO Lijst:
-        - Rework Comments to english and more live enviroment setting.
-        - Alle 2.0 features moeten nog gemaakt worden voor de beheer en gebruik pagina.
-*/
-class LogicController {
-    /* register():
-            Deze functie maakt altijd een standaard gebruiker aan, en hashed het wachtwoord voordat het opgeslagen word.
-            De processing class verwerkt het verzoek om de gebruiker in de database te zetten, maar doet veder geen extra checks.
-            Alle checks worden al gedaan in JS script, voordat de data verzonden word.
-            Ik redirect de gebruiker ook direct naar de login, zodat die meteen gebruik kan maken van de App.
+// TODO List: - Rework Comments to english and more live enviroment setting.
 
-            Deze functie wou ik eigenlijk niet omzetten naar JS fetch, maar dit zou inprincipe nog wel kunnen.
-     */
+/* LogicController Class:
+        In this class i need to deal with a mix of request, all main request are done via HTML form submits.
+        But in certain cases i also opted to use JS fetch, to remove a page reload from the user experience.
+
+        $data (Multi-Dimensional Array)      - Intended for data required for displaying a webpage/data.
+            'header' (Associative Array)     - Data to be injected into the page header, like JS data for the browser storage, redirects etc.
+            'series'  (Associative Array)    - Data used by PhP to display series related information in HTML tables.
+            'albums'  (Associative Array)    - Data used by PhP to display albums related information in HTML tables.
+            'collecties' (Associative Array) - Data used by PhP to display if the user has a ablum in its collection.
+ */
+class LogicController {
+    /* Landingpage functions */
+    // '/register' function.
 	public function register() {
+        // Format the user data for the database structure.
         $temp = [
             'Gebr_Naam' => $_POST['gebr-naam'],
             'Gebr_Email' => $_POST['email'],
@@ -25,42 +28,41 @@ class LogicController {
             'Gebr_Rechten' => 'gebruiker'
         ];
 
+        // Store user data in database, and redirect to the login-pop-in.
         App::get('processing')->set_Object('gebruikers', $temp);
         App::redirect('#login-pop-in');
 	}
 
-    /* login():
-            Deze functie zorgt ervoor dat een gebruiker kan inloggen, en dat het opgeslagen word in de browser storage.
-            Het opgegeven e-mail word gebruikt om de gebruiker te vinden, en met die data controlleer ik of het wachtwoordt klopt.
-            Als het wachtwoord klopt, kijk naar de gebruikers rechten, en sla ik de nodige informatie in de $data['header'].
-            En dan geef ik de juiste pagina view en data terug aan de caller.
-
-            Als het wachtwoord niet klopt, of er iets anders misgaat, maak ik een redirect naar de pop-in.
-            En maak ik een terugkoppeling voor de gebruiker, voordat ik de standaard view en data terug geef aan de caller.
-     */
+    // '/login' function.
     public function login() {
+        // Prepare for the user validation.
         $data = [ 'header' => [] ];
         $id = [ 'Gebr_Email' => $_POST['email'] ];
         $gebruiker = App::get('database')->selectAllWhere('gebruikers', $id);
 
+        // Check if there was user data, and verify the password and user rights.
         if(!empty($gebruiker[0])) {
             if(password_verify($_POST['wachtwoord'], $gebruiker[0]['Gebr_WachtW'])) {
                 if($gebruiker[0]['Gebr_Rechten'] === "Admin") {
+                    // Prepare JS page-data for the admin login
                     array_push($data['header'], App::get('processing')->createData('session', 'gebruiker', $gebruiker[0]['Gebr_Email']));
                     array_push($data['header'], App::get('processing')->createData('session', 'updateUser', 'true'));
                     array_push($data['header'], App::get('processing')->createRedirect('beheer'));
                     return App::view('beheer', $data);
                 } else {
+                    // Prepare JS page-data for the user login
                     array_push($data['header'], App::get('processing')->createData('session', 'gebruiker', $gebruiker[0]['Gebr_Email']));
                     array_push($data['header'], App::get('processing')->createData('session', 'updateUser', 'true'));
                     array_push($data['header'], App::get('processing')->createRedirect('gebruik'));
                     return App::view('gebruik', $data);
                 }
+            // Create JS page-data for failed password check (intentional general feedback mssg).
             } else {
                 $error = "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!";
                 array_push($data['header'], App::get('processing')->createData('local', 'loginFailed', $error));
                 array_push($data['header'], App::get('processing')->createRedirect('#login-pop-in'));
             }
+        // Create JS page-data for failed account check (intentional general feedback mssg).
         } else {
             $error = "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!";
             array_push($data['header'], App::get('processing')->createData('local', 'loginFailed', $error));
@@ -70,38 +72,27 @@ class LogicController {
         return App::view('index', $data);
     }
 
-    /* beheer():
-            Functies voor de beheer pagina, en alle handeling die een pagina refresh verzorgen.
-            Dit gaat bv om het laden van serie data, zodat er een serie overzicht in beeld komt.
-            Maar ook het laden van albums in een serie, als er een serie bekeken word.
-
-            $data - De data die terug moet naar de pagina.
-                'header' - JS data die in de header moet, voor bv redirects of browser local/session storage items.
-                'series' - de serie data voor PhP, die met $data['series'] of gewoon $series gebruikt kan worden op de pagina.
-                'albums' - de albums data voor een serie, met de zelfde werking als de serie hier boven.
-
-            De view wordt altijd terug gegeven met de data zoals die is samengestelt.
-     */
+    /* Admin-Page functions */
+    // '/beheer' function, for the admin page.
     public function beheer() {
-        $data = [
-            'header' => [],
-            'series' => [],
-            'albums' => []
-        ];
+        // Expected/Required Page-data
+        $data = [ 'header' => [], 'series' => [], 'albums' => [] ];
 
-        /* De loop om serie data te laden, en om de albums in die serie te tellen. */
+        // If there is no page data, get all serie data first
         if(empty($data['series'])) {
             $localSeries = App::get('database')->selectAll('series');
 			$localAlbums = [];
 			$count = 0;
 
+            // Loop over all series, store the index and store its ablums.
             foreach($localSeries as $key => $value) {
-			    if(isset($localSeries[$key])) {
-				    array_push($data['series'], $localSeries[$key]);
-                    $sqlId = ['Album_Serie' => $localSeries[$key]['Serie_Index'] ];
-                    array_push($localAlbums, App::get('database')->selectAllWhere('albums', $sqlId));
-			    }
+                $sqlId = ['Album_Serie' => $localSeries[$key]['Serie_Index'] ];
+                array_push($localAlbums, App::get('database')->selectAllWhere('albums', $sqlId));
 
+				// Push each serie into the page data
+				if(isset($localSeries[$key])) { array_push($data['series'], $localSeries[$key]); }
+
+                // Count the albums in each serie, and store/reset the count after.
 			    foreach($localAlbums[$key] as $aKey => $aValue) {
 				    if(!empty($localAlbums[$key][$aKey])) {
 					    if($localAlbums[$key][$aKey]['Album_Serie'] == $localSeries[$key]['Serie_Index']) {
@@ -115,14 +106,16 @@ class LogicController {
             }
 		}
 
-        /* Loop om de albums van een serie te laden, en de juiste script data voor JS. */
+        // To display the albums of a serie, i fist get all albums data.
         if(!empty($_POST['serie-index']) && !empty($_POST['serie-naam'])) {
             $tempAlbums = App::get('database')->selectAllWhere('albums', [ 'Album_Serie' => $_POST['serie-index'] ]);
 
+            // Push each album into the page data array.
             foreach($tempAlbums as $key => $value) {
                 array_push($data['albums'], $value);
             }
 
+            // Prepare JS page data to ensure everything is proccesed\displayed correctly.
             array_push($data['header'], App::get('processing')->createData('local', 'huidigeSerie', $_POST['serie-naam']));
             array_push($data['header'], App::get('processing')->createData('local', 'huidigeIndex', $_POST['serie-index']));
             array_push($data['header'], App::get('processing')->createData('local', 'serieWeerg', true));
@@ -131,24 +124,12 @@ class LogicController {
         return App::view('beheer', $data);
     }
 
-    /* serieM():
-            De functie voor het openen van de serie-maken pop-in, en het maken van een serie.
-            Eerst kijk ik of het om het openen van de pop-in gaat, of het maken van een serie van die pop-in zelf.
-            Als het om de naam-check gaat (openen van de pop-in), dan haal ik eerst alle series uit de database.
-            Dan loop ik over die series heen, en kijk of de serie-naam (naam-check) uit de POST, overeenkomt met een al bestaande serie.
-            Als die overeenkomt, dan zet ik naamError op waar, en evalueer ik dat variable voor de terugkoppeling.
-            Als het waar is echo ik een json_encode string terug, die JS aangeeft dat de pop-in geopend moet worden.
-            Als het niet waar is echo ik een kson_encode string terug, die via JS een terugkoppeling geeft naar de gebruiker.
-
-            Als het om het maken van een serie gaat, sla ik eerst de verplichte form op in sqlData.
-            Dan kijk ik welke andere data er aanwezig is, en zorg ik dat die op de juiste manier in sqlData komen te staan.
-            Dan probeer ik die sqlData via de processing class op te slaan, en evalueer ik het resultaat daarvan.
-            Als er foutmeldingen zijn, echo ik die met json_encode terug naar JS, zodat de gebruiker weet wat er mis ging.
-            Als er geen foutmeldingen zijn, echo ik een geslaagd bericht terug met json_encode.
-     */
+    // '/serieM' function, both the controlle and pop-in submits.
     public function serieM() {
+        // Keep track of potential errors.
         $naamError = false;
 
+        // Before we open the pop-in, we check for double names.
         if(isset($_POST['naam-check'])) {
             $localSeries = App::get('database')->selectAll('series');
 
@@ -158,28 +139,30 @@ class LogicController {
                 }
             }
 
+            // And we give feedback to the user if there is an error.
             if($naamError) {
                 echo json_encode("Deze serie naam bestaat al, gebruik een andere naam gebruiken !");
             } else {
                 echo json_encode("Serie-Maken");
             }
+        // If the submit was from the pop-in, we start with formating the data for SQL
         } else {
             $sqlData = [ 'Serie_Naam' => $_POST['serie-naam'] ];
 
+            // Ensure 'makers' has either a value or empty string
             if(isset($_POST['makers'])) {
                 $sqlData['Serie_Maker'] = $_POST['makers'];
-            } else {
-                $sqlData['Serie_Maker'] = '';
-            }
+            } else { $sqlData['Serie_Maker'] = ''; }
 
+            // Ensure 'opmerking' has either a value or empty string
             if(isset($_POST['opmerking'])) {
                 $sqlData['Serie_Opmerk'] = $_POST['opmerking'];
-            } else {
-                $sqlData['Serie_Opmerk'] = '';
-            }
+            } else { $sqlData['Serie_Opmerk'] = ''; }
     
+            // Attempt to store the data via my own Processing class.
             $newSerie = App::get('processing')->set_Object('series', $sqlData);
     
+            // Check if there where errors or not, and ensure the right feedback is returned to JS.
             if(isset($newSerie)) {
                 echo json_encode($newSerie);
             } else {
@@ -188,115 +171,90 @@ class LogicController {
         }
     }
 
-    /* albumT():
-            De functie voor het toevoegen van een album aan de database.
-            Ik sla direct de required data op vanuit de POST, en maak een leeg errorcheck variable.
-            Dan check ik welke andere data aanwezig is, en voeg die toe aan de albumData.
-            Voor de album cover, moet ik de inhoud van de image omzetten naar base64, en die in een string zetten met het juiste bestandstype.
-            Zodat ik die string als blob kan opslaan, en direct kan gebruiken om de cover weer te geven in HTML.
-            Vervolgens probeer ik de albumData via de processing class aan de database toe tevoegen.
-            Dan kijk ik of dat gelukt is of niet, en aan de hand daarvan, zet ik de foutmeldingen om naar het juiste format voor JS.
-            Als het niet gelukt is, dan echo ik de foutmeldingen terug met json_encode naar de caller.
-            Als het wel gelukt is, dan echo ik een gepaste melding terugn met json_encode naar de caller.
-     */
+    // '/albumT' function, add album to database.
     public function albumT() {
+        // Format the expected SQL data
         $albumData = [
             'Album_Naam' => $_POST['album-naam'],
             'Album_ISBN' => $_POST['album-isbn'],
             'Album_Opm' => 'W.I.P.'
         ];
         
-        if(isset($_POST['serie-index'])) {
-            $albumData['Album_Serie'] = $_POST['serie-index'];
-        }
+        // Check if certain data is present before storing, as they are not required,
+        if(isset($_POST['serie-index'])) { $albumData['Album_Serie'] = $_POST['serie-index']; }
+        if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
+        if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
 
+        // If we dont have a serie-index but only a serie-naam, we make sure the correct index is stored.
         if(isset($_POST['serie-naam']) && !isset($data['serie-index'])) {
             $tempSerie = App::get('database')->selectAllWhere('series', ['Serie_Naam' => $_POST['serie-naam']])[0];
             $albumData['Album_Serie'] = $tempSerie['Serie_Index'];
         }
-
-        if(isset($_POST['album-nummer'])) {
-            $albumData['Album_Nummer'] = $_POST['album-nummer'];
-        }
-
-        if(isset($_POST['album-datum'])) {
-            $albumData['Album_UitgDatum'] = $_POST['album-datum'];
-        }
         
+        // The album-cover requires some converting to base64_encoded blob data.
         if(isset($_FILES['album-cover'])) {
+            // Get all required file info to store it's content
             $fileName = basename($_FILES["album-cover"]["name"]);
             $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-
             $image = $_FILES['album-cover']['tmp_name'];
+
+            // Get file content, and store it in a string that can be inject straight into a HTML <img> tag.
             $imgContent = file_get_contents($image);
             $dbImage = 'data:image/'.$fileType.';charset=utf8;base64,'.base64_encode($imgContent);
-                
+            
+            // Add the blob/string to the SQL data.
             $albumData['Album_Cover'] = $dbImage;
         }
 
+        // Attempt to store the ablum in the database, and store any errors
         $newAlbum = App::get('processing')->set_Object('albums', $albumData);
 
+        // IF there are errors, format the error for JS
         if(isset($newAlbum)) {
             $returnData = [];
 
+            // Make sure that each error is stored properly, if present.
             foreach($newAlbum as $key => $value) {
-                if($key === 'Album_Naam' && isset($value)) {
-                    $returnData['aNaamFailed'] = $newAlbum['Album_Naam'];
-                }
-
-                if($key === 'Album_ISBN' && isset($value)) {
-                    $returnData['aIsbnFailed'] = $newAlbum['Album_ISBN'];
-                }
+                if($key === 'Album_Naam' && isset($value)) { $returnData['aNaamFailed'] = $newAlbum['Album_Naam']; }
+                if($key === 'Album_ISBN' && isset($value)) { $returnData['aIsbnFailed'] = $newAlbum['Album_ISBN']; }
             }
 
+            // return said error to JS for user feedback.
             echo json_encode($returnData);
+        // If there where no errors, give user-feedback that the album was stored.
         } else {
             echo json_encode("Toevoegen van het Album: " . $_POST['album-naam'] . " is gelukt.");
         }
     }
 
-    /* albumV():
-            Deze simpele functie verwijderd het album uit de lijst van albums.
-            En geeft een echo met json_encode string terug voor de terugkoppeling.
-     */
+    // '/albumV' function, remove album from database.
     public function albumV() {
+        // Because all user confirms are done client side, i simple remove the object.
         App::get('processing')->remove_Object('albums', ['Album_Index' => $_POST['album-index']], ['Album_Naam' => $_POST['album-naam']]);
 
+        // And do some user feedback via JS.
         echo json_encode("Verwijderen van {$_POST['album-naam']}, is gelukt.");
     }
 
-    /* albumB():
-            Deze functie zorgt ervoor dat album data die bewerkt is, word gecontroleerd en daarna opgeslagen in de database.
-            Om de juiste informatie te krijgen, heb ik de serie-index nodig van het huidige album, dus ik vraag direct het huidige bewerkte album aan uit de database.
-            Dan sla ik alle verplichte velden direct op inde de $albumData, en voor de rest kijk ik eerst of die in de POST staan.
-
-            Voor de album-cover, moet ik iets meer doen, en dit lijkt wat omslachtig.
-            Ik pak de bestandsnaam en type, zodat ik de inhoud van het bestand, om kan zetten naar base64 code.
-            Die base 64 code, zet ik in een kant en klare string met de filetype erbij, zodat ik die direct in een HTML tag kan zetten.
-            En de cover in zijn geheel, als blob kan opslaan in de database, en niet een lokale kopie hoef te bewaren.
-            Dit was de meest eenvoudige manier die ik kon vinden, om dit doel te berijken, er zijn vast betere manier om dit te doen.
-
-            De foutmeldingen worden behandeld in de 'Processing' class, voordat de data daadwerkelijk word opgeslagen.
-            En aan de hand van wat er terug komt, echo de juiste data terug met een json_encode, zodat Javascript het kan uitlezen.
-     */
+    // 'albumBew' function, edit\update album data.
     public function albumBew() {
+        // Prepare album and error check data.
         $albumData = [];
         $erroCheck;
 
+        // Get all current album data from the database.
         $tempAlbum = App::get('database')->selectAllWhere('albums', ['Album_Index' => $_POST['album-index']])[0];
 
+        // Prepare mandatory album data for SQL
         $albumData['Album_Serie'] = $tempAlbum['Album_Serie'];
         $albumData['Album_Naam'] = $_POST['album-naam'];
         $albumData['Album_ISBN'] = $_POST['album-isbn'];
 
-        if(isset($_POST['album-nummer'])) {
-            $albumData['Album_Nummer'] = $_POST['album-nummer'];
-        }
+        // Check non-mandatory data for SQL.
+        if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
+        if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
 
-        if(isset($_POST['album-datum'])) {
-            $albumData['Album_UitgDatum'] = $_POST['album-datum'];
-        }
-
+        // Prepare the cover in a base64_encoded string (blob).
         if(!empty($_FILES['album-cover']['name'])) {
             $fileName = basename($_FILES["album-cover"]["name"]);
             $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -308,30 +266,31 @@ class LogicController {
             $albumData['Album_Cover'] = $dbImage;
         }
 
+        // Attempt to store album in database.
         $infoAlbum = App::get('processing')->update_Object('albums', ['Album_Index' => $_POST['album-index']], $albumData);
 
+        // If there are errors, pass them to JS for user feedback.
         if(isset($infoAlbum) && $infoAlbum != 0) {
             echo json_encode($infoAlbum);
+        // If there are no errors, give feedback to user via JS.
         } else {
             echo json_encode("Het album: " . $_POST['album-naam'] . " is bijgewerkt.");
         }
     }
 
-    /* serieBew():
-            Deze functie zorgt ervoor dat serie data die bewerkt is, ge-update en ge-controleerd word.
-            Er is geen voorbewerking nodig voor de POST data, ik moet allen de 'key' een andere naam geven voor de database velden.
-            Als er foutmeldingen zijn, echo ik die terug met een json_encode, zodat JS het kan lezen.
-            Als er geen foutmeldingen zijn, echo ik een jscon_encode bericht terug, zodat de gebruiker kan zien dat het gelukt is.
-     */
+    // '/serieBew' function, edit\update serie data.
     public function serieBew() {
+        // Prepare data for SQL
         $serieData = [
             'Serie_Naam' => $_POST['naam'],
             'Serie_Maker' => $_POST['makers'],
             'Serie_Opmerk' => $_POST['opmerking']
         ];
 
+        // Attempt to update database.
         $checkSerie = App::get('processing')->update_Object('series', ['Serie_Index' => $_POST['index']], $serieData);
 
+        // Check for errors, and provide feedback for user via JS.
         if(isset($checkSerie)) { 
             echo json_encode($checkSerie);
         } else {
@@ -339,131 +298,83 @@ class LogicController {
         }
     }
 
-    /* serieVerw():
-            Deze functie verwijdert een serie en al haar albums uit de database.
-            Alle benodigde gebruikers validaties zijn all gedaan, en error checks zijn niet nodig.
-            Dus een echo met json_encode() string dat het gelukt is, is het enige dat terug hoeft naar de caller.
-     */
+    // 'serieVerw' function, remove serie and its albums from database.
     public function serieVerw() {
+        // Store the identifiers required for removing the entire serie.
         $serieId = [ 'Serie_Index' => $_POST['serie-index'], 'Serie_Naam' => $_POST['serie-naam'] ];
 
+        // Remove the albums first, and then the serie to ensure there are not issues.
         App::get('processing')->remove_Object('albums', ['Album_Serie' => $_POST['serie-index']]);
         App::get('processing')->remove_Object('series', $serieId);
 
+        // Provide feeback to user, using JS.
         echo json_encode("Verwijderen van {$_POST['serie-naam']}, en alle albums is gelukt");
     }
 
-    /* adminReset():
-            Deze functie doet niet meer dan het updaten van gebruikers data, aangezien er duidelijk om bevestiging gevraagd word op de pagina zelf.
-            Er is nog ruimte voor een check in de Processing::update_Object() functie, maar momenteel zals deze functie altijd slagen.
-     */
+    // 'adminReset' function, user password reset so only the admin can reset passwords.
     public function adminReset() {
+        // Attempt tom, update user table with the new password
         $reset = App::get('processing')->update_Object('gebruikers', ['Gebr_Email' => $_POST['email']], ['Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT)]);
 
+        // Check if there where errors trying to update the information.
         if(isset($reset)) {
             echo json_encode('De wachtwoord reset is niet gelukt');
-        } else {
-            echo json_encode('De wachtwoord reset is geslaagd');
-        }
+        } else { echo json_encode('De wachtwoord reset is geslaagd'); }
     }
 
-    /* gebruik():
-            Deze functie verwerkt alle POST request die niet handig zijn via een JS Fetch.
-            En is daarom om iets uigebreider dan de GET variant in de PagesController.
-            Bij elke afzonderlijk loop heb ik een comment gemaakt, die uitlegt wat het doel van die loop is.
-
-            De $data array heeft de huidige opmaak en functie:
-                'header' -> JS script data die ik in de header zet, om gegevens in de local storage van de browser te zetten.
-                'series' -> De serie data die ik in PhP gebruik om de juiste gegevens weer te geven (selecteren van een serie).
-                'albums' -> De album data die ik in PhP gebruik om de juiste albums van een serie in beeld te zetten.
-                'collecties' -> De collectie data die ik in PhP gebruik, om aan te geven of een album in het bezit is van een gebruiker of niet.
-     */
+    /* User-Page functions */
+    // '/gebruik' function, for the user page.
     public function gebruik() {
-        $data = [
-            'header' => [],
-            'series' => [],
-            'albums' => [],
-            'collecties' => []
-        ];
+        // Prepare the required data structure for the user page.
+        $data = [ 'header' => [], 'series' => [], 'albums' => [], 'collecties' => [] ];
 
-        /* Deze loop zorgt er voor, dat er altijd 'serie' data is, en altijd op een manier dat ik er makkelijk gebruik van kan maken */
+        // Check if there is 'series' datam and populate if there isn't
         if(empty($data['series'])) {
             $temp = App::get('database')->selectAll('series');
-            foreach($temp as $key => $value) {
-                array_push($data['series'], $temp[$key]);
-            }
+            // Push each serie in to the page data array.
+            foreach($temp as $key => $value) { array_push($data['series'], $temp[$key]); }
         }
 
-        /* Deze loop is voor het ophalen van de 'albums' & 'collecties' data, als er een serie selectie is gemaakt */
+        // If a serie was selected, we need to populate the 'albums' and 'collecties' data.
         if(isset($_POST['serie_naam'])) {
+            // Get the proper identifiers/data required for the request.
             $serieObject = App::get('database')->selectAllWhere('series', [ 'Serie_Naam' => $_POST['serie_naam'] ])[0];
             $serieIndex = [ 'Album_Serie' => $serieObject['Serie_Index'] ];
 
-            /* Dan zorg ik dat de 'albums' data op de juiste plek, en in de juiste format komt te staan */
+            // Check if 'albums' is empty
             if(empty($data['albums'])) {
                 $temp = App::get('database')->selectAllWhere('albums', $serieIndex);
-                foreach($temp as $key => $value) {
-                    array_push($data['albums'], $temp[$key]);
-                }
+                // Push each album in to the page data
+                foreach($temp as $key => $value) { array_push($data['albums'], $temp[$key]); }
             }
 
-            /* Dan zorg ik dat de 'collecties' data op de juiste plek, en in de juiste format komt te staan */
+            // Check if 'collecties' is empty
             if(empty($data['collecties'])) {
+                // Get the proper identifiers/data from the database.
                 $gebrObject = App::get('database')->selectAllWhere('gebruikers', [ 'Gebr_Email' => $_POST['gebr_email'] ])[0];
                 $collecties = App::get('database')->selectAllWhere('collecties', [ 'Gebr_Index' => $gebrObject['Gebr_Index'] ]);
 
-                foreach($collecties as $key => $value) {
-                    array_push($data['collecties'], $collecties[$key]);
-                }
+                // Add each data row to the page data.
+                foreach($collecties as $key => $value) { array_push($data['collecties'], $collecties[$key]); }
             }
 
-            /* En ik geef ook de huidige serie-naam mee terug voor javascript */
+            // Make sure the 'serie-naam' is always returned to JS.
             array_push($data['header'], App::get('processing')->createData('local', 'huidigeSerie', "{$_POST['serie_naam']}"));
         }
 
-        /* De standaard return view + data functie, zodat alles op de pagina terecht komt */
         return App::view('gebruik', $data);
     }
 
-    /* valUsr():
-            Deze functie doet niet meer dat kijken of een gebruiker bestaat, op basis van het aangeleverde e-mail adress.
-            Als de gebruiker niet bestaat echo ik een 'Invalid User' string terug, en als die wel bestaat een 'Valid User' string.
-            In het geval dat er geen e-mail is, echo ik een 'Validatie Mislukt' string terug.
-            Bij alle gevallen, komt de melding terug in een JS Fetch, en dus is de json_encode nodig om het leesbaar te maken voor JS.
-     */
-    public function valUsr() {
-        if(isset($_POST['gebr_email'])) {
-            $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_POST['gebr_email'] ]);
-
-            if(!isset($tempGebr) || empty($tempGebr)) {
-                echo json_encode('Invalid User');
-            } else {
-                if($_POST['gebr_email'] === $tempGebr[0]['Gebr_Email']) {
-                    echo json_encode('Valid User');
-                } else {
-                    echo json_encode('Invalid User');
-                }
-            }
-        } else {
-            echo json_encode('Validatie mislukt!');
-        }
-    }
-
-    /* albSta():
-            Deze functie zet albums op aan-/afwezig voor de gebruiker zijn/haar collecties.
-            Met de POST data vraag ik de juiste gegevens aan, zodat ik de juiste index waardes heb voor het toevoegen.
-            Aan de hand van de 'aanwezig' waarde, bepaal ik wat voor data ik naar de database moet sturen of verwijderen.
-            En op basis van wat er in $newcol gezet word door de Processing class, bepaal ik wat er terug moet naar de caller.
-
-            Alle data die terug moet, kom terug in een JS fetch, en dus moet json_encode() worden zodat het uit te lezen is.
-            De foutmeldingen worden afgehandeld door de Processing class.
-     */
+    // '/albSta' function, to update the 'collecties' data, based on the HTML switch.
     public function albSta() {
+        // Get all required data for the request.
         $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_POST['gebr_email'] ])[0];;
         $tempSerie = App::get('database')->selectAllWhere("series", [ 'Serie_Naam' => $_POST['serie_naam'] ])[0];
         $tempAlbum = App::get('database')->selectAllWhere("albums", [ 'Album_Naam' => $_POST['album_naam'], 'Album_Serie' => $tempSerie['Serie_Index'] ])[0];
 
+        // Check the album states that are changed/requested.
         if($_POST['aanwezig'] === 'true') {
+            // Prepare the data for SQL
             $tempCol = [
                 "Gebr_Index" => $tempGebr["Gebr_Index"],
                 "Alb_Index" => $tempAlbum["Album_Index"],
@@ -473,27 +384,48 @@ class LogicController {
                 "Alb_Opmerk" => ""
             ];
 
+            // Attempt to add data to database.
             $newCol = App::get('processing')->set_Object('collecties', $tempCol);
 
+            // Check for errors, and provide feedback to the user via JS.
             if(isset($newCol)) {
                 echo json_encode($newCol['Col_Toev']);
-            } else {
-                echo json_encode('Toevoegen van het album aan de collectie is gelukt');
-            }
+            } else { echo json_encode('Toevoegen van het album aan de collectie is gelukt'); }
         } else if ($_POST['aanwezig'] === 'false') {
+            // Prepare the data for SQL
             $tempCol = [
                 "Gebr_Index" => $tempGebr["Gebr_Index"],
                 "Alb_Index" => $tempAlbum["Album_Index"]
             ];
 
+            // Attempt to remove the data from the database.
             $newCol = App::get('processing')->remove_Object('collecties', $tempCol);
 
+            // Check for errors, and provide feedback to the user via JS.
             if(isset($newCol)) {
                 echo json_encode($newCol['Col_Verw']);
-            } else {
-                echo json_encode('Verwijderen van het album uit de collectie is gelukt');
-            }
+            } else { echo json_encode('Verwijderen van het album uit de collectie is gelukt'); }
         }
+    }
+
+    /* Shared functions */
+    // '/valUsr' function, for all cases  where i want/need user validation.
+    public function valUsr() {
+        // Check if e-mail was in the $_POST data
+        if(isset($_POST['gebr_email'])) {
+            // get user data from database.
+            $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_POST['gebr_email'] ]);
+
+            // Check if there was a user with said e-mail, and provide feedback for JS (not the user).
+            if(!isset($tempGebr) || empty($tempGebr)) {
+                echo json_encode('Invalid User');
+            } else {
+                if($_POST['gebr_email'] === $tempGebr[0]['Gebr_Email']) {
+                    echo json_encode('Valid User');
+                } else { echo json_encode('Invalid User'); }
+            }
+        // Just in-case there was no e-mail in the POST data.
+        } else { echo json_encode('Validatie mislukt!'); }
     }
 }
 ?>

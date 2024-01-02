@@ -1,4 +1,5 @@
 <?php
+    /* For obvious reasons this are only used in a local testing enviroment, plz edit for production. */
     return [
         'database' => [
             'name' => 'collectie_tracker',

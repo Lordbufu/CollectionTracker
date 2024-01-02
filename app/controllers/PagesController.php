@@ -1,16 +1,13 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\App;
 
-/*	PageController Class:
-		De simpele GET routes voor de website, die zorgen dat de informatie altijd actueel is.
-		Een hoop comments zijn achterwegen gelaten, omdat alles vrij eenvoudig is, zoals ook de bedoelling is voor de PagesController.
-		Liever had ik hier nog minder code gehad, maar dit was de snellere/simpelere oplossing voor de scope van dit project.
- */
 class PagesController {
-	/* landing(): De GET route voor de landingspagina, die ook alle database tafels maakt, als die niet aanwezig zijn. */
+	// Landing-page function
 	public function landing() {
+		// Create initial databse tables/user if they are not set.
 		App::get('database')->createTable('gebruikers');
 		App::get('database')->createAdmin();
 		App::get('database')->createTable('series');
@@ -21,23 +18,28 @@ class PagesController {
 		return App::view('index');
 	}
 
-	/* beheer(): De GET route voor de beheer pagina, die zorgt dat de data op de pagina actueel is. */
+	// Admin-page function
 	public function beheer() {
+		// Page data that is expected
 		$data = [ 'series' => [] ];
 
+		// If there is no page data, get all serie data first
         if(empty($data['series'])) {
             $localSeries = App::get('database')->selectAll('series');
 			$localAlbums = [];
 			$count = 0;
 
+			// Loop over all series, store the index and store its ablums.
             foreach($localSeries as $key => $value) {
                 $sqlId = ['Album_Serie' => $localSeries[$key]['Serie_Index'] ];
 				array_push($localAlbums, App::get('database')->selectAllWhere('albums', $sqlId));
 
+				// Push each serie into the page data
 				if(isset($localSeries[$key])) {
 					array_push($data['series'], $localSeries[$key]);
 				}
 
+				// Count the albums in each serie, and store/reset the count after.
 			    foreach($localAlbums[$key] as $aKey => $aValue) {
 				    if(!empty($localAlbums[$key][$aKey])) {
 					    if($localAlbums[$key][$aKey]['Album_Serie'] == $localSeries[$key]['Serie_Index']) {
@@ -54,12 +56,16 @@ class PagesController {
 		return App::view('beheer', $data);
 	}
 
-	/* gebruik(): De GET route voor de gebruik pagina, die zorgt dat de data op de pagina actueel is. */
+	// User-page function
 	public function gebruik() {
+		// Page data that is expected
 		$data = [ 'series' => [] ];
 
+		// If there is not page data get all series,
         if(empty($data['series'])) {
             $temp = App::get('database')->selectAll('series');
+			
+			// and push each serie into the page data.
             foreach($temp as $key => $value) {
                 array_push($data['series'], $temp[$key]);
             }            

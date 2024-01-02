@@ -1,5 +1,7 @@
 <?php
-
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
+ */
 namespace App\Core;
 
 /*  De App class:

@@ -1,4 +1,7 @@
 <?php
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
+ */
 
 use App\Core\{App, Processing};
 use App\Core\Database\{QueryBuilder, Connection};

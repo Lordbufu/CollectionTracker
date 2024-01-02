@@ -1,3 +1,7 @@
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
+ */
+
 /* Het document listen event:
         Deze functie, kijk of de huidige pagina geladen is, en voert iets uit als dat zo is.
         Voor de landingspagina, is dit heel eenvoudig, en voer ik direct de init functie voor die pagina uit.

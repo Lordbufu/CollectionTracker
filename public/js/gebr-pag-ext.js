@@ -1,3 +1,7 @@
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
+ */
+
 /* Globale variable voor in en buiten de init functie */
 let formButt, formInput;
 

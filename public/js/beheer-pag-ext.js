@@ -1,4 +1,5 @@
-/* TODO Lijst:
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
         - Review voor 2.0 versie, loop door alles heen om te kijken wat er nog veranderd moet worden.
  */
 
@@ -63,21 +64,21 @@ function initBeheer() {
     }
 
     /* Alle benodigde elementen voor album-toevoegen & album-bewerken */
-    submitButtToev = document.getElementById("albumt-form-button");                                                     // De submit button van de album-toevoegen pop-in.
-    let inpTIndex = document.getElementById("albumt-form-indexT");                                                      // Index input Element van de album-toevoegen pop-in.
-    let naamInpToev = document.getElementById("albumt-form-alb-naam");                                                  // Album naam Element van de album-toevoegen pop-in.
-    let isbnInpToev = document.getElementById("albumt-form-alb-isbn");                                                  // ISBN input Element van de album-toevoegen pop-in.
-    submitButtBew = document.getElementById("albumb-form-button");                                                      // De submit button van de album-bewerken pop-in.
-    let naamInpBew = document.getElementById("albumb-form-alb-naam");                                                   // Album naam Element van de album-bewerken pop-in.
-    let isbnInpBew = document.getElementById("albumb-form-alb-isbn");                                                   // ISBN input Element vande album-bewerken pop-in.
+    submitButtToev = document.getElementById("albumt-form-button");
+    let inpTIndex = document.getElementById("albumt-form-indexT");
+    let naamInpToev = document.getElementById("albumt-form-alb-naam");
+    let isbnInpToev = document.getElementById("albumt-form-alb-isbn");
+    submitButtBew = document.getElementById("albumb-form-button");
+    let naamInpBew = document.getElementById("albumb-form-alb-naam");
+    let isbnInpBew = document.getElementById("albumb-form-alb-isbn");
 
     /* De Listenevents en state changes voor album-toevoegen & album-bewerken */
-    isbnInpToev.addEventListener("input", isbnCheck);                                                                   // Een listen event voor als de isbn input veranderd.
-    naamInpToev.addEventListener("input", naamCheck);                                                                   // Een listen event voor als de naam input veranderd.
-    submitButtToev.disabled = true;                                                                                     // Deze zet ik direct op disabled zodat hij niet werkt.
-    isbnInpBew.addEventListener("input", isbnCheck);                                                                    // Een listen event voor als de isbn input veranderd.
-    naamInpBew.addEventListener("input", naamCheck);                                                                    // Een listen event voor als de naam input veranderd.
-    submitButtBew.disabled = true;                                                                                      // Deze zet ik direct op disabled zodat hij niet werkt.
+    isbnInpToev.addEventListener("input", isbnCheck);
+    naamInpToev.addEventListener("input", naamCheck);
+    submitButtToev.disabled = true;
+    isbnInpBew.addEventListener("input", isbnCheck);
+    naamInpBew.addEventListener("input", naamCheck);
+    submitButtBew.disabled = true;
 
     /* Loop voor het mee geven van de serie index bij het toevoegen van een album */
     if(localStorage.albumToevIn != null && localStorage.albumToevIn != undefined && localStorage.albumToevIn != "") {
@@ -85,30 +86,21 @@ function initBeheer() {
         localStorage.removeItem('albumToevIn');
     }
 
-    // TODO: Deze check klopt niet echt, omdat ik handmatig de admin e-mail kan invoeren, en dus op de /beheer pagina kan komen.
+    // TODO: Deze check klopt niet echt, omdat ik handmatig de admin e-mail kan invoeren, en dus op de '/beheer' pagina kan komen.
     /* Redirect naar de landings\beheer of gebruik pagina, als er geen gebruiker of ongeldige gebruiker is */
-    // Conditie voor als er geen gebruikers data is.
     if(sessionStorage.gebruiker === null || sessionStorage.gebruiker === undefined) {
         window.location.assign('/');
-    // Voor alle andere gevallen.
     } else {
-        // Maak nieuwe FormData, en zet de gebruikers data er in.
         let formData = new FormData();
         formData.append('gebr_email', sessionStorage.gebruiker);
 
-        // Maak een verzoek naar de server voor validatie van de gebruiker, en doe iets met de response.
         fetchRequest('valUsr', 'POST', formData)
         .then((data) => {
-            // Als de response niet aangeeft dat de gebruiker bestaat,
             if(data !== "Valid User") {
-                // Redirect ik naar de landingspagina, en verwijder ik de gebruiker.
                 window.location.assign('/');
                 sessionStorage.removeItem('gebruiker');
-            // Als het wel een geldige gebruiker is, maar niet het verwachte administrator account,
             } else if (data === "Valid User" && sessionStorage.gebruiker !== "admin@colltrack.nl") {
-                // is het dus een gebruiker, en moet die naar de gebruikers pagina.
                 window.location.assign('/gebruik');
-            // conditie voor als er iets anders terug kwam.
             }
         });
     }

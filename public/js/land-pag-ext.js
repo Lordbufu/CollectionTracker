@@ -1,3 +1,7 @@
+/* TODO List:
+        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
+ */
+
 /* Globale waardes voor in en buiten de init functie */
 let pwField1, pwField2, pwChecked, inputChecked, submButton;
 
