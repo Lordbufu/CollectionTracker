@@ -34,7 +34,6 @@ class LogicController {
 	}
 
     // '/login' function.
-    37 @goto 30
     public function login() {
         // Prepare for the user validation.
         $data = [ 'header' => [] ];
