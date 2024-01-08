@@ -1,4 +1,4 @@
-/* De globale CSS variable, voor alle opmaak kleuren */
+/* Re-useable variables, for main page design */
 :root {
   --main-background-color: rgba(255, 255, 255, 1);
   --main-fade-background-color: rgba(0, 0, 0, 0.4);
@@ -11,12 +11,7 @@
   --main-link-hover: rgba(199, 37, 37, 0.801);
 }
 
-/*  De Basis opmaak van een pagina:
-      Op een paar dingen naar, zijn de meeste waardes, het zelfde als een default user agent (in dit geval van Chrome, maar zit niet veel verschil in lijkt het).
-      Deze word gebruikt door de meeste web-browsers, maar voor het geval dat, wil ik toch een soort fallback hebben.
-      De hoofd-opmaak staat appart per pagina, en is te vinden in andere css bestanden.
-      Voor mobile devices, zijn er apparte css bestanden, per apparaat groep (ook voor de Desktop, zie verwijzingen in de header).
- */
+/* Base style for default elements (identical to the default user-agent) */
 body {
   font-family: Arial, sans-serif;
   display: block;
@@ -74,8 +69,7 @@ footer {
   display: block;
 }
 
-/* Extra dingen die standaard zijn op alle pagina's, vnml animaties etc voor korte berichten van database handelingen. */
-/* Container voor xhr meldingen */
+/* Extra elements that where added later for user feedback */
 .message-container {
   z-index: 2;
   display: none;
@@ -90,7 +84,6 @@ footer {
   padding: 0.2em;
 }
 
-/* De xhr meldingen */
 .response-message {
   font-size: smaller;
 }

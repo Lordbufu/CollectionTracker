@@ -1,20 +1,15 @@
 <?php
-
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
- */
-
 namespace App\Core;
 
 use App\Core\App;
 
 /*  Processing Class:
-        This class processes all data that i require for the collections, and is there for also a interface between the Controller and QuerryBuilder
-        The most simple actions are not included, since a 'selectAll' or 'selectAllWhere', would be no more then a return x value.
+        This class was specifically designed to format/check/filter data to and from the website/database.
+        With the added benefit, that the controller code is shorter/cleaner and thus more readable.
 
         Short Explanation:
             createData:
-                This function prepares data for the page header, where i inject a JS script string to store things in the local/session storage.
+                This function prepares data for the page-header, where i inject a JS script string to store things in the local/session storage.
 
             createRedirect:
                 This function prepares data for the page header, but this time a redirect base on the $_SERVER super global.
@@ -59,7 +54,7 @@ class Processing {
             
             Scoped Variables:
                 $errorMsg (assoc array) - The error data that will be returned, for user feedback.
-                $..Err                  - Collection of potential errors, store here for sorter code.
+                $..Err (string)         - Collection of potential errors, stored here for sorter code.
      */
     public static function set_Object($naam, $data) {
         $errorMsg = [];
@@ -177,7 +172,7 @@ class Processing {
             
             Scoped Variables:
                 $errorMsg (assoc array) - The error data that will be returned, for user feedback.
-                $..Err (strin)          - Collection of potential errors, store here for sorter/more readable code lines.
+                $..Err (string)          - Collection of potential errors, stored here for sorter/more readable code lines.
      */
     public static function update_Object($naam, $id, $data) {
         $errorMsg = [];

@@ -1,4 +1,4 @@
-/* De top-level van alle Pop-In's, die via de id naam in beeld komt */
+/* All pop-in related styles, starting with the main container, that triggers visibility */
 .modal-container {
     position: fixed;
     z-index: 2;
@@ -15,7 +15,6 @@
     visibility: visible;
 }
 
-/* De Content Container voor de eerste positionering van de inhoud */
 .modal-content-container {
     display: inline-flex;
     flex-direction: column;
@@ -27,7 +26,6 @@
     border-radius: 1em;
 }
 
-/* De Header Content */
 .modal-header {
     display: inline-flex;
     justify-content: center;
@@ -65,7 +63,6 @@
     margin: 0.2em;
 }
 
-/* De Body Container en de bijbehorende inhoud */
 .modal-body {
     display: contents;
     top: 0.1em;
@@ -83,7 +80,6 @@
     margin: 0.1em;
 }
 
-/* Alle opmaak voor alles van de gebruikers overeenkomst */
 .modal-agree-container {
     display: inline-grid;
     justify-content: center;
@@ -113,7 +109,6 @@
     cursor: pointer;
 }
 
-/* De Form Submit knop & hover */
 .modal-form-button {
     background-color: var(--main-butt-color);
     text-align: center;
@@ -126,7 +121,6 @@
     cursor: pointer;
 }
 
-/* Tekst, lijsten en markers voor de gebruikers overeenkomst */
 .modal-para-1 {
     font-size: 1em;
 }
@@ -145,12 +139,7 @@
     font-weight: bold;
 }
 
-/* Extra opmaak voor de bestand input van alle beheer pop-in's:
-        Dit heeft specifiek te maken met de bestandsnaam, die achter het toevoegen knopje komt te staan.
-        Die tekst kan ik met CSS veder niks mee (voor zover ik kon vinden), en dus is de input knop verstopt.
-        En gebruik ik een label met opmaak, om het als een knop te doen laten lijken.
-        Ook zit het weergeven van de huidige cover erbij in, zodat je kan zien of die er is en hoe die eruit ziet.
- */
+/* Remove the file name behind the file input field */
  #albumt-form-alb-cov {
     display: none;
 }
@@ -159,6 +148,7 @@
     display: none;
 }
 
+/* Style a label to look like a submit button */ 
 .modal-form-alb-cov-lab {
     background-color: var(--main-butt-color);
     font-size: small;
@@ -174,22 +164,19 @@
     cursor: pointer;
 }
 
+/* A preview container for the actual cover image if present */
 #albumb-cover {
     left: 2em;
     height: 9em;
     width: 7em;
 }
 
-/*  Extra opmaak voor de serie bekijken pop-in.
-    Zodat de tafel in de pop-in past, en er niet buiten valt.
- */
+/* Set size for the Album view, so it doesnt go out of bounds */
 #beheer-albView-content-container {
     max-width: 100%;
 }
 
-/*  Album-Cover opmaak voor de serie-weergeven pop-in.
-    Deze zorgt ervoor dat de cover in het klein in de tabel komt te staan.
- */
+/* Another cover preview container and img, to show said cover in the series view. */
 .album-cover {
     height: 5em;
     width: 5em;

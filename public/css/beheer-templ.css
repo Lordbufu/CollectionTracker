@@ -1,10 +1,9 @@
-/* De Content Container voor de inhoud */
+/* All different styles for the Admin page */
 .content-container {
     display: grid;
     margin: 0.1EM 0.2EM;
 }
 
-/* De Title Inhoud */
 .title-banner {
     display: grid;
     background: var(--main-banner-color);
@@ -201,8 +200,8 @@ th {
     padding: 1em;
 }
 
-/* Late toevoegingen */
-/* Album Bewerken Button */
+/* Late additions for the albums/series view, mostly related to the new view/edit/delete buttons */
+/* Album Bewereken (Edit) Button */
 .album-bewerken-butt {
     background-image: url('/images/edit.png');
     background-position: center;
@@ -216,7 +215,7 @@ th {
     cursor: pointer;
 }
 
-/* Album Verwijderen Button */
+/* Album Verwijderen (Remove) Button */
 .album-verwijderen-butt {
     background-image: url('/images/delete.png');
     background-position: center;
@@ -230,7 +229,7 @@ th {
     cursor: pointer;
 }
 
-/* Serie Bekijken Button */
+/* Serie Bekijken (View) Button */
 .serie-bekijken-butt {
     background-image: url('/images/view.png');
     background-position: center;
@@ -244,7 +243,7 @@ th {
     cursor: pointer;
 }
 
-/* Serie Bewerken Button */
+/* Serie Bewerken (Edit) Button */
 .serie-bewerken-butt {
     background-image: url('/images/edit.png');
     background-position: center;
@@ -258,7 +257,7 @@ th {
     cursor: pointer;
 }
 
-/* Serie Verwijderen Button */
+/* Serie Verwijderen (Edit) Button */
 .serie-verwijderen-butt {
     background-image: url('/images/delete.png');
     background-position: center;
@@ -272,13 +271,12 @@ th {
     cursor: pointer;
 }
 
-/* De header text voor de album weergave */
+/* Header and table styles */
 .beheer-weerg-header-text {
     font-size: x-large;
     margin: 0.1em;
 }
 
-/* En de albums tafel die er ingeplakt word, moet ook inline gezet worden. */
 .beheer-albums-tafel {
     display: inline-table;
 }

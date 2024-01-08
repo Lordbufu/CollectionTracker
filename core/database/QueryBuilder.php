@@ -1,77 +1,49 @@
 <?php
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
- */
-
 namespace App\Core\Database;
 
 use PDO;
 
-/* QuerryBuilder Class:
-    Deze class zijn functie, is het maken en uitvoeren van SQL querries, via het PDO object van PhP.
+/* sprintf() details/reminder:
+    I use sprintf to create placeholders in the querry string i want to use, so i can paste data into it during the execute part of it.
 
-    Variable:
-        $pdo - Beschermt voor het PDO object.
+    Let say the string i want to create is this:
+        select * from `table-name`
 
-    Functies:
-        __construct(PDO $pdo)       - Constructor het PDO object te laden.
-        createTable($naam)          - Functie database tafels te maken, die de App nodig heeft om te werken.
-        createAdmin()               - Functie om het ingebouwde admin account te maken.
-        executeQuerry($naam, $id)   - Functie om querries uit te voeren, zodat ik niet overal de zelfde try/catch loop moet herschrijven.
-        selectAll($tafel)           - Functie om alles uit een $tafel te selecteren.
-        selectAllWhere($tafel, $id) - Functie om iets op basis van een $id uit een $tafel te selecteren.
-        insert($tafel, $data)       - Functie om $data in een $tafel te zetten.
-        remove($tafel, $cond)       - Functie om data met deze $cond(ities) uit een $tafel te verwijderen.
-        update($table, $params, $id)- Functie om iets met deze $id(entifier(s)) uit een $table, te updaten met deze $data.
+    I can cast the name into the string like this:
+        sprintf("select * from %s", $tableName)
     
-    sprintf() uitleg:
-        sprintf werkt vrij eenvoudig, als ik de volgende querry nodig heb:
-            select * from `tafel-naam`
+    Let say i want to create something more complex like the following:
+        'select * from `table-name` where `colum-name`=`colum-value`'
 
-        Kan ik met deze functie de `tafel-naam` via een placeholder op zijn plek zetten, en krijg je deze string:
-            select * from %s
+    The placeholders i want would now look like this:
+        'select * from `%s` where `%s`=`%s`'
 
-        Om de tafel naam uit een string variable te halen, doe ik dan het volgende:
-            $sql = sprintf("select * from %s", $tafel);
-        
-        Dit kan je dan ook voor met complexe querries gebruiken, zolang de variable op de juiste manier voorbewerkt zijn.
-        Stel dat we de volgende informatie hebben:
-            $tafel = 'gebruikers';
-            $id = [ 'gebruikers-index' => 1, 'gebruikers-email' => 'test@test.nl' ];
-        
-        Als ik dan de gebruiker met die exacte $id gegevens moet hebben, zet ik die als volgt klaar:
-            $sql = sprintf(
-                'select * from `%s` where %s = %s and %s = %s',                 // De querry zoals ik die hebben wil
-                $tafel,                                                         // De tafel naam voor de eerste placeholder
-                implode( ', ', array_keys( array_slice( $id, 0, 1 ) ) ),        // De key van array index 0 als kolum naam bv gebruikers-index
-                ':' . implode( ', :', array_keys( array_slice( $id, 0, 1 ) ) ), // De key van array index 0 als placeholder bv :gebruiker-index
-                implode( ', ', array_keys( array_slice( $id, 1, 2 ) ) ),        // De key van array index 1 als kolum naam bv gebruikers-email
-                ':' . implode( ', :', array_keys( array_slice( $id, 1, 2 ) ) )  // De key van array index 1 als placeholder bv :gebruiker-email
-            );
-        
-        Als de $id maar 1 array pair heeft bv ['gebruikers-index' => 1], is array_slice niet nodig.
-        Ook bij een insert, ondanks dat er meerdere data pairs zijn, is dit niet nodig.
+    To plut the last 2 placeholders in properly, i would need to implode and slice my array to get the right data.
+    This would look something like this:
+        $sql = sprintf(
+            'select * from `%s` where %s = %s and %s = %s',
+            $tafel,
+            implode( ', ', array_keys( array_slice( $id, 0, 1 ) ) ),        // The colum-name from the array casted as string directly 'user-index'
+            ':' . implode( ', :', array_keys( array_slice( $id, 0, 1 ) ) )  // The value placeholder, casted as ':user-index'
+        );
 
-        De querry ($sql) die dan terug komt van sprintf ziet er als volg uit:
-            select * from `gebruikers` where Gebr_Email = :Gebr_Email and Gebr_Index = :Gebr_Index
-
-        En als ik dat dan via de PDO wil uitvoeren, hoef ik alleen $id mee te geven en zet de PDO de juiste waarde op de juiste plek.
-        Die regels zien er dan als volgt uit:
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute($id);
+    Then during the execute part of the code, i simply prepare the string with the placeholders, and execute with the $id array.
+        $statement = $this->pdo->prepare($sql);     // prepare the querry
+        $statement->execute($id);                   // execute with the right data
+    
+    And that makes the data go into the right place, so SQL can actually use said information.
  */
 class QueryBuilder {
+    // PDO object
     protected $pdo;
 
-    // __construct(PDO $pdo): om de PDO te maken in het globale protected variable.
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-    }
+    // __construct(PDO $pdo): set this PDO to PDO class object.
+    public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
-    // createTable($naam): Voor het maken van de database tafel die de App nodig heeft, die alleen de tafel naam verwacht.
+    // createTable($naam): To create the inital database tabels if they are not created already.
+    //  $naam (string)  - The name of the Table i want to create.
     public function createTable($naam) {
         switch($naam) {
-            // De query die nodig is voor de gebruikers tafel.
             case "gebruikers":
                 $sql = sprintf(
                     "create table if not exists `%s` (
@@ -87,7 +59,6 @@ class QueryBuilder {
                 );
 
                 $this->executeQuerry($sql);
-            // De query die nodig is voor de series tafel.
             case "series":
                 $sql = sprintf(
                     "create table if not exists `%s` (
@@ -101,7 +72,6 @@ class QueryBuilder {
                 );
 
                 $this->executeQuerry($sql);
-            // De query die nodig is voor de series-meta tafel.
             case "serie_meta":
                 $sql = sprintf(
                     "create table if not exists `%s` (
@@ -119,7 +89,6 @@ class QueryBuilder {
                 );
 
                 $this->executeQuerry($sql);
-            // De query die nodig is voor de albums tafel.
             case "albums":
                 $sql = sprintf(
                     "create table if not exists `%s` (
@@ -139,7 +108,6 @@ class QueryBuilder {
                 );
 
                 $this->executeQuerry($sql);
-            // De query die nodig is voor de collecties tafel.
             case "collecties":
                 $sql = sprintf(
                     "create table if not exists `%s` (
@@ -163,7 +131,7 @@ class QueryBuilder {
         }
     }
 
-    // createAdmin(): Voor het maken van het standaard admin account.
+    // createAdmin(): To create the default administrator account, if there isnt one.
     public function createAdmin() {
         $wwHashed = password_hash('wachtwoord123', PASSWORD_BCRYPT);
         $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin') ON DUPLICATE KEY UPDATE `Gebr_Email`=`Gebr_Email`";
@@ -171,14 +139,16 @@ class QueryBuilder {
         $this->executeQuerry($sql);
     }
 
-    // executeQuerry($sql, $id = []): Voor het uitvoeren van alle queries.
+    // executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
+    //  $sql (string)       - The querry string with placeholders that has been prepared.
+    //  $id (Assoc Array)   - The identifiers required to select/update/remove specific data
     public function executeQuerry($sql, $id = []) {
-        // Als de id leeg is, moet ik de query uitvoeren zonder die variable.
+        // If the '$id' is empty, i dont need to worry about placeholders for identifying data.
         if(empty($id)) {
             $statement = $this->pdo->prepare($sql);
             $statement->execute();
             return $statement->fetchAll(PDO::FETCH_ASSOC);
-        // Als de id niet leeg is, moet die mee via de execute() voor de placeholders.
+        // In all other cases, i need to use '$id', to get the data casted into the right placeholders.
         } else {
             $statement = $this->pdo->prepare($sql);
             $statement->execute($id);
@@ -186,7 +156,8 @@ class QueryBuilder {
         }
     }
 
-    // selectAll($tafel): Om alles uit een specifieke tafel te halen, en terug te geven aan de caller.
+    // selectAll($tafel): Select all doesnt need anything to complex.
+    //  $tafel (string) - The table name i want to get all data from.
     public function selectAll($tafel) {
         $sql = sprintf('select * from `%s`', $tafel);
         $temp = $this->executeQuerry($sql);
@@ -194,9 +165,12 @@ class QueryBuilder {
     }
 
     // selectAllWhere($tafel, $id): Zoek alles op basis van een identifier, zoals bv een index, of een index + naam.
+    //  $tafel (string)     - The table name i want to get specific data from.
+    //  $id (Assoc Array)   - The identifiers required to select specific data
     public function selectAllWhere($tafel, $id) {
-        // Voor als er meer dan 1 identifier is.
+        // I check if there are multiple identifier.
         if(count($id) > 1) {
+            // I create the querry string using sprintf (details at the top)
             $sql = sprintf(
                 'select * from `%s` where %s = %s and %s = %s',
                 $tafel,
@@ -205,8 +179,9 @@ class QueryBuilder {
                 implode( ', ', array_keys( array_slice( $id, 1, 2 ) ) ),
                 ':' . implode( ', :', array_keys( array_slice( $id, 1, 2 ) ) )
             );
-        // Als er maar 1 identifier is.
+        // If there is only a single identifier.
         } else {
+            // I create the querry string using sprintf (details at the top)
             $sql = sprintf(
                 'select * from `%s` where %s = %s',
                 $tafel,
@@ -215,11 +190,14 @@ class QueryBuilder {
             );
         }
 
-        return $this->executeQuerry($sql, $id);                                                 // Dan voer ik het uit en geef ik de uitslag van 'executeQuerry()' terug.
+        return $this->executeQuerry($sql, $id);
     }
 
-    // insert($tafel, $data): Voor het toevoegen van data aan de database.
+    // insert($tafel, $data): Simple insert querry.
+    //  $tafel (string)     - The table name i want to add specific data to.
+    //  $data (Assoc Array) - The data i want to add, where $key is the colum name that i want to set data in.
     public function insert($tafel, $data) {
+        // I create the querry string using sprintf (details at the top)
         $sql = sprintf(
             'insert into `%s` (%s) values (%s)',
             $tafel,
@@ -230,10 +208,13 @@ class QueryBuilder {
         $this->executeQuerry($sql, $data);
     }
 
-    // remove($tafel, $cond): Voor het verwijderen van data uit de database, op basis van bepaalde condities (identifiers).
+    // remove($tafel, $cond): Simple remove querry.
+    //  $tafel (string)     - The table name i want to remove specific data from.
+    //  $cond (Assoc Array) - The conditions (identifier) of the data i want to remove.
     public function remove($tafel, $cond) {
-        // Als er meer dan 1 conditie is.
+        // I check if there are multiple identifier.
         if(count($cond) > 1) {
+            // I create the querry string using sprintf (details at the top)
             $sql = sprintf(
                 'delete from %s where %s = %s and %s = %s',
                 $tafel,
@@ -242,8 +223,9 @@ class QueryBuilder {
                 implode( ', ', array_keys( array_slice( $cond, 1, 2 ) ) ),
                 ':' . implode( ', :', array_keys( array_slice( $cond, 1, 2 ) ) )
             );
-        // Als er maar 1 conditie is.
+        // If there is only a single identifier.
         } else {
+            // I create the querry string using sprintf (details at the top)
             $sql = sprintf(
                 'delete from %s where %s = %s',
                 $tafel,
@@ -255,21 +237,25 @@ class QueryBuilder {
         $this->executeQuerry($sql, $cond);
     }
 
-    // update($tafel, $data, $id): Vooer het updaten van objecten in de database.
+    // update($tafel, $data, $id): Simple update querry
     public function update($tafel, $data, $id) { 
-        // Variable voor het formateren van de $data.
+        // Variable to re-format the data array, into something more easily worked with.
         $update;
 
-        // Loop over de data array, voor maken van de juiste string voor sprintf().
+        // First i need to format the $data into $update
         foreach($data as $key => $value) {
+            // If there it nothing in $update,
             if(!isset($update)) {
+                // i add the first key + value.
                 $update = $key . '=' . "'" . $value . "'";
+            // If there is something there already,
             } elseif(isset($update)) {
+                // i add the current info first, then the next $key + $value.
                 $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";
             }
         }
 
-        // Het maken van de querry string met placeholders.
+        // I create the querry string using sprintf (details at the top)
         $sql = sprintf(
             'update %s set %s where %s = %s',
             $tafel,

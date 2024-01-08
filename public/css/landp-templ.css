@@ -1,70 +1,71 @@
-.content-container {                                                                            /* De hoofd content container */
-    display: grid;                                                                              /* Weergave in grid, anders een grote lege rand boven de header */
-    margin: 0.1EM 0.2EM;                                                                        /* Beetje margin, om mooie randjes te maken */
+/* All styles specifically for the landing-page, going from the top down */
+.content-container {
+    display: grid;
+    margin: 0.1EM 0.2EM;
 }
   
-.title-banner {                                                                                 /* De Title banner */
-    background: var(--main-banner-color);                                                       /* Met een standaard achtergrond kleur */
-    border-radius: 0.2EM;                                                                       /* En een border radius om het mooi te maken */
+.title-banner {
+    background: var(--main-banner-color);
+    border-radius: 0.2EM;
 }
   
-.title-text {                                                                                   /* De Title in de banner */
-    position: inherit;                                                                          /* Positie inherit, zodat de tekst redelijk goed staat */
-    font-size: 2.2em;                                                                           /* Iets groter lettertype dan default */
+.title-text {
+    position: inherit;
+    font-size: 2.2em;
 }
 
-.button-container {                                                                             /* De button container */
-    display: flex;                                                                              /* Display op flex, om alles naast elkaar te krijgen */
-    justify-content: center;                                                                    /* Met de justify-content op center, om het in het midden te krijgen */
-}
-
-.butt-box {                                                                                     /* De button box, voor betere spacing tussen de knoppen */
-    display: inline-flex;                                                                       /* Display op inline-flex, zodat het in het midden staat bij pop-ins */
+.button-container {
+    display: flex;
     justify-content: center;
-    margin: 1em 1.5em;                                                                          /* Wat margin om het netjes te later lijken */
-}
-  
-.reg-modal-butt, .log-modal-butt, .modal-gebr-ov-button {                                       /* De button hyper-links, voor de algemene opmaak */
-    display: block;                                                                             /* Display in block, om de groote te kunnen bepalen */
-    width: 4.375em;                                                                             /* ~70px breed, zodat ze allemaal even groot zijn */
-    padding: 0.7em;                                                                             /* Wat padding om het wat body te geven */
-    color: var(--main-fade-fallback-color);                                                     /* Extra kleur om de tekst te laten opvallen */
-    background: var(--main-butt-color);                                                         /* Achtergrond om het als een knopje te laten lijken */
-    border: 0.125em solid var(--main-fade-background-color);                                    /* Een randje met een light donkere tint */
-    border-radius: 1.25em/1.875em;                                                              /* Een radius, om het een afgerond uiterlijk te geven */
-    text-decoration: none;                                                                      /* Geen tekst opmaak, dus geen link streepje */
-    cursor: pointer;                                                                            /* Een ander cursor als je er boven hangt */
-}
-.reg-modal-butt:hover, .log-modal-butt:hover, .modal-gebr-ov-button:hover {                     /* De opmaak als je boven een knop hangt */
-    background: var(--main-butt-hover);                                                         /* Een groene achter grond */
-}
-  
-.example-container {                                                                            /* De container voor wat extra pagina vulling */
-    display: flex;                                                                              /* Weergave op flex, zodat ik de content beter in positie krijg */
-    justify-content: center;                                                                    /* Verandwoord de content, omdat het flex weergave is, naar het midden */
-}
-  
-.picture-set {                                                                                  /* De plaatjes die de extra vulling zijn */
-    display: flex;                                                                              /* Display flex om mee te schalen waar mogelijk */
-    flex-wrap: wrap;                                                                            /* Wrap zodat ze netjes weergegeven worden */
-    max-width: 51em;                                                                            /* Max-width, zodat de wrap op hoge resolutie enigsinds logische is */
-}
-  
-.footer {                                                                                       /* De footer container */
-    display: flex;                                                                              /* Weergave op flex, zodat de banenr ook netjes past bij de rest */
-    justify-content: center;                                                                    /* Verandwoord de content, zodat het in het midden staat */
-    background: var(--main-banner-color);                                                       /* Met een standaard achtergrond kleur */
-    border-radius: 0.2em;                                                                       /* Een radius, om het een afgerond uiterlijk te geven */
-    margin: 0.1EM 0.2EM;                                                                        /* Beetje margin, om mooie randjes te maken */
 }
 
-.footer-content {                                                                               /* De footer inhoud */
-    margin: 0.625em;                                                                            /* Om de content wat body te geven */
+.butt-box {
+    display: inline-flex;
+    justify-content: center;
+    margin: 1em 1.5em;
+}
+  
+.reg-modal-butt, .log-modal-butt, .modal-gebr-ov-button {
+    display: block;
+    width: 4.375em;
+    padding: 0.7em;
+    color: var(--main-fade-fallback-color);
+    background: var(--main-butt-color);
+    border: 0.125em solid var(--main-fade-background-color);
+    border-radius: 1.25em/1.875em;
+    text-decoration: none;
+    cursor: pointer;
+}
+.reg-modal-butt:hover, .log-modal-butt:hover, .modal-gebr-ov-button:hover {
+    background: var(--main-butt-hover);
+}
+  
+.example-container {
+    display: flex;
+    justify-content: center;
+}
+  
+.picture-set {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 51em;
+}
+  
+.footer {
+    display: flex;
+    justify-content: center;
+    background: var(--main-banner-color);
+    border-radius: 0.2em;
+    margin: 0.1EM 0.2EM;
 }
 
-.footer-autheur, .footer-date, .footer-madefor {                                                /* De tekst in de footer */
-    display: inline-block;                                                                      /* Om de tekst achter elkaar te zetten */
-    font-weight: bold;                                                                          /* Alle tekst, dik gedrukt */
-    font-size: 0.875em;                                                                         /* Iets ander tekst groote, voor opvulling */
-    padding: 1em;                                                                               /* Wat ruimte tussen de teks velden */
+.footer-content {
+    margin: 0.625em;
+}
+
+.footer-autheur, .footer-date, .footer-madefor {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 0.875em;
+    padding: 1em;
 }

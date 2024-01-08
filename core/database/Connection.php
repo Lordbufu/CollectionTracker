@@ -1,13 +1,10 @@
 <?php
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
- */
-
 namespace App\Core\Database;
 
 use PDO;
 use PDOException;
 
+// Create the database connection, using (loaded) the $config file.
 class Connection {
     public static function make($config) {
         try {
@@ -17,9 +14,8 @@ class Connection {
                 $config['password'],
                 $config['options']
             );
-        } catch (PDOException $e) {
-            die($e->getMessage());
-        }
+        // very basic exception catch
+        } catch (PDOException $e) { die($e->getMessage()); }
     }
 }
 

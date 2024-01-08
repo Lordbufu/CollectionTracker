@@ -1,11 +1,10 @@
-/* De hoofd content container */
+/* All different styles for the User page */
 .content-container {
     z-index: 1;
     display: grid;
     margin: 0.1EM 0.2EM;
 }
 
-/* De Title banner */
 .title-banner {
     display: inline-flex;
     justify-content: center;
@@ -13,7 +12,6 @@
     border-radius: 0.2EM;
 }
 
-/* De Title in de banner */
 .title-text {
     position: inherit;
     display: inline;
@@ -42,8 +40,7 @@ th {
     border: 0.15EM solid black;
 }
 
-/* Gebruikers Controle Containers */
-/* Controller Container*/
+/* Controller Containers */
 .contr-cont {
     display: inline-flex;
     align-items: center;
@@ -52,7 +49,6 @@ th {
     padding: 0.5em;
 }
 
-/* Serie Selecteer Container */
 .serie-sel-cont {
     display: inline-table;
     border: 0.15em;
@@ -96,7 +92,7 @@ th {
     background: var(--main-butt-hover);
 }
 
-/* Album Zoeken Containers */
+/* Album Zoeken (search) Containers */
 .album-zoek-cont {
     border: 0.15em;
     border-style: solid;
@@ -143,8 +139,7 @@ th {
     background: var(--main-butt-hover);
 }
 
-/* Temp Content, for testing visual stuff */
-/* toggle in label designing */
+/* Toggle switches for Albums */
 .album-aanwezig-toggle {
     position : relative ;
     display : inline-block;
