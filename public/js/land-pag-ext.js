@@ -1,30 +1,25 @@
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
- */
-
-/* Globale waardes voor in en buiten de init functie */
 let pwField1, pwField2, pwChecked, inputChecked, submButton;
 
 function initLanding() {
-    /* De nodige elementen voor de account registratie */
+    // Elements required for account registration.
     pwField1 = document.getElementById("register1");
     pwField2 = document.getElementById("register2");
     submButton = document.getElementById("reg-submit");
     let chBox = document.getElementById("chBox");
+    let resetLink = document.getElementById("reset-link");
 
-    /* Luister Events voor de account registratie */
+    // Listen events
     pwField2.addEventListener("input", pwCheck);
     chBox.addEventListener("change", checkBox);
 
-    /* Submit knop en check variablen voor de registratie */
+    // Button and value check states
     submButton.disabled = true;
     pwChecked, inputChecked = false;
 
-    /* Login mislukt condities en terugkoppeling */
+    // Check if login failed, and adjust pop-in where required.
     if(localStorage.loginFailed != null) {
-        let resetLink = document.getElementById("reset-link");
         resetLink.style.display = "block";
-
+        // If we are still on the login-pop-in, display the feedback and remove it from storage.
         if(window.location.hash === "#login-pop-in") {
             displayMessage(localStorage.loginFailed);
             localStorage.removeItem("loginFailed");
@@ -32,46 +27,36 @@ function initLanding() {
     }
 }
 
-/* pwCheck(e):
-        Deze functie vergelijk de ingevoerde wachtwoorden, en doet iets op basis van die evaluatie.
-        Als de wachtwoorden gelijk zijn, krijgt de input een groene border, en word pwChecked waar.
-        Waneer de inputChecked ook waar is, word de submit knop aangezet.
-        Als de wachtwoorden niet gelijk zijn, krijgt de input en rode border we word pwChecked niet waar.
-        En voor de goede orde, word de submit knop uitgezet.
-
-        Deze functie werkt in tandem met checkBox(e), zodat die same bepalen waneer de gebruiker de gegevens kan versturen.
- */
+// Function associated with the password input field.
 function pwCheck(e) {
+    // check if the input matches
     if(pwField1.value === pwField2.value) {
+        // set the checked state and create visual user feedback
         pwChecked = true;
         e.target.style.outline = "3px solid green";
-        if(inputChecked) {
-            submButton.disabled = false;
-        }
+        // enable the submit button if checkbox was also checked
+        if(inputChecked) { submButton.disabled = false; }
     } else {
+        // set the checked state and create visual user feedback
         pwChecked = false;
-        submButton.disabled = true;
         e.target.style.outline = "3px solid red";
+        // disable the submit button
+        submButton.disabled = true;
     }
 }
 
-/* checkBox(e):
-        Deze functie kijkt of men akoord ging met de gebruiker overeenkomst.
-        Als de event target checked is, sla ik dat op in inputChecked.
-        Waneer de pwChecked waarde ook waar is, zet ik de submit knop aan.
-        Als de event target niet checkd is, slad ik dat ook op in inputChecked.
-        En voor de goed orde, zet ik de submit knop uit.
-
-        Deze functie werkt in tandem met pwCheck(e), zodat die same bepalen waneer de gebruiker de gegevens kan versturen.
-*/
+// Function associated with the user agreement checkbox.
 function checkBox(e) {
+    // Check the checkbox state
     if(e.target.checked) {
+        // pass on the state
         inputChecked = e.target.checked;
-        if (pwChecked) {
-            submButton.disabled = false;
-        }
+        // enable submit button is pw was checked
+        if (pwChecked) { submButton.disabled = false; }
     } else {
+        // pass on the state
         inputChecked = e.target.checked;
+        // disable the submit button
         submButton.disabled = true;
     }
 }

@@ -3,35 +3,51 @@ namespace App\Core\Database;
 
 use PDO;
 
-/* sprintf() details/reminder:
-    I use sprintf to create placeholders in the querry string i want to use, so i can paste data into it during the execute part of it.
+/* sprintf() reminder:
+    The sprintf() function is very usefull to create querry string for the PDO class to execute/process.
+    Reading the sprintf() code blocks, can be a bit confusing imo, so i opted to leave this reminder up here.
 
-    Let say the string i want to create is this:
-        select * from `table-name`
+    Lets consider the following data being passed in:
+        $table = "test";
+        $id = [ "key1" => "value1" ];
+        $id2 = [ "key1" => "value1", "key2" => "value2" ];
 
-    I can cast the name into the string like this:
-        sprintf("select * from %s", $tableName)
-    
-    Let say i want to create something more complex like the following:
-        'select * from `table-name` where `colum-name`=`colum-value`'
+    We now have the following 3 example querries:
+        select * from `table` where `key1` = `value1`
+        select * from `table` where `key1` = `value1` and `key2` = `value2`
+        insert into `table` (keys) values (values)
 
-    The placeholders i want would now look like this:
-        'select * from `%s` where `%s`=`%s`'
+    First we have 1 key and value pair that need to go into a specific location.
+    Then we have 2 key and value pairs, again into fixed locations.
+    And as last, we have the pairs split up, but all the keys and values in the same location.
 
-    To plut the last 2 placeholders in properly, i would need to implode and slice my array to get the right data.
-    This would look something like this:
+    Let cover the basics first, and see how we can simply search with a single key/value pair:
         $sql = sprintf(
-            'select * from `%s` where %s = %s and %s = %s',
-            $tafel,
-            implode( ', ', array_keys( array_slice( $id, 0, 1 ) ) ),        // The colum-name from the array casted as string directly 'user-index'
-            ':' . implode( ', :', array_keys( array_slice( $id, 0, 1 ) ) )  // The value placeholder, casted as ':user-index'
+            select * from `%s` where %s = %s,                   // notice the '%s' placeholders
+            $table                                              // table name into the first placeholder
+            implode(array_keys($id)),                           // key can go straight into the second placeholder
+            ':'.implode(array_keys($id))                        // then we add ':' infront of the key for the last placeholder
         );
-
-    Then during the execute part of the code, i simply prepare the string with the placeholders, and execute with the $id array.
-        $statement = $this->pdo->prepare($sql);     // prepare the querry
-        $statement->execute($id);                   // execute with the right data
     
-    And that makes the data go into the right place, so SQL can actually use said information.
+    The last placeholder, is basically another placeholder so the PDO knows where the value of said key has to go.
+    The string stored in $sql, would look like the following now:
+        select * from `test` where key1 = :key1
+    
+    Now to add to this example, and create the querry with a AND condition added, the diffence would be the following:
+        select * from %s where %s = %s and %s = %s,             // Obviously the query is different
+        implode(array_keys(array_slice($id, 0, 1))),            // Then i need to slice of the first pair to only get that key
+        ':' . implode(array_keys(array_slice($id, 0, 1)))       // Same here but with the ':' infront again.
+
+    And as you might have guessed, the second pair is done exactly the same, only shifting the slice up to only catch the second pair.
+    The string stored in $sql, would look like the following now:
+        select * from `test` where key1 = :key1 and key2 = :key2
+    
+    Things get easier if the keys and value are all in the same place, for the insert the changed lines would look like this:
+        insert into %s (%s) values (%s),
+        implode(', ', array_keys($id)),                         // Now we only need all keys seperated by a ','
+        ':'.implode(', :', array_keys($id))                     // And now we can add a ':' before the implode, and to the ',' to make all value placeholders
+
+    This should cover every situation i could think of.
  */
 class QueryBuilder {
     // PDO object
@@ -166,7 +182,7 @@ class QueryBuilder {
 
     // selectAllWhere($tafel, $id): Zoek alles op basis van een identifier, zoals bv een index, of een index + naam.
     //  $tafel (string)     - The table name i want to get specific data from.
-    //  $id (Assoc Array)   - The identifiers required to select specific data
+    //  $id (Assoc Array)   - The identifiers required to select specific data.
     public function selectAllWhere($tafel, $id) {
         // I check if there are multiple identifier.
         if(count($id) > 1) {
@@ -174,10 +190,10 @@ class QueryBuilder {
             $sql = sprintf(
                 'select * from `%s` where %s = %s and %s = %s',
                 $tafel,
-                implode( ', ', array_keys( array_slice( $id, 0, 1 ) ) ),
-                ':' . implode( ', :', array_keys( array_slice( $id, 0, 1 ) ) ),
-                implode( ', ', array_keys( array_slice( $id, 1, 2 ) ) ),
-                ':' . implode( ', :', array_keys( array_slice( $id, 1, 2 ) ) )
+                implode( array_keys( array_slice( $id, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice( $id, 0, 1 ) ) ),
+                implode( array_keys( array_slice( $id, 1, 2 ) ) ),
+                ':' . implode( array_keys( array_slice( $id, 1, 2 ) ) )
             );
         // If there is only a single identifier.
         } else {
@@ -185,8 +201,8 @@ class QueryBuilder {
             $sql = sprintf(
                 'select * from `%s` where %s = %s',
                 $tafel,
-                implode(', ', array_keys($id)),
-                ':' . implode(', :', array_keys($id))
+                implode( array_keys($id)),
+                ':' . implode( array_keys($id))
             );
         }
 
@@ -218,10 +234,10 @@ class QueryBuilder {
             $sql = sprintf(
                 'delete from %s where %s = %s and %s = %s',
                 $tafel,
-                implode( ', ', array_keys( array_slice( $cond, 0, 1 ) ) ),
-                ':' . implode( ', :', array_keys( array_slice( $cond, 0, 1 ) ) ),
-                implode( ', ', array_keys( array_slice( $cond, 1, 2 ) ) ),
-                ':' . implode( ', :', array_keys( array_slice( $cond, 1, 2 ) ) )
+                implode( array_keys( array_slice( $cond, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice( $cond, 0, 1 ) ) ),
+                implode( array_keys( array_slice( $cond, 1, 2 ) ) ),
+                ':' . implode( array_keys( array_slice( $cond, 1, 2 ) ) )
             );
         // If there is only a single identifier.
         } else {
@@ -229,15 +245,18 @@ class QueryBuilder {
             $sql = sprintf(
                 'delete from %s where %s = %s',
                 $tafel,
-                implode(', ', array_keys($cond)),
-                ':' . implode(', :', array_keys($cond))
+                implode( array_keys($cond)),
+                ':' . implode( array_keys($cond))
             );
         }
 
         $this->executeQuerry($sql, $cond);
     }
 
-    // update($tafel, $data, $id): Simple update querry
+    // update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().
+    //  $tafel (string)     - The table name i want to update specific data in.
+    //  $data (Assoc Array) - The data i want to update, paired by column name (key) and the value it should have.
+    //  $id (Assoc Array)   - The identifiers to find the data i want to update.
     public function update($tafel, $data, $id) { 
         // Variable to re-format the data array, into something more easily worked with.
         $update;
@@ -260,8 +279,8 @@ class QueryBuilder {
             'update %s set %s where %s = %s',
             $tafel,
             $update,
-            implode(', ', array_keys(array_slice($id, 0, 1 ))),
-            ':' . implode(', :', array_keys(array_slice($id, 0, 1 )))
+            implode( array_keys(array_slice($id, 0, 1 ))),
+            ':' . implode( array_keys(array_slice($id, 0, 1 )))
         );
 
         $this->executeQuerry($sql, $id);

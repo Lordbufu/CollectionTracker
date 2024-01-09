@@ -1,16 +1,12 @@
-<?php
-    require('partials/header.php');
-?>
-<!-- main content container -->
+<?php require('partials/header.php'); ?>
+
 <div class="content-container">
-    <!-- pagina title banner -->
     <div class="title-banner">
         <h1 class="title-text"> Collectie Tracker v1.1 </h1>
     </div>
-    <?php
-        require('partials/message-pop-in.html');
-    ?>
-    <!-- text container -->
+
+    <?php require('partials/message-pop-in.html'); ?>
+
     <div class="text-content-container">
         <h2 class="content-header"> Welcome bij de Collectie Tracker </h2>
         <p class="content-intro">
@@ -24,7 +20,7 @@
             Echter word er ook al gedacht aan een barcode scanner, afhankelijk van hoe dat gaat, kan het wellicht ook helpen bij het maken van series.<br>
         </p>
     </div>
-    <!-- 'button' container -->
+    
     <div class="button-container">
         <div class="butt-box">
             <a class="reg-modal-butt" href="#account-maken-pop-in"> Register </a>
@@ -33,14 +29,14 @@
             <a class="log-modal-butt" href="#login-pop-in"> Login </a>
         </div>
     </div>
-    <!-- Pop-in Templates\Partials -->
+    
     <?php
         require('partials/account-maken-pop-in.html');
         require('partials/gebruikers-overeenkomst.html');
         require('partials/account-login-pop-in.html');
         require('partials/wachtwoord-reset-pop-in.html');
     ?>
-    <!-- plaatjes content -->
+    
     <div class="example-container">
         <div class="picture-set">
             <img src="images/donald-duck.jpg" alt="Donald Duck Collectie">
@@ -52,6 +48,5 @@
         </div>
     </div>
 </div>
-<?php
-    require('partials/footer.php');
-?>
+
+<?php require('partials/footer.php'); ?>

@@ -1,6 +1,4 @@
-<!-- Controlle Container -->
 <div class="contr-cont">
-    <!-- Serie Selecteren -->
     <div class="serie-sel-cont">
         <form class="serie-sel-form" id="serie-sel-form" action="/gebruik" method="post" >
             <label for="serie-sel" class="serie-sel-lab"> Serie Selecteren:</label>
@@ -19,7 +17,6 @@
             <input class="serie-sel-subm" id="serie-sel-subm" value="Selecteer" onclick=selectSubm() />
         </form>
     </div>
-    <!-- Album Zoeken -->
     <div class="album-zoek-cont">
         <form class="album-zoek-form" id="album-zoek-form">
             <label class="album-zoek-lab" for="album-zoek-inp"> Album Zoeken: </label>

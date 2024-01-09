@@ -1,22 +1,14 @@
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
- */
-
-/* Het document listen event:
-        Deze functie, kijk of de huidige pagina geladen is, en voert iets uit als dat zo is.
-        Voor de landingspagina, is dit heel eenvoudig, en voer ik direct de init functie voor die pagina uit.
-        Voor de andere pagina's, kijk ik eerst of er een gebruikers update gedaan moet worden, en voer ik daarna pas de init fucntie uit.
-        En voor het specifieke geval van de gebruiker zijn album status, kijk ik of de hele pagina een refresh nodig heeft.
-
-        Dit zorgt er voor dat ik altijd de meest recente data heb uit de database, met het minimaale aantal pagina refreshes.
- */
+// Wait for document to be loaded.
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         let gebrForm, gebrData;
 
+        // If we are still on the landingpage, init the required code for that page.
         if(window.location.pathname === '/') {
             initLanding();
+        // If we are on the user (/gebruik) page,
         } else if(window.location.pathname === '/gebruik') {
+            // check if a user update was requested, and process said request;
             if(sessionStorage.updateUser != null && sessionStorage.updateUser) {
                 gebrForm = document.getElementById("gebr-data-form");
                 gebrData = sessionStorage.gebruiker;
@@ -26,8 +18,11 @@ document.onreadystatechange = () => {
                 gebrForm.submit();
             }
 
+            // Init the required code for the user page
             initGebruik();
+        // If we are on the admnin (/beheer) page,
         } else if(window.location.pathname === '/beheer') {
+            // check if a user update was requested, and process said request;
             if(sessionStorage.updateUser != null && sessionStorage.updateUser) {
                 gebrForm = document.getElementById("gebr-data-form");
                 gebrData = sessionStorage.gebruiker;
@@ -37,9 +32,12 @@ document.onreadystatechange = () => {
                 gebrForm.submit();
             }
 
+            // Init the required code for the admin page
             initBeheer();
+        // If we are changing a album state, and there is a page reload requested.
         } else if(window.location.pathname == "/albSta") {
             if(localStorage.reloadPage != null && localStorage.reloadPage) {
+                // We process said request, and remove the request from storage.
                 localStorage.removeItem('reloadPage');
                 postForm('/gebruik', localStorage.huidigeSerie);
             }
@@ -47,10 +45,7 @@ document.onreadystatechange = () => {
     }
 }
 
-/* fetchRequest(url, method, data):
-        Deze functie is voor het aanvragen\versturen van data van/naar PhP, zonder een pagina refresh.
-        De response word altijd terug gegeven als json naar de caller, zodat het daar veder verwerkt kan worden.
- */
+// async fetch request to avoid page reloading.
 async function fetchRequest(url=null, method=null, data=null ) {
     const response = await fetch(url, {
         method: method,
@@ -60,20 +55,16 @@ async function fetchRequest(url=null, method=null, data=null ) {
     return response.json();
 }
 
-/* logoff():
-        De logoff functie is erg simpel, en verwijdert de gebruikers data, en redirect naar de landings pagina.
-*/
+// Very simple logoff and page redirect.
 function logoff() {
     sessionStorage.clear();
     localStorage.clear();
     window.location.assign('/');
 }
 
-/* postForm(path, param):
-        Deze functie gebruik ik om form data naar PhP te sturen, voor het geval dat er echt een pagina refresh nodig is.
-        Dit is altijd een POST request, omdat het altijd gaat om het vernieuwen van database gegevens.
-        De enige toepassing tot dus ver, is als er een serie geselecteerd word.
- */
+// postForm(path, param):
+//  path (string)   - The path the form needs to be submitted to.
+//  param (string)  - The name of the serie that was selected.
 function postForm(path, param) {
     let method = 'post', form, hiddenField1, hiddenField2;
 
@@ -98,40 +89,30 @@ function postForm(path, param) {
     form.submit();
 }
 
-/* replaceSpecChar(text):
-        Deze functie doet niet meer dan speciale characters omzetten, zodat die juist kunnen worden weergegeven in de HTML.
-        En word tot nu toe aleen gebruikt bij het bewerken van een serie, omdat ik daar gegevens uit de pagina haal en terug plak in een invoer veld.
- */
+// replaceSpecChar(text):
+//  text (string)   - The text that needs to be cleaned/filtered.
 function replaceSpecChar(text) {
     return text.replaceAll('&amp;', '&').replaceAll('$lt;', '<').replaceAll('&gt;', '>').replaceAll('$quot;', '"').replaceAll('&#039;', "'");
 }
 
-/* displayMessage(text1, text2):
-        Deze functie doet de terugkoppeling van PhP meldingen naar de gebruiker, via een verstopt element.
-        Het concept is erg simpel, er zijn 2 bericht headers, en die hebben een opmaak die de container buiten beeld zet.
-        Als er tekst mee gegeven wordt, dan verander ik de opmaak zodat het element in beeld komt.
-        Dan zorg ik dat de meldingen in de header(s) gezet word.
-        En dan start ik een timer van 3 seconden, die het element verstopt, en de berichten weer verwijdert.
-        In het geval dat er geen meldingen zijn, verstop ik het element ook, dit was nodig voor een onverwachte uitkomst.
- */
+// displayMessage(text1, text2):
+//  text1 (string)  - The first feedback text that needs to be displayed.
+//  text2 (string)  - The second feedback text that needs to be displayed.
 function displayMessage(text1="", text2="") {
     let container = document.getElementById("message-pop-in");
     let header1 = document.getElementById("response-message1");
     let header2 = document.getElementById("response-message2");
 
     if(text1 !== "" || text2 !== "") {
+        // Making sure the element is visable on the page
         container.style.display = "block";
         container.style.top = "0%";
         container.style.zIndex = "3";
 
-        if(text1 !== "") {
-            header1.innerHTML = text1;
-        }
+        if(text1 !== "") { header1.innerHTML = text1; }
+        if(text2 !== "") { header2.innerHTML = text2; }
 
-        if(text2 !== "") {
-            header2.innerHTML = text2;
-        }
-
+        // Start a timeout to hide the element and remove the feedback text.
         setTimeout( function() {
             container.style.display = "none";
             container.style.top = "-10%";

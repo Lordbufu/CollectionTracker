@@ -7,7 +7,7 @@ use App\Core\App;
 class PagesController {
 	// Landing-page function
 	public function landing() {
-		// Create initial databse tables/user if they are not set.
+		// Create initial database tables/user if they are not set.
 		App::get('database')->createTable('gebruikers');
 		App::get('database')->createAdmin();
 		App::get('database')->createTable('series');

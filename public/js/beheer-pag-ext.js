@@ -1,69 +1,50 @@
-/* TODO List:
-        - Edit/clean-up comments, to much clutter atm left over from the concept/design stage.
-        - Review voor 2.0 versie, loop door alles heen om te kijken wat er nog veranderd moet worden.
- */
-
-// Globale variabelen, die ik nodig heb in en buiten de initBeheer functie, en/of op meerdere plaatsen gebruik.
 let submitButtToev, submitButtBew, naamChecked = false, isbnChecked = false;
 let serieView, albView, buttCont, backButt;
 
-// Init functie, zodat belangrijke dingen aleen geladen worden als de hele pagina geladen is.
 function initBeheer() {
-    /* Album Bewerken submit form */
-    // De elmenten voor de cover en de form zelf.
+    /* album-bewerken submit form */
     let albCovInp = document.getElementById('albumb-form-alb-cov');
-    // De listenevents voor de elementen.
     albCovInp.addEventListener('change', albCovCheck);
 
-    /* Alle nodige elementen voor de serie-bekijken functie */
+    /* All elementens for serie-bekijken */
     buttCont = document.getElementById("title-buttons");
     backButt = document.getElementById("beheer-back-butt");
     serieView = document.querySelector("#beheer-weerg-repl-cont");
     albView = document.querySelector("#beheer-albView-content-container");
-    // De container moet altijd op de juiste plek staan.
     buttCont.style.position = "absolute";
 
-    /* Als er aangegeven is dat ik een serie wil bekijken, vervang ik simpel weg de hele container */
+    // If the admin wants to view a Series
     if(localStorage.serieWeerg) {
+        // I just replace the entire container
         serieView.replaceWith(albView);
-        // Ik zet de terug knop aan, en de container van de knop op fixed.
+        // I enable the back button, and set it to a fixed position.
         backButt.hidden = false;
         buttCont.style.position = "fixed";
 
-        /* Loop voor het weergeven van de album naam in de albums bekijken pop-in header */
+        // I check if the serie name is stored, and replace the title of the container
         if(localStorage.huidigeSerie != null && localStorage.huidigeSerie != "") {
-            // De title moet veranderen naar de serie naam.
             document.getElementById('beheer-albView-text').innerHTML = localStorage.huidigeSerie;
         }
 
-        // En ik verwijder de waardes die ik check in de localStorage.
+        // Clean up storage.
         localStorage.removeItem("serieWeerg");
         localStorage.removeItem('huidigeSerie');
     }
 
-    /* Loop om te kijken of er een gebruiker is opgeslagen, en of die gebruiker een Admin is of niet */
-    if(sessionStorage.gebruiker === null && sessionStorage.gebruiker === "" && sessionStorage.gebruiker != 'admin@colltrack.nl') {
-        // Om problemen te voorkomen, verwijder ik de gebruikers data, en stuur ik de gebruiker terug naar de landingspagina.
-        sessionStorage.removeItem('gebruiker');
-        window.location.assign('/');
-    }
-
-    /* Alle benodigde voor serie-maken */
+    // Elements and checks require for creating a series.
     let inp = document.getElementById('seriem-form-serieNaam');
 
-    /* Loop om te kijken of PhP een dubble serie-naam heeft gevonden, in de inp van de controller */
     if(localStorage.sNaamFailed !== null) {
         displayMessage(localStorage.sNaamFailed);
         localStorage.removeItem('sNaamFailed');
     }
 
-    /* Loop om de serie-naam van de controller, in de form input te zetten */
     if(localStorage.sNaam !== null) {
         inp.value = localStorage.sNaam;
         localStorage.removeItem('sNaam');
     }
 
-    /* Alle benodigde elementen voor album-toevoegen & album-bewerken */
+    // Elements required for adding and editing albums.
     submitButtToev = document.getElementById("albumt-form-button");
     let inpTIndex = document.getElementById("albumt-form-indexT");
     let naamInpToev = document.getElementById("albumt-form-alb-naam");
@@ -72,7 +53,7 @@ function initBeheer() {
     let naamInpBew = document.getElementById("albumb-form-alb-naam");
     let isbnInpBew = document.getElementById("albumb-form-alb-isbn");
 
-    /* De Listenevents en state changes voor album-toevoegen & album-bewerken */
+    // Events associated with adding and editing albums.
     isbnInpToev.addEventListener("input", isbnCheck);
     naamInpToev.addEventListener("input", naamCheck);
     submitButtToev.disabled = true;
@@ -80,14 +61,20 @@ function initBeheer() {
     naamInpBew.addEventListener("input", naamCheck);
     submitButtBew.disabled = true;
 
-    /* Loop voor het mee geven van de serie index bij het toevoegen van een album */
+    // Ensure the series index is also used for adding a album to a series.
     if(localStorage.albumToevIn != null && localStorage.albumToevIn != undefined && localStorage.albumToevIn != "") {
         inpTIndex.value = localStorage.albumToevIn;
         localStorage.removeItem('albumToevIn');
     }
 
-    // TODO: Deze check klopt niet echt, omdat ik handmatig de admin e-mail kan invoeren, en dus op de '/beheer' pagina kan komen.
-    /* Redirect naar de landings\beheer of gebruik pagina, als er geen gebruiker of ongeldige gebruiker is */
+    // Both validations need to be re-evaluated, seems not a bit off/useless atm.
+    // Extra user validation.
+    if(sessionStorage.gebruiker === null && sessionStorage.gebruiker === "" && sessionStorage.gebruiker != 'admin@colltrack.nl') {
+        sessionStorage.removeItem('gebruiker');
+        window.location.assign('/');
+    }
+
+    // More user validation.
     if(sessionStorage.gebruiker === null || sessionStorage.gebruiker === undefined) {
         window.location.assign('/');
     } else {
@@ -105,29 +92,26 @@ function initBeheer() {
         });
     }
 
-    // Loop om te kijken of er een response was van een fetch request, en deze in beeld te zetten.
+    // Display feedback messages, that are stored before a page refresh.
     if(localStorage.fetchResponse !== "") {
         displayMessage(localStorage.fetchResponse);
         localStorage.removeItem("fetchResponse");
     }
 }
 
-/* Check functies, die inputs bekijken, en iets doen op basis van die evaluatie */
-/*  naamCheck(e):
-        Functie van de OnInput ListenEvent, die in de initBeheer() functie is toegewezen.
-        Deze functie kijkt of er een input is, en geeft de gebruiker input of die data verzonden kan worden.
-        Als er input is, krijgt het veld een groen lijn, en als de isbnChecked ook waar is, gaan de submit knoppen aan (en sla ik op de de naam gechecked is).
-        Als er geen input is, kijgt het veld een rode lijn, en blijven de submit knoppen uit staan (en sla ik op de de naam gechecked is).
- */
+// Check the name input
 function naamCheck(e) {
+    // Evaluate if there was a input at all, and change the check state and input outline.
     if(e.target.value !== "" && e.target.value !== null && e.target.value !== undefined) {
         naamChecked = true;
         e.target.style.outline = "3px solid green";
+        // If the isbn was also checked,
         if(isbnChecked) {
+            // enable the button that use these elements in there pop-in/form
             submitButtToev.disabled = false, submitButtBew.disabled = false;
-        } else {
-            submitButtToev.disabled = true, submitButtBew.disabled = true;
-        }
+        // Disable said button if not
+        } else { submitButtToev.disabled = true, submitButtBew.disabled = true; }
+    // If there is not valid input, change the check state and input outline, and also disabled the buttons.
     } else {
         naamChecked = false;
         e.target.style.outline = "3px solid red";
@@ -135,29 +119,26 @@ function naamCheck(e) {
     }
 }
 
-/*  isbnCheck(e):
-        Functie van de OnInput ListenEvent, die in de initBeheer() functie is toegewezen.
-        Deze functie kijkt of er een input is gemaakt, en verwijdert '-' uit de input, omdat die niet relevant zijn voor het complete nummer.
-        En de functie kijkt ook of er letter in zitten, want die horen niet in een ISBN te staan.
-
-        Dan kijk de functie naar de lengte van de input, zodat er feedback is als de isbn niet lang genoeg is.
-        Als de input niet lang genoeg is, komt er een rode lijn om de input heen, en blijven de submit knoppen uitstaan (en sla ik globaal op dat de isbn check false is).
-        Als de input wel lang genoeg is, komt er een groene lijn om de input heen, en gaan de submit knoppen aan als de naamChecked waarde ook waar is (en sla ik globaal op dat de isbn check waar is).
- */
+// Check and sanitise the isbn input
 function isbnCheck(e) {
+    // If there is an input
     if(e.target.value !== "" && e.target.value !== null && e.target.value !== undefined) {
+        // i remove any '-' and check if there are no letters in it.
         let isbn = e.target.value.replace(/-/g, "");
         let expression = /[a-zA-z]/g;
         let letters = expression.test(isbn);
 
+        // If the input is incorrect, change the outline, disable buttons and store the checked state.
         if(isbn.length !== 10 || letters) {
             e.target.style.outline = "3px solid red";
             submitButtToev.disabled = true, submitButtBew.disabled = true;
             isbnChecked = false;
+        // If correct, store the state, change the outline and set the filtered value.
         } else {
             e.target.style.outline = "3px solid green";
             e.target.value = isbn;
             isbnChecked = true;
+            // If the name was also valid, enable all buttons.
             if(naamChecked) {
                 submitButtToev.disabled = false, submitButtBew.disabled = false;
             }
@@ -165,10 +146,7 @@ function isbnCheck(e) {
     }
 }
 
-/*  albCovCheck(e):
-        Deze functie kijkt naar het bestand dat geselecteerd is, en vergelijkt die met een bepaalde grote (4 MB).
-        Als het bestand te groot is, geeft die een melding, en verwijdert die het bestand uit de input.
- */
+// I check if the cover file size isnt larger then 4MB
 function albCovCheck(e) {
     let file = e.target.files;
 
@@ -178,41 +156,30 @@ function albCovCheck(e) {
     }
 }
 
-/* Controlle functies voor Album Bewerken/Verwijderen/Toevoegen */
-/*  albumToevInv():
-        Hele eenvoudige functie, die kijkt of er een selectie is gemaakt.
-        En als die gemaakt is, dan komt de pop-in in beeld.
-        Is er geen selectie, dan geef ik een melding naar de gebruiker toe.
- */
+// Add album function to open the pop-in
 function albumToevInv() {
     let inp = document.getElementById("album-toev").value;
     let ind = localStorage.huidigeIndex;
 
-    // Als de huidigeIndex een geldige waarde heeft, sla ik die en de serie-naam op in de form.
+    // If there is a series index, i save it in the pop-in form, along with the name.
     if(ind !== "" || ind !== null || ind !== undefined) {
         document.getElementById("albumt-form-indexT").value = localStorage.huidigeIndex;
         document.getElementById("albumt-form-seNaam").value = inp;
-    // Als die geen geldige waarde heeft sla ik aleen de serie-naam op in de form.
+    // If there isnt i just pass on the serie name.
     } else {
         document.getElementById("albumt-form-seNaam").value = inp;
     }
 
-    // Als er een selectie is gemaakt, redirect ik de browser naar de pop-in.
+    // If a selection is made i open the pop-in, if not is give user feedback.
     if(inp !== "" && inp !== null && inp !== undefined) {
         window.location.assign('/beheer#albumt-pop-in');
-    // Als er geen selectie is gemaakt, geef ik daar feedback over naar de gebruiker.
-    } else {
-        displayMessage("U kan geen album toevoegen, als u geen selectie maakt!");
-    }
+    } else { displayMessage("U kan geen album toevoegen, als u geen selectie maakt!"); }
 }
 
-/*  albumToevClose():
-        Deze functie kijkt of de gebruiker op de normale /beheer pagina zit, of dat er een serie bekeken word.
-        Dit kan doordat er in de serie bekijken stand, een huidigeIndex lokaal is opgeslagen, dus als die er niet is zijn we in de normale beheer view.
-        Als die huidigeIndex er lokaal is, maak ik een form aan met de juiste gegeven, op exact dezelfde manier als ik de serie view in beeld heb gekregen.
-        En die form submit ik naar PhP, zodat we weer terug komen op de beheer pagina, met de juiste data in beeld.
- */
+// TODO: Re-factor using other means if possible ?
+// Function to close pop-in while on the '/beheer' page/
 function popInClose() {
+    // If a series index was stored, i need to request a new view from PhP
     if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
         let serieNaam = document.getElementById('beheer-albView-text').innerHTML;
 
@@ -237,27 +204,25 @@ function popInClose() {
         document.body.appendChild(form);
 
         form.submit();
-    } else {
-        window.location.assign('/beheer');
-    }
+    // If there wasnt, we can just return to the '/beheer' page
+    } else { window.location.assign('/beheer'); }
 }
 
-/*  albumToevSubm():
-        Deze functie stuurt de HTML form naar PhP, via de JS fetch functie.
-        Dit kan eenvoudig door de form in zijn geheel, aan de FormData mee te geven.
-        Als de response van PhP geen object is, is de actie geslaagd, en mag de pop-in gesloten worden nadat de melding is opgeslagen.
-        Als de response wel een object is, word(en) de juiste melding(en) weer gegeven en blijft de pop-in open.
- */
+// Add Album Submit function
 function albumToevSubm(e) {
+    // Get form, store as FormData, and prevent the default form submit
     let form = document.getElementById('albumt-form');
     let formData = new FormData(form);
     e.preventDefault();
 
+    // Send fetch request to PhP
     fetchRequest('albumT', 'POST', formData)
     .then((data) => {
+        // If we have no errors, we store the feedback and close to pop-in
         if(typeof data != 'object') {
             localStorage.setItem('fetchResponse', data);
             popInClose();
+        // If we have erros, we ensure they are all displayed properly.
         } else {
             if(data.aNaamFailed != "") {
                 if(data.aIsbnFailed != "") {
@@ -272,16 +237,9 @@ function albumToevSubm(e) {
     })
 }
 
-/*  albumBewerken(e):
-        Deze functie is voor het bewerken van een album, en zorgt dat de juiste informatie in de pop-in komt te staan.
-        Dit doe ik door de rij te pakken waar de knop zit de gebruikt word, en die html collectie om te zetten naar een array.
-        Dan kan ik via die array, de innerHTML data pakken van de juiste velden, en ook de cover image string.
-        Zodat ik niet een verzoek hoef te doen naar PhP, en de pop-in direct in beeld komt ipv eerst een pagina reload.
-        Voor de cover image maak ik wel een nieuw element, en de submit knop krijgt een andere text als er wel of geen cover image is.
-        Ook zit er nog een Naam/ISBN check in, om te kijken of de inhoud van die velden klopt, andere blijft de submit knop uit staan.
-        Het weer aan zetten van die submit knop, zit in andere functies, naamCheck and isbnCheck.
- */
+// Edit Album function
 function albumBewerken(e) {
+    // Load all data required to display the current album info
     let rowCol = document.getElementsByClassName('album-bewerken-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let div = rowArr[0].children[5];
@@ -290,9 +248,10 @@ function albumBewerken(e) {
     let covInp = document.getElementById("modal-form-albumB-cov-lab").children[0];
     let albCov = document.getElementById("albumb-cover");
 
-    // Normaal gesproken zijn de gegevens altijd aanwezig, en dus kan de submit knop altijd op aan gezet worden.
+    // Enable the button by default
     submitButtBew.disabled = false;
 
+    // Inject all album info in to the pop-in form.
     form[0].value = e.target.id;
     form[1].value = rowArr[0].children[2].innerHTML;
     form[2].value = rowArr[0].children[3].innerHTML;
@@ -300,7 +259,7 @@ function albumBewerken(e) {
     form[4].value = "";
     form[5].value = rowArr[0].children[6].innerHTML;
     form[6].value = rowArr[0].children[7].innerHTML;
-    
+    // Extra check for the album cover.
     if(rowArr[0].children[5].hasChildNodes()) {
         let imgEl = document.createElement('img');
         imgEl.src = div.children[0].src;
@@ -314,25 +273,25 @@ function albumBewerken(e) {
         covLab.appendChild(covInp);
     }
 
+    // Display the pop-in.
     window.location.assign('#albumb-pop-in');
 }
 
-/*  albumBewSubm(e):
-        Deze functie stuurt de HTML form naar PhP, via de JS fetch functie.
-        Dit kan eenvoudig door de form in zijn geheel, aan de FormData mee te geven.
-        Als de response van PhP geen object is, is de actie geslaagd, en mag de pop-in gesloten worden nadat de melding is opgeslagen.
-        Als de response wel een object is, word(en) de juiste melding(en) weer gegeven en blijft de pop-in open.
- */
+// Edit Album Submit button.
 function albumBewSubm(e) {
+    // Get form, create FormData from it, and prevent the default form submit.
     let form = document.getElementById('albumb-form');
     let formData = new FormData(form);
     e.preventDefault();
 
+    // Send request to PhP
     fetchRequest('albumBew', 'POST', formData)
     .then((data) => {
+        // Check if there are no errors, and store the feedback a before closing the pop-in.
         if(typeof(data) !== 'object') {
             localStorage.setItem('fetchResponse', data);
             popInClose();
+        // If there are errors, display them properly to the user.
         } else {
             if(data.albumNaam != "") {
                 if(data.albumIsbn != "") {
@@ -347,21 +306,21 @@ function albumBewSubm(e) {
     });
 }
 
-/*  albumVerwijderen(e):
-        Onclick functie voor het verwijderen van een album, die de data als FormData naar PhP verstuurt.
-        De response word opgeslagen in the localStorage, en er word een form gemaakt voor een pagina refresh.
-        Die form bevat de data van de huidig geslecteerd Serie, zodat we terug komen op het zelfde scherm.
- */
+// Remove Album function.
 function albumVerwijderen(e) {
+    // Get all Album info, and make new empty FormData
     let rowCol = document.getElementsByClassName('album-bewerken-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let formData = new FormData();
 
+    // Add relevant album info to the FormData
     formData.append('serie-index', localStorage.huidigeIndex);
     formData.append('album-index', e.target.id);
     formData.append('album-naam', rowArr[0].children[2].innerHTML);
 
+    // Send Request to PhP
     fetchRequest('albumV', 'POST', formData)
+    // Store the response and request a page reload for the current view.
     .then((data) => {
         localStorage.setItem('fetchResponse', data);
                 
@@ -578,15 +537,3 @@ function aResetBev(e) {
         displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals");
     }
 }
-
-/* Code refactor sectie, hier ben ik nog mee bezig, voor de nieuwe pagina opmaak. */
-// 
-//  Index van de tafel rij:
-//      e.target.id
-//
-//  Test Code voor het weergeven van de formData inhoud.
-//
-//  for (const temp of formData.values()) {
-//      console.log(temp);
-//  }
-//

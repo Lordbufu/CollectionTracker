@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-// TODO List: - Rework Comments to english and more live enviroment setting.
-
 /* LogicController Class:
         In this class i need to deal with a mix of request, all main request are done via HTML form submits.
         But in certain cases i also opted to use JS fetch, to remove a page reload from the user experience.

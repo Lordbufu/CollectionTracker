@@ -1,7 +1,5 @@
-<!-- Controle Container -->
 <div class="contr-cont">
 
-    <!-- Serie Maken (Klaar) -->
     <div class="serie-maken-cont">
         <form class="serie-maken-form" id="serie-maken-form" >
             <label for="serie-maken-inp" class="serie-maken-lab"> Serie Maken: </label>
@@ -10,7 +8,6 @@
         </form>
     </div>
 
-    <!-- Album Toevoegen (Klaar) -->
     <div class="album-toev-cont">
         <form class="album-toev-form" id="album-toev-form" >
             <label for="album-toev" class="album-toev-lab"> Album Toevoegen: </label>
@@ -26,4 +23,5 @@
             <input class="album-toev-subm" id="album-toev-subm" type="button" value="Invoeren" onclick="albumToevInv()" />
         </form>
     </div>
+    
 </div>
