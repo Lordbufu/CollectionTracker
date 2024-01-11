@@ -1,4 +1,5 @@
-* This readme is still a work in progress, as rather new to all this, and more focussed on the project itself *
+## This readme is still a work in progress, as rather new to all this, and more focussed on the project itself
+
 Collection Tracker:
   Small web-app designed to keep track of several types of collections.
   In co-operation with 'Aletho: ICT Dagbesteding', i started writing this App recently, to get a better grasp on the workflow for web development.
