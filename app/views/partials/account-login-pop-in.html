@@ -6,8 +6,14 @@
         </div>
         <div class="modal-body">
             <form class="modal-form" id="login-form" method="post">
-                <input type="email" class="modal-form-email" name="email" placeholder="E-mail" autocomplete="on" required>
-                <input type="password" class="modal-form-wachtwoord" name="wachtwoord" placeholder="Wachtwoord" autocomplete="on" required>
+                <label class="modal-form-label">
+                    <input type="email" class="modal-form-input" name="email" placeholder="" autocomplete="on" required>
+                    <span class="modal-form-span"> E-Mail </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="password" class="modal-form-input" name="wachtwoord" placeholder="" autocomplete="on" required>
+                    <span class="modal-form-span"> Wachtwoord </span>
+                </label>
                 <input class="modal-form-button" type="submit" value="Login" formaction="/login">
                 <a class="modal-form-link" id="reset-link" href="#ww-reset-pop-in" style="display:none"> Wachtwoord Reset </a>
             </form>

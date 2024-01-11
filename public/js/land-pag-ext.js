@@ -1,3 +1,4 @@
+// Variables shared between init and function
 let pwField1, pwField2, pwChecked, inputChecked, submButton;
 
 function initLanding() {

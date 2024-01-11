@@ -1,6 +1,9 @@
+// TODO: Review if i can off-load form creation and submit functions to a gobal function in main.js
+// Shared variables between init and functions.
 let submitButtToev, submitButtBew, naamChecked = false, isbnChecked = false;
 let serieView, albView, buttCont, backButt;
 
+// Default page init function
 function initBeheer() {
     /* album-bewerken submit form */
     let albCovInp = document.getElementById('albumb-form-alb-cov');
@@ -67,14 +70,13 @@ function initBeheer() {
         localStorage.removeItem('albumToevIn');
     }
 
-    // Both validations need to be re-evaluated, seems not a bit off/useless atm.
-    // Extra user validation.
+    // Extra user validation, to prevent unwanted access to the admin page.
     if(sessionStorage.gebruiker === null && sessionStorage.gebruiker === "" && sessionStorage.gebruiker != 'admin@colltrack.nl') {
         sessionStorage.removeItem('gebruiker');
         window.location.assign('/');
     }
 
-    // More user validation.
+    // More user validation, to catch unwanted users on the admin page.
     if(sessionStorage.gebruiker === null || sessionStorage.gebruiker === undefined) {
         window.location.assign('/');
     } else {
@@ -121,9 +123,8 @@ function naamCheck(e) {
 
 // Check and sanitise the isbn input
 function isbnCheck(e) {
-    // If there is an input
+    // If there is an input, i remove any '-' and check if there are no letters in it.
     if(e.target.value !== "" && e.target.value !== null && e.target.value !== undefined) {
-        // i remove any '-' and check if there are no letters in it.
         let isbn = e.target.value.replace(/-/g, "");
         let expression = /[a-zA-z]/g;
         let letters = expression.test(isbn);
@@ -139,9 +140,7 @@ function isbnCheck(e) {
             e.target.value = isbn;
             isbnChecked = true;
             // If the name was also valid, enable all buttons.
-            if(naamChecked) {
-                submitButtToev.disabled = false, submitButtBew.disabled = false;
-            }
+            if(naamChecked) { submitButtToev.disabled = false, submitButtBew.disabled = false; }
         }
     }
 }
@@ -166,9 +165,7 @@ function albumToevInv() {
         document.getElementById("albumt-form-indexT").value = localStorage.huidigeIndex;
         document.getElementById("albumt-form-seNaam").value = inp;
     // If there isnt i just pass on the serie name.
-    } else {
-        document.getElementById("albumt-form-seNaam").value = inp;
-    }
+    } else { document.getElementById("albumt-form-seNaam").value = inp; }
 
     // If a selection is made i open the pop-in, if not is give user feedback.
     if(inp !== "" && inp !== null && inp !== undefined) {
@@ -176,8 +173,7 @@ function albumToevInv() {
     } else { displayMessage("U kan geen album toevoegen, als u geen selectie maakt!"); }
 }
 
-// TODO: Re-factor using other means if possible ?
-// Function to close pop-in while on the '/beheer' page/
+// Function to close pop-ins while on the '/beheer' page.
 function popInClose() {
     // If a series index was stored, i need to request a new view from PhP
     if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
@@ -215,24 +211,19 @@ function albumToevSubm(e) {
     let formData = new FormData(form);
     e.preventDefault();
 
-    // Send fetch request to PhP
+    // Send fetch request to PhP, check for errors, store user feedback before closing the pop-in
     fetchRequest('albumT', 'POST', formData)
     .then((data) => {
-        // If we have no errors, we store the feedback and close to pop-in
         if(typeof data != 'object') {
             localStorage.setItem('fetchResponse', data);
             popInClose();
-        // If we have erros, we ensure they are all displayed properly.
+        // If we have errors, we ensure they are all displayed properly.
         } else {
             if(data.aNaamFailed != "") {
                 if(data.aIsbnFailed != "") {
                     displayMessage(data.aNaamFailed, data.aIsbnFailed);
-                } else {
-                    displayMessage(data.aNaamFailed);
-                }
-            } else {
-                displayMessage(data.aIsbnFailed);
-            }
+                } else { displayMessage(data.aNaamFailed); }
+            } else { displayMessage(data.aIsbnFailed); }
         }
     })
 }
@@ -284,10 +275,9 @@ function albumBewSubm(e) {
     let formData = new FormData(form);
     e.preventDefault();
 
-    // Send request to PhP
+    // Send request to PhP, check for errors, and store user feedback before closing the pop-in
     fetchRequest('albumBew', 'POST', formData)
     .then((data) => {
-        // Check if there are no errors, and store the feedback a before closing the pop-in.
         if(typeof(data) !== 'object') {
             localStorage.setItem('fetchResponse', data);
             popInClose();
@@ -296,12 +286,8 @@ function albumBewSubm(e) {
             if(data.albumNaam != "") {
                 if(data.albumIsbn != "") {
                     displayMessage(data.albumNaam, data.albumIsbn);
-                } else {
-                    displayMessage(data.albumNaam);
-                }
-            } else {
-                displayMessage(data.albumIsbn);
-            }
+                } else { displayMessage(data.albumNaam); }
+            } else { displayMessage(data.albumIsbn); }
         }
     });
 }
@@ -346,47 +332,40 @@ function albumVerwijderen(e) {
     });
 }
 
-/* Controlle functies voor Serie Maken/Bekijken/Bewerken/Verwijderen */
-/*  serieSelSubmit(e):
-        Dit is de functie voor de 'Bevestigen' knop in de controller.
-        Deze checkt via JS fetch, of de naam al aanwezig is in de database, en voer de juiste handeling uit.
-        Als de naam al aanwezig is, krijgt de gebruiker een melding in beeeld.
-        Als de naam niet aanwezig is, slaan we de input op in de pop-in form, en openen we de form.
-        Als er helemaal geen input is, krijgt de gebruiker daat ook melding over.
- */
+// Create series controller button
 function serieSelSubmit(e) {
-    e.preventDefault();
-
+    // Get input, create new FormData, and prevent the default submit.
     let inp = document.getElementById("serie-maken-inp");
     let formData = new FormData();
+    e.preventDefault();
 
+    // If there is input selected, add input to FormData and send said input to PhP,
     if(inp.value !== "") {
         formData.append('naam-check', inp.value);
 
         fetchRequest('serieM', 'POST', formData)
+        // Check for errors, and provide feedback about said errors.
         .then((data) => {
             if(data !== "Serie-Maken") {
                 displayMessage(data);
+            // If no errors, i cast he name into the form, and redirect to the pop-in with said form.
             } else {
                 document.getElementById('seriem-form-serieNaam').value = inp.value;
                 window.location.assign('/beheer#seriem-pop-in');
             }
         })
+    // If there was no input selection for some reason, we provide user feedback.
     } else { displayMessage("Zonder opgegeven naam, kan er geen serie gemaakt worden!"); }
 }
 
-/*  serieMakSubm(e):
-        Deze functie is voor de submit knop van de serie maken pop-in.
-        Ik zet de form om in JS FormData, en gebruik mijn fetch functie om die data naar PhP te sturen.
-        Als er geen foutmelding terug komt (data != object), sla ik de melding op in de local storage, en redirect ik terug naar beheer.
-        Als er wel een foutmelding is terug gekomen, dan geef ik die melding weer voor de de gebruiker.
- */
+// Creat series pop-in button
 function serieMakSubm(e) {
-    e.preventDefault();
-
+    // Get form element, create new FormData from it, and prevent the default submit.
     let form = document.getElementById('seriem-form');
     let formData = new FormData(form);
+    e.preventDefault();
 
+    // Send form to PhP, check for error, store user feedback, and redirect back to the main view.
     fetchRequest('serieM', 'POST', formData)
     .then((data) => {
         if(typeof(data) !== "object") {
@@ -396,36 +375,25 @@ function serieMakSubm(e) {
     })
 }
 
-/*  serieBekijken(e):
-        Deze functie zorgt er voor dat serie inhoud te bekijken is, via een verstopte form.
-        Ik zet de serie dat uit de tafel rij, in de juiste input velden.
-        En als die input velden een waarde hebben, zorg ik dat de form submit mag worden (true/false).
-        Het vervangen van de pagina inhoud, gebeurd in de init functie.
- */
+// View Series button
 function serieBekijken(e) {
+    // Get the required elements, and set the series data in the hidden form.
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let inp1 = document.getElementById("serie-bekijken-form-index-"+e.target.id);
     let inp2 = document.getElementById("serie-bekijken-form-naam-"+e.target.id);
-
     inp1.value = e.target.id;
     inp2.value = rowArr[0].children[3].innerHTML;
 
+    // Trigger submit based on if there was a valid input.
     if (inp1.value === "" && inp2.value === "") {
         return false;
-    } else {
-        return true;
-    }
+    } else { return true; }
 }
 
-/*  beheerBackButt():
-        Deze functie zorgt ervoor, dat de serie inhoud data die inbeeld is gekomen, weer terug word gezet naar de lijst met series.
-        Dit doe ik door de hele tafel te vervangen, omdat de serie data altijd aanwezig is, is een extra server verzoek niet nodig.
-        De '< Series' back button, word verstopt, en de container wordt weer vast gezet op de pagina.
-        Ik zorg er ook voor, dat de form data reset word en opnieuwe verzonden word, zodat met een pagina refresh de gebruiker niet terug gaat.
-        En als laatst verwijder ik de huidigeIndex dat uit de browser storage.
- */
+// Back button for the series view
 function beheerBackButt() {
+    // Revert the series view back to the main view, and hide the back button.
     albView.replaceWith(serieView);
     backButt.hidden = true;
     buttCont.style.position = "absolute";
@@ -434,15 +402,14 @@ function beheerBackButt() {
     localStorage.removeItem('huidigeIndex');
 }
 
-/*  serieBewerken(e):
-        Deze functie is lijkt complexer dan hij is, maar eigenlijk copieer ik aleen de row data naar de bewerken pop-in.
-        En zorg ik ervoor, dat er een redirect is naar de 'serieb-pop-in'.
- */
+// Edit serie controller button
 function serieBewerken(e) {
+    // Get the current table row, and the serie-bewerken pop-in form
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let form = document.getElementById('serieb-form');
 
+    // Cast row data into the form inputs, and redirect to said form.
     form[0].value = replaceSpecChar(rowArr[0].children[3].innerHTML);
     form[1].value = e.target.id;
     form[2].value = replaceSpecChar(rowArr[0].children[4].innerHTML);
@@ -451,89 +418,70 @@ function serieBewerken(e) {
     window.location.assign('#serieb-pop-in');
 }
 
-/*  serieBewSubm(e):
-        Deze onclick functie, stuurt de FormData naar PhP, via mijn eigen fetchRequest functie.
-        Ik zet de hele form direct om naar een FormData object, en voorkom de default submit.
-        Dan stuur ik de data door naar PhP, en wacht ik de response af.
-        Als die response geen object is (assoc array), sla ik die op in de localStorage, en geef ik een redirect naar de beheer pagina.
-        Als het wel een object is, geef ik de melding weer via mijn displayMessage functie.
- */
+// Edit serie pop-in button
 function serieBewSubm(e) {
+    // Get form element, create FormData from it, and prevent the default submit.
     let form = document.getElementById("serieb-form");
     let formData = new FormData(form);
     e.preventDefault();
     
+    // Send FormData to PhP, check for errors, store the user feedback and redirect to default view.
     fetchRequest('serieBew', 'POST', formData)
     .then((data) => {
         if(typeof data != 'object') {
             localStorage.setItem('fetchResponse', data);
             window.location.assign('/beheer');
-        } else {
-            displayMessage(data['Serie_Naam']);
-        }
+        } else { displayMessage(data['Serie_Naam']); }
     })
 }
 
-/*  serieVerwijderen(e):
-        Deze functie is gemaakt voor de verwijder knop, en pak de juiste informatie uit de tafel-rij.
-        De informatie wordt in formData gezet, zodat we in PhP makkelijker iets kunnen doen met deze data.
-        En de rij wordt uit de tafel verwijderdt, zodat er geen pagina refresh nodig is.
-        Vervolgens gebruik ik mijn fetchRequest functie, om de data naar PhP te sturen.
-        Voor de response gebruik ik mijn displayMessage functie, zodat er een terugkoppeling is naar de gebruiker.
- */
+// Remove serie button
 function serieVerwijderen(e) {
+    // Get table row, create new FormData, and ask for confirmation of the remove action.
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let formData = new FormData();
     let conf = confirm("Weet u zeker dat de Serie: " + rowArr[0].children[3].innerHTML + "\n En al haar albums wilt verwijderen ?");
-        
+
+    // If the confirm was made, add serie data to the FormData, and remove the table row.
     if(conf) {
         formData.append('serie-index', e.target.id);
         formData.append('serie-naam', rowArr[0].children[3].innerHTML);
-        
         rowCol[0].remove();
         
+        // Send request to PhP, and provide user feedback.
         fetchRequest('serieVerw', 'POST', formData)
-        .then((data) => {
-            displayMessage(data);
-        })
+        .then((data) => { displayMessage(data); })
     }
 }
 
-/* Wachtwoord Reset functies */
-/*  wwResetClick():
-        Onclick functie, die een redirect geeft naar de ww-reset-pop-in.
- */
-function wwResetClick() {
-    window.location.assign('#ww-reset-pop-in');
-}
+// Password reset controller reset button, redirecting to the pop-in.
+function wwResetClick() { window.location.assign('#ww-reset-pop-in'); }
 
-// Pas de comments aan voor de nieuwe JS fetch structuur.
-/*  aResetBev():
-        
- */
+// Password reset pop-in button
 function aResetBev(e) {
+    // Get form element, create new FormData from it and prevent the default submit.
     let form = document.getElementById('ww-reset-form');
     let formData = new FormData(form);
     e.preventDefault();
 
+    // Check if the form has inputs, and see if the passwords are identical.
     if(form[0].value != '' && form[1].value != '' && form[2].value != '') {
         if(form[1].value === form[2].value) {
+            // Ask for confirmation since its a remove action.
             let conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?");
 
+            // When confirmed, send request to PhP, provide user feedback and close the pop-in.
             if(conf) {
                 fetchRequest('aReset', 'POST', formData)
                 .then((data) => {
                     localStorage.setItem('fetchResponse', data);
                     popInClose();
                 })
-            } else {
-                displayMessage("Reset afgbroken, verander de gegevens en probeer het nogmaals.");
-            }
-        } else {
-            displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals.");
-        }
-    } else {
-        displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals");
-    }
+            // If not confirmend provide feedback.
+            } else { displayMessage("Reset afgbroken, verander de gegevens en probeer het nogmaals."); }
+        // If passwords are not equal, provide feedback.
+        } else { displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals."); }
+    // If inputs are missing, provide feedback
+    } else { displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals"); }
 }

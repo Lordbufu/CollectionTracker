@@ -1,3 +1,4 @@
+// Variables shared between init and functions
 let formButt, formInput;
 
 // Init the required elements and events.
@@ -59,9 +60,7 @@ function initGebruik() {
 function selectEvent(e) {
     if(formInput.value === "") {
         formButt.disabled = true;
-    } else {
-        formButt.disabled = false;
-    }
+    } else { formButt.disabled = false; }
 }
 
 // Ensure the user data is included in the form, and submit it.
@@ -89,10 +88,8 @@ function albumZoek(event) {
         if(albumNaam.toUpperCase().indexOf(filter) > -1) {
             // ensure the row is displayed if there is a match,
             tafelRows[index].style.display = "";
-        } else {
-            // hide the row if there is no match.
-            tafelRows[index].style.display = "none";
-        }
+        // hide the row if there is no match.
+        } else { tafelRows[index].style.display = "none"; }
 
     });
 }
@@ -110,9 +107,7 @@ function checkBox(e) {
     formData.append('album_naam', tempArr[0].children[1].textContent);
     formData.append('aanwezig', e.target.checked);
 
-    // Send request to PhP
+    // Send request to PhP and display user feedback.
     fetchRequest('albSta', 'POST', formData)
-    .then((data) => {
-        displayMessage(data)
-    });
+    .then((data) => { displayMessage(data) });
 }

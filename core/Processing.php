@@ -3,28 +3,12 @@ namespace App\Core;
 
 use App\Core\App;
 
-/*  Processing Class:
-        This class was specifically designed to format/check/filter data to and from the website/database.
-        With the added benefit, that the controller code is shorter/cleaner and thus more readable.
-
-        Short Explanation:
-            createData:
-                This function prepares data for the page-header, where i inject a JS script string to store things in the local/session storage.
-
-            createRedirect:
-                This function prepares data for the page header, but this time a redirect base on the $_SERVER super global.
-                JS redirects are sometimes needed, because a PhP redirect might present an unwanted loss of data in certain cases.
-
-            set_Object/update_Object/remove_Object:
-                These function are the interface between the Controller and QuerryBuilder, to keep both clean and readable.
-                I evaluated data for double entries, but also filter string for special characters.
- */
 class Processing {
     /* createData($type, $key, $value):
             Parameters:
                 $type (string)          - The storage type i want to use 'local' or 'session'.
                 $key (string)           - The name/key the item should have in said storage.
-                $value (string/array)   - The value that should be stored, best would be a string but can also be an assoc or normal array.
+                $value (string/array)   - The value that should be stored, with said key.
      */
     public static function createData($type, $key, $value) {
         switch($type) {
@@ -67,9 +51,7 @@ class Processing {
             case "gebruikers":
                 // filer strings for special characters (in this case on the user name).
                 foreach($data as $key => $value) {
-                    if($key === 'Gebr_Naam') {
-                        $data[$key] = htmlspecialchars($value);
-                    }
+                    if($key === 'Gebr_Naam') { $data[$key] = htmlspecialchars($value); }
                 }
 
                 App::get('database')->insert($naam, $data);
@@ -81,29 +63,21 @@ class Processing {
                 if(!empty($tempAlbums)) {
                     foreach($tempAlbums as $key => $value) {
                         if($value['Album_Naam'] == $data['Album_Naam']) {
-                            if($value['Album_Serie'] == $data['Album_Serie']) {
-                                $errorMsg["Album_Naam"] = $albumErr;
-                            }
+                            if($value['Album_Serie'] == $data['Album_Serie']) { $errorMsg["Album_Naam"] = $albumErr; }
                         }
 
-                        if($value['Album_ISBN'] == $data['Album_ISBN']) {
-                            $errorMsg["Album_ISBN"] = $isbnErr;
-                        }
+                        if($value['Album_ISBN'] == $data['Album_ISBN']) { $errorMsg["Album_ISBN"] = $isbnErr; }
                     }
                 }
 
+                // If errors are found, return them to the caller,
                 if(!empty($errorMsg)) {
                     return $errorMsg;
+                // if not filter strings for special characters
                 } else {
-                    // filter strings for special characters
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Album_Naam') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Album_Opm') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
+                        if($data[$key] === 'Album_Naam') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Album_Opm') { $data[$key] = htmlspecialchars($value); }
                     }
 
                     App::get('database')->insert($naam, $data);
@@ -115,28 +89,19 @@ class Processing {
                 // Check for double names for all series.
                 if(!empty($tempSerie)) {
                     foreach($tempSerie as $key => $value) {
-                        if($value['Serie_Naam'] == $data['Serie_Naam']) {
-                            $errorMsg['Serie_Naam'] = $serieErr;
-                        }
+                        if($value['Serie_Naam'] == $data['Serie_Naam']) { $errorMsg['Serie_Naam'] = $serieErr; }
                     }
                 }
 
+                // If errors are found, return them to the caller,
                 if(!empty($errorMsg)) {
                     return $errorMsg;
+                // if not filter strings for special characters
                 } else {
-                    // filter strings for special characters
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Serie_Naam') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Serie_Maker') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Serie_Opmerk') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
+                        if($data[$key] === 'Serie_Naam') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Serie_Maker') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Serie_Opmerk') { $data[$key] = htmlspecialchars($value); }
                     }
 
                     App::get('database')->insert($naam, $data);
@@ -193,16 +158,12 @@ class Processing {
                     foreach($tempAlbums as $key => $value) {
                         if($value['Album_Naam'] == $data['Album_Naam']) {
                             if($value['Album_Serie'] == $huidigeAlbum['Album_Serie']) {
-                                if($value['Album_Index'] != $huidigeAlbum['Album_Index']) {
-                                    $errorMsg['albumNaam'] = $albumErr;
-                                }
+                                if($value['Album_Index'] != $huidigeAlbum['Album_Index']) { $errorMsg['albumNaam'] = $albumErr; }
                             }
                         }
 
                         if($value['Album_ISBN'] == $data['Album_ISBN']) {
-                            if($value['Album_Index'] != $huidigeAlbum['Album_Index']) {
-                                $errorMsg['albumIsbn'] = $isbnErr;
-                            }
+                            if($value['Album_Index'] != $huidigeAlbum['Album_Index']) { $errorMsg['albumIsbn'] = $isbnErr; }
                         }
                     }
                 }
@@ -212,13 +173,8 @@ class Processing {
                 } else {
                     // filter strings for special characters
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Album_Naam') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Album_Opm') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
+                        if($data[$key] === 'Album_Naam') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Album_Opm') { $data[$key] = htmlspecialchars($value); }
                     }
 
                     App::get('database')->update($naam, $data, $id);
@@ -233,13 +189,9 @@ class Processing {
                     foreach($tempSeries as $key => $value) {
                         if(!empty($huidigeSerie)) {
                             if(htmlspecialchars($value['Serie_Naam']) === htmlspecialchars($data['Serie_Naam'])) {
-                                if($huidigeSerie['Serie_Index'] != $value['Serie_Index']) {
-                                    $errorMsg['Serie_Naam'] = $serieErr;
-                                }
+                                if($huidigeSerie['Serie_Index'] != $value['Serie_Index']) { $errorMsg['Serie_Naam'] = $serieErr; }
                             }
-                        } else {
-                            $errorMsg['Serie_Naam'] = 'Er ging iets mis bij het controleren van de serie naam !';
-                        }
+                        } else { $errorMsg['Serie_Naam'] = 'Er ging iets mis bij het controleren van de serie naam !'; }
                     }
                 }
 
@@ -248,17 +200,9 @@ class Processing {
                 } else {
                     // filter strings for special characters
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Serie_Naam') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Serie_Maker') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
-
-                        if($data[$key] === 'Serie_Opmerk') {
-                            $data[$key] = htmlspecialchars($value);
-                        }
+                        if($data[$key] === 'Serie_Naam') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Serie_Maker') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Serie_Opmerk') { $data[$key] = htmlspecialchars($value); }
                     }
 
                     App::get('database')->update($naam, $data, $id);

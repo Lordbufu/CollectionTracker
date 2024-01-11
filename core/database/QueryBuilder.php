@@ -267,11 +267,8 @@ class QueryBuilder {
             if(!isset($update)) {
                 // i add the first key + value.
                 $update = $key . '=' . "'" . $value . "'";
-            // If there is something there already,
-            } elseif(isset($update)) {
-                // i add the current info first, then the next $key + $value.
-                $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";
-            }
+            // If there is something there already, i add the current info first, then the next $key + $value.
+            } elseif(isset($update)) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
         }
 
         // I create the querry string using sprintf (details at the top)

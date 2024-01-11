@@ -11,9 +11,7 @@
     visibility: hidden;
     overflow: auto;
 }
-.modal-container:target {
-    visibility: visible;
-}
+.modal-container:target { visibility: visible; }
 
 .modal-content-container {
     display: inline-flex;
@@ -22,7 +20,7 @@
     background-color: var(--main-background-color);
     min-width: 15em;
     max-width: 20em;
-    min-height: 15em;
+    /*min-height: 15em;*/
     border-radius: 1em;
 }
 
@@ -77,7 +75,7 @@
 .modal-form {
     display: inline-grid;
     justify-content: center;
-    margin: 0.1em;
+    margin: 0.3em;
 }
 
 .modal-agree-container {
@@ -92,13 +90,9 @@
     position: inherit;
     top: 0.15em;
 }
-.modal-form-checkbox:hover {
-    cursor: pointer;
-}
+.modal-form-checkbox:hover { cursor: pointer; }
   
-.modal-form-agree-text {
-    font-size: 0.8em;
-}
+.modal-form-agree-text { font-size: 0.8em; }
 
 .modal-form-link {
     font-size: 0.8em;
@@ -121,9 +115,7 @@
     cursor: pointer;
 }
 
-.modal-para-1 {
-    font-size: 1em;
-}
+.modal-para-1 { font-size: 1em; }
   
 .modal-ord-list {
     font-size: 0.8em;
@@ -139,14 +131,9 @@
     font-weight: bold;
 }
 
-/* Remove the file name behind the file input field */
- #albumt-form-alb-cov {
-    display: none;
-}
-
-#albumb-form-alb-cov {
-    display: none;
-}
+/* Remove the file name behind the file input field for adding and editing album covers */
+#albumt-form-alb-cov { display: none; }
+#albumb-form-alb-cov { display: none; }
 
 /* Style a label to look like a submit button */ 
 .modal-form-alb-cov-lab {
@@ -172,9 +159,7 @@
 }
 
 /* Set size for the Album view, so it doesnt go out of bounds */
-#beheer-albView-content-container {
-    max-width: 100%;
-}
+#beheer-albView-content-container { max-width: 100%; }
 
 /* Another cover preview container and img, to show said cover in the series view. */
 .album-cover {
@@ -186,4 +171,39 @@
     height: 100%;
     width: 100%;
     margin: 0px;
+}
+
+/* Labels for input fields Test Code */
+.modal-form-input {
+    margin: 0.7em;
+}
+
+.modal-form-label {
+    position: relative;
+    display: block;
+    height: 2.5em;
+}
+
+.modal-form-span {
+    font-size: small;
+    display: block;
+    position: relative;
+    bottom: 2.4em;
+    transition: 0.2s;
+    opacity: 0.5;
+}
+
+.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:placeholder-shown) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.75) translate(-100%) translateX(100%) translateY(-1.3em);
+    color: white;
+    background-color: black;
+}
+
+/* IE support ? */
+.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:-ms-input-placeholder) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.75) translate(-100%) translateX(100%) translateY(-1.3em);
+    color: white;
+    background-color: black;
 }
