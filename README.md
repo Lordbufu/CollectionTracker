@@ -1,4 +1,4 @@
-## This readme is still a work in progress, as rather new to all this, and more focussed on the project itself
+## This readme is still a work in progress, as i am rather new to all this, and more focussed on the project itself
 
 Collection Tracker:
   Small web-app designed to keep track of several types of collections.
@@ -26,10 +26,10 @@ Notable Technical Notes:
 
 Visual Examples of what the App looks like currently:
 ![Preview](https://github.com/Lordbufu/CollectionTracker/assets/19768243/3b6feae5-a5d9-4e58-888a-95aea0d0ba6d)
-![Preview2](https://github.com/Lordbufu/CollectionTracker/assets/19768243/e7b21f20-8f13-41f3-a1cd-6c37480274c7)
 ![Preview3](https://github.com/Lordbufu/CollectionTracker/assets/19768243/08566c27-c420-42dc-9230-8ff3d5bc466f)
+![Preview2](https://github.com/Lordbufu/CollectionTracker/assets/19768243/e7b21f20-8f13-41f3-a1cd-6c37480274c7)
 ![Preview4](https://github.com/Lordbufu/CollectionTracker/assets/19768243/6fab3805-8b8d-4dad-abc5-e798bb7b91e8)
-![Preview5](https://github.com/Lordbufu/CollectionTracker/assets/19768243/ccc335bd-6bf8-439d-9feb-50c28d9cb443)
+
 
 What do i need to setup\know to host this ?:
   Somekind of web hosting App/Service, that matches the required tool, and the knowledge to opperate/config that.
