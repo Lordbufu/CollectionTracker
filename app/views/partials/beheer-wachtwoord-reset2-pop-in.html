@@ -8,9 +8,18 @@
           
         <div class="modal-body">
             <form class="modal-form" id="ww-reset-form" >
-                <input type="email" class="modal-form-email" id="emailField" name="email" placeholder="E-mail" autocomplete="on" required>
-                <input type="password" class="modal-form-wachtwoord" id="resetVeld1" name="wachtwoord1" placeholder="Nieuw Wachtwoord" autocomplete="on" required>
-                <input type="password" class="modal-form-wachtwoord" id="resetVeld2" name="wachtwoord2" placeholder="Wachtwoord Bevestigen" autocomplete="on" required>
+                <label class="modal-form-label">
+                    <input type="email" class="modal-form-input" id="emailField" name="email" placeholder="" autocomplete="on" required>
+                    <span class="modal-form-span"> E-mail </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="password" class="modal-form-input" id="resetVeld1" name="wachtwoord1" placeholder="" autocomplete="on" required>
+                    <span class="modal-form-span"> Nieuw Wachtwoord </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="password" class="modal-form-input" id="resetVeld2" name="wachtwoord2" placeholder="" autocomplete="on" required>
+                    <span class="modal-form-span"> Wachtwoord Bevestigen </span>
+                </label>
                 <input class="modal-form-button" id="reset-submit" type="submit" value="Bevestigen" onclick="aResetBev(event)">
             </form>
         </div>

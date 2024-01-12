@@ -3,7 +3,10 @@
     <div class="serie-maken-cont">
         <form class="serie-maken-form" id="serie-maken-form" >
             <label for="serie-maken-inp" class="serie-maken-lab"> Serie Maken: </label>
-            <input type="text" class="serie-maken-inp" id="serie-maken-inp" name="serieNaam" />
+            <label class="modal-form-label">
+                <input type="text" class="modal-form-input" id="serie-maken-inp" name="serieNaam" placeholder="" autocomplete="on"/>
+                <span class="modal-form-span"> Serie Naam </span>
+            </label>
             <input class="serie-maken-subm" id="serie-maken-subm" type="submit" value="Bevestigen" onclick="serieSelSubmit(event)" />
         </form>
     </div>

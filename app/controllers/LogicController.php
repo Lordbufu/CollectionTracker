@@ -190,7 +190,7 @@ class LogicController {
         }
         
         // The album-cover requires some converting to base64_encoded blob data.
-        if(isset($_FILES['album-cover'])) {
+        if($_FILES['album-cover']['error'] === 0) {
             // Get all required file info to store it's content
             $fileName = basename($_FILES["album-cover"]["name"]);
             $fileType = pathinfo($fileName, PATHINFO_EXTENSION);

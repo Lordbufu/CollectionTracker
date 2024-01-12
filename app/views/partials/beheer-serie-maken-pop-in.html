@@ -8,9 +8,18 @@
           
         <div class="modal-body">
             <form class="modal-form" id="seriem-form" >
-                <input type="text" class="modal-form-serieNaam" id="seriem-form-serieNaam" name="serie-naam" placeholder="Serie Naam" autocomplete="on" required >
-                <input type="text" class="modal-form-makers" id="seriem-form-makers" name="makers" placeholder="Makers/Artiesten" autocomplete="on" />
-                <input type="text" class="modal-form-opmerking" id="seriem-form-opmerking" name="opmerking" placeholder="Opmerking/Notitie" autocomplete="on" />
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="seriem-form-serieNaam" name="serie-naam" placeholder="" autocomplete="on" required >
+                    <span class="modal-form-span"> Serie Naam </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="seriem-form-makers" name="makers" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Makers/Artiesten </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="seriem-form-opmerking" name="opmerking" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Opmerking/Notitie </span>
+                </label>
                 <input class="modal-form-button" id="seriem-form-button" type="submit" value="Bevestigen" onclick="serieMakSubm(event)">
             </form>
         </div>

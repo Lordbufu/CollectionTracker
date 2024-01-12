@@ -13,14 +13,17 @@
               <option class="serie-sel-opt" value="<?= $series[$key]['Serie_Naam'] ?>"> <?= $series[$key]['Serie_Naam'] ?> </option>
                 <?php endforeach; ?>
             </select>
-            <input class="serie-sel-data" id="serie-sel-data" name="gebr_email" value="" style="display: none;" />
+            <input class="serie-sel-data" id="serie-sel-data" name="gebr_email" value="" hidden />
             <input class="serie-sel-subm" id="serie-sel-subm" value="Selecteer" onclick=selectSubm() />
         </form>
     </div>
     <div class="album-zoek-cont">
         <form class="album-zoek-form" id="album-zoek-form">
             <label class="album-zoek-lab" for="album-zoek-inp"> Album Zoeken: </label>
-            <input class="album-zoek-inp" id="album-zoek-inp" type="text" onkeyup="albumZoek(event)" placeholder="Zoek naar albums.." title="Type in a title"/>
+            <label class="modal-form-label">
+                <input class="modal-form-input" id="album-zoek-inp" type="text" onkeyup="albumZoek(event)" placeholder=""/>
+                <span class="modal-form-span"> Zoek naar albums.. </span>
+            </label>
         </form>
     </div>
 </div>

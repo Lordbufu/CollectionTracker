@@ -8,12 +8,22 @@
           
         <div class="modal-body">
             <form class="modal-form" id="serieb-form">
-                <input type="text" class="modal-form-serieNaamB" id="serieb-form-serieNaamB" name="naam" placeholder="Serie Naam" autocomplete="on" required />
-                <input type="text" class="modal-form-indexB" id="serieb-form-indexB" name="index" value="" hidden />
-                <input type="text" class="modal-form-makers" id="serieb-form-makersB" name="makers" placeholder="Makers/Artiesten" autocomplete="on" />
-                <input type="text" class="modal-form-opmerking" id="serieb-form-opmerkingB" name="opmerking" placeholder="Opmerking/Notitie" autocomplete="on" />
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-serieNaamB" name="naam" placeholder="" autocomplete="on" required />
+                    <span class="modal-form-span"> Serie Naam </span>
+                </label>
+                <input type="text" class="modal-form-input" id="serieb-form-indexB" name="index" value="" hidden />
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-makersB" name="makers" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Makers/Artiesten </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-opmerkingB" name="opmerking" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Opmerking/Notitie </span>
+                </label>
                 <input class="modal-form-button" id="serieb-form-button" type="submit" value="Bevestigen" onclick="serieBewSubm(event)"/>
             </form>
         </div>
+
     </div>
 </div>

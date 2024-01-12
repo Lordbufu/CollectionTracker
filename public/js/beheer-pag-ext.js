@@ -250,11 +250,13 @@ function albumBewerken(e) {
     form[4].value = "";
     form[5].value = rowArr[0].children[6].innerHTML;
     form[6].value = rowArr[0].children[7].innerHTML;
+
     // Extra check for the album cover.
-    if(rowArr[0].children[5].hasChildNodes()) {
+    if(rowArr[0].children[5].innerHTML.trim() != "") {
         let imgEl = document.createElement('img');
         imgEl.src = div.children[0].src;
-        imgEl.id = 'album-cover-img';
+        imgEl.id = 'albumb-cover-img';
+        imgEl.className = 'modal-album-cover-img';
         albCov.appendChild(imgEl);
         covLab.innerHTML = 'Nieuwe Cover Selecteren';
         covLab.appendChild(covInp);
