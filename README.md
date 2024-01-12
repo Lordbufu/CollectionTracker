@@ -35,8 +35,8 @@ What do i need to setup\know to host this ?:
   Somekind of web hosting App/Service, that matches the required tool, and the knowledge to opperate/config that.
   
 What is required for this to work ?:
-  PhP 8.2.6 (or higher)
-  MariaDb - cp1252 West European (latin1)
+  - PhP 8.2.6 (or higher)
+  - MariaDb - cp1252 West European (latin1)
 
 Do i have to edit/config anything to make it work ?:
   - '\config.php' will need to be edited with the connection details, as the settings in there are from a local testing enviroment.
