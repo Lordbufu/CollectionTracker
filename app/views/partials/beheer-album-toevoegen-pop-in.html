@@ -1,24 +1,39 @@
 <div id="albumt-pop-in" class="modal-container">
     <div class="modal-content-container">
+
         <div class="modal-header">  
             <h1 class="modal-header-text"> Album Toevoegen </h1>
             <a class="modal-header-close" onclick="popInClose()">&times;</a>
         </div>
+
         <div class="modal-body">
             <form class="modal-form" id="albumt-form" enctype="multipart/form-data" >
-                <input type="text" class="modal-form-indexT" id="albumt-form-indexT" name="serie-index" hidden />
-                <input type="text" class="modal-form-indexT" id="albumt-form-seNaam" name="serie-naam" hidden />
-                <input type="text" class="modal-form-alb-naam" id="albumt-form-alb-naam" name="album-naam" placeholder="Album Naam" autocomplete="on" required />
-                <input type="number" min="0" class="modal-form-alb-nr" id="albumt-form-alb-nr" name="album-nummer" placeholder="Album Uitgave Nummer" autocomplete="on" />
-                <input type="date" class="modal-form-alb-date" id="albumt-form-alb-date" name="album-datum" placeholder="Album Uitgave Datum" autocomplete="on" />
-                <div id="albumt-cover"> </div>
+                <input type="text" class="modal-form-input" id="albumt-form-indexT" name="serie-index" hidden />
+                <input type="text" class="modal-form-input" id="albumt-form-seNaam" name="serie-naam" hidden />
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="albumt-form-alb-naam" name="album-naam" placeholder="" autocomplete="on" required />
+                    <span class="modal-form-span"> Album Naam </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="number" min="0" class="modal-form-input" id="albumt-form-alb-nr" name="album-nummer" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Album Uitgave Nummer </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="date" class="modal-form-input" id="albumt-form-alb-date" name="album-datum" placeholder="" autocomplete="on" />
+                    <span class="modal-form-span"> Album Uitgave Datum </span>
+                </label>
+                <div class="modal-album-cover" id="albumt-cover"> </div>
                 <label class="modal-form-alb-cov-lab" id="modal-form-alb-cov-lab" for="albumt-form-alb-cov">
-                    <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-alb-cov" id="albumt-form-alb-cov" name="album-cover" />
+                    <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumt-form-alb-cov" name="album-cover" />
                     Album Cover Selecteren
                 </label>
-                <input class="modal-form-alb-isbn" id="albumt-form-alb-isbn" name="album-isbn" placeholder="Album ISBN" autocomplete="on" required />
+                <label class="modal-form-label">
+                    <input class="modal-form-input" id="albumt-form-alb-isbn" name="album-isbn" placeholder="" autocomplete="on" required />
+                    <span class="modal-form-span"> Album ISBN </span>
+                </label>
                 <input class="modal-form-button" id="albumt-form-button" type="submit" value="Bevestigen" onclick="albumToevSubm(event)" />
             </form>
         </div>
+
     </div>
 </div>

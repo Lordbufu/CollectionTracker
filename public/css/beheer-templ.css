@@ -71,16 +71,14 @@
 /* Controller Content */
 .contr-cont {
     display: inline-flex;
-    align-items: center;
     justify-content: center;
     padding:0.5em;
 }
 
 /* Serie Maken controller */
 .serie-maken-cont {
-    border: 0.15em;
-    border-style: solid;
-    width: 12em;
+    border: solid 0.15em black;
+    border-radius: 0.2em;
     height: 6em;
     padding: 0.1em;
     margin-right: 2em;
@@ -111,10 +109,8 @@
 /* Album Toevoegen Controller */
 .album-toev-cont {
     display: inline-table;
-    border: 0.15em;
-    border-style: solid;
-    width: 12em;
-    height: 6em;
+    border: solid 0.15em black;
+    border-radius: 0.2em;
     padding: 0.1em;
     margin-right: 2em;
 }

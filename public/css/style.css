@@ -43,6 +43,7 @@ div {
   display: block;
   position: relative;
   text-align: center;
+  text-wrap: balance;
 }
 
 form {
@@ -86,4 +87,16 @@ footer {
 
 .response-message {
   font-size: smaller;
+}
+
+/* Another cover preview container and img, to show said cover in the series view. */
+.album-cover {
+  height: 4em;
+  width: 4em;
+}
+
+.album-cover-img {
+  height: 3.9em;
+  width: 3.9em;
+  margin: 0;
 }

@@ -53,8 +53,6 @@ th {
     display: inline-table;
     border: 0.15em;
     border-style: solid;
-    width: 12em;
-    height: 6em;
     margin-right: 2em;
 }
 
@@ -96,7 +94,6 @@ th {
 .album-zoek-cont {
     border: 0.15em;
     border-style: solid;
-    width: 12em;
     height: 6em;
     margin-left: 2em;
 }
