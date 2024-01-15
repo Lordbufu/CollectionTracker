@@ -7,13 +7,17 @@
     <?php require('partials/message-pop-in.html'); ?>
     
     <div class="content-container">
+
         <div class="title-banner">
+
             <div id="title-buttons" class="title-buttons">
                 <button class="ww-reset-butt" onclick=wwResetClick()> Wachtwoord Reset </button> <br>
                 <button class="logoff-butt" onclick=logoff()> Afmelden </button> <br>
                 <button id="beheer-back-butt" class="beheer-back-butt" onclick=beheerBackButt() hidden> < Series </button> <br>
             </div>
+
             <h1 class="title-text"> Collectie Tracker v1.1: Beheer Applicatie </h1>
+            
         </div>
 
         <?php
@@ -26,6 +30,7 @@
             require('partials/beheer-album-bewerken-pop-in.html');
             require('partials/beheer-wachtwoord-reset2-pop-in.html');
         ?>
+
     </div>
 
 <?php require('partials/footer.php'); ?>
