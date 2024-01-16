@@ -29,18 +29,15 @@ Visual Examples of what the App looks like currently:
 ![Preview3](https://github.com/Lordbufu/CollectionTracker/assets/19768243/08566c27-c420-42dc-9230-8ff3d5bc466f)
 ![Preview2](https://github.com/Lordbufu/CollectionTracker/assets/19768243/e7b21f20-8f13-41f3-a1cd-6c37480274c7)
 ![Preview4](https://github.com/Lordbufu/CollectionTracker/assets/19768243/6fab3805-8b8d-4dad-abc5-e798bb7b91e8)
-
-
-What do i need to setup\know to host this ?:
-  Somekind of web hosting App/Service, that matches the required tool, and the knowledge to opperate/config that.
-  
+ 
 What is required for this to work ?:
   - PhP 8.2.6 (or higher)
-  - MariaDb - cp1252 West European (latin1)
+  - MariaDb charset: cp1252 West European (latin1)
 
 Do i have to edit/config anything to make it work ?:
   - '\config.php' will need to be edited with the connection details, as the settings in there are from a local testing enviroment.
   - The same file also needs to be edited to change the error reporting mode, as its also set to testing/development mode.
+  - Website must have its webroot set to the 'public' folder.
 
 
 
