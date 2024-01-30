@@ -28,6 +28,7 @@
     border-radius: 1em;
     text-align: center;
     text-wrap: balance;
+    align-items: center;
 }
 
 .modal-header {
@@ -41,6 +42,7 @@
     background-color: var(--main-banner-color);
     text-align: center;
     text-wrap: balance;
+    width: -webkit-fill-available;
 }
 
 .modal-header-text {
@@ -235,4 +237,9 @@
 }
 .modal-gebr-ov-button:hover {
     background: var(--main-butt-hover);
+}
+
+.butt-box {
+    margin: var(--main-page-margin);
+    padding: 0.2em;
 }
