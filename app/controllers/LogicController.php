@@ -15,6 +15,19 @@ use App\Core\App;
             'collecties' (Associative Array) - Data used by PhP to display if the user has a ablum in its collection.
  */
 class LogicController {
+    // Test function for isbn data
+    public function isbn() {
+        if(isset($_POST['isbn'])) {
+            // set request url for the google api
+            App::get('isbn')->set_url($_POST['isbn']);
+
+            // request book data
+            $result = App::get('isbn')->get_data();
+
+            die(var_dump(print_r($result)));
+        }
+    }
+    
     /* Landingpage functions */
     // '/register' function.
 	public function register() {

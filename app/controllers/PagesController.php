@@ -5,6 +5,15 @@ namespace App\Controllers;
 use App\Core\App;
 
 class PagesController {
+	// Test function to test new features
+	public function test() {
+		return App::view('test');
+	}
+
+	public function test2() {
+		return App::view('scanner-page');
+	}
+	
 	// Landing-page function
 	public function landing() {
 		// Create initial database tables/user if they are not set.

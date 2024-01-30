@@ -1,7 +1,17 @@
+// temp test code
+let html5QrcodeScanner, resultContainer, lastResult, countResults = 0;
+// end of temp test code
+
 // Wait for document to be loaded.
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         let gebrForm, gebrData;
+
+        // Test code for barscanning.
+        resultContainer = document.getElementById('qr-reader-results');
+        html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        // end of test code
 
         // If we are still on the landingpage, init the required code for that page.
         if(window.location.pathname === '/') {
@@ -121,4 +131,26 @@ function displayMessage(text1="", text2="") {
             header2.innerHTML = "";
         }, 3000);
     }
+}
+
+// Test Code that is required in the init function of the page its being used on, so that the element are loaded.
+//let html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+//html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+// Test Code fo barcode scanning
+function onScanSuccess(decodedText, decodedResult) {
+    // handle the scanned code as you like, for example:
+    if (decodedText !== lastResult) {
+        ++countResults;
+        lastResult = decodedText;
+        resultContainer.innerHTML = JSON.stringify(decodedResult);
+        // Handle on success condition with the decoded message.
+        console.log(`Scan result ${decodedText}`, decodedResult);
+    }
+}
+
+function onScanFailure(error) {
+    // handle scan failure, usually better to ignore and keep scanning.
+    // for example:
+    console.warn(`Code scan error = ${error}`);
 }

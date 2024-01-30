@@ -16,6 +16,7 @@
 		<!-- Extentie style for mobile gebruiker (vanaf 320x480) -->
 		<link rel="stylesheet" type="text/css" href="css/mobile-queries.css" media="(min-width: 20em)">
 		
+		<script src="js/html5-qrcode.min.js"></script>
 		<script src="js/main.js"></script>
 
 		<?php

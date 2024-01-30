@@ -1,3 +1,7 @@
 Current Version: 1.2.0
 Patch Name: CSS-Design-Patch
 Noteable Changes: Changed placeholder text in HTML input elements, with CSS magic to create a Label on focus.
+
+This Branch: 2.0.0 Beta
+Patch Name: v2.0.0-Beta
+Noteable Changes: Testing things related to looking up isbn numbers, and hopefully also EAN numbers, so the admin\user can just scan a barcode to add a item.
