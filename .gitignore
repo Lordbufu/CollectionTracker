@@ -1,4 +1,4 @@
-**/.github
-CODE_OF_CONDUCT.md
-LICENSE
-README.md
+# ignore ALL files in ANY directory named .github
+.github/
+#ignore all .md files
+*.md
