@@ -1,0 +1,48 @@
+/* Set menu grid size to match desktop screen ratio */
+.banner-container { grid-template-columns: 7.5rem auto; }
+
+/* Adjust banner text size, no margin required on this screen ratio */
+.title-text { font-size: 1.6em; }
+
+/* Adjust font size for the entire table */
+.beheer-serie-tafel th, .beheer-albums-tafel th { font-size: 0.7em; }
+
+/* Make button images slightly smaller */
+.album-bewerken-butt, .album-verwijderen-butt, .serie-bekijken-butt, .serie-bewerken-butt, .serie-verwijderen-butt {
+    height: 1.7em;
+    width: 1.7em;
+}
+
+/* Place footer text below each other */
+.footer {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Changes specific to normal orientation */
+@media only screen and not (orientation: landscape) {
+    /* Change display, to align elements below each other, and in the center */
+    .contr-cont {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* adjust header text size */
+    .beheer-weerg-cont h2 { font-size: 1.6em; }
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) {
+    /* Set elements inline, but make columns width auto */
+    .contr-cont {
+        display: inline-grid;
+        grid-template-columns: auto;
+    }
+
+    /* adjust header text size */
+    .beheer-weerg-cont h2 { font-size: 1.4em; }
+
+    /* Adjust the text size slightly */
+    .footer p { font-size: 0.6em; }
+}

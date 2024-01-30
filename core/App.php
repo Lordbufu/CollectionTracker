@@ -1,9 +1,14 @@
 <?php
+
 namespace App\Core;
+
+use Detection\MobileDetect;
 
 class App {
     // Create a static registry, to store/load/link(bind) important features.
     protected static $registry = [];
+    protected static $version;
+    protected static $device;
 
     // (Set) This function binds what i want to link, to an easy to use $key value.
     //  $key (string)       - The key name i want to use for said feature.
@@ -23,21 +28,68 @@ class App {
         return static::$registry[$key];
     }
 
+    // Test functions
+    public static function checkDevice() {
+        // Init detect framework
+        $detect = new MobileDetect();
+        // Give it the user agent string
+		$detect->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+
+        // Detect if mobile
+        if($detect->isMobile()) { static::$device = "mobile"; }
+
+        // Detect if tablet
+        if($detect->isTablet()) { static::$device = "tablet"; }
+
+        // Default to desktop in other cases
+        if(!$detect->isMobile() && !$detect->isTablet()) { static::$device = "desktop"; }
+
+        return;
+    }
+
+    public static function setVersion() {
+        // Open, read and close the version.txt, so the content is stored in the version variable.
+        $versionFile = fopen("../version.txt", "r");
+        static::$version = fread($versionFile, filesize("../version.txt"));
+        fclose($versionFile);
+
+        return;
+    }
+
     // A fairly simple view function, to return the correct view and data to the browser.
+    // Now also include a device check, so i can properly add css files based on that.
     //  $name (string)       - The first part of the view file its name.
     //  $data (Multid Array) - The data i want to send to the page.
     public static function view($name, $data = []) {
-        // Do note, that i can also still use $data['key'] instead of '$key' directly, extract allows the latter.
+        static::checkDevice();
+        static::setVersion();
+
+        // Add device tag to data array
+        $data['device'] = static::$device;
+        $data['version'] = static::$version;
+
+        // Extract $data, so we can use the key's as variables on the page.
         extract($data);
-        // And i terun the correct view with a require.
+
+        // Return the requested view.
         return require "../app/views/{$name}.view.php";
     }
 
     // A redirect function to redirect PhP to the right route.
     public static function redirect($path, $data = []) {
+        static::checkDevice();
+        static::setVersion();
+
+        // Add device tag to data array
+        $data['device'] = static::$device;
+        $data['version'] = static::$version;
+
+        // Extract $data, so we can use the key's as variables on the page.
         extract($data);
+
         // Always use the $_SERVER['SERVER_NAME'] variable, to make it function on other host names.
         header("location:http://{$_SERVER['SERVER_NAME']}/{$path}");
+        
         return;
     }
 }
