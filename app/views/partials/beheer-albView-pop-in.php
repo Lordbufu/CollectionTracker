@@ -1,17 +1,17 @@
 <div id="beheer-albView-pop-in" class="beheer-weerg-cont" style="display: none">
     <div id="beheer-albView-content-container" class="beheer-weerg-repl-cont">
-        <h1 id="beheer-albView-text" class="beheer-weerg-header-text"> Test Title </h1>
+        <h2 id="beheer-albView-text" class="beheer-weerg-header"> Test Title </h1>
         <div id="beheer-albView-body" class="beheer-album-weerg-modal-body">
             <table id="beheer-albView-tafel" class="beheer-albums-tafel">
                 <tr id="beheer-albView-titles" class="beheer-albums-tafel-titles">
-                    <th style="border: 0px;"> </th>
-                    <th style="border: 0px;"> </th>
-                    <th> Album Naam </th>
-                    <th> Album Nummer </th>
-                    <th> Album Uitgave Datum </th>
-                    <th> Album Cover </th>
-                    <th> Album ISBN </th>
-                    <th> Album Opmerking </th>
+                    <th style="border: 0px;"></th>
+                    <th style="border: 0px;"></th>
+                    <th>Album Naam</th>
+                    <th>Album Nummer</th>
+                    <th>Album Uitgave Datum</th>
+                    <th>Album Cover</th>
+                    <th>Album ISBN</th>
+                    <th>Album Opmerking</th>
                 </tr>
 
                 <?php
@@ -21,10 +21,10 @@
                                 echo "<tr class='album-bewerken-inhoud-{$albums[$key]['Album_Index']}' id='album-bewerken-inhoud-{$albums[$key]['Album_Index']}'>";
                 ?>
 
-                    <th id="album-bewerken" class="album-bewerken">
+                    <th id="album-bewerken" class="album-bewerken button">
                         <button class="album-bewerken-butt" id="<?= $albums[$key]['Album_Index']; ?>" type="button" onclick="albumBewerken(event)"></button>
                     </th>
-                    <th id="album-verwijderen" class="album-verwijderen">
+                    <th id="album-verwijderen" class="album-verwijderen button">
                         <button class="album-verwijderen-butt" id="<?= $albums[$key]['Album_Index']; ?>" type="button" onclick="albumVerwijderen(event)"></button>
                     </th>
                     <th id="album-naam" class="album-naam"><?=$albums[$key]['Album_Naam']?></th>

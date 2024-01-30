@@ -1,7 +1,16 @@
+// Required to make the banner sticky across all pages
+let header, sticky;
+
 // Wait for document to be loaded.
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         let gebrForm, gebrData;
+
+        /* On scroll code for the title banner */
+        window.onscroll = function() { onScroll() };
+
+        header = document.getElementById("title-banner");
+        sticky = header.offsetTop;
 
         // If we are still on the landingpage, init the required code for that page.
         if(window.location.pathname === '/') {
@@ -60,6 +69,16 @@ function logoff() {
     sessionStorage.clear();
     localStorage.clear();
     window.location.assign('/');
+}
+
+// onScroll function
+function onScroll() {
+    // Remove or add class if scrolling or not
+    if(window.scrollY > sticky) {
+        header.classList.add("sticky");
+    } else {
+        header.classList.remove("sticky");
+    }
 }
 
 // postForm(path, param):
