@@ -10,27 +10,37 @@
     background-color: var(--main-fade-background-color);
     visibility: hidden;
     overflow: auto;
+    text-align: center;
+    text-wrap: balance;
 }
-.modal-container:target { visibility: visible; }
+.modal-container:target {
+    visibility: visible;
+}
 
 .modal-content-container {
     display: inline-flex;
+    position: relative;
     flex-direction: column;
     top: 5em;
     background-color: var(--main-background-color);
     min-width: 15em;
     max-width: 20em;
     border-radius: 1em;
+    text-align: center;
+    text-wrap: balance;
 }
 
 .modal-header {
     display: inline-flex;
+    position: relative;
     justify-content: center;
     border-radius: 1em;
     margin: 0.15em;
     padding-left: 1em;
     padding-right: 1em;
     background-color: var(--main-banner-color);
+    text-align: center;
+    text-wrap: balance;
 }
 
 .modal-header-text {
@@ -78,6 +88,84 @@
     margin: 0.3em;
     width: 15em;
 }
+
+/* Labels for input fields */
+.modal-form-label {
+    position: relative;
+    display: inline-grid;
+    justify-items: center;
+    height: 2.5em;
+    margin: 0.2em;
+}
+
+/* Form inputs nested inside the label */
+.modal-form-input {
+    text-align: center;
+    width: 14em;
+    height: 1.3em;
+    margin: 0.3em;
+    padding: 0.4em;
+}
+
+/* The span that has the placeholder text */
+.modal-form-span {
+    font-size: small;
+    display: block;
+    position: relative;
+    bottom: 2.1em;
+    transition: 0.2s;
+    opacity: 0.5;
+    width: 14em;
+}
+
+/* Some animation magic to make the label/input and span work together */
+.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:placeholder-shown) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.5em);
+    color: white;
+    background-color: rgb(73, 43, 243);
+}
+
+/* IE support ? */
+.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:-ms-input-placeholder) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.75) translate(-100%) translateX(100%) translateY(-1.5em);
+    color: white;
+    background-color: rgb(73, 43, 243);
+}
+
+/* Date input fixed size to make things look nicer */
+#albumt-form-alb-date, #albumb-form-alb-date { height: 1em; }
+
+/* Style a label for the cover image, to look like a submit button */ 
+.modal-form-alb-cov-lab {
+    background-color: var(--main-butt-color);
+    font-size: small;
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    display: inline-block;
+    padding: 0.4em;
+    margin-bottom: 0.3em;
+    cursor: pointer;
+}
+.modal-form-alb-cov-lab:hover {
+    background-color: var(--main-butt-hover);
+    cursor: pointer;
+}
+
+/* Remove the file name behind the file input field for adding and editing album covers */
+#albumt-form-alb-cov { display: none; }
+#albumb-form-alb-cov { display: none; }
+
+/* A preview container for the actual cover image if present */
+.modal-album-cover-img {
+    height: 7.4em;
+    width: 6.4em;
+    margin: 0;
+}
+
+/* Set size for the Album view, so it doesnt go out of bounds */
+#beheer-albView-content-container { max-width: 100%; }
 
 .modal-agree-container {
     display: inline-grid;
@@ -133,76 +221,18 @@
     font-weight: bold;
 }
 
-/* Remove the file name behind the file input field for adding and editing album covers */
-#albumt-form-alb-cov { display: none; }
-#albumb-form-alb-cov { display: none; }
-
-/* Style a label to look like a submit button */ 
-.modal-form-alb-cov-lab {
-    background-color: var(--main-butt-color);
-    font-size: small;
-    border: 0.1em solid black;
-    border-radius: 0.5em;
-    display: inline-block;
-    padding: 0.4em;
-    margin-bottom: 0.3em;
-    cursor: pointer;
-}
-.modal-form-alb-cov-lab:hover {
-    background-color: var(--main-butt-hover);
-    cursor: pointer;
-}
-
-/* A preview container for the actual cover image if present */
-.modal-album-cover-img {
-    height: 7.4em;
-    width: 6.4em;
-    margin: 0;
-}
-
-/* Set size for the Album view, so it doesnt go out of bounds */
-#beheer-albView-content-container { max-width: 100%; }
-
-/* Labels for input fields Test Code */
-.modal-form-input {
-    width: 14em;
-    height: 1.3em;
-    margin: 0.3em;
-}
-
-.modal-form-label {
-    position: relative;
-    display: inline-grid;
-    justify-items: center;
-    height: 2.5em;
-    margin: 0.2em;
-}
-
-.modal-form-span {
-    font-size: small;
+/* User-agreement stuff */
+.modal-gebr-ov-button {
     display: block;
-    position: relative;
-    bottom: 2.1em;
-    transition: 0.2s;
-    opacity: 0.5;
-    width: 14em;
+    width: 4.375em;
+    padding: 0.7em;
+    color: var(--main-fade-fallback-color);
+    background: var(--main-butt-color);
+    border: 0.125em solid var(--main-fade-background-color);
+    border-radius: 1.25em/1.875em;
+    text-decoration: none;
+    cursor: pointer;
 }
-
-.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:placeholder-shown) + .modal-form-span {
-    opacity: 1;
-    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.5em);
-    color: white;
-    background-color: rgb(73, 43, 243);
-}
-
-/* IE support ? */
-.modal-form-input:focus + .modal-form-span, .modal-form-input:not(:-ms-input-placeholder) + .modal-form-span {
-    opacity: 1;
-    transform: scale(0.75) translate(-100%) translateX(100%) translateY(-1.5em);
-    color: white;
-    background-color: rgb(73, 43, 243);
-}
-
-#albumt-form-alb-date, #albumb-form-alb-date {
-    height: 1em;
+.modal-gebr-ov-button:hover {
+    background: var(--main-butt-hover);
 }

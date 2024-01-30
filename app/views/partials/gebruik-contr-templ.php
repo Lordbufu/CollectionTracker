@@ -14,7 +14,7 @@
                 <?php endforeach; ?>
             </select>
             <input class="serie-sel-data" id="serie-sel-data" name="gebr_email" value="" hidden />
-            <input class="serie-sel-subm" id="serie-sel-subm" value="Selecteer" onclick=selectSubm() />
+            <input class="serie-sel-subm" id="serie-sel-subm" type="submit" value="Selecteer" onclick=selectSubm() />
         </form>
     </div>
     <div class="album-zoek-cont">

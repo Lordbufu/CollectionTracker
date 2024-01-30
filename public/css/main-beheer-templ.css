@@ -1,0 +1,167 @@
+/* Adminpage banner elements */
+.banner-container {
+    display: grid;                                                  /* Set to grid to place content easier */
+    grid-template-areas: 'menu title-text';                         /* Define the grid area's for the content */
+    background-color: var(--main-banner-color);
+    border-radius: var(--main-border-radius);
+    margin: var(--main-page-margin);
+    z-index: 1;                                                     /* Ensure its always on top for when it becomes sticky */
+}
+
+/* Assing a grid area for the title-text and title-buttons */
+.title-buttons { grid-area: menu; }
+.title-banner { grid-area: title-text; }
+
+/* */
+.title-text { text-align: center; }
+
+/* Admin page buttons */
+/* Place them vertically and align content */
+.title-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styles for all 3 menu buttons */
+.ww-reset-butt, .logoff-butt, .beheer-back-butt {
+    display: flex;
+    font-size: 0.8em;                                               /* Fixed font size */
+    font-weight: bold;
+    text-wrap: nowrap;                                              /* Disable text wrap */
+    background: var(--main-butt-color);
+    border: solid 0.1em;
+    border-radius: 0.4em;
+    border-color: black;
+    cursor: pointer;
+    width: 7.7em;                                                   /* Fixed size so it fits on all screens */
+    margin: 0.2em;                                                  /* Create a bit more space between the buttons */
+    justify-content: center;                                        /* Center the text, cause text-align does nothing */
+}
+.ww-reset-butt:hover, .logoff-butt:hover, .beheer-back-butt:hover { background: var(--main-butt-hover); }
+
+/* Controller Content */
+.contr-cont {
+    grid-template-areas: 'serie album';                             /* Define grid area's for its content */
+    grid-template-columns: 15vw 21vw;                               /* Set columns to fix viewwidth based values */
+    justify-content: center;                                        /* Place childeren in the horizontal center */
+    justify-items: center;                                          /* Center childeren inside there grid area */
+    text-align: center;                                             /* Align text of childeren to the center */
+    padding: 0.5em;
+}
+
+/* Assign grid area */
+.serie-maken-cont { grid-area: serie; }
+.album-toev-cont { grid-area: album; }
+
+/* controller content containers */
+.serie-maken-cont, .album-toev-cont {
+    display: flex;                                                  /* Set to flex for easy alignment */
+    border: solid 0.15em black;
+    border-radius: 0.2em;
+    padding: 0.2em;                                                 /* Some extra space inside the elements */
+    margin: 0.2em;                                                  /* Some extra space between the elements */
+}
+
+/* controller form content */
+.serie-maken-cont form, .album-toev-cont form {
+    display: inline-grid;
+    justify-content: center;
+    margin: 0.1em;
+    padding: 0.1em;
+}
+
+/* controller label content */
+.serie-maken-cont label, .album-toev-cont label { font-weight: bold; }
+
+/* controller span content */
+.serie-maken-cont span, .album-toev-cont span { bottom: 1.8em; }
+
+
+/* controller album select input */
+.serie-maken-cont input, .album-toev-cont input {
+    margin: 0.2em;
+    padding: 0.2em;
+}
+
+/* controller select input */
+.album-toev-cont select {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+/* controller submit buttons (overwrites input styles) */
+.serie-maken-subm, .album-toev-subm {
+    background: var(--main-butt-color);
+    border: 0.15em;
+    border-radius: 0.4em;
+    cursor: pointer;
+    height: 2em;
+}
+.serie-maken-subm:hover, .album-toev-subm:hover { background: var(--main-butt-hover); }
+
+/* weergave container content */
+.beheer-weerg-cont {
+    padding: 0.1em;
+    text-align: center;
+}
+
+/* weergave table content */
+.beheer-weerg-cont table { display: inline-table; }
+
+/* table content itself */
+.beheer-serie-tafel th, .beheer-albums-tafel th {
+    border: 0.15em solid black;
+    padding: 0.2em;
+}
+
+/* remove border for all buttons */
+.beheer-serie-tafel th.button, .beheer-albums-tafel th.button { border: 0; }
+
+.serie-maker, .serie-opmerk, .serie-naam, .serie-albums, .serie-gebruikers {
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+.album-naam, .album-nummer, .album-uitgave, .album-cover, .album-isbn, .album-opm {
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+
+/* table icon button images */
+.album-bewerken-butt { background-image: url('/images/edit.png'); }
+.album-verwijderen-butt { background-image: url('/images/delete.png'); }
+.serie-bekijken-butt { background-image: url('/images/view.png'); }
+.serie-bewerken-butt { background-image: url('/images/edit.png'); }
+.serie-verwijderen-butt { background-image: url('/images/delete.png'); }
+
+/* table icon button styles */
+.album-bewerken-butt, .album-verwijderen-butt, .serie-bekijken-butt, .serie-bewerken-butt, .serie-verwijderen-butt {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 2.5em;
+    width: 2.5em;
+    border: unset;
+}
+.album-bewerken-butt:hover, .album-verwijderen-butt:hover, .serie-bekijken-butt:hover, .serie-bewerken-butt:hover, .serie-verwijderen-butt:hover {
+    cursor: pointer;
+}
+
+/* Footer Content */
+.footer {
+    text-align: center;                                                         /* Center all text */
+    background: var(--main-banner-color);
+    border-radius: 0.2em;
+    margin: var(--main-page-margin);
+}
+
+/* Footer text */
+.footer p {
+    font-weight: bold;
+    font-size: 0.875em;
+    margin: var(--main-page-margin);
+    padding: 0.1em;    
+}

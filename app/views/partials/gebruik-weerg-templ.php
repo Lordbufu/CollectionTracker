@@ -1,4 +1,4 @@
-<div class="weergave-container">
+<div class="gebr-weerg-cont">
     <h2 id="weergave-header"> Huidige Serie, met alle Albums: </h2>
     <table class="album-tafel">
         <tr class="album-tafel-titles">

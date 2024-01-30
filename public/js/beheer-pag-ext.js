@@ -1,7 +1,7 @@
 // TODO: Review if i can off-load form creation and submit functions to a gobal function in main.js
 // Shared variables between init and functions.
 let submitButtToev, submitButtBew, naamChecked = false, isbnChecked = false;
-let serieView, albView, buttCont, backButt;
+let serieView, albView, titleCont, buttBan, backButt;
 
 // Default page init function
 function initBeheer() {
@@ -10,19 +10,20 @@ function initBeheer() {
     albCovInp.addEventListener('change', albCovCheck);
 
     /* All elementens for serie-bekijken */
+    titleBan = document.getElementById("title-banner");
+    titleCont = document.getElementById("title-cont");
     buttCont = document.getElementById("title-buttons");
     backButt = document.getElementById("beheer-back-butt");
     serieView = document.querySelector("#beheer-weerg-repl-cont");
     albView = document.querySelector("#beheer-albView-content-container");
-    buttCont.style.position = "absolute";
+    backButt.style.display = 'none';
 
     // If the admin wants to view a Series
     if(localStorage.serieWeerg) {
         // I just replace the entire container
         serieView.replaceWith(albView);
         // I enable the back button, and set it to a fixed position.
-        backButt.hidden = false;
-        buttCont.style.position = "fixed";
+        backButt.style.display = 'flex';
 
         // I check if the serie name is stored, and replace the title of the container
         if(localStorage.huidigeSerie != null && localStorage.huidigeSerie != "") {
@@ -397,7 +398,7 @@ function serieBekijken(e) {
 function beheerBackButt() {
     // Revert the series view back to the main view, and hide the back button.
     albView.replaceWith(serieView);
-    backButt.hidden = true;
+    backButt.style.display = 'flex';
     buttCont.style.position = "absolute";
     document.getElementById('serie-bekijken-form-'+localStorage.huidigeIndex).reset();
     document.getElementById('serie-bekijken-form-'+localStorage.huidigeIndex).submit();

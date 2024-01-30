@@ -2,75 +2,51 @@
 :root {
   --main-background-color: rgba(255, 255, 255, 1);
   --main-fade-background-color: rgba(0, 0, 0, 0.4);
-  --main-fade-fallback-color: rgb(0, 0, 0);
+  --main-fade-fallback-color: rgba(0, 0, 0, 1);
   --main-banner-color: rgb(94, 158, 255);
-  --main-text-color: rgb(0, 0, 0);
-  --main-butt-color: rgb(94, 125, 255);
+  --main-text-color: rgba(0, 0, 0, 1);
+  --main-butt-color: rgba(94, 125, 255, 1);
   --main-butt-hover: rgb(59, 185, 42);
   --main-butt-img-hover: rgba(59, 185, 42, 0.2);
   --main-link-hover: rgba(199, 37, 37, 0.801);
+  --main-border-radius: 0.2em;
+  --main-page-margin: 0.1em 0.2em;
 }
 
-/* Base style for default elements (identical to the default user-agent) */
+/* Default body layout */
 body {
   font-family: Arial, sans-serif;
   display: block;
   margin: 0em;
   padding: 0em;
-  width: -webkit-fill-available;
-  width: -moz-available;
-  height: -webkit-fill-available;
-  height: -moz-available;
 }
 
-h1, h2, h3, h4 {
-  margin-block-start: 0.67em;
-  margin-block-end: 0.67em;
-  margin-inline-start: 0em;
-  margin-inline-end: 0em;
-  font-weight: bold;
+/* Grid Container Style */
+.content-container {
+    display: grid;
+    grid-template-areas: 'banner' 'text' 'image' 'footer';
+    margin: var(--main-page-margin);
 }
 
-p {
-  font-size: 0.8em;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 0em;
-  margin-inline-end: 0em;
+/* Assign elements to gird area's */
+.banner-container { grid-area: banner; }
+.text-content-container { grid-area: text; }
+.contr-cont { grid-area: text; }
+.example-container { grid-area: image; }
+.beheer-weerg-cont { grid-area: image; }
+.gebr-weerg-cont { grid-area: image; }
+.footer { grid-area: footer; }
+
+/* Styles shared between devices */
+/* Banner related things for a static banner/menu */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 98.5vw;
+  padding-top: 0;
 }
 
-div {
-  display: block;
-  position: relative;
-  text-align: center;
-  text-wrap: balance;
-}
-
-form {
-  display: block;
-  margin-block-end: 0.1em;
-}
-
-input {
-  text-align: center;
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
-  padding: 0.4em;
-}
-
-img {
-  overflow: clip;
-  overflow-clip-margin: content-box;
-  width: 15em;
-  height: 15em;
-  margin: 1em;
-}
-
-footer {
-  display: block;
-}
-
-/* Extra elements that where added later for user feedback */
+/* User feedback container */
 .message-container {
   z-index: 2;
   display: none;
@@ -85,11 +61,9 @@ footer {
   padding: 0.2em;
 }
 
-.response-message {
-  font-size: smaller;
-}
+.response-message { font-size: smaller; }
 
-/* Another cover preview container and img, to show said cover in the series view. */
+/* Album cover styles for pop-in and table content */
 .album-cover {
   height: 4em;
   width: 4em;
