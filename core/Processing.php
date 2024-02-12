@@ -27,7 +27,7 @@ class Processing {
      */
     public static function createRedirect($path) {
         $location = "http://{$_SERVER['SERVER_NAME']}/{$path}";
-        $temp = "<script>window.location.assign('$location')</script>";
+        $temp = "<script>window.location.replace('$location')</script>";
         return $temp;
     }
 
@@ -42,6 +42,8 @@ class Processing {
      */
     public static function set_Object($naam, $data) {
         $errorMsg = [];
+        $userNameErr = "Deze gebruiker bestaat al.";
+        $userEmailErr = "E-mail adres reeds ingebruik.";
         $albumErr = "Deze Album Naam bestaat al in de huidige Serie, kies een andere naam.";
         $isbnErr = "Deze Album ISBN bestaat al, controleer of deze juist is.";
         $serieErr = "Deze Serie Naam staat reeds in de Database!!";
@@ -49,13 +51,31 @@ class Processing {
 
         switch($naam) {
             case "gebruikers":
-                // filer strings for special characters (in this case on the user name).
-                foreach($data as $key => $value) {
-                    if($key === 'Gebr_Naam') { $data[$key] = htmlspecialchars($value); }
+                // Get all user in database
+                $tempUsers = App::get('database')->selectAll('gebruikers');
+
+                // Check for duplicate names and e-mails.
+                if(!empty($tempUsers)) {
+                    foreach($tempUsers as $key => $user) {
+                        if($user['Gebr_Naam'] === $data['Gebr_Naam']) {
+                            $errorMsg['gebrNaam'] = $userNameErr;
+                        }
+
+                        if($user['Gebr_Email'] === $data['Gebr_Email']) {
+                            $errorMsg['gebrEmail'] = $userEmailErr;
+                        }
+                    }
                 }
 
-                App::get('database')->insert($naam, $data);
-                return;
+                // Evaluate if there was and error, and return those.
+                if(!empty($errorMsg)) {
+                    return $errorMsg;
+                // Filter the user name, before putting in the database.
+                } else {
+                    $data['Gebr_Naam'] = htmlspecialchars($data['Gebr_Naam']);
+                    App::get('database')->insert($naam, $data);
+                    return;
+                }
             case "albums":
                 $tempAlbums = App::get('database')->selectAll('albums');
 
@@ -63,10 +83,14 @@ class Processing {
                 if(!empty($tempAlbums)) {
                     foreach($tempAlbums as $key => $value) {
                         if($value['Album_Naam'] == $data['Album_Naam']) {
-                            if($value['Album_Serie'] == $data['Album_Serie']) { $errorMsg["Album_Naam"] = $albumErr; }
+                            if($value['Album_Serie'] == $data['Album_Serie']) {
+                                $errorMsg["Album_Naam"] = $albumErr;
+                            }
                         }
 
-                        if($value['Album_ISBN'] == $data['Album_ISBN']) { $errorMsg["Album_ISBN"] = $isbnErr; }
+                        if($value['Album_ISBN'] == $data['Album_ISBN']) {
+                            $errorMsg["Album_ISBN"] = $isbnErr;
+                        }
                     }
                 }
 
@@ -76,8 +100,13 @@ class Processing {
                 // if not filter strings for special characters
                 } else {
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Album_Naam') { $data[$key] = htmlspecialchars($value); }
-                        if($data[$key] === 'Album_Opm') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Album_Naam') {
+                            $data[$key] = htmlspecialchars($value);
+                        
+                        }
+                        if($data[$key] === 'Album_Opm') {
+                            $data[$key] = htmlspecialchars($value);
+                        }
                     }
 
                     App::get('database')->insert($naam, $data);
@@ -89,7 +118,9 @@ class Processing {
                 // Check for double names for all series.
                 if(!empty($tempSerie)) {
                     foreach($tempSerie as $key => $value) {
-                        if($value['Serie_Naam'] == $data['Serie_Naam']) { $errorMsg['Serie_Naam'] = $serieErr; }
+                        if($value['Serie_Naam'] == $data['Serie_Naam']) {
+                            $errorMsg['Serie_Naam'] = $serieErr;
+                        }
                     }
                 }
 
@@ -99,9 +130,17 @@ class Processing {
                 // if not filter strings for special characters
                 } else {
                     foreach($data as $key => $value) {
-                        if($data[$key] === 'Serie_Naam') { $data[$key] = htmlspecialchars($value); }
-                        if($data[$key] === 'Serie_Maker') { $data[$key] = htmlspecialchars($value); }
-                        if($data[$key] === 'Serie_Opmerk') { $data[$key] = htmlspecialchars($value); }
+                        if($data[$key] === 'Serie_Naam') {
+                            $data[$key] = htmlspecialchars($value);
+                        }
+
+                        if($data[$key] === 'Serie_Maker') {
+                            $data[$key] = htmlspecialchars($value);
+                        }
+
+                        if($data[$key] === 'Serie_Opmerk') {
+                            $data[$key] = htmlspecialchars($value);
+                        }
                     }
 
                     App::get('database')->insert($naam, $data);

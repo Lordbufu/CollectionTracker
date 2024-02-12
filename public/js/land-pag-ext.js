@@ -17,6 +17,35 @@ function initLanding() {
     submButton.disabled = true;
     pwChecked, inputChecked = false;
 
+    // Check if registering an account had errors
+    if(localStorage.userError1 != null || localStorage.userError2 != null) {
+        // If there the first error happened, 
+        if(localStorage.userError1 != null) {
+            // check for a second and display and remove both.
+            if(localStorage.userError2 != null) {
+                displayMessage(localStorage.userError1, localStorage.userError2);
+                localStorage.removeItem("userError1");
+                localStorage.removeItem("userError2");
+            // Else just display and remove the one.
+            } else {
+                displayMessage(localStorage.userError1);
+                localStorage.removeItem("userError1");
+            }
+        }
+
+        // If there as only the second error, display and remove only that.
+        if(localStorage.userError2 != null) {
+            displayMessage(localStorage.userError2);
+            localStorage.removeItem("userError2");
+        }
+    }
+
+    // Check if user was created during register, and display user feedback.
+    if(localStorage.userCreated != null) {
+        displayMessage(localStorage.userCreated);
+        localStorage.removeItem("userCreated");
+    }
+
     // Check if login failed, and adjust pop-in where required.
     if(localStorage.loginFailed != null) {
         resetLink.style.display = "block";
@@ -36,7 +65,9 @@ function pwCheck(e) {
         pwChecked = true;
         e.target.style.outline = "3px solid green";
         // enable the submit button if checkbox was also checked
-        if(inputChecked) { submButton.disabled = false; }
+        if(inputChecked) {
+            submButton.disabled = false;
+        }
     } else {
         // set the checked state and create visual user feedback
         pwChecked = false;
@@ -53,7 +84,9 @@ function checkBox(e) {
         // pass on the state
         inputChecked = e.target.checked;
         // enable submit button is pw was checked
-        if (pwChecked) { submButton.disabled = false; }
+        if (pwChecked) {
+            submButton.disabled = false;
+        }
     } else {
         // pass on the state
         inputChecked = e.target.checked;

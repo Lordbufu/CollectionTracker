@@ -16,13 +16,19 @@ function initGebruik() {
     formInput.addEventListener("change", selectEvent);
     formButt.disabled = true;
 
+    // Adding a listen event to the album search input
+    let input = document.getElementById('album-zoek-inp');
+    input.addEventListener("input", albumZoek);
+
     // If there was a Serie selection made, i grab all selection options.
     if(localStorage.huidigeSerie != null) {
         let selOptions = document.getElementsByClassName('serie-sel-opt');
 
         // Loop over the selection options, and ensure its showing the right one as selected.
         for(let i = 0; i < selOptions.length; i++) {
-            if(selOptions[i].value == localStorage.huidigeSerie) { selOptions[i].selected = true; }
+            if(selOptions[i].value == localStorage.huidigeSerie) {
+                selOptions[i].selected = true;
+            }
         }
 
         // Then the header is changed to the new series name.
@@ -60,7 +66,9 @@ function initGebruik() {
 function selectEvent(e) {
     if(formInput.value === "") {
         formButt.disabled = true;
-    } else { formButt.disabled = false; }
+    } else {
+        formButt.disabled = false;
+    }
 }
 
 // Ensure the user data is included in the form, and submit it.
@@ -89,8 +97,9 @@ function albumZoek(event) {
             // ensure the row is displayed if there is a match,
             tafelRows[index].style.display = "";
         // hide the row if there is no match.
-        } else { tafelRows[index].style.display = "none"; }
-
+        } else {
+            tafelRows[index].style.display = "none";
+        }
     });
 }
 
@@ -109,5 +118,7 @@ function checkBox(e) {
 
     // Send request to PhP and display user feedback.
     fetchRequest('albSta', 'POST', formData)
-    .then((data) => { displayMessage(data) });
+    .then((data) => {
+        displayMessage(data);
+    });
 }
