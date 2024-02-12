@@ -12,4 +12,7 @@ App::bind( 'database', new QueryBuilder( Connection::make(App::get('config')['da
 // Create a processing link, for more readable code for example: "App::get('processing')->functionName($parameters)".
 App::bind('processing', new Processing);
 
+// Create a session manager link
+App::bind('session', new SessionMan);
+
 ?>
