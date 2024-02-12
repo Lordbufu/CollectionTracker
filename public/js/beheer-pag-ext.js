@@ -8,7 +8,11 @@ let serieView, albView, titleCont, buttBan, backButt;
 
 // Default page init function
 function initBeheer() {
-    /* All elementens for viewing series */
+    /* album-bewerken submit form */
+    let albCovInp = document.getElementById('albumb-form-alb-cov');
+    albCovInp.addEventListener('change', albCovCheck);
+
+    /* All elementens for serie-bekijken */
     titleBan = document.getElementById("title-banner");
     titleCont = document.getElementById("title-cont");
     buttCont = document.getElementById("title-buttons");

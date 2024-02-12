@@ -34,6 +34,7 @@ class ComposerStaticInita497427bd7695e03c8e90e71a8328ac1
         'App\\Core\\App' => __DIR__ . '/../..' . '/core/App.php',
         'App\\Core\\Database\\Connection' => __DIR__ . '/../..' . '/core/database/Connection.php',
         'App\\Core\\Database\\QueryBuilder' => __DIR__ . '/../..' . '/core/database/QueryBuilder.php',
+        'App\\Core\\Isbn' => __DIR__ . '/../..' . '/core/isbn.php',
         'App\\Core\\Processing' => __DIR__ . '/../..' . '/core/Processing.php',
         'App\\Core\\Request' => __DIR__ . '/../..' . '/core/Request.php',
         'App\\Core\\Router' => __DIR__ . '/../..' . '/core/Router.php',

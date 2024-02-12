@@ -11,6 +11,7 @@ return array(
     'App\\Core\\App' => $baseDir . '/core/App.php',
     'App\\Core\\Database\\Connection' => $baseDir . '/core/database/Connection.php',
     'App\\Core\\Database\\QueryBuilder' => $baseDir . '/core/database/QueryBuilder.php',
+    'App\\Core\\Isbn' => $baseDir . '/core/isbn.php',
     'App\\Core\\Processing' => $baseDir . '/core/Processing.php',
     'App\\Core\\Request' => $baseDir . '/core/Request.php',
     'App\\Core\\Router' => $baseDir . '/core/Router.php',
