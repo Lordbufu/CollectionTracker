@@ -1,3 +1,5 @@
+//  TODO: Review if i should expand on the dispatchInputEvent function, to dispatch various request events instead of only input.
+//  TODO: Review if the caller check in dispatchInputEvent is actually required/usefull or not.
 // Required to make the banner sticky across all pages
 let header, sticky;
 
@@ -50,6 +52,19 @@ document.onreadystatechange = () => {
                 localStorage.removeItem('reloadPage');
                 postForm('/gebruik', localStorage.huidigeSerie);
             }
+        // Check for errors during account registration, and redirect accordingly.
+        } else if(window.location.pathname == "/register") {
+            if(localStorage.userError1 != null) {
+                window.location.href = '/#account-maken-pop-in';
+            }
+
+            if(localStorage.userError2 != null) {
+                window.location.href = '/#account-maken-pop-in';
+            }
+
+            if(localStorage.userCreated != null) {
+                window.location.href = "/#login-pop-in";
+            }
         }
     }
 }
@@ -61,7 +76,35 @@ async function fetchRequest(url=null, method=null, data=null ) {
         body: data
     })
 
+    // return the response.
     return response.json();
+}
+
+//  dispatchInputEvent(caller):
+//      caller (object) - The event from the caller function, so we can get the callers name.
+function dispatchInputEvent(caller) {
+    // Create new event
+    let inputEvent = new Event('input', {
+        'bubbles': true,
+        'cancelable': false
+    });
+
+    // Check if caller was set, not sure if really required.
+    if(caller !== "" || caller !== null || caller !== undefined) {
+        // Dispatch event to the right element based on the caller its class name.
+        switch(caller.target.className) {
+            case "album-bewerken-butt":
+                document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);
+                document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
+                return;
+            case "serie-maken-subm":
+                document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
+                return;
+            case "serie-bewerken-butt":
+                document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
+                return;
+        }
+    }
 }
 
 // Very simple logoff and page redirect.
@@ -73,7 +116,7 @@ function logoff() {
 
 // onScroll function
 function onScroll() {
-    // Remove or add class if scrolling or not
+    // Remove or add class if scrolling or not, magical CSS does the rest.
     if(window.scrollY > sticky) {
         header.classList.add("sticky");
     } else {

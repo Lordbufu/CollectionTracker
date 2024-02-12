@@ -1,5 +1,7 @@
 <?php
 
+//  TODO: Write some code, to see if a user name or e-mail was used to login in the App.
+//  TODO: Re-write the 'valUsr()' function with the new validation method in 'login()'.
 namespace App\Controllers;
 
 use App\Core\App;
@@ -18,6 +20,8 @@ class LogicController {
     /* Landingpage functions */
     // '/register' function.
 	public function register() {
+        $data = [ 'header' => [] ];
+
         // Format the user data for the database structure.
         $temp = [
             'Gebr_Naam' => $_POST['gebr-naam'],
@@ -27,22 +31,53 @@ class LogicController {
         ];
 
         // Store user data in database, and redirect to the login-pop-in.
-        App::get('processing')->set_Object('gebruikers', $temp);
-        App::redirect('#login-pop-in');
+        $newUser = App::get('processing')->set_Object('gebruikers', $temp);
+
+        if(isset($newUser)) {
+            if(isset($newUser['gebrNaam'])) {
+                array_push($data['header'], App::get('processing')->createData('local', 'userError1', $newUser['gebrNaam']));
+            }
+
+            if(isset($newUser['gebrEmail'])) {
+                array_push($data['header'], App::get('processing')->createData('local', 'userError2', $newUser['gebrEmail']));
+            }
+
+            array_push($data['header'], App::get('processing')->createRedirect('#account-maken-pop-in'));
+        } else {
+            array_push($data['header'], App::get('processing')->createData('local', 'userCreated', 'Gebruiker aangemaakt, u kunt nu inloggen!'));
+            array_push($data['header'], App::get('processing')->createRedirect('#login-pop-in'));
+        }
+
+        return App::view('index', $data);
 	}
 
     // '/login' function.
     public function login() {
-        // Prepare for the user validation.
         $data = [ 'header' => [] ];
-        $id = [ 'Gebr_Email' => $_POST['email'] ];
+
+        // Evaluate te account credentials.
+        if(isset($_POST['accountCred'])) {
+            if(filter_var($_POST['accountCred'], FILTER_VALIDATE_EMAIL)) {
+                // Use e-mail as id for db requests.
+                $id = [ 'Gebr_Email' => $_POST['accountCred'] ];
+            } else {
+                // Use user name as id for db requests.
+                $id = [ 'Gebr_Naam' => htmlspecialchars($_POST['accountCred']) ];
+            }
+        }
+
+        // Attempt to look up user data
         $gebruiker = App::get('database')->selectAllWhere('gebruikers', $id);
 
         // Check if there was user data, and verify the password and user rights.
         if(!empty($gebruiker[0])) {
+
+            // evaluate is the password,
             if(password_verify($_POST['wachtwoord'], $gebruiker[0]['Gebr_WachtW'])) {
+
+                // evaluate the user rights,
                 if($gebruiker[0]['Gebr_Rechten'] === "Admin") {
-                    // Prepare JS page-data for the admin login
+                    // Prepare JS page-data for the admin login,
                     array_push($data['header'], App::get('processing')->createData('session', 'gebruiker', $gebruiker[0]['Gebr_Email']));
                     array_push($data['header'], App::get('processing')->createData('session', 'updateUser', 'true'));
                     array_push($data['header'], App::get('processing')->createRedirect('beheer'));
@@ -54,6 +89,7 @@ class LogicController {
                     array_push($data['header'], App::get('processing')->createRedirect('gebruik'));
                     return App::view('gebruik', $data);
                 }
+
             // Create JS page-data for failed password check (intentional general feedback mssg).
             } else {
                 $error = "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!";
@@ -143,6 +179,8 @@ class LogicController {
             } else {
                 echo json_encode("Serie-Maken");
             }
+
+            return;
         // If the submit was from the pop-in, we start with formating the data for SQL
         } else {
             $sqlData = [ 'Serie_Naam' => $_POST['serie-naam'] ];
@@ -150,12 +188,16 @@ class LogicController {
             // Ensure 'makers' has either a value or empty string
             if(isset($_POST['makers'])) {
                 $sqlData['Serie_Maker'] = $_POST['makers'];
-            } else { $sqlData['Serie_Maker'] = ''; }
+            } else {
+                $sqlData['Serie_Maker'] = '';
+            }
 
             // Ensure 'opmerking' has either a value or empty string
             if(isset($_POST['opmerking'])) {
                 $sqlData['Serie_Opmerk'] = $_POST['opmerking'];
-            } else { $sqlData['Serie_Opmerk'] = ''; }
+            } else {
+                $sqlData['Serie_Opmerk'] = '';
+            }
     
             // Attempt to store the data via my own Processing class.
             $newSerie = App::get('processing')->set_Object('series', $sqlData);
@@ -166,6 +208,8 @@ class LogicController {
             } else {
                 echo json_encode("Het toevoegen van: " . $_POST['serie-naam'] . " is gelukt !");
             }
+
+            return;
         }
     }
 
@@ -174,14 +218,27 @@ class LogicController {
         // Format the expected SQL data
         $albumData = [
             'Album_Naam' => $_POST['album-naam'],
-            'Album_ISBN' => $_POST['album-isbn'],
             'Album_Opm' => 'W.I.P.'
         ];
+
+        if(!empty($_POST['album-isbn']) || $_POST['album-isbn'] !== "") {
+            $albumData['Album_ISBN'] = $_POST['album-isbn'];
+        } else {
+            $albumData['Album_ISBN'] = 0;
+        }
         
         // Check if certain data is present before storing, as they are not required,
-        if(isset($_POST['serie-index'])) { $albumData['Album_Serie'] = $_POST['serie-index']; }
-        if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
-        if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
+        if(isset($_POST['serie-index'])) {
+            $albumData['Album_Serie'] = $_POST['serie-index'];
+        }
+
+        if(isset($_POST['album-nummer'])) {
+            $albumData['Album_Nummer'] = $_POST['album-nummer'];
+        }
+
+        if(!empty($_POST['album-datum'])) {
+            $albumData['Album_UitgDatum'] = $_POST['album-datum'];
+        }
 
         // If we dont have a serie-index but only a serie-naam, we make sure the correct index is stored.
         if(isset($_POST['serie-naam']) && !isset($data['serie-index'])) {
@@ -213,8 +270,13 @@ class LogicController {
 
             // Make sure that each error is stored properly, if present.
             foreach($newAlbum as $key => $value) {
-                if($key === 'Album_Naam' && isset($value)) { $returnData['aNaamFailed'] = $newAlbum['Album_Naam']; }
-                if($key === 'Album_ISBN' && isset($value)) { $returnData['aIsbnFailed'] = $newAlbum['Album_ISBN']; }
+                if($key === 'Album_Naam' && isset($value)) {
+                    $returnData['aNaamFailed'] = $newAlbum['Album_Naam'];
+                }
+
+                if($key === 'Album_ISBN' && isset($value)) {
+                    $returnData['aIsbnFailed'] = $newAlbum['Album_ISBN'];
+                }
             }
 
             // return said error to JS for user feedback.
@@ -311,13 +373,15 @@ class LogicController {
 
     // 'adminReset' function, user password reset so only the admin can reset passwords.
     public function adminReset() {
-        // Attempt tom, update user table with the new password
+        // Attempt to update the user table with the new password
         $reset = App::get('processing')->update_Object('gebruikers', ['Gebr_Email' => $_POST['email']], ['Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT)]);
 
         // Check if there where errors trying to update the information.
         if(isset($reset)) {
             echo json_encode('De wachtwoord reset is niet gelukt');
-        } else { echo json_encode('De wachtwoord reset is geslaagd'); }
+        } else {
+            echo json_encode('De wachtwoord reset is geslaagd');
+        }
     }
 
     /* User-Page functions */
@@ -343,7 +407,9 @@ class LogicController {
             if(empty($data['albums'])) {
                 $temp = App::get('database')->selectAllWhere('albums', $serieIndex);
                 // Push each album in to the page data
-                foreach($temp as $key => $value) { array_push($data['albums'], $temp[$key]); }
+                foreach($temp as $key => $value) {
+                    array_push($data['albums'], $temp[$key]);
+                }
             }
 
             // Check if 'collecties' is empty
@@ -353,7 +419,9 @@ class LogicController {
                 $collecties = App::get('database')->selectAllWhere('collecties', [ 'Gebr_Index' => $gebrObject['Gebr_Index'] ]);
 
                 // Add each data row to the page data.
-                foreach($collecties as $key => $value) { array_push($data['collecties'], $collecties[$key]); }
+                foreach($collecties as $key => $value) {
+                    array_push($data['collecties'], $collecties[$key]);
+                }
             }
 
             // Make sure the 'serie-naam' is always returned to JS.
@@ -402,7 +470,9 @@ class LogicController {
             // Check for errors, and provide feedback to the user via JS.
             if(isset($newCol)) {
                 echo json_encode($newCol['Col_Verw']);
-            } else { echo json_encode('Verwijderen van het album uit de collectie is gelukt'); }
+            } else {
+                echo json_encode('Verwijderen van het album uit de collectie is gelukt');
+            }
         }
     }
 

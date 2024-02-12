@@ -14,14 +14,14 @@
                 <?php endforeach; ?>
             </select>
             <input class="serie-sel-data" id="serie-sel-data" name="gebr_email" value="" hidden />
-            <input class="serie-sel-subm" id="serie-sel-subm" type="submit" value="Selecteer" onclick=selectSubm() />
+            <input class="serie-sel-subm" id="serie-sel-subm" type="submit" value="Selecteer" onclick="selectSubm()" />
         </form>
     </div>
     <div class="album-zoek-cont">
-        <form class="album-zoek-form" id="album-zoek-form">
+        <form class="album-zoek-form" id="album-zoek-form" onsubmit="event.preventDefault()">
             <label class="album-zoek-lab" for="album-zoek-inp"> Album Zoeken: </label>
-            <label class="modal-form-label">
-                <input class="modal-form-input" id="album-zoek-inp" type="text" onkeyup="albumZoek(event)" placeholder=""/>
+            <label class="modal-form-label" for="album-zoek-inp">
+                <input class="modal-form-input" id="album-zoek-inp" type="text" placeholder=""/>
                 <span class="modal-form-span"> Zoek naar albums.. </span>
             </label>
         </form>
