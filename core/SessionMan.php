@@ -2,78 +2,42 @@
 /*  Test code to see how i want to handle sessions in this App, so far i have been doing ok without it.
     Things to consider for using this, is to prevent non-users from using the database, so i need to link accounts to sessions.
     There might also be an added benefit for account validation, and potentially reduce the amount of JS being used atm.
-
-    I still want to try and not use any cookies for this, but i might have to end up having to use cookies.
-
-    This is going to be a hot mess of code for a while.
  */
 
+//  TODO: Figure out how i can remove old session cookies properly.
+//  TODO: See if i can force a Garbage collection when i close a account session.
 namespace App\Core;
 
 class SessionMan {
-    protected $session_save_loc = '../tmp/sessions/';                                   // Set a path for storing sessions
-    protected $gc_time = '../tmp/php_session_last_gc';                                  // Create file path for tacking the last garbage collection
-    protected $gc_period = 1800;                                                        // Create a set interval for when the collection should trigger
+    protected $savePath = '../tmp/sessions/';                                           // Save path i want on the server side.
 
-    //  TODO: Do something constructive if the name and rights din't pass the validation.
-    protected function set_session_id($name, $rights) {                                 // Function to set the session ID and start the session
-        $valName = preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $name);                       // Check if name is a valid string for the id
-        $valRights = preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $rights);                   // Check if rights is a valid string for the id
+    protected function init_session() {                                                 // Initialize the session settings,
+        ini_set('session.gc_probability', '1');                                         // set session garbage collection probability to 1,
+        ini_set('session.gc_divisor', '10');                                            // set divisor to 10 (should be 10% chance it fires on session init ?),
+        ini_set('session.gc_maxlifetime', '1800');                                      // set max lifetime to 30min.
 
-        if($valName > 0 && $valRights > 0) {                                            // Evaluate the outcome of the params validation
-            if(session_status() == PHP_SESSION_NONE) {                                  // check if there are no sessions active
-                session_name('user-' . $name);                                          // set a session name
-                session_id($name . '-' . $rights);                                      // give a new id for the session
-                session_start();                                                        // start new session
-            } else {                                                                    // If there are session active
-                session_unset();                                                        // remove all session data
-                session_destroy();                                                      // close the current session
-                session_id($name, $rights);                                             // give a new id for the session
-                session_start();                                                        // start new session
-            }
-        } else {
-            return;                                                                     // For now we do nothing if the strings are invalid
+        if(!is_dir($this->savePath)) {                                                  // If the savepath is not present,
+            mkdir($this->savePath, 0777, true);                                         // make the directory,
+            session_save_path($this->savePath);                                         // then set the save path.
+        } else {                                                                        // If the save path is already present,
+            session_save_path($this->savePath);                                         // set the save path.
         }
-
-        return;                                                                         // Return to caller
     }
 
-    // concept for default session if think in need those.
-    public function start_default_session() {
-        if(session_status() == PHP_SESSION_NONE) {
-            session_start();
-        } else {
-            session_destroy();
-            session_start();
-        }
-
-        return;
+    public function default_session() {                                                 // Default session for the initial session,
+        $this->init_session();                                                          // ensure every thing is configured correctly,
+        session_start();                                                                // then start a default session.
     }
 
-    public function start_account_session($name, $rights) {                             // function specifically for account related sessions.
-        ini_set('session.use_cookies', '0');                                            // the cookieless journey stays alive
-        session_save_path($this->session_save_loc);                                     // set save path for session files
-        $this->set_session_id($name, $rights);                                          // set session id and start a new session.
-
-        return;                                                                         // return to caller
+    public function bind_account($name) {                                               // Bind account to a new session name/id,
+        session_destroy();                                                              // kill all previous session data,
+        session_name($name);                                                            // set new session name use the user name,
+        session_start();                                                                // start the new session,
+        session_regenerate_id();                                                        // generate new id so its not the same as the default session.
     }
 
-    public function stop_account_session() {                                            // function to stop and clean up session data
-        session_unset();                                                                // Remove session variables
-
-        if(file_exists($this->gc_time)) {                                               // Check if there is a gc tracking file
-            if(filemtime($this->gc_time < time() - $this->gc_period)) {                 // if the clean up period has passed
-                session_gc();                                                           // do the garbage collection
-                touch($this->gc_time);                                                  // touch file and reset the time
-            }
-        } else {                                                                        // If there is no file set
-            touch($this->gc_time);                                                      // make it so we can track if a clean up is likely required
-        }
-
-        session_destroy();                                                              // destroy all session data
-        session_write_close();                                                          // close session ?
-
-        return;                                                                         // return to caller
+    public function remove_session() {                                                  // destroy function incase i need more things on logout.
+        session_destroy();
     }
 }
 ?>

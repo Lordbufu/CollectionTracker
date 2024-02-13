@@ -1,6 +1,6 @@
 <?php
 // Some stuff dint really fit into the classes, so i bootstrap them to ensure there included\loaded.
-use App\Core\{App, Processing};
+use App\Core\{App, Processing, SessionMan};
 use App\Core\Database\{QueryBuilder, Connection};
 
 // Create a registry binding for the database config file, creating the following syntax: "App:get('config')[configOption]".
@@ -12,7 +12,10 @@ App::bind( 'database', new QueryBuilder( Connection::make(App::get('config')['da
 // Create a processing link, for more readable code for example: "App::get('processing')->functionName($parameters)".
 App::bind('processing', new Processing);
 
-// Create a session manager link
+// Create a session manager link, and set a default name for sessions.
 App::bind('session', new SessionMan);
+
+// Always start a default session if there i no active session.
+App::get('session')->default_session();
 
 ?>
