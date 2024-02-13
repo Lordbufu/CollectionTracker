@@ -23,6 +23,7 @@ class PagesController {
 		// Page data that is expected
 		$data = [ 'series' => [] ];
 
+		//die(session_name());
 		// If there is no page data, get all serie data first
         if(empty($data['series'])) {
             $localSeries = App::get('database')->selectAll('series');
@@ -61,6 +62,7 @@ class PagesController {
 		// Page data that is expected
 		$data = [ 'series' => [] ];
 
+		//die(session_name());
 		// If there is not page data get all series,
         if(empty($data['series'])) {
             $temp = App::get('database')->selectAll('series');

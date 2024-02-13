@@ -1,5 +1,6 @@
 //  TODO: Review if i should expand on the dispatchInputEvent function, to dispatch various request events instead of only input.
 //  TODO: Review if the caller check in dispatchInputEvent is actually required/usefull or not.
+//  TODO: Refactor the code base to remove the user data stored in the SessionStorage, this needs to more to session variables on the server side.
 // Required to make the banner sticky across all pages
 let header, sticky;
 
@@ -9,7 +10,9 @@ document.onreadystatechange = () => {
         let gebrForm, gebrData;
 
         /* On scroll code for the title banner */
-        window.onscroll = function() { onScroll() };
+        window.onscroll = function() {
+            onScroll()
+        };
 
         header = document.getElementById("title-banner");
         sticky = header.offsetTop;
@@ -81,22 +84,19 @@ async function fetchRequest(url=null, method=null, data=null ) {
 }
 
 //  dispatchInputEvent(caller):
-//      caller (object) - The event from the caller function, so we can get the callers name.
+//      caller (object) - The event from the caller function.
 function dispatchInputEvent(caller) {
-    // Create new event
-    let inputEvent = new Event('input', {
+    let inputEvent = new Event('input', {                                                               // Create new input event
         'bubbles': true,
         'cancelable': false
     });
 
-    // Check if caller was set, not sure if really required.
-    if(caller !== "" || caller !== null || caller !== undefined) {
-        // Dispatch event to the right element based on the caller its class name.
-        switch(caller.target.className) {
+    if(caller !== "" || caller !== null || caller !== undefined) {                                      // Check if caller was set, not sure if really required.
+        switch(caller.target.className) {                                                               // Switch the callers element class name.
             case "album-bewerken-butt":
-                document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);
-                document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
-                return;
+                document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);              // Assign event to the desired input element
+                document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);              // Assign event to the desired input element
+                return;                                                                                 // Return to caller.
             case "serie-maken-subm":
                 document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
                 return;
@@ -107,11 +107,17 @@ function dispatchInputEvent(caller) {
     }
 }
 
-// Very simple logoff and page redirect.
+//  lofoff(): W.I.P.
+//      For now i just send a empty post request, and clear the browser storage, and redirect to home.
 function logoff() {
-    sessionStorage.clear();
-    localStorage.clear();
-    window.location.assign('/');
+    fetchRequest('logout', 'POST')                                          // Request the logout,
+    .then((data) => {
+        if(data === "finished") {                                           // if PhP finished the request,
+            sessionStorage.clear();                                         // clear the browser session storage,
+            localStorage.clear();                                           // clear the browser local storage,
+            window.location.assign('/');                                    // redirect to home.
+        }
+    });
 }
 
 // onScroll function

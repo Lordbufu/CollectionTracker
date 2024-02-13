@@ -72,8 +72,9 @@ class LogicController {
         // Check if there was user data, and verify the password and user rights.
         if(!empty($gebruiker[0])) {
 
-            // evaluate is the password,
+            // evaluate the input passwords vs the stored password,
             if(password_verify($_POST['wachtwoord'], $gebruiker[0]['Gebr_WachtW'])) {
+                App::get('session')->bind_account($gebruiker[0]['Gebr_Naam']);
 
                 // evaluate the user rights,
                 if($gebruiker[0]['Gebr_Rechten'] === "Admin") {
@@ -104,6 +105,13 @@ class LogicController {
         }
 
         return App::view('index', $data);
+    }
+
+    // '/logout' function.
+    public function logout() {
+        App::get('session')->remove_session();
+        // Just a print string for now.
+        echo json_encode("finished");
     }
 
     /* Admin-Page functions */
@@ -490,10 +498,14 @@ class LogicController {
             } else {
                 if($_POST['gebr_email'] === $tempGebr[0]['Gebr_Email']) {
                     echo json_encode('Valid User');
-                } else { echo json_encode('Invalid User'); }
+                } else {
+                    echo json_encode('Invalid User');
+                }
             }
         // Just in-case there was no e-mail in the POST data.
-        } else { echo json_encode('Validatie mislukt!'); }
+        } else {
+            echo json_encode('Validatie mislukt!');
+        }
     }
 }
 ?>
