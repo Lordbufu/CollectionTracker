@@ -1,4 +1,17 @@
 <?php require('partials/header.php'); ?>
+<!-- Test Code for sessions -->
+<?php if (session_status() == PHP_SESSION_ACTIVE): ?>
+    <p> Session Name: <?=session_name()?></p>
+    <p> Cookie: <?=var_dump($_COOKIE)?></p>
+    <p> Session Var: <?=var_dump($_SESSION)?></p>
+<?php endif; ?>
+
+<?php if (session_status() == PHP_SESSION_NONE): ?>
+    <p> A Redirect Happend </p>
+    <p> Session Name: <?=session_name()?></p>
+    <p> Cookie: <?=var_dump($_COOKIE)?></p>
+    <p> Session Var: <?=var_dump($_SESSION)?></p>
+<?php endif; ?>
 
 <div class="content-container">
     

@@ -1,14 +1,12 @@
 //  TODO: Review if i should expand on the dispatchInputEvent function, to dispatch various request events instead of only input.
 //  TODO: Review if the caller check in dispatchInputEvent is actually required/usefull or not.
-//  TODO: Refactor the code base to remove the user data stored in the SessionStorage, this needs to more to session variables on the server side.
+//  TODO: Review if i can use sessions to remove the need for postForm(path, param).
 // Required to make the banner sticky across all pages
 let header, sticky;
 
 // Wait for document to be loaded.
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
-        let gebrForm, gebrData;
-
         /* On scroll code for the title banner */
         window.onscroll = function() {
             onScroll()
@@ -20,33 +18,11 @@ document.onreadystatechange = () => {
         // If we are still on the landingpage, init the required code for that page.
         if(window.location.pathname === '/') {
             initLanding();
-        // If we are on the user (/gebruik) page,
+        // If we are on the user (/gebruik) page, we init that the code required there.
         } else if(window.location.pathname === '/gebruik') {
-            // check if a user update was requested, and process said request;
-            if(sessionStorage.updateUser != null && sessionStorage.updateUser) {
-                gebrForm = document.getElementById("gebr-data-form");
-                gebrData = sessionStorage.gebruiker;
-                document.getElementById("gebr-form-input").value = gebrData;
-
-                sessionStorage.removeItem("updateUser");
-                gebrForm.submit();
-            }
-
-            // Init the required code for the user page
             initGebruik();
-        // If we are on the admnin (/beheer) page,
+        // If we are on the admnin (/beheer) page, we init that the code required there.
         } else if(window.location.pathname === '/beheer') {
-            // check if a user update was requested, and process said request;
-            if(sessionStorage.updateUser != null && sessionStorage.updateUser) {
-                gebrForm = document.getElementById("gebr-data-form");
-                gebrData = sessionStorage.gebruiker;
-                document.getElementById("gebr-form-input").value = gebrData;
-
-                sessionStorage.removeItem("updateUser");
-                gebrForm.submit();
-            }
-
-            // Init the required code for the admin page
             initBeheer();
         // If we are changing a album state, and there is a page reload requested.
         } else if(window.location.pathname == "/albSta") {
@@ -105,19 +81,6 @@ function dispatchInputEvent(caller) {
                 return;
         }
     }
-}
-
-//  lofoff(): W.I.P.
-//      For now i just send a empty post request, and clear the browser storage, and redirect to home.
-function logoff() {
-    fetchRequest('logout', 'POST')                                          // Request the logout,
-    .then((data) => {
-        if(data === "finished") {                                           // if PhP finished the request,
-            sessionStorage.clear();                                         // clear the browser session storage,
-            localStorage.clear();                                           // clear the browser local storage,
-            window.location.assign('/');                                    // redirect to home.
-        }
-    });
 }
 
 // onScroll function

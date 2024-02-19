@@ -1,7 +1,7 @@
 <?php
 
-//  TODO: Write some code, to see if a user name or e-mail was used to login in the App.
 //  TODO: Re-write the 'valUsr()' function with the new validation method in 'login()'.
+//  TODO: Add something to clear session data on logout via SessionMan.
 namespace App\Controllers;
 
 use App\Core\App;
@@ -55,13 +55,13 @@ class LogicController {
     public function login() {
         $data = [ 'header' => [] ];
 
-        // Evaluate te account credentials.
+        // Evaluate if the account credentials where set.
         if(isset($_POST['accountCred'])) {
+            // Check if the credentials where a e-mail, and use that for a database id.
             if(filter_var($_POST['accountCred'], FILTER_VALIDATE_EMAIL)) {
-                // Use e-mail as id for db requests.
                 $id = [ 'Gebr_Email' => $_POST['accountCred'] ];
+            // If it wasnt a valid e-mail, filter the input and use that as database id.
             } else {
-                // Use user name as id for db requests.
                 $id = [ 'Gebr_Naam' => htmlspecialchars($_POST['accountCred']) ];
             }
         }
@@ -71,24 +71,17 @@ class LogicController {
 
         // Check if there was user data, and verify the password and user rights.
         if(!empty($gebruiker[0])) {
-
             // evaluate the input passwords vs the stored password,
             if(password_verify($_POST['wachtwoord'], $gebruiker[0]['Gebr_WachtW'])) {
-                App::get('session')->bind_account($gebruiker[0]['Gebr_Naam']);
+                // Set variable for user validation and data requests,
+                App::get('session')->setVariable(['Gebr_Naam' => $gebruiker[0]['Gebr_Naam']]);
+                App::get('session')->setVariable(['Gebr_Email' => $gebruiker[0]['Gebr_Email']]);
 
-                // evaluate the user rights,
+                // evaluate the user rights, and redirect accordingly
                 if($gebruiker[0]['Gebr_Rechten'] === "Admin") {
-                    // Prepare JS page-data for the admin login,
-                    array_push($data['header'], App::get('processing')->createData('session', 'gebruiker', $gebruiker[0]['Gebr_Email']));
-                    array_push($data['header'], App::get('processing')->createData('session', 'updateUser', 'true'));
-                    array_push($data['header'], App::get('processing')->createRedirect('beheer'));
-                    return App::view('beheer', $data);
+                    App::redirect('beheer');
                 } else {
-                    // Prepare JS page-data for the user login
-                    array_push($data['header'], App::get('processing')->createData('session', 'gebruiker', $gebruiker[0]['Gebr_Email']));
-                    array_push($data['header'], App::get('processing')->createData('session', 'updateUser', 'true'));
-                    array_push($data['header'], App::get('processing')->createRedirect('gebruik'));
-                    return App::view('gebruik', $data);
+                    App::redirect('gebruik');
                 }
 
             // Create JS page-data for failed password check (intentional general feedback mssg).
@@ -109,9 +102,10 @@ class LogicController {
 
     // '/logout' function.
     public function logout() {
-        App::get('session')->remove_session();
-        // Just a print string for now.
-        echo json_encode("finished");
+        // Clean up and end the current session.
+        App::get('session')->endSession();
+        // Redirect to the landing page.
+        App::redirect('');
     }
 
     /* Admin-Page functions */
@@ -402,7 +396,9 @@ class LogicController {
         if(empty($data['series'])) {
             $temp = App::get('database')->selectAll('series');
             // Push each serie in to the page data array.
-            foreach($temp as $key => $value) { array_push($data['series'], $temp[$key]); }
+            foreach($temp as $key => $value) {
+                array_push($data['series'], $temp[$key]);
+            }
         }
 
         // If a serie was selected, we need to populate the 'albums' and 'collecties' data.
@@ -423,7 +419,7 @@ class LogicController {
             // Check if 'collecties' is empty
             if(empty($data['collecties'])) {
                 // Get the proper identifiers/data from the database.
-                $gebrObject = App::get('database')->selectAllWhere('gebruikers', [ 'Gebr_Email' => $_POST['gebr_email'] ])[0];
+                $gebrObject = App::get('database')->selectAllWhere('gebruikers', [ 'Gebr_Email' => $_SESSION['Gebr_Email'] ])[0];
                 $collecties = App::get('database')->selectAllWhere('collecties', [ 'Gebr_Index' => $gebrObject['Gebr_Index'] ]);
 
                 // Add each data row to the page data.
@@ -442,7 +438,7 @@ class LogicController {
     // '/albSta' function, to update the 'collecties' data, based on the HTML switch.
     public function albSta() {
         // Get all required data for the request.
-        $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_POST['gebr_email'] ])[0];;
+        $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_SESSION['Gebr_Email'] ])[0];;
         $tempSerie = App::get('database')->selectAllWhere("series", [ 'Serie_Naam' => $_POST['serie_naam'] ])[0];
         $tempAlbum = App::get('database')->selectAllWhere("albums", [ 'Album_Naam' => $_POST['album_naam'], 'Album_Serie' => $tempSerie['Serie_Index'] ])[0];
 
@@ -484,7 +480,7 @@ class LogicController {
         }
     }
 
-    /* Shared functions */
+    /* Shared functions --- DEPRICATED ??
     // '/valUsr' function, for all cases  where i want/need user validation.
     public function valUsr() {
         // Check if e-mail was in the $_POST data
@@ -506,6 +502,6 @@ class LogicController {
         } else {
             echo json_encode('Validatie mislukt!');
         }
-    }
+    }*/
 }
 ?>
