@@ -77,30 +77,6 @@ function initBeheer() {
         localStorage.removeItem('albumToevIn');
     }
 
-    // Extra user validation, to prevent unwanted access to the admin page.
-    if(sessionStorage.gebruiker === null && sessionStorage.gebruiker != 'admin@colltrack.nl') {
-        sessionStorage.removeItem('gebruiker');
-        window.location.assign('/');
-    }
-
-    // More user validation, to catch unwanted users on the admin page.
-    if(sessionStorage.gebruiker === null) {
-        window.location.assign('/');
-    } else {
-        let formData = new FormData();
-        formData.append('gebr_email', sessionStorage.gebruiker);
-
-        fetchRequest('valUsr', 'POST', formData)
-        .then((data) => {
-            if(data !== "Valid User") {
-                window.location.assign('/');
-                sessionStorage.removeItem('gebruiker');
-            } else if (data === "Valid User" && sessionStorage.gebruiker !== "admin@colltrack.nl") {
-                window.location.assign('/gebruik');
-            }
-        });
-    }
-
     // Display feedback messages, that are stored before a page refresh.
     if(localStorage.fetchResponse !== null) {
         displayMessage(localStorage.fetchResponse);

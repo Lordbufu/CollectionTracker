@@ -35,25 +35,6 @@ function initGebruik() {
         let wHeader = document.getElementById('weergave-header');
         wHeader.innerHTML = localStorage.huidigeSerie + ", en alle albums.";
     }
-
-    // A bunch of user checks/validations.
-    if(sessionStorage.gebruiker === null || sessionStorage.gebruiker === undefined) {
-        window.location.assign('/');
-    } else if(sessionStorage.gebruiker === 'admin@coltrack.nl') {
-        window.location.assign('/beheer');
-    } else {
-        let formData = new FormData();
-        formData.append('gebr_email', sessionStorage.gebruiker);
-
-        /* JS fetch voor gebruikers validatie */
-        fetchRequest('valUsr', 'POST', formData)
-        .then((data) => {
-            if(data !== "Valid User") {
-                window.location.assign('/');
-                sessionStorage.removeItem('gebruiker');
-            }
-        });
-    }
     
     // In same case i need to display a response after a refresh.
     if(localStorage.fetchResponse !== "") {
@@ -74,8 +55,6 @@ function selectEvent(e) {
 // Ensure the user data is included in the form, and submit it.
 function selectSubm() {
     let form = document.getElementById('serie-sel-form');
-    let gebrVeld = document.getElementById("serie-sel-data");
-    gebrVeld.value = sessionStorage.gebruiker;
 
     form.submit();
 }
@@ -111,7 +90,6 @@ function checkBox(e) {
 
     // Make form data for PhP
     let formData = new FormData();
-    formData.append('gebr_email', sessionStorage.gebruiker);
     formData.append('serie_naam', localStorage.huidigeSerie);
     formData.append('album_naam', tempArr[0].children[1].textContent);
     formData.append('aanwezig', e.target.checked);

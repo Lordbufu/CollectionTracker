@@ -7,15 +7,14 @@ use App\Core\App;
 class PagesController {
 	// Landing-page function
 	public function landing() {
-		// Create initial database tables/user if they are not set.
-		App::get('database')->createTable('gebruikers');
-		App::get('database')->createAdmin();
-		App::get('database')->createTable('series');
-		App::get('database')->createTable('serie_meta');
-		App::get('database')->createTable('albums');
-		App::get('database')->createTable('collecties');
+		App::get('database')->createTable('gebruikers');						// Create a gebruikers table if there is non,
+		App::get('database')->createAdmin();									// create a default admin account if there is non,
+		App::get('database')->createTable('series');							// create a serie table if there is non,
+		App::get('database')->createTable('serie_meta');						// create a serie_meta table if there is non,
+		App::get('database')->createTable('albums');							// create a albums table if there is non,
+		App::get('database')->createTable('collecties');						// create a collecties table if there is non,
 
-		return App::view('index');
+		return App::view('index');												// and then return to the index view.
 	}
 
 	// Admin-page function
@@ -23,7 +22,6 @@ class PagesController {
 		// Page data that is expected
 		$data = [ 'series' => [] ];
 
-		//die(session_name());
 		// If there is no page data, get all serie data first
         if(empty($data['series'])) {
             $localSeries = App::get('database')->selectAll('series');

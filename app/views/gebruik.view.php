@@ -1,15 +1,13 @@
 <?php require('partials/header.php'); ?>
-<div class="content-container">
-    
-    <form method="post" class="gebr-data-form" id="gebr-data-form">
-        <input class="gebr-form-input" id="gebr-form-input" name="gebr-email" value="" hidden />
-    </form>
 
+<div class="content-container">
     <?php require('partials/message-pop-in.html'); ?>
 
     <div id="title-banner" class="banner-container">
         <div id="title-buttons" class="title-buttons">
-            <button class="logoff-butt" onclick=logoff()> <b>Afmelden</b> </button>
+            <form class="logoff-form" id="logoff-form" method="post" action="/logout">
+                <input class="logoff-butt" type="submit" value="Afmelden" />
+            </form>
         </div>
         <div id="title-cont" class="title-banner">
             <h1 class="title-text"> Collectie Tracker: Gebruikers Applicatie </h1>

@@ -4,18 +4,15 @@ use App\Core\{App, Processing, SessionMan};
 use App\Core\Database\{QueryBuilder, Connection};
 
 // Create a registry binding for the database config file, creating the following syntax: "App:get('config')[configOption]".
-App::bind( 'config', require '../config.php' );
+App::bind('config', require '../config.php');
 
 // Create a registry binding for the database connection, creating the following syntax: "App::get('database')->functionName($parameters)"
-App::bind( 'database', new QueryBuilder( Connection::make(App::get('config')['database']) ) );
+App::bind('database', new QueryBuilder(Connection::make(App::get('config')['database'])));
 
 // Create a processing link, for more readable code for example: "App::get('processing')->functionName($parameters)".
 App::bind('processing', new Processing);
 
-// Create a session manager link, and set a default name for sessions.
+// Create a session manager link, triggering the default session, and allowing use of the class: "App::get('session')->setVariable()".
 App::bind('session', new SessionMan);
-
-// Always start a default session if there i no active session.
-App::get('session')->default_session();
 
 ?>
