@@ -7,14 +7,16 @@ use App\Core\App;
 class PagesController {
 	// Landing-page function
 	public function landing() {
-		App::get('database')->createTable('gebruikers');						// Create a gebruikers table if there is non,
-		App::get('database')->createAdmin();									// create a default admin account if there is non,
-		App::get('database')->createTable('series');							// create a serie table if there is non,
-		App::get('database')->createTable('serie_meta');						// create a serie_meta table if there is non,
-		App::get('database')->createTable('albums');							// create a albums table if there is non,
-		App::get('database')->createTable('collecties');						// create a collecties table if there is non,
+		// Check if a table is present or not,
+		$test = App::get('database')->testTable('gebruikers');
 
-		return App::view('index');												// and then return to the index view.
+		// if not present we redirect to a db creation route.
+		if($test === '42S02') {
+			App::redirect('createDB');
+		// If present we return the index.
+		} else {
+			return App::view('index');
+		}
 	}
 
 	// Admin-page function
