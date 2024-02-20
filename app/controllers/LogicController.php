@@ -17,7 +17,8 @@ use App\Core\App;
             'collecties' (Associative Array) - Data used by PhP to display if the user has a ablum in its collection.
  */
 class LogicController {
-    // Create DB function, for when the table check was triggered on landing.
+    /* Landingpage functions */
+    // '/dbCreation' function.
     public function dbCreation() {
         // Create database tables and the default admin account.
         App::get('database')->createTable('gebruikers');
@@ -27,10 +28,10 @@ class LogicController {
         App::get('database')->createTable('albums');
         App::get('database')->createTable('collecties');
 
+        // Redirect back to the landingpage.
         App::redirect('');
     }
-
-    /* Landingpage functions */
+    
     // '/register' function.
 	public function register() {
         $data = [ 'header' => [] ];

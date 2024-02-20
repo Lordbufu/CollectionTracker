@@ -56,19 +56,21 @@ class QueryBuilder {
     // __construct(PDO $pdo): set this PDO to PDO class object.
     public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
-    // We test a table name, to see if the table is there.
+    //  testTable($name): Check if a table is present in the DB.
+    //      $name (string)  - The name of a table i want to check.
     public function testTable($name) {
         // Should generate a error if the table is not there.
         $sql = sprintf("select 1 from %s LIMIT 1", $name);
         $statement = $this->pdo->prepare($sql);
+        // Only here for production reasons, normally not required.
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
         $statement->execute();
-        // And we simple return said error to check if the table is there or not.
+        // return the error, so we can check if the table was there or not.
         return $statement->errorCode();
     }
 
-    // createTable($naam): To create the inital database tabels.
-    //  $naam (string)  - The name of the Table i want to create.
+    //  createTable($naam): To create the inital database tabels.
+    //      $naam (string)  - The name of the Table i want to create.
     public function createTable($naam) {
         switch($naam) {
             case "gebruikers":
@@ -85,7 +87,6 @@ class QueryBuilder {
                     $naam
                 );
 
-                //$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
                 return $this->executeQuerry($sql);
             case "series":
                 $sql = sprintf(
@@ -167,9 +168,9 @@ class QueryBuilder {
         return $this->executeQuerry($sql);
     }
 
-    // executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
-    //  $sql (string)       - The querry string with placeholders that has been prepared.
-    //  $id (Assoc Array)   - The identifiers required to select/update/remove specific data
+    //  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
+    //      $sql (string)       - The querry string with placeholders that has been prepared.
+    //      $id (Assoc Array)   - The identifiers required to select/update/remove specific data
     public function executeQuerry($sql, $id = []) {
         // If the '$id' is empty, i dont need to worry about placeholders for identifying data.
         if(empty($id)) {
@@ -184,17 +185,17 @@ class QueryBuilder {
         }
     }
 
-    // selectAll($tafel): Select all doesnt need anything to complex.
-    //  $tafel (string) - The table name i want to get all data from.
+    //  selectAll($tafel): Select all doesnt need anything to complex.
+    //      $tafel (string) - The table name i want to get all data from.
     public function selectAll($tafel) {
         $sql = sprintf('select * from `%s`', $tafel);
         $temp = $this->executeQuerry($sql);
         return $temp;
     }
 
-    // selectAllWhere($tafel, $id): Zoek alles op basis van een identifier, zoals bv een index, of een index + naam.
-    //  $tafel (string)     - The table name i want to get specific data from.
-    //  $id (Assoc Array)   - The identifiers required to select specific data.
+    //  selectAllWhere($tafel, $id): Zoek alles op basis van een identifier, zoals bv een index, of een index + naam.
+    //      $tafel (string)     - The table name i want to get specific data from.
+    //      $id (Assoc Array)   - The identifiers required to select specific data.
     public function selectAllWhere($tafel, $id) {
         // I check if there are multiple identifier.
         if(count($id) > 1) {
@@ -221,9 +222,9 @@ class QueryBuilder {
         return $this->executeQuerry($sql, $id);
     }
 
-    // insert($tafel, $data): Simple insert querry.
-    //  $tafel (string)     - The table name i want to add specific data to.
-    //  $data (Assoc Array) - The data i want to add, where $key is the colum name that i want to set data in.
+    //  insert($tafel, $data): Simple insert querry.
+    //      $tafel (string)     - The table name i want to add specific data to.
+    //      $data (Assoc Array) - The data i want to add, where $key is the colum name that i want to set data in.
     public function insert($tafel, $data) {
         // I create the querry string using sprintf (details at the top)
         $sql = sprintf(
@@ -236,9 +237,9 @@ class QueryBuilder {
         return $this->executeQuerry($sql, $data);
     }
 
-    // remove($tafel, $cond): Simple remove querry.
-    //  $tafel (string)     - The table name i want to remove specific data from.
-    //  $cond (Assoc Array) - The conditions (identifier) of the data i want to remove.
+    //  remove($tafel, $cond): Simple remove querry.
+    //      $tafel (string)     - The table name i want to remove specific data from.
+    //      $cond (Assoc Array) - The conditions (identifier) of the data i want to remove.
     public function remove($tafel, $cond) {
         // I check if there are multiple identifier.
         if(count($cond) > 1) {
@@ -265,10 +266,10 @@ class QueryBuilder {
         return $this->executeQuerry($sql, $cond);
     }
 
-    // update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().
-    //  $tafel (string)     - The table name i want to update specific data in.
-    //  $data (Assoc Array) - The data i want to update, paired by column name (key) and the value it should have.
-    //  $id (Assoc Array)   - The identifiers to find the data i want to update.
+    //  update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().
+    //      $tafel (string)     - The table name i want to update specific data in.
+    //      $data (Assoc Array) - The data i want to update, paired by column name (key) and the value it should have.
+    //      $id (Assoc Array)   - The identifiers to find the data i want to update.
     public function update($tafel, $data, $id) { 
         // Variable to re-format the data array, into something more easily worked with.
         $update;
