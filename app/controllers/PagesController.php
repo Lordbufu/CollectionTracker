@@ -1,5 +1,5 @@
 <?php
-//	TODO: Review why createAdmin() generates a new user index in the database, or if that is even the issue.
+
 namespace App\Controllers;
 
 use App\Core\App;
@@ -13,7 +13,7 @@ class PagesController {
 		// if not present we redirect to a db creation route.
 		if($test === '42S02') {
 			App::redirect('createDB');
-		// If present we return the index.
+		// If present we return the index view.
 		} else {
 			return App::view('index');
 		}
