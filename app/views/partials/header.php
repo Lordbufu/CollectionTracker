@@ -57,10 +57,28 @@
 				}
 			}
 
-			// Script injectie voor browser local & sessionStorage, en JS redirects.
-			if(isset($header)) {
-				foreach($header as $key => $value) {
-					echo $value;
+			// Check if there is data for the header scripts,
+			if(isset($_SESSION['header'])) {
+				// check if said data is for errors,
+				if(isset($_SESSION['header']['error'])) {
+					// loop over the error and set them to localStorage to trigger JS,
+					foreach($_SESSION['header']['error'] as $key => $value) {
+						echo "<script>localStorage.setItem('{$key}', '{$value}');</script>";
+					}
+
+					// remove the session error data.
+					unset($_SESSION['header']['error']);
+				}
+
+				// check if said data is for user feedback,
+				if(isset($_SESSION['header']['feedB'])) {
+					// loop over the feedback and set them to localStorage to trigger JS,
+					foreach($_SESSION['header']['feedB'] as $key => $value) {
+						echo "<script>localStorage.setItem('{$key}', '{$value}');</script>";
+					}
+
+					// remove the session feedback data.
+					unset($_SESSION['header']['feedB']);
 				}
 			}
 		?>

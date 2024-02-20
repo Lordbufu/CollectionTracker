@@ -5,6 +5,8 @@ namespace App\Core;
 /*  SessionMan Class:
         The concept is fairly simple, i want to save the session files in the main project folder, and start a session on page entry.
         So instead of just starting a session on the entry point, i opted for a constructor triggered by the bootstrap.
+        As with most things in this App, im considering everything is set to default, so i change .ini settings to ensure the expected result.
+        For that reason im also using the build in GC, instead of requiring the end user to make timed cron jobs, despite it not being best pratice.
 
         __construct():
             The main function to init sessions and the default settings.
@@ -13,16 +15,33 @@ namespace App\Core;
         Public functions:
             setVariable($data)          - A function to more easily set various things in the session data.
             clearVariable($data = [])   - ...
+        
+        $_SESSION content:
+            - User Name
+            - User Email
  */
 
 class SessionMan {
     protected $savePath = '../tmp/sessions/';
 
     function __construct() {
-        // Garbage Collection .ini settings.
+        // Set current hostname + uri.
+        $adress = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+        
+        // Various ini settings to improve session security.
         ini_set('session.gc_probability', '1');
         ini_set('session.gc_divisor', '10');
         ini_set('session.gc_maxlifetime', '1800');
+        ini_set('session.user_strict_mode', '1');
+        ini_set('session.cookie_httponly', '1');
+        //ini_set('session.cookie_secure', '1'); // Only use for production when its on https
+        ini_set('session.cookie_samesite', 'Strict');
+        ini_set('session.use_trans_sid', '1');
+        ini_set('session.referer_check', $adress);
+        ini_set('session.cache_limiter', 'private');
+        ini_set('session.sid_length', '256');
+        ini_set('session.side_bits_per_character', '6');
+        ini_set('session.hash_function', 'sha512');
 
         // Check, create and set the save path.
         if(!is_dir($this->savePath)) {
@@ -41,11 +60,12 @@ class SessionMan {
         session_destroy();
     }
 
-    //  setVariable($data):
-    //      $data (associative array) - Data that needs to be added to the session.
-    public function setVariable($data) {
+    //  setVariable($data): Designed to store data sets in multi-dimensional array format.
+    //      $name (string)              - The name of the first session data key.
+    //      $data (associative array)   - Data that needs to be added to the session.
+    public function setVariable($name, $data = []) {
         foreach($data as $key => $value) {
-            $_SESSION["$key"] = $value;
+            $_SESSION["$name"]["$key"] = $value;
         }
     }
 
