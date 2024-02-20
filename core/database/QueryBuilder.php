@@ -56,13 +56,24 @@ class QueryBuilder {
     // __construct(PDO $pdo): set this PDO to PDO class object.
     public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
-    // createTable($naam): To create the inital database tabels if they are not created already.
+    // We test a table name, to see if the table is there.
+    public function testTable($name) {
+        // Should generate a error if the table is not there.
+        $sql = sprintf("select 1 from %s LIMIT 1", $name);
+        $statement = $this->pdo->prepare($sql);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+        $statement->execute();
+        // And we simple return said error to check if the table is there or not.
+        return $statement->errorCode();
+    }
+
+    // createTable($naam): To create the inital database tabels.
     //  $naam (string)  - The name of the Table i want to create.
     public function createTable($naam) {
         switch($naam) {
             case "gebruikers":
                 $sql = sprintf(
-                    "create table if not exists `%s` (
+                    "create table `%s` (
                         `Gebr_Index` INT NOT NULL AUTO_INCREMENT COMMENT 'Gebruikers index.',
                         `Gebr_Naam` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Naam v/d gebruiker.',
                         `Gebr_Email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'E-mail (hashed) voor de login.',
@@ -74,10 +85,11 @@ class QueryBuilder {
                     $naam
                 );
 
-                $this->executeQuerry($sql);
+                //$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+                return $this->executeQuerry($sql);
             case "series":
                 $sql = sprintf(
-                    "create table if not exists `%s` (
+                    "create table `%s` (
                         `Serie_Index` INT NOT NULL AUTO_INCREMENT COMMENT 'Serie index.',
                         `Serie_Naam` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Serie naam.',
                         `Serie_Maker` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Schrijver, Tekenaar etc',
@@ -87,10 +99,10 @@ class QueryBuilder {
                     $naam
                 );
 
-                $this->executeQuerry($sql);
+                return $this->executeQuerry($sql);
             case "serie_meta":
                 $sql = sprintf(
-                    "create table if not exists `%s` (
+                    "create table `%s` (
                         `Meta_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
                         `Serie_Index` int NOT NULL COMMENT 'Serie_Index link.',
                         `Gebr_Index` int NOT NULL COMMENT 'Gebr_Index link.',
@@ -104,10 +116,10 @@ class QueryBuilder {
                     $naam
                 );
 
-                $this->executeQuerry($sql);
+                return $this->executeQuerry($sql);
             case "albums":
                 $sql = sprintf(
-                    "create table if not exists `%s` (
+                    "create table `%s` (
                         `Album_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
                         `Album_Serie` int NOT NULL COMMENT 'Serie index link.',
                         `Album_Nummer` int COMMENT 'Uitgavenummer',
@@ -123,10 +135,10 @@ class QueryBuilder {
                     $naam
                 );
 
-                $this->executeQuerry($sql);
+                return $this->executeQuerry($sql);
             case "collecties":
                 $sql = sprintf(
-                    "create table if not exists `%s` (
+                    "create table `%s` (
                         `Col_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Collectie index.',
                         `Gebr_Index` int NOT NULL COMMENT 'Account index link.',
                         `Alb_Index` int NOT NULL COMMENT 'Album index link.',
@@ -143,16 +155,16 @@ class QueryBuilder {
                     $naam
                 );
 
-                $this->executeQuerry($sql);
+                return $this->executeQuerry($sql);
         }
     }
 
-    // createAdmin(): To create the default administrator account, if there isnt one.
+    // createAdmin(): To create the default administrator account.
     public function createAdmin() {
         $wwHashed = password_hash('wachtwoord123', PASSWORD_BCRYPT);
-        $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin') ON DUPLICATE KEY UPDATE `Gebr_Email`=`Gebr_Email`";
+        $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin')";
 
-        $this->executeQuerry($sql);
+        return $this->executeQuerry($sql);
     }
 
     // executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
@@ -221,7 +233,7 @@ class QueryBuilder {
             ':' . implode(', :', array_keys($data))
         );
 
-        $this->executeQuerry($sql, $data);
+        return $this->executeQuerry($sql, $data);
     }
 
     // remove($tafel, $cond): Simple remove querry.
@@ -250,7 +262,7 @@ class QueryBuilder {
             );
         }
 
-        $this->executeQuerry($sql, $cond);
+        return $this->executeQuerry($sql, $cond);
     }
 
     // update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().

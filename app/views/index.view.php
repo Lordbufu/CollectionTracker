@@ -3,13 +3,16 @@
 <div class="content-container">
 
     <div id="title-banner" class="banner-container">
+
         <div class="title-buttons">
             <a class="reg-modal-butt" href="#account-maken-pop-in"> Register </a>
             <a class="log-modal-butt" href="#login-pop-in"> Login </a>
         </div>
+
         <div class="title-banner">
             <h1 class="title-text"> Collectie Tracker <?= $version ?> </h1>
         </div>
+        
     </div>
 
     <?php require('partials/message-pop-in.html'); ?>

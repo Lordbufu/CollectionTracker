@@ -1,35 +1,22 @@
 <?php require('partials/header.php'); ?>
-<!-- Test Code for sessions -->
-<?php if (session_status() == PHP_SESSION_ACTIVE): ?>
-    <p> Session Name: <?=session_name()?></p>
-    <p> Cookie: <?=var_dump($_COOKIE)?></p>
-    <p> Session Var: <?=var_dump($_SESSION)?></p>
-<?php endif; ?>
-
-<?php if (session_status() == PHP_SESSION_NONE): ?>
-    <p> A Redirect Happend </p>
-    <p> Session Name: <?=session_name()?></p>
-    <p> Cookie: <?=var_dump($_COOKIE)?></p>
-    <p> Session Var: <?=var_dump($_SESSION)?></p>
-<?php endif; ?>
-
 <div class="content-container">
-    
-    <form method="post" class="gebr-data-form" id="gebr-data-form" hidden>
-        <input class="gebr-form-input" id="gebr-form-input" name="gebr-email" value="" hidden />
-    </form>
 
     <?php require('partials/message-pop-in.html'); ?>
     
     <div id="title-banner" class="banner-container">
+
         <div id="title-buttons" class="title-buttons">
             <button id="ww-reset-butt" class="ww-reset-butt" onclick=wwResetClick()> Wachtw Reset </button>
-            <button id="logoff-butt" class="logoff-butt" onclick=logoff()> Afmelden </button>
+            <form class="logoff-form" id="logoff-form" method="post" action="/logout">
+                <input class="logoff-butt" type="submit" value="Afmelden" />
+            </form>
             <button id="beheer-back-butt" class="beheer-back-butt" onclick=beheerBackButt() hidden> < Series </button>
         </div>
+
         <div id="title-cont" class="title-banner">
             <h1 class="title-text"> Collectie Tracker: Beheer Applicatie </h1>
         </div>
+        
     </div>
 
     <?php

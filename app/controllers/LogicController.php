@@ -17,6 +17,19 @@ use App\Core\App;
             'collecties' (Associative Array) - Data used by PhP to display if the user has a ablum in its collection.
  */
 class LogicController {
+    // Create DB function, for when the table check was triggered on landing.
+    public function dbCreation() {
+        // Create database tables and the default admin account.
+        App::get('database')->createTable('gebruikers');
+        App::get('database')->createAdmin();
+        App::get('database')->createTable('series');
+        App::get('database')->createTable('serie_meta');
+        App::get('database')->createTable('albums');
+        App::get('database')->createTable('collecties');
+
+        App::redirect('');
+    }
+
     /* Landingpage functions */
     // '/register' function.
 	public function register() {
@@ -479,29 +492,5 @@ class LogicController {
             }
         }
     }
-
-    /* Shared functions --- DEPRICATED ??
-    // '/valUsr' function, for all cases  where i want/need user validation.
-    public function valUsr() {
-        // Check if e-mail was in the $_POST data
-        if(isset($_POST['gebr_email'])) {
-            // get user data from database.
-            $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_POST['gebr_email'] ]);
-
-            // Check if there was a user with said e-mail, and provide feedback for JS (not the user).
-            if(!isset($tempGebr) || empty($tempGebr)) {
-                echo json_encode('Invalid User');
-            } else {
-                if($_POST['gebr_email'] === $tempGebr[0]['Gebr_Email']) {
-                    echo json_encode('Valid User');
-                } else {
-                    echo json_encode('Invalid User');
-                }
-            }
-        // Just in-case there was no e-mail in the POST data.
-        } else {
-            echo json_encode('Validatie mislukt!');
-        }
-    }*/
 }
 ?>

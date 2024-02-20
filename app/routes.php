@@ -5,6 +5,9 @@
 	$router->get('gebruik',			'PagesController@gebruik');
 
 	/* Post routes for the LogicController */
+	// Database creation route
+	$router->get('createDB',		'LogicController@dbCreation');
+
 	// Account related routes
 	$router->post('register',		'LogicController@register');
 	$router->post('login',			'LogicController@login');
