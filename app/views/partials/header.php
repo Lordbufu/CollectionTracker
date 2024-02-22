@@ -19,15 +19,19 @@
 
 				// Check device and give required css changes
 				if(isset($device)) {
-					if($device === 'desktop') { echo("<link rel='stylesheet' type='text/css' href='css/desk-landp-templ.css'>"); }
-					if($device === 'mobile') { echo("<link rel='stylesheet' type='text/css' href='css/mob-landp-templ.css'>"); }
-					if($device === 'tablet') { echo("<link rel='stylesheet' type='text/css' href='css/ipad-landp-templ.css'>"); }
+					if($device === 'desktop') {
+						echo("<link rel='stylesheet' type='text/css' href='css/desk-landp-templ.css'>");
+					} else if($device === 'mobile') {
+						echo("<link rel='stylesheet' type='text/css' href='css/mob-landp-templ.css'>");
+					} else if($device === 'tablet') {
+						echo("<link rel='stylesheet' type='text/css' href='css/ipad-landp-templ.css'>");
+					}
 				}
-			// assign specific scripts and css based on the uri and device type
+			// assign page specific scripts and css based on the uri and device type
 			} else if($_SERVER['REQUEST_URI'] === "/gebruik") {
 				// If no user session is active, redirect to the landingpage.
-				if(!isset($_SESSION['Gebr_Naam'])) {
-					header("location:http://{$_SERVER['SERVER_NAME']}/");
+				if(!isset($_SESSION['user']['id'])) {
+					header("location:https://{$_SERVER['SERVER_NAME']}/");
 				}
 
 				echo("<script src='js/gebr-pag-ext.js'></script>");
@@ -42,8 +46,8 @@
 			// assign specific scripts and css based on the uri and device type
 			} else if($_SERVER['REQUEST_URI'] === "/beheer") {
 				// If no user session is active, redirect to the landingpage.
-				if(!isset($_SESSION['Gebr_Naam']) && isset($_SESSION['admin'])) {
-					header("location:http://{$_SERVER['SERVER_NAME']}/");
+				if(!isset($_SESSION['user']['id']) && isset($_SESSION['user']['admin'])) {
+					header("location:https://{$_SERVER['SERVER_NAME']}/");
 				}
 
 				echo("<script src='js/beheer-pag-ext.js'></script>");

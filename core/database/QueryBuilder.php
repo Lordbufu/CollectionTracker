@@ -218,8 +218,8 @@ class QueryBuilder {
                 ':' . implode( array_keys($id))
             );
         }
-
-        return $this->executeQuerry($sql, $id);
+        
+        return $this->executeQuerry($sql, $id)[0];
     }
 
     //  insert($tafel, $data): Simple insert querry.
