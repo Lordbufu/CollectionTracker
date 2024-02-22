@@ -38,6 +38,7 @@ class ComposerStaticInita497427bd7695e03c8e90e71a8328ac1
         'App\\Core\\Request' => __DIR__ . '/../..' . '/core/Request.php',
         'App\\Core\\Router' => __DIR__ . '/../..' . '/core/Router.php',
         'App\\Core\\SessionMan' => __DIR__ . '/../..' . '/core/SessionMan.php',
+        'App\\Core\\User' => __DIR__ . '/../..' . '/core/User.php',
         'ComposerAutoloaderInita497427bd7695e03c8e90e71a8328ac1' => __DIR__ . '/..' . '/composer/autoload_real.php',
         'Composer\\Autoload\\ClassLoader' => __DIR__ . '/..' . '/composer/ClassLoader.php',
         'Composer\\Autoload\\ComposerStaticInita497427bd7695e03c8e90e71a8328ac1' => __DIR__ . '/..' . '/composer/autoload_static.php',

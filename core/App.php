@@ -88,7 +88,7 @@ class App {
         extract($data);
 
         // Always use the $_SERVER['SERVER_NAME'] variable, to make it function on other host names.
-        header("location:http://{$_SERVER['SERVER_NAME']}/{$path}");
+        header("location:https://{$_SERVER['SERVER_NAME']}/{$path}");
         
         return;
     }

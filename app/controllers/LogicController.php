@@ -4,7 +4,7 @@
 //  TODO: Add something to clear session data on logout via SessionMan.
 namespace App\Controllers;
 
-use App\Core\App;
+use App\Core\{App, User};
 
 /* LogicController Class:
         In this class i need to deal with a mix of request, all main request are done via HTML form submits.
@@ -29,29 +29,22 @@ class LogicController {
         App::redirect('');                                                                      // Redirect back to the landingpage.
     }
     
-    // Finished.
+    // Finished and cleaned up.
 	public function register() {                                                                // '/register' function.
-        $temp = [                                                                               // Temp store for the user input.
-            'Gebr_Naam' => $_POST['gebr-naam'],
-            'Gebr_Email' => $_POST['email'],
+        $temp = [                                                                               // Temp store for the filtered user input.
+            'Gebr_Naam' => htmlspecialchars($_POST['gebr-naam']),
+            'Gebr_Email' => htmlspecialchars($_POST['email']),
             'Gebr_WachtW' => password_hash($_POST['wachtwoord'], PASSWORD_BCRYPT),
             'Gebr_Rechten' => 'gebruiker'
         ];
 
-        $newUser = App::get('processing')->set_Object('gebruikers', $temp);                     // Attempt to store user data in database.
+        $user = new User();                                                                     // Create new empty user object,
+        $eval = $user->setUser($temp);                                                          // attempt to store the new user in the DB,
 
-        if(isset($newUser)) {                                                                   // Check if user was added or if there where errors,
-            if(isset($newUser['gebrNaam'])) {                                                   // check what the error was,
-                $error['error']['userError1'] = $newUser['gebrNaam'];                           // temp store the error,
-            }
-
-            if(isset($newUser['gebrEmail'])) {                                                  // check if there was another error,
-                $error['error']['userError2'] = $newUser['gebrEmail'];                          // temp store that error aswell.
-            }
-
-            App::get('session')->setVariable('header', $error);                                 // Store all errors in the session,
+        if($eval !== 1) {                                                                       // if we where not able to store the user,
+            App::get('session')->setVariable('header', $eval);                                  // store any errors in the session,
             return App::redirect('#account-maken-pop-in');                                      // redirect back to the register pop-in.
-        } else {                                                                                // If the user was added to the database,
+        } else {                                                                                // If we where able to store the user,
             $feedB = ['feedB' => [                                                              // temp store a feedback message,
                 'userCreated' => 'Gebruiker aangemaakt, u kunt nu inloggen!'
             ]];
@@ -59,52 +52,51 @@ class LogicController {
             App::get('session')->setVariable('header', $feedB);                                 // store that message in the session,
             return App::redirect('#login-pop-in');                                              // redirect to the login pop-in.
         }
-
-        return App::view('index');                                                              // Failsave incase all conditions failed.
 	}
 
-    //  TODO: Review what is going wrong with the login process atm.
+    // Finished and cleaned up.
     public function login() {                                                                   // '/login' function.
-        $validate = '';                                                                         // Store the validation outcome.
-        $error = [ 'error' => [                                                                 // Generic failed login message.
-            'loginFailed' => 'Uw inlog gegevens zijn niet correct, probeer het nogmaals!!'
-        ]];
+        $user = new User($_POST['accountCred']);                                                // Create user object,
 
-        if(isset($_POST['accountCred'])) {                                                      // Evaluate if the account credentials where set.
-            if(filter_var($_POST['accountCred'], FILTER_VALIDATE_EMAIL)) {                      // Check if the credentials where a e-mail,
-                $id = [ 'Gebr_Email' => $_POST['accountCred'] ];                                // and use that for a database id.
-            } else {                                                                            // If it wasnt a valid e-mail,
-                $id = [ 'Gebr_Naam' => htmlspecialchars($_POST['accountCred']) ];               // filter the input and use that as database id.
+        if($user->validateUser($_POST['wachtwoord']) == 1) {                                    // validate the user credentials,
+            App::get('session')->setVariable('user', ['id' => $user->getUserId()]);             // bind user & session,
+
+            if($user->evalUser() == 1) {                                                        // then evaluate the user rights,
+                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome back message,
+                    ['welcome' => "Welcome terug {$user->getUserName()}"]
+                ]);
+
+                return App::redirect('gebruik');                                                // and redirect to the user page.
+            } elseif($user->evalUser() == 0) {                                                  // If the user is a Admin,
+                App::get('session')->setVariable('user', [                                      // tell the session that the use is a Admin,
+                    'Admin' => TRUE
+                ]);
+
+                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome back message,
+                    ['welcome' => "Welcome terug {$user->getUserName()}"]
+                ]);
+
+                return App::redirect('beheer');                                                 // we redirect to the admin page.
+            } else {                                                                            // Just incase user rights went missing,
+                App::get('session')->setVariable('header',                                      // store the return error in the session,
+                    ['error' => $user->evalUser()]
+                );
+
+                return App::redirect('#login-pop-in');                                          // and redirect back to the login pop-in.
             }
+        } else {                                                                                // If the validation failed,
+            App::get('session')->setVariable('header',                                          // store the return error in the session,
+                ['error' => $user->validateUser($_POST['wachtwoord'])]
+            );
+
+            return App::redirect('#login-pop-in');                                              // and redirect back to the login pop-in.
         }
-
-        $gebruiker = App::get('database')->selectAllWhere('gebruikers', $id);                   // Attempt to look up user data
-
-        if(!empty($gebruiker[0])) {                                                             // Check if there was a user in the database,
-            if(password_verify($_POST['wachtwoord'], $gebruiker[0]['Gebr_WachtW'])) {           // validate the input passwords vs the stored password,
-                $validate = true;                                                               // validation process suceeded.
-            } else { $validate = false; }                                                       // The validation failed, because the password dint match.
-        } else { $validate = false; }                                                           // The Validation failed, because there was no user data.
-
-        if($validate) {
-            App::get('session')->setVariable(['Gebr_Naam' => $gebruiker[0]['Gebr_Naam']]);      // store the user name in the session,
-            App::get('session')->setVariable(['Gebr_Email' => $gebruiker[0]['Gebr_Email']]);    // store the user e-mail in the session,
-            if($gebruiker[0]['Gebr_Rechten'] === "Admin") {                                     // evaluate the user rights,
-                return App::redirect('beheer');                                                 // and redirect accordingly.
-            } else {
-                return App::redirect('gebruik');
-            }
-        } else {
-            App::get('session')->setVariable('header', $error);                                 // store the message in the session,
-            return App::redirect('#login-pop-in');                                              // redirect back to the login pop-in.
-        }
-
-        //return App::view('index');                                                              // Failsave incase all conditions failed.
     }
 
+    // Finished and cleaned up.
     public function logout() {                                                                  // '/logout' function.
-        App::get('session')->endSession();                                                      // Clean up and end the current session.
-        App::redirect('');                                                                      // Redirect to the landingpage.
+        App::get('session')->endSession();                                                      // clean up and end the current session,
+        App::redirect('');                                                                      // then redirect to the landingpage.
     }
 
     /* Admin-Page functions */

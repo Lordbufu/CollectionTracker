@@ -77,6 +77,12 @@ function initBeheer() {
         localStorage.removeItem('albumToevIn');
     }
 
+    // Display and remove the welcome message on login.
+    if(localStorage.welcome) {
+        displayMessage(localStorage.welcome);
+        localStorage.removeItem("welcome");
+    }
+
     // Display feedback messages, that are stored before a page refresh.
     if(localStorage.fetchResponse !== null) {
         displayMessage(localStorage.fetchResponse);

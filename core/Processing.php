@@ -26,7 +26,7 @@ class Processing {
                 $path (string)       - The URI i want to redirect to, 'beheer' would be equal to the PhP get route '/beheer'.
      */
     public static function createRedirect($path) {
-        $location = "http://{$_SERVER['SERVER_NAME']}/{$path}";
+        $location = "https://{$_SERVER['SERVER_NAME']}/{$path}";
         $temp = "<script>window.location.replace('$location')</script>";
         return $temp;
     }

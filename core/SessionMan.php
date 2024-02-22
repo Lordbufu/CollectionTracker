@@ -17,8 +17,13 @@ namespace App\Core;
             clearVariable($data = [])   - ...
         
         $_SESSION content:
-            - User Name
-            - User Email
+            - header    : Content that i required in the header, like js related things.
+                - error (Assoc Array)   : Error feedback for the end user.
+                - feedB (Assoc Array)   : General feedback for the end user.
+            - user      : Content that i use check user related data.
+                - id    (int)           : The id to bind the user to a specific session.
+                - Admin (bool)          : To seperate users from admins, only set if said user is a admin.
+            
  */
 
 class SessionMan {
@@ -26,7 +31,7 @@ class SessionMan {
 
     function __construct() {
         // Set current hostname + uri.
-        $adress = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+        $adress = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
         
         // Various ini settings to improve session security.
         ini_set('session.gc_probability', '1');
@@ -34,12 +39,12 @@ class SessionMan {
         ini_set('session.gc_maxlifetime', '1800');
         ini_set('session.user_strict_mode', '1');
         ini_set('session.cookie_httponly', '1');
-        //ini_set('session.cookie_secure', '1'); // Only use for production when its on https
+        ini_set('session.cookie_secure', '1');  // Only use for production when its on https
         ini_set('session.cookie_samesite', 'Strict');
         ini_set('session.use_trans_sid', '1');
         ini_set('session.referer_check', $adress);
         ini_set('session.cache_limiter', 'private');
-        ini_set('session.sid_length', '256');
+        ini_set('session.sid_length', '128');   // Changed to 128 as adviced, because 256 (max) is a to long file name ?
         ini_set('session.side_bits_per_character', '6');
         ini_set('session.hash_function', 'sha512');
 
@@ -56,7 +61,9 @@ class SessionMan {
     }
 
     // endSession(): Destroy the current session and its related data.
+    //      session_destroy does not clean the session variables, so we do that manually first.
     public function endSession() {
+        session_unset();
         session_destroy();
     }
 

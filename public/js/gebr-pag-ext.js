@@ -21,7 +21,7 @@ function initGebruik() {
     input.addEventListener("input", albumZoek);
 
     // If there was a Serie selection made, i grab all selection options.
-    if(localStorage.huidigeSerie != null) {
+    if(localStorage.huidigeSerie) {
         let selOptions = document.getElementsByClassName('serie-sel-opt');
 
         // Loop over the selection options, and ensure its showing the right one as selected.
@@ -35,9 +35,15 @@ function initGebruik() {
         let wHeader = document.getElementById('weergave-header');
         wHeader.innerHTML = localStorage.huidigeSerie + ", en alle albums.";
     }
+
+    // Display and remove the welcome message on login.
+    if(localStorage.welcome) {
+        displayMessage(localStorage.welcome);
+        localStorage.removeItem("welcome");
+    }
     
     // In same case i need to display a response after a refresh.
-    if(localStorage.fetchResponse !== "") {
+    if(localStorage.fetchResponse) {
         displayMessage(localStorage.fetchResponse);
         localStorage.removeItem("fetchResponse");
     }
