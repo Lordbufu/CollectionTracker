@@ -386,8 +386,8 @@ class LogicController {
     }
 
     /* User-Page functions */
-    // '/gebruik' function, for the user page.
-    public function gebruik() {
+    // Finished and cleaned up.
+    public function gebruik() {                                                                 // '/gebruik' function, for the user page.
         $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
 		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
 
@@ -422,8 +422,8 @@ class LogicController {
         return App::view('gebruik');                                                            // Always return the user view.
     }
 
-    // '/albSta' function, to update the 'collecties' data, based on the HTML switch.
-    public function albSta() {
+    // Finished and cleaned up.
+    public function albSta() {                                                                  // '/albSta' function, to update the 'collecties' data, based on the HTML switch.
         $authFailed = "Access denied, Account authentication failed !";                         // Error for when the user is not authenticated.
 		$unexError = "Unexpected error occured, plz contact your admin";						// If for some reason there was no user id.
 
