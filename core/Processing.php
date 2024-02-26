@@ -47,9 +47,10 @@ class Processing {
         $albumErr = "Deze Album Naam bestaat al in de huidige Serie, kies een andere naam.";
         $isbnErr = "Deze Album ISBN bestaat al, controleer of deze juist is.";
         $serieErr = "Deze Serie Naam staat reeds in de Database!!";
-        $collErr = "Dit Album is al aanwezig in de huidige Collectie!!";
+        $collErr = ["Col_Toev" => "Dit Album is al aanwezig in de huidige Collectie!!"];
 
         switch($naam) {
+            // Potentially Obsolete now, as user related things moved to the User class.
             case "gebruikers":
                 // Get all user in database
                 $tempUsers = App::get('database')->selectAll('gebruikers');
@@ -76,6 +77,7 @@ class Processing {
                     App::get('database')->insert($naam, $data);
                     return;
                 }
+            // Potentially Obsolete now
             case "albums":
                 $tempAlbums = App::get('database')->selectAll('albums');
 
@@ -112,6 +114,7 @@ class Processing {
                     App::get('database')->insert($naam, $data);
                     return;
                 }
+            // Potentially Obsolete now
             case "series":
                 $tempSerie = App::get('database')->selectAll('series');
 
@@ -146,6 +149,7 @@ class Processing {
                     App::get('database')->insert($naam, $data);
                     return;
                 }
+            // Potentially Obsolete now
             case "collecties":
                 $tempCol = App::get('database')->selectAll('collecties');
 

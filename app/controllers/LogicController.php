@@ -1,7 +1,9 @@
 <?php
 
+//  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
+//  TODO: Review the user of certain Else statements, might not even be userfull (register(), )
 //  TODO: Re-write the 'valUsr()' function with the new validation method in 'login()'.
-//  TODO: Add something to clear session data on logout via SessionMan.
+
 namespace App\Controllers;
 
 use App\Core\{App, User};
@@ -38,55 +40,61 @@ class LogicController {
             'Gebr_Rechten' => 'gebruiker'
         ];
 
-        $user = new User();                                                                     // Create new empty user object,
-        $eval = $user->setUser($temp);                                                          // attempt to store the new user in the DB,
+        $eval = App::get('user')->setUser($temp);                                               // Attempt to set user data in DB,
 
-        if($eval !== 1) {                                                                       // if we where not able to store the user,
+        if(isset($eval['error'])) {                                                             // if we where not able to store the user,
             App::get('session')->setVariable('header', $eval);                                  // store any errors in the session,
             return App::redirect('#account-maken-pop-in');                                      // redirect back to the register pop-in.
-        } else {                                                                                // If we where able to store the user,
-            $feedB = ['feedB' => [                                                              // temp store a feedback message,
-                'userCreated' => 'Gebruiker aangemaakt, u kunt nu inloggen!'
-            ]];
-
-            App::get('session')->setVariable('header', $feedB);                                 // store that message in the session,
+        } elseif(isset($eval['feedB'])) {                                                       // If we where able to store the user,
+            App::get('session')->setVariable('header', $eval);                                  // store that message in the session,
             return App::redirect('#login-pop-in');                                              // redirect to the login pop-in.
+        } else {
+            // Not sure if required, just leaving it here for the moment
+            die('A unknown error come looking around the corner');
         }
 	}
 
     // Finished and cleaned up.
     public function login() {                                                                   // '/login' function.
-        $user = new User($_POST['accountCred']);                                                // Create user object,
+        $pw = $_POST['wachtwoord'];                                                             // store pw input,
+        $cred = htmlspecialchars($_POST['accountCred']);                                        // store/filter credentials input,
 
-        if($user->validateUser($_POST['wachtwoord']) == 1) {                                    // validate the user credentials,
-            App::get('session')->setVariable('user', ['id' => $user->getUserId()]);             // bind user & session,
 
-            if($user->evalUser() == 1) {                                                        // then evaluate the user rights,
-                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome back message,
-                    ['welcome' => "Welcome terug {$user->getUserName()}"]
+        if(App::get('user')->validateUser($cred, $pw) == 1) {                                   // validate the user credentials,
+            App::get('session')->setVariable('user',                                            // bind user & session,
+                [ 'id' => App::get('user')->getUserId() ]
+            );
+
+            if(App::get('user')->evalUser() == 1) {                                             // then evaluate the user rights,
+                App::get('session')->setVariable('user', [                                      // tell the session that the user is not a Admin,
+                    'Admin' => FALSE
+                ]);
+
+                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome message,
+                    ['welcome' => "Welcome " . App::get('user')->getUserName() ]
                 ]);
 
                 return App::redirect('gebruik');                                                // and redirect to the user page.
             } elseif($user->evalUser() == 0) {                                                  // If the user is a Admin,
-                App::get('session')->setVariable('user', [                                      // tell the session that the use is a Admin,
+                App::get('session')->setVariable('user', [                                      // tell the session that the user is a Admin,
                     'Admin' => TRUE
                 ]);
 
-                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome back message,
-                    ['welcome' => "Welcome terug {$user->getUserName()}"]
+                App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome message,
+                    ['welcome' => "Welcome " . App::get('user')->getUserName() ]
                 ]);
 
                 return App::redirect('beheer');                                                 // we redirect to the admin page.
             } else {                                                                            // Just incase user rights went missing,
                 App::get('session')->setVariable('header',                                      // store the return error in the session,
-                    ['error' => $user->evalUser()]
+                    [ 'error' => App::get('user')->evalUser() ]
                 );
 
                 return App::redirect('#login-pop-in');                                          // and redirect back to the login pop-in.
             }
         } else {                                                                                // If the validation failed,
             App::get('session')->setVariable('header',                                          // store the return error in the session,
-                ['error' => $user->validateUser($_POST['wachtwoord'])]
+                [ 'error' => App::get('user')->validateUser($cred, $pw) ]
             );
 
             return App::redirect('#login-pop-in');                                              // and redirect back to the login pop-in.
@@ -380,95 +388,92 @@ class LogicController {
     /* User-Page functions */
     // '/gebruik' function, for the user page.
     public function gebruik() {
-        // Prepare the required data structure for the user page.
-        $data = [ 'header' => [], 'series' => [], 'albums' => [], 'collecties' => [] ];
+        $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
+		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
 
-        // Check if there is 'series' datam and populate if there isn't
-        if(empty($data['series'])) {
-            $temp = App::get('database')->selectAll('series');
-            // Push each serie in to the page data array.
-            foreach($temp as $key => $value) {
-                array_push($data['series'], $temp[$key]);
-            }
-        }
+        if(isset($_SESSION['user']['id'])) {													// Check if there is a user id in the session,
+            if(App::get('user')->checkUSer($_SESSION['user']['id'])) {							// authenticate the user with the user class.
+                unset($_SESSION['page-data']);                                                  // Clear page-data so we get new selections.
 
-        // If a serie was selected, we need to populate the 'albums' and 'collecties' data.
-        if(isset($_POST['serie_naam'])) {
-            // Get the proper identifiers/data required for the request.
-            $serieObject = App::get('database')->selectAllWhere('series', [ 'Serie_Naam' => $_POST['serie_naam'] ])[0];
-            $serieIndex = [ 'Album_Serie' => $serieObject['Serie_Index'] ];
-
-            // Check if 'albums' is empty
-            if(empty($data['albums'])) {
-                $temp = App::get('database')->selectAllWhere('albums', $serieIndex);
-                // Push each album in to the page data
-                foreach($temp as $key => $value) {
-                    array_push($data['albums'], $temp[$key]);
+                if(empty($_SESSION['page-data']['series'])) {                                   // Trigger repopulation if page-data series is clear
+                    $_SESSION['page-data']['series'] = App::get('collection')->getSeries();     // set series data in the session.
                 }
-            }
 
-            // Check if 'collecties' is empty
-            if(empty($data['collecties'])) {
-                // Get the proper identifiers/data from the database.
-                $gebrObject = App::get('database')->selectAllWhere('gebruikers', [ 'Gebr_Email' => $_SESSION['Gebr_Email'] ])[0];
-                $collecties = App::get('database')->selectAllWhere('collecties', [ 'Gebr_Index' => $gebrObject['Gebr_Index'] ]);
+                if(isset($_POST['serie_naam'])) {                                               // If there was a serie name in the POST,
+                    if(empty($_SESSION['page-data']['albums'])) {                               // and albums data is empty, then set the albums.
+                        $_SESSION['page-data']['albums'] = App::get('collection')->getAlbums($_POST['serie_naam']);
+                    }
 
-                // Add each data row to the page data.
-                foreach($collecties as $key => $value) {
-                    array_push($data['collecties'], $collecties[$key]);
+                    if(empty($_SESSION['page-data']['collection'])) {                           // If the collection data is empty, set the collection data.
+                        $_SESSION['page-data']['collections'] = App::get('collection')->getColl($_SESSION['user']['id']);
+                    }
+
+                    App::get('session')->setVariable('header', [                                // Set selected serie name in session for JS.
+                        'broSto' => [ 'huidigeSerie' => $_POST['serie_naam'] ] ]
+                    );
                 }
+            } else {																			// If Authentication failed, (most likely my own fail)
+                $_SESSION['header']['error'] = $authFailed;										// we store the error in the session.
             }
+        } else {																				// If there was no user data at all,
+			die($unexError);																	// we die the unexError to end the request process.
+		}
 
-            // Make sure the 'serie-naam' is always returned to JS.
-            array_push($data['header'], App::get('processing')->createData('local', 'huidigeSerie', "{$_POST['serie_naam']}"));
-        }
-
-        return App::view('gebruik', $data);
+        return App::view('gebruik');                                                            // Always return the user view.
     }
 
     // '/albSta' function, to update the 'collecties' data, based on the HTML switch.
     public function albSta() {
-        // Get all required data for the request.
-        $tempGebr = App::get('database')->selectAllWhere("gebruikers", [ 'Gebr_Email' => $_SESSION['Gebr_Email'] ])[0];;
-        $tempSerie = App::get('database')->selectAllWhere("series", [ 'Serie_Naam' => $_POST['serie_naam'] ])[0];
-        $tempAlbum = App::get('database')->selectAllWhere("albums", [ 'Album_Naam' => $_POST['album_naam'], 'Album_Serie' => $tempSerie['Serie_Index'] ])[0];
+        $authFailed = "Access denied, Account authentication failed !";                         // Error for when the user is not authenticated.
+		$unexError = "Unexpected error occured, plz contact your admin";						// If for some reason there was no user id.
 
-        // Check the album states that are changed/requested.
-        if($_POST['aanwezig'] === 'true') {
-            // Prepare the data for SQL
-            $tempCol = [
-                "Gebr_Index" => $tempGebr["Gebr_Index"],
-                "Alb_Index" => $tempAlbum["Album_Index"],
-                "Alb_Staat" => "",
-                "Alb_DatumVerkr" => date('Y-m-d'),
-                "Alb_Aantal" => 1,
-                "Alb_Opmerk" => ""
-            ];
+        if(isset($_SESSION['user']['id'])) {													// Check if there is a user id in the session,
+            if(App::get('user')->checkUSer($_SESSION['user']['id'])) {                          // authenticate the user with the user class.
+                if(isset($_POST['aanwezig'])) {                                                 // check if expected post data was set,
+                    if($_POST['aanwezig'] === 'true') {                                         // if the user set a ablum to present in his collection,
+                        $collErr = "Dit Album is al aanwezig in de huidige Collectie!!";        // Duplicate entry error.
+                        $collComp = "Toevoegen van het album aan de collectie is gelukt";       // Collection data added feedback message.
 
-            // Attempt to add data to database.
-            $newCol = App::get('processing')->set_Object('collecties', $tempCol);
+                        $tempData = [                                                           // Prep the required data for setting collection data,
+                            'Gebr_Index' => $_SESSION['user']['id'],
+                            'Album_Naam' => $_POST['album_naam']
+                        ];
 
-            // Check for errors, and provide feedback to the user via JS.
-            if(isset($newCol)) {
-                echo json_encode($newCol['Col_Toev']);
-            } else { echo json_encode('Toevoegen van het album aan de collectie is gelukt'); }
-        } else if ($_POST['aanwezig'] === 'false') {
-            // Prepare the data for SQL
-            $tempCol = [
-                "Gebr_Index" => $tempGebr["Gebr_Index"],
-                "Alb_Index" => $tempAlbum["Album_Index"]
-            ];
+                        $newCol = App::get('collection')->setColl($tempData);                   // then attempt to store the collection data,
 
-            // Attempt to remove the data from the database.
-            $newCol = App::get('processing')->remove_Object('collecties', $tempCol);
+                        if($newCol) {                                                           // if the collection was added,
+                            echo json_encode($collComp);                                        // return the user feedback to JS json encoded.
+                        } else {                                                                // If the collection was not added,
+                            echo json_encode($collErr);                                         // return the error to JS json encoded.
+                        }
+                    } elseif($_POST['aanwezig'] === 'false') {                                  // If the user set a ablum to not present in his collection,
+                        $collErr = "Er was geen ablum om te verwijderen!!";                     // Nothing to remove error.
+                        $collRemo = "Verwijderen van het album uit de collectie is gelukt";     // Collection data removed feedback message.
 
-            // Check for errors, and provide feedback to the user via JS.
-            if(isset($newCol)) {
-                echo json_encode($newCol['Col_Verw']);
-            } else {
-                echo json_encode('Verwijderen van het album uit de collectie is gelukt');
+                        $tempData = [                                                           // Prep the required data for removing collection data,
+                            'Gebr_Index' => $_SESSION['user']['id'],
+                            'Album_Naam' => $_POST['album_naam']
+                        ];
+
+                        $newCol = App::get('collection')->remColl($tempData);                   // then attempt to remove the data from the database,
+
+                        if($newCol) {                                                           // if the collection was added,
+                            echo json_encode($collRemo);                                        // return the user feedback to JS json encoded.
+                        } else {                                                                // If the collection was not added (dont think this can ever happen ?),
+                            echo json_encode($collErr);                                         // return the error to JS json encoded.
+                        }
+                    } else {                                                                    // If there was not post aanwezig data,
+                        echo json_encode($unexError);                                           // we return the error to JS, json encoded for the fetch request.
+                    }
+                }
+            } else {                                                                            // If Authentication failed, (most likely my own fail)
+                echo json_encode($authFailed);                                                  // we return the error to JS, json encoded for the fetch request.
             }
+        } else {                                                                                // If there was no user id stored in the session,
+            echo json_encode($unexError);                                                       // we return the error to JS, json encoded for the fetch request.
         }
+
+        return;                                                                                 // Always a good habbit to return to caller.
     }
 }
 ?>

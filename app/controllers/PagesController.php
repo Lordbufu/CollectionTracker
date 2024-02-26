@@ -57,23 +57,34 @@ class PagesController {
 		return App::view('beheer', $data);
 	}
 
-	// User-page function
+	// Finished and cleaned up.
+	/*	gebruik():
+			Function for the '/gebruik' get route, default user page.
+			The minimal required data for the user page, is all the series the user can view.
+			We die an error if there is no session user data, this can happen via bookmarks but also malicious intent/bots.
+	 */
 	public function gebruik() {
-		// Page data that is expected
-		$data = [ 'series' => [] ];
+		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
+		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
 
-		//die(session_name());
-		// If there is not page data get all series,
-        if(empty($data['series'])) {
-            $temp = App::get('database')->selectAll('series');
-			
-			// and push each serie into the page data.
-            foreach($temp as $key => $value) {
-                array_push($data['series'], $temp[$key]);
-            }            
-        }
+		//unset($_SESSION['page-data']);
+		if(isset($_SESSION['page-data']['albums'])) {
+			die('is not set');
+		}
 
-		return App::view('gebruik', $data);
+		if(isset($_SESSION['user']['id'])) {													// Authenticate the user with the session data,
+			if(App::get('user')->checkUSer($_SESSION['user']['id'])) {							// use the user class to check the id
+				$_SESSION['page-data']['series'] = App::get('collection')->getSeries();			// set series data in the session.
+			} else {																			// If Authentication failed, (to catch coding fails from me)
+				$_SESSION['header']['error'] = $authFailed;										// we store the error in the session.
+			}
+		} else {																				// If there was no user data at all,
+			die($unexError);																	// we die the unexError to end the request process.
+		}
+
+		//die(print(isset($_SESSION['page-data']['series'])));
+
+		return App::view('gebruik');															// Return the default user view.
 	}
 }
 ?>
