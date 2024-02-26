@@ -84,6 +84,17 @@
 					// remove the session feedback data.
 					unset($_SESSION['header']['feedB']);
 				}
+
+				// check if said data is for the general use in JS (browser storage)
+				if(isset($_SESSION['header']['broSto'])) {
+					// loop over the data and set them to localStorage to trigger JS,
+					foreach($_SESSION['header']['broSto'] as $key => $value) {
+						echo "<script>localStorage.setItem('{$key}', '{$value}');</script>";
+					}
+
+					// remove the session data
+					unset($_SESSION['header']['broSto']);
+				}
 			}
 		?>
 	</head>

@@ -32,6 +32,7 @@ class ComposerStaticInita497427bd7695e03c8e90e71a8328ac1
         'App\\Controllers\\LogicController' => __DIR__ . '/../..' . '/app/controllers/LogicController.php',
         'App\\Controllers\\PagesController' => __DIR__ . '/../..' . '/app/controllers/PagesController.php',
         'App\\Core\\App' => __DIR__ . '/../..' . '/core/App.php',
+        'App\\Core\\Collection' => __DIR__ . '/../..' . '/core/Collection.php',
         'App\\Core\\Database\\Connection' => __DIR__ . '/../..' . '/core/database/Connection.php',
         'App\\Core\\Database\\QueryBuilder' => __DIR__ . '/../..' . '/core/database/QueryBuilder.php',
         'App\\Core\\Processing' => __DIR__ . '/../..' . '/core/Processing.php',

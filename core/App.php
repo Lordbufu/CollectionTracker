@@ -10,9 +10,12 @@ class App {
     protected static $version;
     protected static $device;
 
-    // (Set) This function binds what i want to link, to an easy to use $key value.
-    //  $key (string)       - The key name i want to use for said feature.
-    //  $value (object)     - The feature i want to bind to said key.
+    //  bind($key, $value):
+    //      This function binds what i want to link, to the App so i can only use the App to acess other classes.
+    //
+    //      $key (string)       - The key name i want to use for said feature.
+    //      $value (object)     - The feature i want to bind to said key.
+    //
     public static function bind($key, $value) {
         static::$registry[$key] = $value;
     }

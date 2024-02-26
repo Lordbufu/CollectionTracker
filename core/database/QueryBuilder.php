@@ -219,7 +219,7 @@ class QueryBuilder {
             );
         }
         
-        return $this->executeQuerry($sql, $id)[0];
+        return $this->executeQuerry($sql, $id);
     }
 
     //  insert($tafel, $data): Simple insert querry.
