@@ -4,57 +4,48 @@ namespace App\Controllers;
 
 use App\Core\App;
 
+//	TODO: If i feel like it, i might want to find a better way to prepare the series data for the beheer() function.
+// Finished and cleaned up.
 class PagesController {
-	// Landing-page function
-	public function landing() {
-		// Check if a table is present or not,
-		$test = App::get('database')->testTable('gebruikers');
+	// Finished and cleaned up.
+	public function landing() {																	// Landing-page function
+		$test = App::get('database')->testTable('gebruikers');									// Check if a table is present or not,
 
-		// if not present we redirect to a db creation route.
-		if($test === '42S02') {
+		if($test === '42S02') {																	// if not present we redirect to a db creation route.
 			App::redirect('createDB');
-		// If present we return the index view.
-		} else {
+		} else {																				// If present we return the index view.
 			return App::view('index');
 		}
 	}
 
-	// Admin-page function
-	public function beheer() {
-		// Page data that is expected
-		$data = [ 'series' => [] ];
+	// Finished and cleaned up.
+	public function beheer() {																	// Function for the '/beheer' get route, default admin page.
+		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
+		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
 
-		// If there is no page data, get all serie data first
-        if(empty($data['series'])) {
-            $localSeries = App::get('database')->selectAll('series');
-			$localAlbums = [];
-			$count = 0;
+		if(isset($_SESSION['user']['id'])) {													// Check if there is user data in the session data,
+			if($_SESSION['user']['admin']) {													// then check if the user is a admin or not,
+				if(App::get('user')->checkUSer($_SESSION['user']['id'])) {						// and just to be sure validate the user id,
+					$_SESSION['page-data']['series'] = App::get('collection')->getSeries();		// store all series in the session,
 
-			// Loop over all series, store the index and store its ablums.
-            foreach($localSeries as $key => $value) {
-                $sqlId = ['Album_Serie' => $localSeries[$key]['Serie_Index'] ];
-				array_push($localAlbums, App::get('database')->selectAllWhere('albums', $sqlId));
+					// Loop over each series, and count the albums per serie and store that in the session.
+					foreach($_SESSION['page-data']['series'] as $index => $value) {
+						$count = App::get('database')->countAlbums($value['Serie_Index']);
+						$_SESSION['page-data']['series'][$index]['Album_Aantal'] = $count['count(*)'];
+					}
 
-				// Push each serie into the page data
-				if(isset($localSeries[$key])) {
-					array_push($data['series'], $localSeries[$key]);
+					return App::view('beheer');													// Return the default admin view.
+				} else {																		// If Authentication failed, (to catch coding fails from me?)
+					$_SESSION['header']['error'] = $authFailed;									// we store the error in the session,
+					return App::redirect('');													// and we redirect to home because there was not valid user.
 				}
-
-				// Count the albums in each serie, and store/reset the count after.
-			    foreach($localAlbums[$key] as $aKey => $aValue) {
-				    if(!empty($localAlbums[$key][$aKey])) {
-					    if($localAlbums[$key][$aKey]['Album_Serie'] == $localSeries[$key]['Serie_Index']) {
-						    $count++;
-					    }
-				    }
-			    }
-
-				$data['series'][$key]['Album_Aantal'] = $count;
-				$count = 0;
-            }
+			} else {																			// If Authentication failed, (to catch coding fails from me?)
+				$_SESSION['header']['error'] = $authFailed;										// we store the error in the session,
+				return App::redirect('');   													// and we redirect to home because there was not valid user.
+			}
+		} else {																				// If there was no user data at all,
+			die($unexError);																	// we die the unexError to end the request process.
 		}
-
-		return App::view('beheer', $data);
 	}
 
 	// Finished and cleaned up.
@@ -65,7 +56,7 @@ class PagesController {
 		if(isset($_SESSION['user']['id'])) {													// Authenticate the user with the session data,
 			if(App::get('user')->checkUSer($_SESSION['user']['id'])) {							// use the user class to check the id
 				$_SESSION['page-data']['series'] = App::get('collection')->getSeries();			// set series data in the session.
-			} else {																			// If Authentication failed, (to catch coding fails from me)
+			} else {																			// If Authentication failed, (to catch coding fails from me?)
 				$_SESSION['header']['error'] = $authFailed;										// we store the error in the session.
 			}
 		} else {																				// If there was no user data at all,

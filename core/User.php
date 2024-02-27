@@ -57,13 +57,22 @@ class User {
 
         if(!empty($id)) {                                                           // Check if $id is set,
             if(filter_var($id, FILTER_VALIDATE_EMAIL)) {                            // check if its an e-mail or user name.
-                $this->user = App::get('database')->selectAllWhere('gebruikers', [  // Get the user base on the outcome of the e-mail/name check.
-                    'Gebr_Email' => $id
-                ])[0];
+                // Check if the DB has a valid response, send a error back if not, set user it has.
+                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
+                    return $credError;
+                } else {
+                    $this->user = App::get('database')->selectAllWhere('gebruikers', [
+                        'Gebr_Email' => $id
+                    ])[0];
+                }
             } else {
-                $this->user = App::get('database')->selectAllWhere('gebruikers', [
-                    'Gebr_Naam' => $id
-                ])[0];
+                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
+                    return $credError;
+                } else {
+                    $this->user = App::get('database')->selectAllWhere('gebruikers', [
+                        'Gebr_Naam' => $id
+                    ])[0];
+                }
             }
         }
 
@@ -78,9 +87,13 @@ class User {
     public function checkUser($id) {
         // Check and set user if not set.
         if(empty($this->user)) {
-            $this->user = App::get('database')->selectAllWhere('gebruikers',
-                [ 'Gebr_Index' => $id ]
-            )[0];
+            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0])) {
+                return FALSE;
+            } else {
+                $this->user = App::get('database')->selectAllWhere('gebruikers',
+                    [ 'Gebr_Index' => $id ]
+                )[0];
+            }
         }
 
         // Check if the index matches the set user.
@@ -121,6 +134,7 @@ class User {
     public function evalUser() {
         $rightsError = ['loginFailed' => 'U heeft geen rechten om de website te bezoeken !!'];
 
+        //die(print_r($this->user));
         if($this->user['Gebr_Rechten'] === 'gebruiker') {
             return 1;
         } elseif($this->user['Gebr_Rechten'] === 'Admin') {

@@ -14,7 +14,8 @@
             </tr>
 
             <?php
-                if(isset($data['series']))
+                if(isset($_SESSION['page-data']['series'])):
+                    $series = $_SESSION['page-data']['series'];
                     foreach($series as $key => $value):
                         echo "<tr class='serie-tafel-inhoud-{$series[$key]['Serie_Index']}' id='serie-tafel-inhoud-{$series[$key]['Serie_Index']}'>";
             ?>
@@ -38,7 +39,10 @@
                 <th class="serie-albums"><?= $series[$key]['Album_Aantal'] ?></th>
                 <th class="serie-gebruikers">W.I.P.</th>
 
-            <?php endforeach; ?>
+            <?php
+                endforeach;
+                endif;
+            ?>
 
             </tr>
         </table>

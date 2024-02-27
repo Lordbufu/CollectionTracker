@@ -34,6 +34,8 @@ function initGebruik() {
         // Then the header is changed to the new series name.
         let wHeader = document.getElementById('weergave-header');
         wHeader.innerHTML = localStorage.huidigeSerie + ", en alle albums.";
+        // And remove the entry from localStorage to prevent artifact behavior.
+        localStorage.removeItem('huidigeSerie');
     }
 
     // Display and remove the welcome message on login.
@@ -93,10 +95,9 @@ function checkBox(e) {
     // Store the row the checkbox is on, and convert it to an array
     let temp = document.getElementsByClassName("album-tafel-inhoud-"+e.target.id);
     let tempArr = Array.from(temp);
-
-    // Make form data for PhP
+    
+    // init new formdata, and append required the info.
     let formData = new FormData();
-    formData.append('serie_naam', localStorage.huidigeSerie);
     formData.append('album_naam', tempArr[0].children[1].textContent);
     formData.append('aanwezig', e.target.checked);
 

@@ -78,7 +78,7 @@ class QueryBuilder {
                     "create table `%s` (
                         `Gebr_Index` INT NOT NULL AUTO_INCREMENT COMMENT 'Gebruikers index.',
                         `Gebr_Naam` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Naam v/d gebruiker.',
-                        `Gebr_Email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'E-mail (hashed) voor de login.',
+                        `Gebr_Email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'E-mail voor de login.',
                         `Gebr_WachtW` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Wachtwood (hashed).',
                         `Gebr_Rechten` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'App Account rechten.',
                         PRIMARY KEY (`Gebr_Index`) COMMENT 'Primary index key voor gebruikers.',
@@ -166,6 +166,15 @@ class QueryBuilder {
         $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin')";
 
         return $this->executeQuerry($sql);
+    }
+
+    //  countAblums($id): Count albums from a specific serie.
+    //      $id (int)       - The index from the serie we want to count its albums.
+    public function countAlbums($id) {
+        $sql = sprintf("select count(*) from `albums` where `Album_Serie`=%s", $id);
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC)[0];
     }
 
     //  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
@@ -296,5 +305,4 @@ class QueryBuilder {
         $this->executeQuerry($sql, $id);
     }
 }
-
 ?>
