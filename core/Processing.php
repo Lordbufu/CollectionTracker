@@ -40,6 +40,7 @@ class Processing {
                 $errorMsg (assoc array) - The error data that will be returned, for user feedback.
                 $..Err (string)         - Collection of potential errors, stored here for sorter code.
      */
+    // Potentially Obsolete now, because of the user and collection class.
     public static function set_Object($naam, $data) {
         $errorMsg = [];
         $userNameErr = "Deze gebruiker bestaat al.";
@@ -182,6 +183,7 @@ class Processing {
                 $errorMsg (assoc array) - The error data that will be returned, for user feedback.
                 $..Err (string)          - Collection of potential errors, stored here for sorter/more readable code lines.
      */
+    // Potentially Obsolete now, because of the user and collection class.
     public static function update_Object($naam, $id, $data) {
         $errorMsg = [];
         $serieErr = "Deze Serie Naam bestaat al, kies een andere naam.";
@@ -260,6 +262,7 @@ class Processing {
                 $id (assoc array)   - The first identifier for the data that i want to remove.
                 $id2 (assoc array)  - The second identifier for the data that i want to remove (initially empty, because its not always required).
      */
+    // Potentially Obsolete now, because of the user and collection class.
     public static function remove_Object($naam, $id, $id2 = []) {
         switch($naam) {
             case "albums":

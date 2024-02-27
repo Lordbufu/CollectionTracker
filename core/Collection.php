@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Core;
 
 use App\Core\App;
 
+//  TODO: Consider some kind of error reporting, for when the DB querries return nothing in certain edge cases.
 class Collection {
     protected $albums;
     protected $series;

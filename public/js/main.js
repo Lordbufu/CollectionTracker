@@ -1,6 +1,7 @@
 //  TODO: Review if i should expand on the dispatchInputEvent function, to dispatch various request events instead of only input.
 //  TODO: Review if the caller check in dispatchInputEvent is actually required/usefull or not.
 //  TODO: Review if i can use sessions to remove the need for postForm(path, param).
+//  TODO: Review how i can remove the huidigeSerie properly, without breaking code, it creates unexpected result keeping it in storage.
 // Required to make the banner sticky across all pages
 let header, sticky;
 
@@ -17,6 +18,11 @@ document.onreadystatechange = () => {
 
         // If we are still on the landingpage, init the required code for that page.
         if(window.location.pathname === '/') {
+            // Required feedback loop, for when account authentication fails.
+            if(localStorage.fetchResponse) {
+                displayMessage(localStorage.fetchResponse);
+                localStorage.removeItem('fetchResponse');
+            }
             initLanding();
         // If we are on the user (/gebruik) page, we init that the code required there.
         } else if(window.location.pathname === '/gebruik') {

@@ -71,7 +71,7 @@ class SessionMan {
     public function endSession() {
         session_unset();
         session_destroy();
-
+        
         return;
     }
 

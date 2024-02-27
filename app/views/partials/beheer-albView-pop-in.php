@@ -15,10 +15,11 @@
                 </tr>
 
                 <?php
-                    if(isset($data['albums']))
-                        if(isset($albums))
-                            foreach($albums as $key => $value):
-                                echo "<tr class='album-bewerken-inhoud-{$albums[$key]['Album_Index']}' id='album-bewerken-inhoud-{$albums[$key]['Album_Index']}'>";
+                    if(isset($_SESSION['page-data']['albums'])):
+                        $albums = $_SESSION['page-data']['albums'];
+
+                        foreach($albums as $key => $value):
+                            echo "<tr class='album-bewerken-inhoud-{$albums[$key]['Album_Index']}' id='album-bewerken-inhoud-{$albums[$key]['Album_Index']}'>";
                 ?>
 
                     <th id="album-bewerken" class="album-bewerken button">
@@ -40,7 +41,10 @@
                     <th id="album-isbn" class="album-isbn"><?=$albums[$key]['Album_ISBN']?></th>
                     <th id="album-opm" class="album-opm"><?=$albums[$key]['Album_Opm']?></th>
 
-                <?php endforeach; ?>
+                <?php
+                    endforeach;
+                    endif;
+                ?>
                 </tr>
             </table>
         </div>

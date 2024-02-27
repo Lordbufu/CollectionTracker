@@ -1,8 +1,7 @@
 <?php
 
 //  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
-//  TODO: Review the user of certain Else statements, might not even be userfull (register(), )
-//  TODO: Re-write the 'valUsr()' function with the new validation method in 'login()'.
+//  TODO: Review the use of certain Else statements, might not even be userfull (register(), )
 
 namespace App\Controllers;
 
@@ -59,15 +58,14 @@ class LogicController {
         $pw = $_POST['wachtwoord'];                                                             // store pw input,
         $cred = htmlspecialchars($_POST['accountCred']);                                        // store/filter credentials input,
 
-
         if(App::get('user')->validateUser($cred, $pw) == 1) {                                   // validate the user credentials,
             App::get('session')->setVariable('user',                                            // bind user & session,
                 [ 'id' => App::get('user')->getUserId() ]
             );
 
-            if(App::get('user')->evalUser() == 1) {                                             // then evaluate the user rights,
+            if(App::get('user')->evalUser() === 1) {                                             // then evaluate the user rights,
                 App::get('session')->setVariable('user', [                                      // tell the session that the user is not a Admin,
-                    'Admin' => FALSE
+                    'admin' => FALSE
                 ]);
 
                 App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome message,
@@ -75,9 +73,9 @@ class LogicController {
                 ]);
 
                 return App::redirect('gebruik');                                                // and redirect to the user page.
-            } elseif($user->evalUser() == 0) {                                                  // If the user is a Admin,
+            } else if(App::get('user')->evalUser() === 0) {                                       // If the user is a Admin,
                 App::get('session')->setVariable('user', [                                      // tell the session that the user is a Admin,
-                    'Admin' => TRUE
+                    'admin' => TRUE
                 ]);
 
                 App::get('session')->setVariable('header', ['feedB' =>                          // store a welcome message,
@@ -108,55 +106,57 @@ class LogicController {
     }
 
     /* Admin-Page functions */
-    // '/beheer' function, for the admin page.
-    public function beheer() {
-        // Expected/Required Page-data
-        $data = [ 'header' => [], 'series' => [], 'albums' => [] ];
+    //  TODO: Figure out why serie names with a '&' in it are not working, while they are in the user page code.
+    public function beheer() {                                                                   // '/beheer' function, for the admin page.
+		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
+		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
 
-        // If there is no page data, get all serie data first
-        if(empty($data['series'])) {
-            $localSeries = App::get('database')->selectAll('series');
-			$localAlbums = [];
-			$count = 0;
+		if(isset($_SESSION['user']['id'])) {													// Check if there is user data in the session data,
+			if($_SESSION['user']['admin']) {													// then check if the user is a admin or not,
+				if(App::get('user')->checkUSer($_SESSION['user']['id'])) {						// and just to be sure validate the user id,
+                    unset($_SESSION['page-data']);                                              // Clear page-data so we get new selections.
 
-            // Loop over all series, store the index and store its ablums.
-            foreach($localSeries as $key => $value) {
-                $sqlId = ['Album_Serie' => $localSeries[$key]['Serie_Index'] ];
-                array_push($localAlbums, App::get('database')->selectAllWhere('albums', $sqlId));
+                    if(empty($_SESSION['page-data']['series'])) {                               // Trigger repopulation if page-data series is clear
+                        $_SESSION['page-data']['series'] = App::get('collection')->getSeries(); // store all series in the session.
+                    }
 
-				// Push each serie into the page data
-				if(isset($localSeries[$key])) { array_push($data['series'], $localSeries[$key]); }
+					// Loop over each series, and count the albums per serie and store that in the session.
+					foreach($_SESSION['page-data']['series'] as $index => $value) {
+						$count = App::get('database')->countAlbums($value['Serie_Index']);
+						$_SESSION['page-data']['series'][$index]['Album_Aantal'] = $count['count(*)'];
+					}
 
-                // Count the albums in each serie, and store/reset the count after.
-			    foreach($localAlbums[$key] as $aKey => $aValue) {
-				    if(!empty($localAlbums[$key][$aKey])) {
-					    if($localAlbums[$key][$aKey]['Album_Serie'] == $localSeries[$key]['Serie_Index']) {
-						    $count++;
-					    }
-				    }
-			    }
+                    if(!empty($_POST['serie-index']) && !empty($_POST['serie-naam'])) {         // If there is a serie index and name in the post,
+                        if(empty($_SESSION['page-data']['albums'])) {                           // and albums data is empty, then set the albums.
+                            
+                            // very odd workaround, seems im getting a filtered string in the post, that doesnt match the db entry.
+                            // so for now im using the session data to match the post name to a session serie name.
+                            foreach($_SESSION['page-data']['series'] as $index => $value) {
+                                if(htmlspecialchars($value['Serie_Naam']) === $_POST['serie-naam']) {
+                                    $_SESSION['page-data']['albums'] = App::get('collection')->getAlbums($value['Serie_Naam']);
+                                }
+                            }
+                        }
 
-			    $data['series'][$key]['Album_Aantal'] = $count;
-			    $count = 0;
-            }
+                        App::get('session')->setVariable('header', [
+                            'broSto' => [
+                                'huidigeSerie' => $_POST['serie-naam'],                         // Set selected serie name in session for JS.
+                                'huidigeIndex' => $_POST['serie-index'],                        // Set selected serie index in session for JS.
+                                'serieWeerg' => TRUE                                            // Set serie display tag in session for JS.
+                            ]
+                        ]);
+                    }                    
+				} else {																		// If Authentication failed, (to catch coding fails from me?)
+					$_SESSION['header']['error'] = $authFailed;									// we store the error in the session.
+				}
+			} else {																			// If Authentication failed, (to catch coding fails from me?)
+				$_SESSION['header']['error'] = $authFailed;										// we store the error in the session.
+			}
+		} else {																				// If there was no user data at all, (to catch coding fails from me?)
+			die($unexError);																	// we die the unexError to end the request process.
 		}
 
-        // To display the albums of a serie, i fist get all albums data.
-        if(!empty($_POST['serie-index']) && !empty($_POST['serie-naam'])) {
-            $tempAlbums = App::get('database')->selectAllWhere('albums', [ 'Album_Serie' => $_POST['serie-index'] ]);
-
-            // Push each album into the page data array.
-            foreach($tempAlbums as $key => $value) {
-                array_push($data['albums'], $value);
-            }
-
-            // Prepare JS page data to ensure everything is proccesed\displayed correctly.
-            array_push($data['header'], App::get('processing')->createData('local', 'huidigeSerie', $_POST['serie-naam']));
-            array_push($data['header'], App::get('processing')->createData('local', 'huidigeIndex', $_POST['serie-index']));
-            array_push($data['header'], App::get('processing')->createData('local', 'serieWeerg', true));
-        }
-
-        return App::view('beheer', $data);
+		return App::view('beheer');																// Return the default admin view.
     }
 
     // '/serieM' function, both the controlle and pop-in submits.

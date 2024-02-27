@@ -30,8 +30,8 @@ function initBeheer() {
             localStorage.removeItem('huidigeSerie');
         }
 
-        // remove the serieWeerg item as well.
-        localStorage.removeItem("serieWeerg");        
+        // remove the serieWeerg and index item as well.
+        localStorage.removeItem("serieWeerg");
     }
 
     // Elements, states and events required for creating a serie.

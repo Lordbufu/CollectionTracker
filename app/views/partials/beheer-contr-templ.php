@@ -16,12 +16,16 @@
             <label for="album-toev" class="album-toev-lab"> Album Toevoegen: </label>
             <select class="album-toev" name="album-toev" id="album-toev" required>
                 <option value=""> Selecteer een serie </option>
-                <?php if(isset($data["series"]))
-                          $series = $data["series"];
-                          if(isset($series))
-                              foreach($series as $key => $value): ?>
+                <?php
+                    if(isset($_SESSION['page-data']['series'])):
+                        $series = $_SESSION['page-data']['series'];
+                            foreach($series as $key => $value):
+                ?>
                 <option class="album-toev-opt" id="album-toev-opt" value="<?= $series[$key]['Serie_Naam'] ?>"> <?= $series[$key]['Serie_Naam'] ?> </option>
-                <?php endforeach; ?>
+                <?php
+                    endforeach;
+                    endif;
+                ?>
             </select>
             <input class="album-toev-subm" id="album-toev-subm" type="button" value="Invoeren" onclick="albumToevInv()" />
         </form>
