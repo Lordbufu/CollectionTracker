@@ -170,11 +170,13 @@ class QueryBuilder {
 
     //  countAblums($id): Count albums from a specific serie.
     //      $id (int)       - The index from the serie we want to count its albums.
+    //
+    //      Return Value (int)
     public function countAlbums($id) {
         $sql = sprintf("select count(*) from `albums` where `Album_Serie`=%s", $id);
         $statement = $this->pdo->prepare($sql);
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+        return $statement->fetchAll(PDO::FETCH_ASSOC)[0]['count(*)'];
     }
 
     //  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.

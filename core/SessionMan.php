@@ -18,6 +18,7 @@ namespace App\Core;
             - page-data : Content that is related to albums/series and collections.
                 - albums (Assoc Array)      : All albums that needs to be displayed.
                 - series (Assoc Array)      : All series that needs to be displayed.
+                - huidige-serie (string)    : The current selected serie for the Administrator page.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
  */
 
@@ -76,16 +77,32 @@ class SessionMan {
     }
 
     /*  setVariable($data):
-            Designed to store data sets in the session, making certain parts easier to manage/write/read.
+            Desgined to append data to session data keys, since i have to do this a lot, i made a function for it.
 
             $name (string)              - The name of the first session data key.
             $data (assoc/multiD array)  - Data that needs to be added to the session.
 
             Return Type: None.
      */
-    public function setVariable($name, $data = []) {
+    public function setVariable($name, $data) {
         foreach($data as $key => $value) {
-            $_SESSION["$name"]["$key"] = $value;
+            if(!is_array($value)) {
+                $_SESSION[$name][$key] = $value;
+            } else {
+                if(isset($value['Serie_Index'])) {
+                    $_SESSION[$name]['series'] = $data;
+                } elseif(isset($value['Album_Index'])) {
+                    $_SESSION[$name]['albums'] = $data;
+                } elseif(isset($value['Col_Index'])) {
+                    $_SESSION[$name]['collections'] = $data;
+                } elseif($key == 'feedB') {
+                    $_SESSION[$name][$key] = $value;
+                } elseif($key == 'error') {
+                    $_SESSION[$name][$key] = $value;
+                } else {
+                    die('New condition required in setVariable()!!');
+                }
+            }
         }
 
         return;

@@ -23,7 +23,6 @@
                 <th class="serie-bekijken button" id="serie-bekijken">
                     <form id="serie-bekijken-form-<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-form-<?=$series[$key]['Serie_Index'];?>" method="post" action="/beheer">
                         <input id="serie-bekijken-form-index-<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-form-index-<?=$series[$key]['Serie_Index'];?>" name="serie-index" value="" hidden />
-                        <input id="serie-bekijken-form-naam-<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-form-naam-<?=$series[$key]['Serie_Index'];?>" name="serie-naam" value="" hidden />
                         <input id="<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-butt" type="submit" value="" onclick="serieBekijken(event)"/>
                     </form>
                 </th>

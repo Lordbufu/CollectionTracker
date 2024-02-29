@@ -52,60 +52,83 @@ class User {
     }
 
     // W.I.P.
-    public function validateUser($id, $pw) {
-        $credError = ['loginFailed' => 'Uw inlog gegevens zijn niet correct, probeer het nogmaals!!'];
+    /*  validateUser($id, $pw):
+            Validate if the user id is in the database, and validate if the stored PW matches the user input.
 
-        if(!empty($id)) {                                                           // Check if $id is set,
-            if(filter_var($id, FILTER_VALIDATE_EMAIL)) {                            // check if its an e-mail or user name.
-                // Check if the DB has a valid response, send a error back if not, set user it has.
-                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
-                    return $credError;
-                } else {
-                    $this->user = App::get('database')->selectAllWhere('gebruikers', [
-                        'Gebr_Email' => $id
-                    ])[0];
-                }
+            $id (string)    - The user its credentials, either a valid e-mail or user name.
+            $pw (string)    - The password input from the user.
+
+            Return Value:
+                On Validate - (int)
+                Failed - (Assoc Array)
+     */
+    public function validateUser($id, $pw) {
+        // Set error message for failing validation.
+        $credError = [
+            'loginFailed' => 'Uw inlog gegevens zijn niet correct, probeer het nogmaals!!'
+        ];
+
+        // If the id is a valid e-mail adress,
+        if(filter_var($id, FILTER_VALIDATE_EMAIL)) {
+            // Check if the database has a valid entry for the users e-mail,
+            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
+                // return the error if there wasn't.
+                return $credError;
+            // If the DB has a valid entry for the user,
             } else {
-                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Naam' => $id])[0])) {
-                    return $credError;
-                } else {
-                    $this->user = App::get('database')->selectAllWhere('gebruikers', [
-                        'Gebr_Naam' => $id
-                    ])[0];
-                }
+                // set the matched user to the user object.
+                $this->user = App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0];
+            }
+        // If the id was not a valid e-mail,
+        } else {
+            // Check if the database has a valid entry for the users name,
+            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Naam' => $id])[0])) {
+                // return the error if there wasn't.
+                return $credError;
+            // If the DB has a valid entry for the user,
+            } else {
+                // set the matched user to the user object.
+                $this->user = App::get('database')->selectAllWhere('gebruikers', [
+                    'Gebr_Naam' => $id
+                ])[0];
             }
         }
 
+        // If the stored password matches the input,
         if(password_verify($pw, $this->user['Gebr_WachtW'])) {
+            // return 1 to the caller.
             return 1;
+        // If they dint match,
         } else {
+            // return the error.
             return $credError;
         }
     }
 
     // W.I.P.
-    public function checkUser($id) {
-        // Check and set user if not set.
+    public function checkUser($id, $rights = '') {
+        // If there was no user object set, then check if the DB returns a user, and set the user if it does.
         if(empty($this->user)) {
-            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0])) {
-                return FALSE;
-            } else {
-                $this->user = App::get('database')->selectAllWhere('gebruikers',
-                    [ 'Gebr_Index' => $id ]
-                )[0];
-            }
+            if(isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0])) {
+                $this->user = App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0];
+            // if database return nothing we return FALSE and end the check.
+            } else { return FALSE; }
         }
 
-        // Check if the index matches the set user.
-        if(!empty($this->user)) {
-            if($id === $this->user['Gebr_Index']) {
-                return TRUE;
-            } else {
-                return FALSE;
+        // Now we are sure the user object is set, we check the user id
+        if($id === $this->user['Gebr_Index']) {
+            // if we also wanted to check the user rights (only for the admins),
+            if(isset($rights)) {
+                // if the rights are a match we return TRUE,
+                if($this->user['Gebr_Rechten'] === 'Admin') {
+                    return TRUE;
+                // and FALSE if not regardless of the id check outcome.
+                } else { return FALSE; }
             }
-        } else {
-            return FALSE;
-        }
+
+            return TRUE;
+        // If the id check failed, we don't need to check the rights either, and can just return FALSE.
+        } else { return FALSE; }
     }
 
     //  TODO: Need to figure out if and when this can fails, so i know what to return when that happens.
@@ -132,7 +155,7 @@ class User {
 
     // W.I.P.
     public function evalUser() {
-        $rightsError = ['loginFailed' => 'U heeft geen rechten om de website te bezoeken !!'];
+        $rightsError = [ 'loginFailed' => 'U heeft geen rechten om de website te bezoeken !!' ];
 
         if($this->user['Gebr_Rechten'] === 'gebruiker') {
             return 1;

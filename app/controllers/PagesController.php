@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-//	TODO: If i feel like it, i might want to find a better way to prepare the series data for the beheer() function.
+//	TODO: Find a better way to present unexpected errors, so its not just a die to a funky looking printed string.
 // Finished and cleaned up.
 class PagesController {
 	// Finished and cleaned up.
@@ -18,33 +18,28 @@ class PagesController {
 		}
 	}
 
-	// Finished and cleaned up.
-	public function beheer() {																	// Function for the '/beheer' get route, default admin page.
-		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
-		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
+	/*	beheer():
+			The admin page get function, to load the default series data, and valid the user & rights.
 
-		if(isset($_SESSION['user']['id'])) {													// Check if there is user data in the session data,
-			if($_SESSION['user']['admin']) {													// then check if the user is a admin or not,
-				if(App::get('user')->checkUSer($_SESSION['user']['id'])) {						// and just to be sure validate the user id,
-					$_SESSION['page-data']['series'] = App::get('collection')->getSeries();		// store all series in the session,
+				$authFailed (Assoc Array)	- Error for when account validation failed
 
-					// Loop over each series, and count the albums per serie and store that in the session.
-					foreach($_SESSION['page-data']['series'] as $index => $value) {
-						$count = App::get('database')->countAlbums($value['Serie_Index']);
-						$_SESSION['page-data']['series'][$index]['Album_Aantal'] = $count['count(*)'];
-					}
+			Return Value:
+				On Validation: (view) -> beheer.view.php
+				Failed Validation: (redirect) -> index.view.php
+	 */
+	public function beheer() {
+		$authFailed = [ "error" => [ "fetchResponse" => "Access denied, Account authentication failed !" ] ];
 
-					return App::view('beheer');													// Return the default admin view.
-				} else {																		// If Authentication failed, (to catch coding fails from me?)
-					$_SESSION['header']['error'] = $authFailed;									// we store the error in the session,
-					return App::redirect('');													// and we redirect to home because there was not valid user.
-				}
-			} else {																			// If Authentication failed, (to catch coding fails from me?)
-				$_SESSION['header']['error'] = $authFailed;										// we store the error in the session,
-				return App::redirect('');   													// and we redirect to home because there was not valid user.
-			}
-		} else {																				// If there was no user data at all,
-			die($unexError);																	// we die the unexError to end the request process.
+		unset($_SESSION['page-data']);		// I find it easier to update, when page-data starts clean each request.
+
+		if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
+			App::get('session')->setVariable('page-data', App::get('collection')->getSeries());
+
+			return App::view('beheer');
+		} else {
+			App::get('session')->setVariable('header', $authFailed);
+
+			return App::redirect('');
 		}
 	}
 
