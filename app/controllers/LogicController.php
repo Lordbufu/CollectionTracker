@@ -49,7 +49,7 @@ class LogicController {
             return App::redirect('#login-pop-in');                                              // redirect to the login pop-in.
         } else {
             // Not sure if required, just leaving it here for the moment
-            die('A unknown error come looking around the corner');
+            die('The server hamsters have encounted some problem, plz contact the Administrator if this keeps happening!!');
         }
 	}
 
@@ -63,7 +63,7 @@ class LogicController {
                 [ 'id' => App::get('user')->getUserId() ]
             );
 
-            if(App::get('user')->evalUser() === 1) {                                             // then evaluate the user rights,
+            if(App::get('user')->evalUser() === 1) {                                            // then evaluate the user rights,
                 App::get('session')->setVariable('user', [                                      // tell the session that the user is not a Admin,
                     'admin' => FALSE
                 ]);
@@ -73,7 +73,7 @@ class LogicController {
                 ]);
 
                 return App::redirect('gebruik');                                                // and redirect to the user page.
-            } else if(App::get('user')->evalUser() === 0) {                                       // If the user is a Admin,
+            } elseif(App::get('user')->evalUser() === 0) {                                      // If the user is a Admin,
                 App::get('session')->setVariable('user', [                                      // tell the session that the user is a Admin,
                     'admin' => TRUE
                 ]);

@@ -66,7 +66,7 @@ class User {
                     ])[0];
                 }
             } else {
-                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
+                if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Naam' => $id])[0])) {
                     return $credError;
                 } else {
                     $this->user = App::get('database')->selectAllWhere('gebruikers', [
@@ -134,7 +134,6 @@ class User {
     public function evalUser() {
         $rightsError = ['loginFailed' => 'U heeft geen rechten om de website te bezoeken !!'];
 
-        //die(print_r($this->user));
         if($this->user['Gebr_Rechten'] === 'gebruiker') {
             return 1;
         } elseif($this->user['Gebr_Rechten'] === 'Admin') {
