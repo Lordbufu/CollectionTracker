@@ -1,6 +1,15 @@
 <div id="beheer-albView-pop-in" class="beheer-weerg-cont" style="display: none">
+
     <div id="beheer-albView-content-container" class="beheer-weerg-repl-cont">
+        <?php
+            if(isset($_SESSION['page-data']['huidige-serie'])) {
+                echo "<h2 id='beheer-albView-text' class='beheer-weerg-header'> {$_SESSION['page-data']['huidige-serie']} </h1>";
+            } else {
+                echo "<h2 id='beheer-albView-text' class='beheer-weerg-header'> Test Title </h1>";
+            }
+        ?>
         <h2 id="beheer-albView-text" class="beheer-weerg-header"> Test Title </h1>
+
         <div id="beheer-albView-body" class="beheer-album-weerg-modal-body">
             <table id="beheer-albView-tafel" class="beheer-albums-tafel">
                 <tr id="beheer-albView-titles" class="beheer-albums-tafel-titles">

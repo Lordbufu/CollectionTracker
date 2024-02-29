@@ -466,9 +466,7 @@ function serieBekijken(e) {
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
     let inp1 = document.getElementById("serie-bekijken-form-index-"+e.target.id);
-    let inp2 = document.getElementById("serie-bekijken-form-naam-"+e.target.id);
     inp1.value = e.target.id;
-    inp2.value = rowArr[0].children[3].innerHTML;
 
     // Trigger submit based on if there was a valid input.
     if (inp1.value === "" && inp2.value === "") {

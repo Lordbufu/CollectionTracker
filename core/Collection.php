@@ -39,13 +39,26 @@ class Collection {
         return $tempAlbum['Album_Index'];
     }
 
+    // W.I.P.
+    protected function countAlbums() {
+        // Loop over all stored series,
+        foreach($this->series as $key => $value) {
+            // Then count the albums in the data base, and store it with each serie.
+            $this->series[$key]['Album_Aantal'] = App::get('database')->countAlbums($value['Serie_Index']);
+        }
+
+        // return to caller.
+        return;
+    }
+
     /*  getSeries():
-            Simple get all series from DB, and return them to the caller.
+            Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
             Return Value: Multi-Dimensional Array.
      */
     public function getSeries() {
         $this->series = App::get('database')->selectAll('series');
+        $this->countAlbums();
         return $this->series;
     }
 
@@ -56,18 +69,34 @@ class Collection {
     public function remSerie($data) { }
 
     /*  getAlbums($seriesId):
-            This function gets all albums from a series, based on a serie name.
+            This function gets all albums from a series, based on a serie name or index.
 
-            $name (String)  - Expecting the serie name that i need to get albums from.
+            $partId (String or Int)  - Can both take a serie name or index value, to get the associciated albums.
 
             Return Value: Multi-Dimensional Array.
      */
-    public function getAlbums($name) {
-        $id = [ 'Album_Serie' => $this->getSerId($name) ];
+    public function getAlbums($partId) {
+        if(!is_numeric($partId)) {
+            $this->albums = App::get('database')->selectAllWhere('albums', [
+                'Album_Serie' => $this->getSerId($partId)
+            ]);
 
-        $this->albums = App::get('database')->selectAllWhere('albums', $id);
+            return $this->albums;
+        } else {
+            $this->albums = App::get('database')->selectAllWhere('albums', [
+                'Album_Serie' => $partId
+            ]);
 
-        return $this->albums;
+            return $this->albums;
+        }
+    }
+
+    public function getSerName($ind) {
+        foreach($this->series as $index => $serie) {
+            if($ind == $serie['Serie_Index']) {
+                return $this->series[$index]['Serie_Naam'];
+            }
+        }
     }
 
     // set album in database for the admin

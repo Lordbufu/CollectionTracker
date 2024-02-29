@@ -49,7 +49,7 @@ class LogicController {
             return App::redirect('#login-pop-in');                                              // redirect to the login pop-in.
         } else {
             // Not sure if required, just leaving it here for the moment
-            die('The server hamsters have encounted some problem, plz contact the Administrator if this keeps happening!!');
+            die('The server hamsters have encounted some kind of problem, plz contact the Administrator if this keeps happening!!');
         }
 	}
 
@@ -106,10 +106,9 @@ class LogicController {
     }
 
     /* Admin-Page functions */
-    //  TODO: Figure out why serie names with a '&' in it are not working, while they are in the user page code.
     public function beheer() {                                                                   // '/beheer' function, for the admin page.
 		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];	// Error for when the user is not authenticated.
-		$unexError = ["Unexpected error occured, plz contact your admin"];						// If for some reason there was no user id.
+		$unexError = "Unexpected error occured, plz contact your admin";						// If for some reason there was no user id.
 
 		if(isset($_SESSION['user']['id'])) {													// Check if there is user data in the session data,
 			if($_SESSION['user']['admin']) {													// then check if the user is a admin or not,
@@ -117,26 +116,25 @@ class LogicController {
                     unset($_SESSION['page-data']);                                              // Clear page-data so we get new selections.
 
                     if(empty($_SESSION['page-data']['series'])) {                               // Trigger repopulation if page-data series is clear
-                        $_SESSION['page-data']['series'] = App::get('collection')->getSeries(); // store all series in the session.
+                        App::get('session')->setVariable('page-data',                           // store all required series data in the session.
+                            App::get('collection')->getSeries()
+                        );
                     }
 
-					// Loop over each series, and count the albums per serie and store that in the session.
-					foreach($_SESSION['page-data']['series'] as $index => $value) {
-						$count = App::get('database')->countAlbums($value['Serie_Index']);
-						$_SESSION['page-data']['series'][$index]['Album_Aantal'] = $count['count(*)'];
-					}
+                    if(!empty($_POST['serie-index'])) {                                         // If there is a serie index in the post,
 
-                    if(!empty($_POST['serie-index']) && !empty($_POST['serie-naam'])) {         // If there is a serie index and name in the post,
+                        die(print_r($_SESSION));
+
                         if(empty($_SESSION['page-data']['albums'])) {                           // and albums data is empty, then set the albums.
-                            
-                            // very odd workaround, seems im getting a filtered string in the post, that doesnt match the db entry.
-                            // so for now im using the session data to match the post name to a session serie name.
-                            foreach($_SESSION['page-data']['series'] as $index => $value) {
-                                if(htmlspecialchars($value['Serie_Naam']) === $_POST['serie-naam']) {
-                                    $_SESSION['page-data']['albums'] = App::get('collection')->getAlbums($value['Serie_Naam']);
-                                }
-                            }
+                            App::get('session')->setVariable('page-data', [
+                                [ 'albums' => App::get('collection')->getAlbums($_POST['serie-index']) ]
+                            ]);
                         }
+
+                        App::get('session')->setVariable('page-data', [ [
+                            'huidige-index' => $_POST['serie-index'],
+                            'huidige-serie' => App::get('collection')->getSerName($_POST['serie-index'])
+                        ]]);
 
                         App::get('session')->setVariable('header', [
                             'broSto' => [
@@ -145,6 +143,9 @@ class LogicController {
                                 'serieWeerg' => TRUE                                            // Set serie display tag in session for JS.
                             ]
                         ]);
+
+                        die(print_r($_SESSION));
+
                     }                    
 				} else {																		// If Authentication failed, (to catch coding fails from me?)
 					$_SESSION['header']['error'] = $authFailed;									// we store the error in the session.
