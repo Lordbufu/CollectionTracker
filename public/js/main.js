@@ -26,6 +26,18 @@ document.onreadystatechange = () => {
             initLanding();
         // If we are on the user (/gebruik) page, we init that the code required there.
         } else if(window.location.pathname === '/gebruik') {
+            if(localStorage.refrPage) {
+                formData = new FormData();
+
+                formData.append('serie_naam', localStorage.huidigeSerie);
+
+                fetchRequest('/gebruik', 'POST', formData)
+                .then((data) => {
+                   console.log(data);
+                });
+
+                localStorage.removeItem('refrPage');
+            }
             initGebruik();
         // If we are on the admnin (/beheer) page, we init that the code required there.
         } else if(window.location.pathname === '/beheer') {
@@ -37,6 +49,7 @@ document.onreadystatechange = () => {
                 localStorage.removeItem('reloadPage');
                 postForm('/gebruik', localStorage.huidigeSerie);
             }
+        // Depricated ?
         // Check for errors during account registration, and redirect accordingly.
         } else if(window.location.pathname == "/register") {
             if(localStorage.userError1 != null) {

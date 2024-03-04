@@ -90,6 +90,7 @@ function albumZoek(event) {
     });
 }
 
+// Depricated ??
 // Checkbox function for the listenEvent
 function checkBox(e) {
     // Store the row the checkbox is on, and convert it to an array

@@ -17,37 +17,37 @@ class User {
 
             $data (Assoc Array) - The user input, sanitized in the controller.
 
-            Return Value    - Associative Array
-            Example         - [ 'type-of-message' => [ 'browser-storage-tag' => 'error/feedback-string' ]]
+            Return Value:
+                On sucess: Boolean
+                On failed: Assoc Array -> example: ['type-of-message' => ['browser-storage-tag' => 'error-string']]
      */
     public function setUser($data) {
-        $userNameErr = "Deze gebruiker bestaat al.";                                // Error for a duplicate user name.
-        $userEmailErr = "E-mail adres reeds ingebruik.";                            // Error for a duplicate user e-mail.
-        $userCreated = "Gebruiker aangemaakt, u kunt nu inloggen!";                 // Feedback for when the user was added.
-        $noUserErr = "No users found, plz contact the Administrator!";              // Error for when there are no users in the database.
+        $userNameErr = "Deze gebruiker bestaat al.";
+        $userEmailErr = "E-mail adres reeds ingebruik.";
+        $noUserErr = "No users found, plz contact the Administrator!";
 
-        $tempUsers = App::get('database')->selectAll('gebruikers');                 // Get all user in database.
+        $tempUsers = App::get('database')->selectAll('gebruikers');
 
-        if(!empty($tempUsers)) {                                                    // Check if there where users stored, and then loop over each user.
+        if(!empty($tempUsers)) {
             foreach($tempUsers as $key => $user) {
-                if($user['Gebr_Naam'] === $data['Gebr_Naam']) {                     // Check if the user name/e-mail was already used in the database,
-                    $errorMsg['error']['userError1'] = $userNameErr;                // then set a pre-defined error message.
+                if($user['Gebr_Naam'] === $data['Gebr_Naam']) {
+                    $errorMsg['error']['userError1'] = $userNameErr;
                 }
 
                 if($user['Gebr_Email'] === $data['Gebr_Email']) {
                     $errorMsg['error']['userError2'] = $userEmailErr;
                 }
             }
-        } else {                                                                    // Incase the user database is empty, we return a no user error.
+        } else {
             $errorMsg = ['error' => ['userError1' => $noUserErr]];
         }
 
-        if(!empty($errorMsg)) {                                                     // Evaluate if there were any errors, and return those.
+        if(!empty($errorMsg)) {
             return $errorMsg;
-        } else {                                                                    // If all checks where ok,
-            App::get('database')->insert('gebruikers', $data);                      // store the user in the database,
+        } else {
+            App::get('database')->insert('gebruikers', $data);
 
-            return ['feedB' => ['userCreated' => $userCreated]];                    // and return the feedback message.
+            return TRUE;
         }
     }
 
@@ -106,13 +106,15 @@ class User {
     }
 
     // W.I.P.
-    public function checkUser($id, $rights = '') {
+    public function checkUser($id, $rights = null) {
         // If there was no user object set, then check if the DB returns a user, and set the user if it does.
         if(empty($this->user)) {
             if(isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0])) {
                 $this->user = App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0];
             // if database return nothing we return FALSE and end the check.
-            } else { return FALSE; }
+            } else {
+                return FALSE;
+            }
         }
 
         // Now we are sure the user object is set, we check the user id
@@ -123,12 +125,16 @@ class User {
                 if($this->user['Gebr_Rechten'] === 'Admin') {
                     return TRUE;
                 // and FALSE if not regardless of the id check outcome.
-                } else { return FALSE; }
+                } else {
+                    return FALSE;
+                }
             }
 
             return TRUE;
         // If the id check failed, we don't need to check the rights either, and can just return FALSE.
-        } else { return FALSE; }
+        } else {
+            return FALSE;
+        }
     }
 
     //  TODO: Need to figure out if and when this can fails, so i know what to return when that happens.
