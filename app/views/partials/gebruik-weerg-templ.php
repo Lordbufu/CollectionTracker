@@ -23,10 +23,7 @@
         ?>
 
             <th class="album-aanwezig">
-                <form class="album-aanwezig-form" id="album-form" >
-                    <input class="album-aanwezig-data" id="album-form-data1" name="albumNaam" value="" />
-                    <input class="album-aanwezig-data" id="album-form-data2" name="aanwezig" value="" />
-                    <input class="album-aanwezig-data" id="album-form-data4" name="serieNaam" value="" />
+                <form class="album-aanwezig-form" id="album-form">
                     <?php
                         if(isset($_SESSION['page-data']['collections'])) {
                             $collecties = $_SESSION['page-data']['collections'];

@@ -31,7 +31,7 @@ class Collection {
 
             Return Value: INT
      */
-    protected function getAlbId($name) {
+    public function getAlbId($name) {
         $tempAlbum = App::get('database')->selectAllWhere('albums', [
             'Album_Naam' => $name
         ])[0];
@@ -60,6 +60,32 @@ class Collection {
         $this->series = App::get('database')->selectAll('series');
         $this->countAlbums();
         return $this->series;
+    }
+
+    // W.I.P.
+    public function getSerName($ind) {
+        if(!isset($this->series)) {
+            $this->getSeries();
+        }
+
+        foreach($this->series as $index => $serie) {
+            if($ind == $serie['Serie_Index']) {
+                return $this->series[$index]['Serie_Naam'];
+            }
+        }
+    }
+
+    // W.I.P.
+    public function getSerInd($name) {
+        if(!isset($this->series)) {
+            $this->getSeries();
+        }
+
+        foreach($this->series as $index => $serie) {
+            if($name == $serie['Serie_Naam']) {
+                return $this->series[$index]['Serie_Index'];
+            }
+        }
     }
 
     // set serie in database for the admin
@@ -91,13 +117,11 @@ class Collection {
         }
     }
 
-    public function getSerName($ind) {
-        foreach($this->series as $index => $serie) {
-            if($ind == $serie['Serie_Index']) {
-                return $this->series[$index]['Serie_Naam'];
-            }
-        }
-    }
+    // public function getAlbInd($name) {
+    //     $temp = App::get('database')->selectAllWhere('albums', ['Album_Naam' => $name])[0];
+
+    //     return $temp['Album_Index'];
+    // }
 
     // set album in database for the admin
     public function setAlbum($data) { }
@@ -133,14 +157,14 @@ class Collection {
         ]);
 
         foreach($this->collections as $key => $value) {                             // First we check if the album was already added in the users collection.
-            if($value === $this->getAlbId($data["Album_Naam"])) {
+            if($value === $data["Alb_Index"]) {
                 return FALSE;
             }
         }
 
         $tempCol = [                                                                // Then we prepare the data that needs to be added,
             "Gebr_Index" => $data["Gebr_Index"],
-            "Alb_Index" => $this->getAlbId($data["Album_Naam"]),
+            "Alb_Index" => $data["Alb_Index"],
             "Alb_Staat" => "",
             "Alb_DatumVerkr" => date('Y-m-d'),
             "Alb_Aantal" => 1,
@@ -160,11 +184,9 @@ class Collection {
             Return Type: boolean.
      */
     public function remColl($data) {
-        $albInd = $this->getAlbId($data["Album_Naam"]);
-
         $colIds = [
             "Gebr_Index" => $data["Gebr_Index"],
-            "Alb_Index" => $this->getAlbId($data["Album_Naam"])
+            "Alb_Index" => $data["Alb_Index"]
         ];
 
         App::get('database')->remove('collecties', $colIds);

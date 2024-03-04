@@ -17,21 +17,10 @@ function initBeheer() {
     albView = document.querySelector("#beheer-albView-content-container");
     backButt.style.display = 'none';
 
-    // If the admin wants to view a Series
-    if(localStorage.serieWeerg) {
-        // I just replace the entire container
-        serieView.replaceWith(albView);
-        // I enable the back button, and set it to a fixed position.
-        backButt.style.display = 'flex';
-
-        // I check if the serie name is stored, and replace the title of the container, and remove the storage
-        if(localStorage.huidigeSerie != null) {
-            document.getElementById('beheer-albView-text').innerHTML = localStorage.huidigeSerie;
-            localStorage.removeItem('huidigeSerie');
-        }
-
-        // remove the serieWeerg and index item as well.
-        localStorage.removeItem("serieWeerg");
+    if(localStorage.serieWeerg) {               // If the admin wants to view a Series
+        serieView.replaceWith(albView);         // I just replace the entire container
+        backButt.style.display = 'flex';        // I enable the back button by setting a display style.
+        localStorage.removeItem("serieWeerg");  // remove the serieWeerg and index item as well.
     }
 
     // Elements, states and events required for creating a serie.
