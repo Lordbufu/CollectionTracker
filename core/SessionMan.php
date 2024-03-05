@@ -18,7 +18,7 @@ namespace App\Core;
             - page-data : Content that is related to albums/series and collections.
                 - albums (Assoc Array)      : All albums that needs to be displayed.
                 - series (Assoc Array)      : All series that needs to be displayed.
-                - huidige-serie (string)    : The current selected serie for the Administrator page series view title.
+                - huidige-serie (string)    : The current selected serie, for both the user and admin.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
  */
 
@@ -104,8 +104,8 @@ class SessionMan {
                 } elseif($key == 'broSto') {
                     $_SESSION[$name][$key] = $value;
                 } else {
-                    die(print_r($data));    // Debug-line.
-                    die(print_r($key));    // Debug-line.
+                    //die(print_r($data));    // Debug-line.
+                    //die(print_r($key));    // Debug-line.
                     //die(print_r($value));    // Debug-line.
                     die('New condition required in setVariable()!!');   // Debug-line/condition.
                 }

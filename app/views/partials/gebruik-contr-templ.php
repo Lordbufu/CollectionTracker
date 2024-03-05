@@ -7,14 +7,15 @@
                 <option value="">Selecteer een serie</option>
                 <?php
                     if(isset($_SESSION['page-data']['series'])) {
-                        $series = $_SESSION['page-data']['series'];
-                        foreach($series as $key => $value) {
+                        foreach($_SESSION['page-data']['series'] as $key => $value) {
                             if(isset($_SESSION['page-data']['huidige-serie'])) {
-                                if($series[$key]['Serie_Naam'] == $_SESSION['page-data']['huidige-serie']) {
-                                    echo "<option class='serie-sel-opt' selected>{$series[$key]['Serie_Naam']}</option>";
+                                if($value['Serie_Naam'] === $_SESSION['page-data']['huidige-serie']) {
+                                    echo "<option class='serie-sel-opt' selected>{$value['Serie_Naam']}</option>";
                                 } else {
-                                    echo "<option class='serie-sel-opt'>{$series[$key]['Serie_Naam']}</option>";    
+                                    echo "<option class='serie-sel-opt'>{$value['Serie_Naam']}</option>";   
                                 }
+                            } else {
+                                echo "<option class='serie-sel-opt'>{$value['Serie_Naam']}</option>";
                             }
                         }
                     }

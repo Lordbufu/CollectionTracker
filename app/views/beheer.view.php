@@ -10,7 +10,11 @@
             <form class="logoff-form" id="logoff-form" method="post" action="/logout">
                 <input class="logoff-butt" type="submit" value="Afmelden" />
             </form>
-            <button id="beheer-back-butt" class="beheer-back-butt" onclick=beheerBackButt() hidden> < Series </button>
+            <?php if(isset($_SESSION['page-data']['huidige-serie'])): ?>
+                <form class="back-form" id="back-form" method="post" action="/beheer">
+                    <button id="beheer-back-butt" class="beheer-back-butt" type="submit"> < Series </button>
+                </form>
+            <?php endif; ?>
         </div>
 
         <div id="title-cont" class="title-banner">
@@ -21,9 +25,12 @@
 
     <?php
         require('partials/beheer-contr-templ.php');
-        require('partials/beheer-weerg-templ.php');
-        require('partials/beheer-albView-pop-in.php');
-        require('partials/beheer-serie-maken-pop-in.html');
+        if(!isset($_SESSION['page-data']['huidige-serie'])) {
+            require('partials/beheer-weerg-templ.php');
+        } else {
+            require('partials/beheer-albView-templ.php');
+        }
+        require('partials/beheer-serie-maken-pop-in.php');
         require('partials/beheer-serie-bewerken-pop-in.html');
         require('partials/beheer-album-toevoegen-pop-in.html');
         require('partials/beheer-album-bewerken-pop-in.html');

@@ -13,35 +13,34 @@
                 <th>Aantal Gebruikers</th>
             </tr>
 
-            <?php
-                if(isset($_SESSION['page-data']['series'])):
-                    $series = $_SESSION['page-data']['series'];
-                    foreach($series as $key => $value):
-                        echo "<tr class='serie-tafel-inhoud-{$series[$key]['Serie_Index']}' id='serie-tafel-inhoud-{$series[$key]['Serie_Index']}'>";
-            ?>
+        <?php
+            if(isset($_SESSION['page-data']['series'])):
+                foreach($_SESSION['page-data']['series'] as $key => $value):
+        ?>
 
+            <tr class='serie-tafel-inhoud-<?=$value['Serie_Index']?>' id='serie-tafel-inhoud-<?=$value['Serie_Index']?>'>
                 <th class="serie-bekijken button" id="serie-bekijken">
-                    <form id="serie-bekijken-form-<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-form-<?=$series[$key]['Serie_Index'];?>" method="post" action="/beheer">
-                        <input id="serie-bekijken-form-index-<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-form-index-<?=$series[$key]['Serie_Index'];?>" name="serie-index" value="" hidden />
-                        <input id="<?=$series[$key]['Serie_Index'];?>" class="serie-bekijken-butt" type="submit" value="" onclick="serieBekijken(event)"/>
+                    <form id="serie-bekijken-form-<?=$value['Serie_Index'];?>" class="serie-bekijken-form-<?=$value['Serie_Index'];?>" method="post" action="/beheer">
+                        <input id="serie-bekijken-form-index-<?=$value['Serie_Index'];?>" class="serie-bekijken-form-index-<?=$value['Serie_Index'];?>" name="serie-index" value="" hidden />
+                        <input id="<?=$value['Serie_Index'];?>" class="serie-bekijken-butt" type="submit" value="" onclick="serieBekijken(event)"/>
                     </form>
                 </th>
                 <th class="serie-bewerken button" id="serie-bewerken">
-                    <button class="serie-bewerken-butt" id="<?= $series[$key]['Serie_Index']; ?>" type="button" onclick="serieBewerken(event)"> </button>
+                    <button class="serie-bewerken-butt" id="<?= $value['Serie_Index']; ?>" type="button" onclick="serieBewerken(event)"> </button>
                 </th>
                 <th class="serie-verwijderen button">
-                    <button class="serie-verwijderen-butt" id="<?= $series[$key]['Serie_Index']; ?>" type="button" onclick="serieVerwijderen(event)"> </button>
+                    <button class="serie-verwijderen-butt" id="<?= $value['Serie_Index']; ?>" type="button" onclick="serieVerwijderen(event)"> </button>
                 </th>
-                <th class="serie-naam" id="serieNaam"><?= $series[$key]['Serie_Naam']; ?></th>
-                <th class="serie-maker" id="serieMaker"><?= $series[$key]['Serie_Maker']; ?></th>
-                <th class="serie-opmerk" id="serieOpmerk"><?= $series[$key]['Serie_Opmerk'] ?></th>
-                <th class="serie-albums"><?= $series[$key]['Album_Aantal'] ?></th>
+                <th class="serie-naam" id="serieNaam"><?= $value['Serie_Naam']; ?></th>
+                <th class="serie-maker" id="serieMaker"><?= $value['Serie_Maker']; ?></th>
+                <th class="serie-opmerk" id="serieOpmerk"><?= $value['Serie_Opmerk'] ?></th>
+                <th class="serie-albums"><?= $value['Album_Aantal'] ?></th>
                 <th class="serie-gebruikers">W.I.P.</th>
 
-            <?php
+        <?php
                 endforeach;
-                endif;
-            ?>
+            endif;
+        ?>
 
             </tr>
         </table>

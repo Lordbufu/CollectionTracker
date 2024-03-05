@@ -3,7 +3,6 @@ namespace App\Core;
 
 use App\Core\App;
 
-//  TODO: Consider some kind of error reporting, for when the DB querries return nothing in certain edge cases.
 class Collection {
     protected $albums;
     protected $series;
@@ -22,21 +21,6 @@ class Collection {
         ])[0];
 
         return $tempSerie['Serie_Index'];
-    }
-
-    /* getAlbId($name):
-            Get serie index based on album name.
-
-            $name (String)  : The name of the album we want the index for.
-
-            Return Value: INT
-     */
-    public function getAlbId($name) {
-        $tempAlbum = App::get('database')->selectAllWhere('albums', [
-            'Album_Naam' => $name
-        ])[0];
-        
-        return $tempAlbum['Album_Index'];
     }
 
     // W.I.P.
@@ -88,8 +72,25 @@ class Collection {
         }
     }
 
+    // W.I.P.
+    public function cheSerName($name) {
+        if(!isset($this->series)) {
+            $this->getSeries();
+        }
+
+        foreach($this->series as $index => $serie) {
+            if($name == $serie['Serie_Naam']) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
     // set serie in database for the admin
-    public function setSerie($data) { }
+    public function setSerie($data) {
+        die(var_dump(print_r($data)));
+    }
 
     // remove serie in database for the admin
     public function remSerie($data) { }
@@ -117,11 +118,20 @@ class Collection {
         }
     }
 
-    // public function getAlbInd($name) {
-    //     $temp = App::get('database')->selectAllWhere('albums', ['Album_Naam' => $name])[0];
+    /* getAlbId($name):
+            Get serie index based on album name.
 
-    //     return $temp['Album_Index'];
-    // }
+            $name (String)  : The name of the album we want the index for.
+
+            Return Value: INT
+     */
+    public function getAlbId($name) {
+        $tempAlbum = App::get('database')->selectAllWhere('albums', [
+            'Album_Naam' => $name
+        ])[0];
+        
+        return $tempAlbum['Album_Index'];
+    }
 
     // set album in database for the admin
     public function setAlbum($data) { }

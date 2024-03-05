@@ -21,6 +21,7 @@ document.onreadystatechange = () => {
                 displayMessage(localStorage.fetchResponse);
                 localStorage.removeItem('fetchResponse');
             }
+            
             initLanding();
         // If we are on the user (/gebruik) page, we init that the code required there.
         } else if(window.location.pathname === '/gebruik') {
