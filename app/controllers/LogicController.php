@@ -394,7 +394,6 @@ class LogicController {
     }
 
     /* User-Page functions */
-    // Finished and cleaned up.
     /*  gebruik():
             The POST route for '/gebruik', this is similar to the GET route in the 'PageController'.
             In this case though, we also need to load albums and collections, to display when a serie is selected.
@@ -420,8 +419,7 @@ class LogicController {
                     ));
 
                     App::get('session')->setVariable('page-data', App::get('collection')->getColl($_SESSION['user']['id']));
-
-                    App::get('session')->setVariable('header', ['broSto' => ['huidigeSerie' => $_POST['serie_naam']]]);
+                    App::get('session')->setVariable('page-data', ['huidige-serie' => $_POST['serie_naam']]);
                 }
 
                 return App::view('gebruik');
@@ -455,31 +453,29 @@ class LogicController {
 
         if(isset($_SESSION['user']['id'])) {
             if(App::get('user')->checkUSer($_SESSION['user']['id'])) {
-                $checkCol = null;
+                $checkCol;
 
-                if(isset($_POST['aanwezig'])) {
-                    if($_POST['aanwezig'] === '0') {
-                        $tempData = [
-                            'Gebr_Index' => $_SESSION['user']['id'],
-                            'Alb_Index' => App::get('collection')->getAlbId($_POST['album-naam'])
-                        ];
+                if(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'true') {
+                    $tempData = [
+                        'Gebr_Index' => $_SESSION['user']['id'],
+                        'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
+                    ];
 
-                        $checkCol = App::get('collection')->setColl($tempData);
-                    } else {
-                        $tempData = [
-                            'Gebr_Index' => $_SESSION['user']['id'],
-                            'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
-                        ];
+                    $checkCol = App::get('collection')->setColl($tempData);
+                } elseif(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'false') {
+                    $tempData = [
+                        'Gebr_Index' => $_SESSION['user']['id'],
+                        'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
+                    ];
 
-                        $checkCol = App::get('collection')->remColl($tempData);
-                    }
+                    $checkCol = App::get('collection')->remColl($tempData);
                 }
 
                 if($checkCol) {
                     if($_POST['aanwezig'] === 'true') {
                         echo json_encode($collComp);
                         return;
-                    } else {
+                    } elseif($_POST['aanwezig'] === 'false') {
                         echo json_encode($collRemo);
                         return;
                     }

@@ -1,7 +1,5 @@
 //  TODO: Review if i should expand on the dispatchInputEvent function, to dispatch various request events instead of only input.
 //  TODO: Review if the caller check in dispatchInputEvent is actually required/usefull or not.
-//  TODO: Review if i can use sessions to remove the need for postForm(path, param).
-//  TODO: Review how i can remove the huidigeSerie properly, without breaking code, it creates unexpected result keeping it in storage.
 // Required to make the banner sticky across all pages
 let header, sticky;
 
@@ -26,43 +24,10 @@ document.onreadystatechange = () => {
             initLanding();
         // If we are on the user (/gebruik) page, we init that the code required there.
         } else if(window.location.pathname === '/gebruik') {
-            if(localStorage.refrPage) {
-                formData = new FormData();
-
-                formData.append('serie_naam', localStorage.huidigeSerie);
-
-                fetchRequest('/gebruik', 'POST', formData)
-                .then((data) => {
-                   console.log(data);
-                });
-
-                localStorage.removeItem('refrPage');
-            }
             initGebruik();
         // If we are on the admnin (/beheer) page, we init that the code required there.
         } else if(window.location.pathname === '/beheer') {
             initBeheer();
-        // If we are changing a album state, and there is a page reload requested.
-        } else if(window.location.pathname == "/albSta") {
-            if(localStorage.reloadPage != null && localStorage.reloadPage) {
-                // We process said request, and remove the request from storage.
-                localStorage.removeItem('reloadPage');
-                postForm('/gebruik', localStorage.huidigeSerie);
-            }
-        // Depricated ?
-        // Check for errors during account registration, and redirect accordingly.
-        } else if(window.location.pathname == "/register") {
-            if(localStorage.userError1 != null) {
-                window.location.href = '/#account-maken-pop-in';
-            }
-
-            if(localStorage.userError2 != null) {
-                window.location.href = '/#account-maken-pop-in';
-            }
-
-            if(localStorage.userCreated != null) {
-                window.location.href = "/#login-pop-in";
-            }
         }
     }
 }
@@ -110,33 +75,6 @@ function onScroll() {
     } else {
         header.classList.remove("sticky");
     }
-}
-
-// postForm(path, param):
-//  path (string)   - The path the form needs to be submitted to.
-//  param (string)  - The name of the serie that was selected.
-function postForm(path, param) {
-    let method = 'post', form, hiddenField1, hiddenField2;
-
-    form = document.createElement('form');
-    form.setAttribute('method', method);
-    form.setAttribute('action', path);
-
-    hiddenField1 = document.createElement('input');
-    hiddenField1.hidden = true;
-    hiddenField1.setAttribute('name', 'serie-selecteren');
-    hiddenField1.setAttribute('value', param);
-
-    hiddenField2 = document.createElement('input');
-    hiddenField2.hidden = true;
-    hiddenField2.setAttribute('name', 'gebr-email');
-    hiddenField2.setAttribute('value', sessionStorage.gebruiker);
-
-    form.appendChild(hiddenField1);
-    form.appendChild(hiddenField2);
-    document.body.appendChild(form);
-
-    form.submit();
 }
 
 // replaceSpecChar(text):
