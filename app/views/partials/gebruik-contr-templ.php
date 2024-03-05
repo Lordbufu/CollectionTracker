@@ -6,14 +6,19 @@
             <select class="serie-sel" name="serie_naam" id="serie-sel" required>
                 <option value="">Selecteer een serie</option>
                 <?php
-                    if(isset($_SESSION['page-data']['series'])):
+                    if(isset($_SESSION['page-data']['series'])) {
                         $series = $_SESSION['page-data']['series'];
-                        foreach($series as $key => $value):
-                ?>
-              <option class="serie-sel-opt" value="<?= $series[$key]['Serie_Naam'] ?>"> <?= $series[$key]['Serie_Naam'] ?> </option>
-                <?php
-                    endforeach;
-                    endif;
+                        foreach($series as $key => $value) {
+                            if(isset($_SESSION['page-data']['huidige-serie'])) {
+                                if($series[$key]['Serie_Naam'] == $_SESSION['page-data']['huidige-serie']) {
+                                    echo "<option class='serie-sel-opt' selected>{$series[$key]['Serie_Naam']}</option>";
+                                } else {
+                                    echo "<option class='serie-sel-opt'>{$series[$key]['Serie_Naam']}</option>";    
+                                }
+                            }
+                        }
+                    }
+
                 ?>
             </select>
             <input class="serie-sel-subm" id="serie-sel-subm" type="submit" value="Selecteer"/>

@@ -1,5 +1,11 @@
 <div class="gebr-weerg-cont">
-    <h2 id="weergave-header"> Huidige Serie, met alle Albums: </h2>
+    <?php
+        if(isset($_SESSION['page-data']['huidige-serie'])) {
+            echo "<h2 id='weergave-header'> {$_SESSION['page-data']['huidige-serie']}, met alle Albums: </h2>";
+        } else {
+            echo "<h2 id='weergave-header'> Huidige Serie, met alle Albums: </h2>";
+        }
+    ?>
     <table class="album-tafel">
         <tr class="album-tafel-titles">
             <th> Aanwezig </th>

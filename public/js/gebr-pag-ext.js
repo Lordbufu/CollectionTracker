@@ -20,24 +20,6 @@ function initGebruik() {
     let input = document.getElementById('album-zoek-inp');
     input.addEventListener("input", albumZoek);
 
-    // If there was a Serie selection made, i grab all selection options.
-    if(localStorage.huidigeSerie) {
-        let selOptions = document.getElementsByClassName('serie-sel-opt');
-
-        // Loop over the selection options, and ensure its showing the right one as selected.
-        for(let i = 0; i < selOptions.length; i++) {
-            if(selOptions[i].value == localStorage.huidigeSerie) {
-                selOptions[i].selected = true;
-            }
-        }
-
-        // Then the header is changed to the new series name.
-        let wHeader = document.getElementById('weergave-header');
-        wHeader.innerHTML = localStorage.huidigeSerie + ", en alle albums.";
-        // And remove the entry from localStorage to prevent artifact behavior.
-        localStorage.removeItem('huidigeSerie');
-    }
-
     // Display and remove the welcome message on login.
     if(localStorage.welcome) {
         displayMessage(localStorage.welcome);
@@ -90,7 +72,6 @@ function albumZoek(event) {
     });
 }
 
-// Depricated ??
 // Checkbox function for the listenEvent
 function checkBox(e) {
     // Store the row the checkbox is on, and convert it to an array
