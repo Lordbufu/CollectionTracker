@@ -1,28 +1,10 @@
-// TODO: Review if i can off-load form creation and submit functions to a gobal function in main.js
 // Check states for name and isbn user inputs.
 let naamChecked = false, isbnChecked = false;
 // Create and edit series/albums form submit buttons.
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
-// Elements for switching between serie/album view mode.
-let serieView, albView, titleCont, buttBan, backButt;
 
 // Default page init function
 function initBeheer() {
-    /* All elementens for viewing series */
-    titleBan = document.getElementById("title-banner");
-    titleCont = document.getElementById("title-cont");
-    buttCont = document.getElementById("title-buttons");
-    backButt = document.getElementById("beheer-back-butt");
-    serieView = document.querySelector("#beheer-weerg-repl-cont");
-    albView = document.querySelector("#beheer-albView-content-container");
-    backButt.style.display = 'none';
-
-    if(localStorage.serieWeerg) {               // If the admin wants to view a Series
-        serieView.replaceWith(albView);         // I just replace the entire container
-        backButt.style.display = 'flex';        // I enable the back button by setting a display style.
-        localStorage.removeItem("serieWeerg");  // remove the serieWeerg and index item as well.
-    }
-
     // Elements, states and events required for creating a serie.
     let serieCreateNameInput = document.getElementById('seriem-form-serieNaam');
     createSerieSubm = document.getElementById("seriem-form-button");
@@ -34,12 +16,6 @@ function initBeheer() {
     editSerieSubm = document.getElementById("serieb-form-button");
     editSerieSubm.disabled = true;
     serieEditNameInput.addEventListener('input', naamCheck);
-
-    // Check for the series name error from the controller
-    if(localStorage.sNaamFailed !== null) {
-        displayMessage(localStorage.sNaamFailed);
-        localStorage.removeItem('sNaamFailed');
-    }
 
     // Elements required for adding and editing albums.
     createAlbumSubm = document.getElementById("albumt-form-button");
@@ -59,6 +35,12 @@ function initBeheer() {
     naamInpBew.addEventListener("input", naamCheck);
     editAlbumSubm.disabled = true;
     albCovInp.addEventListener('change', albCovCheck);
+
+    // Check for the series name error from the controller
+    if(localStorage.sNaamFailed !== null) {
+        displayMessage(localStorage.sNaamFailed);
+        localStorage.removeItem('sNaamFailed');
+    }
 
     // Ensure the series index is also used for adding a album to a series.
     if(localStorage.albumToevIn != null) {
@@ -222,38 +204,41 @@ function albumToevInv() {
     }
 }
 
-// Function to close pop-ins while on the '/beheer' page.
-function popInClose() {
-    // If a series index was stored, i need to request a new view from PhP
-    if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
-        let serieNaam = document.getElementById('beheer-albView-text').innerHTML;
+// DEPRICATED
+/*
+    // Function to close pop-ins while on the '/beheer' page.
+    // function popInClose() {
+    //     // If a series index was stored, i need to request a new view from PhP
+    //     if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
+    //         let serieNaam = document.getElementById('beheer-albView-text').innerHTML;
 
-        let form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', '/beheer');
+    //         let form = document.createElement('form');
+    //         form.setAttribute('method', 'post');
+    //         form.setAttribute('action', '/beheer');
 
-        let fInp1 = document.createElement('input');
-        fInp1.setAttribute('type', 'text');
-        fInp1.setAttribute('name', 'serie-index');
-        fInp1.setAttribute('value', localStorage.huidigeIndex);
-        fInp1.hidden = true;
+    //         let fInp1 = document.createElement('input');
+    //         fInp1.setAttribute('type', 'text');
+    //         fInp1.setAttribute('name', 'serie-index');
+    //         fInp1.setAttribute('value', localStorage.huidigeIndex);
+    //         fInp1.hidden = true;
 
-        let fInp2 = document.createElement('input');
-        fInp2.setAttribute('type', 'text');
-        fInp2.setAttribute('name', 'serie-naam');
-        fInp2.setAttribute('value', serieNaam);
-        fInp2.hidden = true;
+    //         let fInp2 = document.createElement('input');
+    //         fInp2.setAttribute('type', 'text');
+    //         fInp2.setAttribute('name', 'serie-naam');
+    //         fInp2.setAttribute('value', serieNaam);
+    //         fInp2.hidden = true;
 
-        form.appendChild(fInp1);
-        form.appendChild(fInp2);
-        document.body.appendChild(form);
+    //         form.appendChild(fInp1);
+    //         form.appendChild(fInp2);
+    //         document.body.appendChild(form);
 
-        form.submit();
-    // If there wasnt, we can just return to the '/beheer' page
-    } else {
-        window.location.assign('/beheer');
-    }
-}
+    //         form.submit();
+    //     // If there wasnt, we can just return to the '/beheer' page
+    //     } else {
+    //         window.location.assign('/beheer');
+    //     }
+    // }
+ */
 
 // Add Album Submit function
 function albumToevSubm(e) {
@@ -398,37 +383,40 @@ function albumVerwijderen(e) {
     }
 }
 
-// Create series controller button
-function serieSelSubmit(e) {
-    // Get input, create new FormData, and prevent the default submit.
-    let inp = document.getElementById("serie-maken-inp");
-    let formData = new FormData();
-    e.preventDefault();
+// DEPRICATED
+/*
+    // Create series controller button
+    // function serieSelSubmit(e) {
+    //     // Get input, create new FormData, and prevent the default submit.
+    //     let inp = document.getElementById("serie-maken-inp");
+    //     let formData = new FormData();
+    //     e.preventDefault();
 
-    // If there is input selected, add input to FormData and send said input to PhP,
-    if(inp.value !== "") {
-        formData.append('naam-check', inp.value);
+    //     // If there is input selected, add input to FormData and send said input to PhP,
+    //     if(inp.value !== "") {
+    //         formData.append('naam-check', inp.value);
 
-        fetchRequest('serieM', 'POST', formData)
-        // Check for errors, and provide feedback about said errors.
-        .then((data) => {
-            if(data !== "Serie-Maken") {
-                displayMessage(data);
-            // If no errors
-            } else {
-                // cast serie name into the form input first,
-                document.getElementById('seriem-form-serieNaam').value = inp.value;
-                // then dispatch the event so the serie name is actually checked,
-                dispatchInputEvent(e);
-                // and then redirect to the pop-in.
-                window.location.assign('/beheer#seriem-pop-in');
-            }
-        })
-    // If there was no input selection for some reason, we provide user feedback.
-    } else {
-        displayMessage("Zonder opgegeven naam, kan er geen serie gemaakt worden!");
-    }
-}
+    //         fetchRequest('serieM', 'POST', formData)
+    //         // Check for errors, and provide feedback about said errors.
+    //         .then((data) => {
+    //             if(data !== "Serie-Maken") {
+    //                 displayMessage(data);
+    //             // If no errors
+    //             } else {
+    //                 // cast serie name into the form input first,
+    //                 document.getElementById('seriem-form-serieNaam').value = inp.value;
+    //                 // then dispatch the event so the serie name is actually checked,
+    //                 dispatchInputEvent(e);
+    //                 // and then redirect to the pop-in.
+    //                 window.location.assign('/beheer#seriem-pop-in');
+    //             }
+    //         })
+    //     // If there was no input selection for some reason, we provide user feedback.
+    //     } else {
+    //         displayMessage("Zonder opgegeven naam, kan er geen serie gemaakt worden!");
+    //     }
+    // }
+ */
 
 // Creat series pop-in button
 function serieMakSubm(e) {
@@ -463,17 +451,6 @@ function serieBekijken(e) {
     } else {
         return true;
     }
-}
-
-// Back button for the series view
-function beheerBackButt() {
-    // Revert the series view back to the main view, and hide the back button.
-    albView.replaceWith(serieView);
-    backButt.style.display = 'flex';
-    buttCont.style.position = "absolute";
-    document.getElementById('serie-bekijken-form-'+localStorage.huidigeIndex).reset();
-    document.getElementById('serie-bekijken-form-'+localStorage.huidigeIndex).submit();
-    localStorage.removeItem('huidigeIndex');
 }
 
 // Edit serie controller button

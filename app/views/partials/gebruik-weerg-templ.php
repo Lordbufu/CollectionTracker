@@ -1,11 +1,10 @@
 <div class="gebr-weerg-cont">
-    <?php
-        if(isset($_SESSION['page-data']['huidige-serie'])) {
-            echo "<h2 id='weergave-header'> {$_SESSION['page-data']['huidige-serie']}, met alle Albums: </h2>";
-        } else {
-            echo "<h2 id='weergave-header'> Huidige Serie, met alle Albums: </h2>";
-        }
-    ?>
+<?php if(isset($_SESSION['page-data']['huidige-serie'])): ?>
+    <h2 id='weergave-header'> <?=$_SESSION['page-data']['huidige-serie']?>, met alle Albums: </h2>
+<?php else: ?>
+    <h2 id='weergave-header'> Huidige Serie, met alle Albums: </h2>
+<?php endif; ?>
+
     <table class="album-tafel">
         <tr class="album-tafel-titles">
             <th> Aanwezig </th>
@@ -17,63 +16,57 @@
             <th> Opmerking </th>
         </tr>
 
-        <?php
-            $count = 0;
-            $aanw = false;
+<?php
+    if(isset($_SESSION['page-data']['albums'])):
+        $count = 0;
+        
+        foreach($_SESSION['page-data']['albums'] as $key => $value):
+            $count++;
+?>
 
-            if(isset($_SESSION['page-data']['albums'])):
-                $albums = $_SESSION['page-data']['albums'];
-                foreach($albums as $key => $value):
-                    $count++;
-                    echo "<tr class='album-tafel-inhoud-{$count}' id='album-tafel-inhoud'>";
-        ?>
-
+        <tr class='album-tafel-inhoud-<?=$count?>' id='album-tafel-inhoud'>
             <th class="album-aanwezig">
                 <form class="album-aanwezig-form" id="album-form">
-                    <?php
-                        if(isset($_SESSION['page-data']['collections'])) {
-                            $collecties = $_SESSION['page-data']['collections'];
+            <?php
+                if(isset($_SESSION['page-data']['collections'])):
+                    foreach($_SESSION['page-data']['collections'] as $iKey => $iValue):
+                        if($iValue['Alb_Index'] === $value['Album_Index']):
+            ?>
 
-                            foreach($collecties as $iKey => $iValue) {
-                                if($collecties[$iKey]['Alb_Index'] === $albums[$key]['Album_Index']) {
-                                    $aanw = true;
-                                }
-                            }
+                    <input class='album-aanwezig-checkbox' id='<?=$count?>' type='checkbox' checked style='display: none;'/>
+                    <label for='<?=$count?>' class='album-aanwezig-toggle'> </label>
 
-                            if($aanw) {
-                                echo "<input class='album-aanwezig-checkbox' id='{$count}' type='checkbox' checked style='display: none;'/>";
-                                echo "<label for='{$count}' class='album-aanwezig-toggle'> </label>";
-                            } else {
-                                echo "<input class='album-aanwezig-checkbox' id='{$count}' type='checkbox' style='display: none;'/>";
-                                echo "<label for='{$count}' class='album-aanwezig-toggle'> </label>";
-                            }
+                        <?php else: ?>
+                            
+                    <input class='album-aanwezig-checkbox' id='<?=$count?>' type='checkbox' style='display: none;'/>
+                    <label for='<?=$count?>' class='album-aanwezig-toggle'> </label>
 
-                            $aanw = false;
-                        } else if(!$aanw) {
-                            echo "<input class='album-aanwezig-checkbox' id='{$count}' type='checkbox' style='display: none;'/>";
-                            echo "<label for='{$count}' class='album-aanwezig-toggle'> </label>";
-                        }
-                    ?>
+            <?php
+                        endif;
+                    endforeach;
+            ?>
+            <?php else: ?>
+                    <input class='album-aanwezig-checkbox' id='<?=$count?>' type='checkbox' style='display: none;'/>
+                    <label for='<?=$count?>' class='album-aanwezig-toggle'> </label>
+            <?php endif; ?>
                 </form>
             </th>
-            <th class="album-naam" id="albumNaam"><?= $albums[$key]['Album_Naam']; ?></th>
-            <th class="album-uitgnr"><?= $albums[$key]['Album_Nummer']; ?></th>
+            <th class="album-naam" id="albumNaam"><?= $value['Album_Naam']; ?></th>
+            <th class="album-uitgnr"><?= $value['Album_Nummer']; ?></th>
             <th class="album-cover">
-            <?php
-                if($albums[$key]['Album_Cover'] == "") {
-                    echo "Geen";
-                } else {
-                    echo '<img id="alb-cov" src="'.$albums[$key]['Album_Cover'].'">';
-                }
-            ?>
+            <?php if($value['Album_Cover'] == ""): ?>
+                <?="Geen"?>
+            <?php else: ?>
+                <img id='album-cover-img' class='album-cover-img' src='<?=$value['Album_Cover']?>'>
+            <?php endif; ?>
             </th>
-            <th class="album-uitgdt"><?= $albums[$key]['Album_UitgDatum']; ?></th>
-            <th class="album-isbn"><?= $albums[$key]['Album_ISBN']; ?></th>
-            <th class="album-opm"><?= $albums[$key]['Album_Opm']; ?></th>
-            <?php
-                endforeach;
-                endif;
-            ?>
+            <th class="album-uitgdt"><?= $value['Album_UitgDatum']; ?></th>
+            <th class="album-isbn"><?= $value['Album_ISBN']; ?></th>
+            <th class="album-opm"><?= $value['Album_Opm']; ?></th>
+<?php
+        endforeach;
+    endif;
+?>
         </tr>
     </table>
 </div>

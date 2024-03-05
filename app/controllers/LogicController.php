@@ -133,9 +133,26 @@ class LogicController {
      */
     public function beheer() {
 		$authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
+        $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
 
         if(isset($_SESSION['user']['id'])) {
-            if(App::get('user')->checkUSer($_SESSION['user']['id'],  'rights')) {
+            if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
+                // If a pop-in is closed, and a serie is selected, we return to the page with all current session data.
+                if(isset($_POST['close-pop-in']) && isset($_SESSION['page-data']['huidige-serie'])) {
+                    return App::view('beheer');
+                }
+
+                // Check for duplicate serie names for the serie-maken controller.
+                if(isset($_POST['newSerName'])) {
+                    if(App::get('collection')->cheSerName($_POST['newSerName'])) {
+                        App::get('session')->setVariable('header', ['error' => $dupError]);
+                        return App::view('beheer');
+                    } else {
+                        App::get('session')->setVariable('page-data', ['new-serie' => $_POST['newSerName']]);
+                        return App::redirect('/beheer#seriem-pop-in');
+                    }
+                }
+
                 unset($_SESSION['page-data']);
 
                 if(empty($_SESSION['page-data']['series'])) {
@@ -144,82 +161,127 @@ class LogicController {
 
                 if(!empty($_POST['serie-index'])) {
                     App::get('session')->setVariable('page-data', App::get('collection')->getAlbums($_POST['serie-index']));
-                    App::get('session')->setVariable('page-data', ['huidige-serie' => App::get('collection')->getSerName($_POST['serie-index'])]);
-                    App::get('session')->setVariable('header', [
-                        'broSto' => [
-                            'huidigeIndex' => $_POST['serie-index'],
-                            'serieWeerg' => TRUE
-                        ]
-                    ]);
+                    App::get('session')->setVariable('page-data', ['huidige-serie' => App::get('collection')->getSerName($_POST['serie-index']) ] );
                 }
 
                 return App::view('beheer');
 
             } else {
-                App::get('session')->setVariable('error', $authFailed);
+                App::get('session')->setVariable('header', ['error' => $authFailed]);
 
                 return App::redirect('');
             }
         } else {
-            App::get('session')->setVariable('error', $authFailed);
+            App::get('session')->setVariable('header', ['error' => $authFailed]);
 
             return App::redirect('');
         }
     }
 
     // '/serieM' function, both the controlle and pop-in submits.
+    /*  serieM():
+            The POST route for '/serieM', for checking series names and creating series.
+            Where the latter is related to the pop-in form, and the former to the name input from the controller.
+
+            Return Value: JSON encoded data, for the JS fetch request.
+     */
     public function serieM() {
-        // Keep track of potential errors.
-        $naamError = false;
+        die(print_r($_POST));
+        
+        // Authentication error.
+        $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
 
-        // Before we open the pop-in, we check for double names.
-        if(isset($_POST['naam-check'])) {
-            $localSeries = App::get('database')->selectAll('series');
+        // check session user data
+        if(isset($_SESSION['user']['id'])) {
+            // validate user session data
+            if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
+                // despite being required, still check if the serie-name was set.
+                if(isset($_POST['serie-naam'])) { $sqlData = [ 'Serie_Naam' => htmlspecialchars($_POST['serie-naam']) ]; }
 
-            foreach($localSeries as $key => $value) {
-                if($value['Serie_Naam'] === $_POST['naam-check']) {
-                    $naamError = true;
+                // Ensure 'makers' has either a value or empty string
+                if(isset($_POST['makers'])) {
+                    $sqlData['Serie_Maker'] = htmlspecialchars($_POST['makers']);
+                } else { $sqlData['Serie_Maker'] = ''; }
+
+                // Ensure 'opmerking' has either a value or empty string
+                if(isset($_POST['opmerking'])) {
+                    $sqlData['Serie_Opmerk'] = htmlspecialchars($_POST['opmerking']);
+                } else { $sqlData['Serie_Opmerk'] = ''; }
+
+                // Attempt to store the data
+                $newSerie = App::get('collection')->setSerie($sqlData);
+        
+                // Check if there where errors or not, and ensure the right feedback is returned to JS.
+                if(isset($newSerie)) {
+                    // return error from the collection class.
+                } else {
+                    // return user feedback that the serie was added.
+                    $temp = ['fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is gelukt !'];
                 }
-            }
-
-            // And we give feedback to the user if there is an error.
-            if($naamError) {
-                echo json_encode("Deze serie naam bestaat al, gebruik een andere naam gebruiken !");
+            // Notify user that authentication failed, and redirect to the landingpage
             } else {
-                echo json_encode("Serie-Maken");
+                App::get('session')->setVariable('header', ['error' => $authFailed]);
+                return App::redirect('');
             }
-
-            return;
-        // If the submit was from the pop-in, we start with formating the data for SQL
+        // Notify user that authentication failed, and redirect to the landingpage
         } else {
-            $sqlData = [ 'Serie_Naam' => $_POST['serie-naam'] ];
-
-            // Ensure 'makers' has either a value or empty string
-            if(isset($_POST['makers'])) {
-                $sqlData['Serie_Maker'] = $_POST['makers'];
-            } else {
-                $sqlData['Serie_Maker'] = '';
-            }
-
-            // Ensure 'opmerking' has either a value or empty string
-            if(isset($_POST['opmerking'])) {
-                $sqlData['Serie_Opmerk'] = $_POST['opmerking'];
-            } else {
-                $sqlData['Serie_Opmerk'] = '';
-            }
-    
-            // Attempt to store the data via my own Processing class.
-            $newSerie = App::get('processing')->set_Object('series', $sqlData);
-    
-            // Check if there where errors or not, and ensure the right feedback is returned to JS.
-            if(isset($newSerie)) {
-                echo json_encode($newSerie);
-            } else {
-                echo json_encode("Het toevoegen van: " . $_POST['serie-naam'] . " is gelukt !");
-            }
-
-            return;
+            App::get('session')->setVariable('header', ['error' => $authFailed]);
+            return App::redirect('');  
         }
+
+        /*
+            // // Keep track of potential errors.
+            // $naamError = false;
+
+            // // Before we open the pop-in, we check for double names.
+            // if(isset($_POST['naam-check'])) {
+            //     $localSeries = App::get('database')->selectAll('series');
+
+            //     foreach($localSeries as $key => $value) {
+            //         if($value['Serie_Naam'] === $_POST['naam-check']) {
+            //             $naamError = true;
+            //         }
+            //     }
+
+            //     // And we give feedback to the user if there is an error.
+            //     if($naamError) {
+            //         echo json_encode("Deze serie naam bestaat al, gebruik een andere naam gebruiken !");
+            //     } else {
+            //         echo json_encode("Serie-Maken");
+            //     }
+
+            //     return;
+            // // If the submit was from the pop-in, we start with formating the data for SQL
+            // } else {
+            //     $sqlData = [ 'Serie_Naam' => $_POST['serie-naam'] ];
+
+            //     // Ensure 'makers' has either a value or empty string
+            //     if(isset($_POST['makers'])) {
+            //         $sqlData['Serie_Maker'] = $_POST['makers'];
+            //     } else {
+            //         $sqlData['Serie_Maker'] = '';
+            //     }
+
+            //     // Ensure 'opmerking' has either a value or empty string
+            //     if(isset($_POST['opmerking'])) {
+            //         $sqlData['Serie_Opmerk'] = $_POST['opmerking'];
+            //     } else {
+            //         $sqlData['Serie_Opmerk'] = '';
+            //     }
+        
+            //     // Attempt to store the data via my own Processing class.
+            //     $newSerie = App::get('processing')->set_Object('series', $sqlData);
+        
+            //     // Check if there where errors or not, and ensure the right feedback is returned to JS.
+            //     if(isset($newSerie)) {
+            //         echo json_encode($newSerie);
+            //     } else {
+            //         echo json_encode("Het toevoegen van: " . $_POST['serie-naam'] . " is gelukt !");
+            //     }
+
+            //     return;
+            // }
+         */
     }
 
     // '/albumT' function, add album to database.
@@ -414,10 +476,7 @@ class LogicController {
                 App::get('session')->setVariable('page-data', App::get('collection')->getSeries());
 
                 if(!empty($_POST['serie_naam'])) {
-                    App::get('session')->setVariable('page-data', App::get('collection')->getAlbums(
-                        App::get('collection')->getSerInd($_POST['serie_naam'])
-                    ));
-
+                    App::get('session')->setVariable('page-data', App::get('collection')->getAlbums(App::get('collection')->getSerInd($_POST['serie_naam'])));
                     App::get('session')->setVariable('page-data', App::get('collection')->getColl($_SESSION['user']['id']));
                     App::get('session')->setVariable('page-data', ['huidige-serie' => $_POST['serie_naam']]);
                 }
