@@ -137,7 +137,7 @@ class LogicController {
 
         if(isset($_SESSION['user']['id'])) {
             if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
-                // If a pop-in is closed, and a serie is selected, we return to the page with all current session data.
+                // If a pop-in is closed, and a serie is selected, we return to the admin page.
                 if(isset($_POST['close-pop-in']) && isset($_SESSION['page-data']['huidige-serie'])) {
                     return App::view('beheer');
                 }
@@ -186,17 +186,36 @@ class LogicController {
             Return Value: JSON encoded data, for the JS fetch request.
      */
     public function serieM() {
-        die(print_r($_POST));
+        //die(print_r($_POST));
         
         // Authentication error.
         $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
+        $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
 
         // check session user data
         if(isset($_SESSION['user']['id'])) {
             // validate user session data
             if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
                 // despite being required, still check if the serie-name was set.
-                if(isset($_POST['serie-naam'])) { $sqlData = [ 'Serie_Naam' => htmlspecialchars($_POST['serie-naam']) ]; }
+                if(isset($_POST['serie-naam'])) {
+                    // Since the serie name can be changed, check for duplicate entries again.
+                    if(App::get('collection')->cheSerName($_POST['serie-naam'])) {
+                        // return the input to JS
+                        App::get('session')->setVariable('header', ["broSto" => [
+                            "serieNaam" => $_POST['serie-naam'],
+                            "makers" => $_POST['makers'],
+                            "opmerking" => $_POST['opmerking']
+                        ]]);
+
+                        // return the error feedback to JS
+                        App::get('session')->setVariable('header', ['error' => $dupError]);
+                        
+                        // redirect to the pop-in
+                        return App::redirect('beheer#seriem-pop-in');
+                    } else {
+                        $sqlData = [ 'Serie_Naam' => htmlspecialchars($_POST['serie-naam']) ];
+                    }
+                }
 
                 // Ensure 'makers' has either a value or empty string
                 if(isset($_POST['makers'])) {
