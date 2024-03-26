@@ -54,6 +54,21 @@ function initBeheer() {
         localStorage.removeItem("welcome");
     }
 
+    // Check if create serie had duplication issues
+    if(localStorage.makers) {
+        let nameInp = document.getElementById('seriem-form-serieNaam');
+        let makerInp = document.getElementById('seriem-form-makers');
+        let commentInp = document.getElementById('seriem-form-opmerking');
+
+        nameInp.value = localStorage.serieNaam;
+        makerInp.value = localStorage.makers;
+        commentInp.value = localStorage.opmerking;
+
+        localStorage.removeItem('serieNaam');
+        localStorage.removeItem('makers');
+        localStorage.removeItem('opmerking');
+    }
+
     // Display feedback messages, that are stored before a page refresh.
     if(localStorage.fetchResponse !== null) {
         displayMessage(localStorage.fetchResponse);
