@@ -131,7 +131,7 @@ class Collection {
     }
 
     // W.I.P.
-    // Lacking a proper check and error return, for now it only has a useless name check.
+    // Need a FALSE condition, to see what happened with the querry.
     /*  setSerie($data):
             This functions set the a serie in the database, all filtering etc is done in the controller.
 
@@ -140,14 +140,7 @@ class Collection {
             Return value        : Boolean
      */
     public function setSerie($data) {
-        $check = $this->checkDupl('series', ['name' => $data['Serie_Naam'] ]);
-        
-        if(!$check) {
-            App::get('database')->insert('series', $data);
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return App::get('database')->insert('series', $data) ? TRUE : FALSE;
     }
 
     // remove serie in database for the admin
@@ -244,6 +237,7 @@ class Collection {
         return TRUE;                                                                // and indicate the data was stored.
     }
 
+    // Still needs a FALSE condition, or somekind of check to see what happened with the querry.
     /*  remColl($data):
             Function to remove specifc collection data from the database.
 
