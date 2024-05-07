@@ -7,7 +7,7 @@ use App\Core\App;
 class PagesController {
 	/*	landing():
 			The landing/homepage of the website, that checks if the database tables are present.
-			If not present (err0r 42S02), i redirect to a route that creates all tables and the admin account.
+			If not present (error 42S02), i redirect to a route that creates all tables and the admin account.
 
 			Return Value:
 				On Validation: (view)			-> index.view.php
@@ -33,8 +33,10 @@ class PagesController {
 	public function beheer() {
 		$authFailed = [ "error" => [ "fetchResponse" => "Access denied, Account authentication failed !" ] ];
 
-		// Don't unset if 'new-serie' was set, else we get unexpected behavior ¿.
-		if(!isset($_SESSION['page-data']['new-serie'])) { unset($_SESSION['page-data']); }
+		// Don't unset if 'new-serie' was set, else we get unexpected behavior.
+		if(!isset($_SESSION['page-data']['new-serie'])) {
+			unset($_SESSION['page-data']);
+		}
 
 		if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
 			App::get('session')->setVariable('page-data', App::get('collection')->getSeries());

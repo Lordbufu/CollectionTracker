@@ -4,16 +4,17 @@ namespace App\Core;
 use App\Core\App;
 
 class Collection {
+    // Protected/Internal functions and variables.
     protected $albums;
     protected $series;
     protected $collections;
 
-    /* getSetId($name):
+    /*  getSetId($name):
             Get serie index based on serie name.
 
             $name (String)  : The name of the series we want the index for.
 
-            Return Value: INT
+            Return Value    : INT
      */
     protected function getSerId($name) {
         $tempSerie = App::get('database')->selectAllWhere('series', [
@@ -23,17 +24,44 @@ class Collection {
         return $tempSerie['Serie_Index'];
     }
 
-    // W.I.P.
+    /*  countAlbums():
+            We use the database to count the number of albums in a series, and store it in the global.
+            So it can be displayed, each time getSeries is called, the number is updated.
+     */
     protected function countAlbums() {
-        // Loop over all stored series,
         foreach($this->series as $key => $value) {
-            // Then count the albums in the data base, and store it with each serie.
             $this->series[$key]['Album_Aantal'] = App::get('database')->countAlbums($value['Serie_Index']);
         }
 
-        // return to caller.
         return;
     }
+
+    // W.I.P.
+    /*  checkDupl($type, $data = []):
+            This function is desgined to check in all items, if there is a duplicated entry in the database.
+
+            $type (String)          : The type of store i want to check, albums/series/collections.
+            $data (Assoc Array)     : The data required for the check, this varies depending on the store.
+
+            Return value            : Boolean.
+     */
+    public function checkDupl($type, $data = []) {
+        if($type == 'albums') {
+            // W.I.P.
+        } elseif($type == 'series') {
+            foreach($this->series as $index => $serie) {
+                if($data['name'] == $serie['Serie_Naam']) {
+                    return TRUE;
+                }
+            }
+    
+            return FALSE;
+        } elseif($type == 'collections') {
+            // W.I.P.
+        }
+    }
+
+    // Public get/set functions.
 
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
@@ -43,10 +71,17 @@ class Collection {
     public function getSeries() {
         $this->series = App::get('database')->selectAll('series');
         $this->countAlbums();
+
         return $this->series;
     }
 
-    // W.I.P.
+    /*  getSerName($ind):
+            This function takes the serie index number, and finds the matching serie naam.
+
+            $ind (INT)      : The index of the serie.
+
+            Return Value    : String
+     */
     public function getSerName($ind) {
         if(!isset($this->series)) {
             $this->getSeries();
@@ -59,7 +94,13 @@ class Collection {
         }
     }
 
-    // W.I.P.
+    /*  getSerInd($name):
+            This function takes a serie name, and finds the matching serie index.
+
+            $name (String)  : The name of the serie.
+
+            Return Value    : INT
+     */
     public function getSerInd($name) {
         if(!isset($this->series)) {
             $this->getSeries();
@@ -72,24 +113,41 @@ class Collection {
         }
     }
 
-    // W.I.P.
+    /*  cheSerName($name):
+            This function checks if the name/entry, is duplicate or not.
+
+            $name (String)  : The name of the serie.
+
+            Return Value    : Boolean
+     */
     public function cheSerName($name) {
         if(!isset($this->series)) {
             $this->getSeries();
         }
 
-        foreach($this->series as $index => $serie) {
-            if($name == $serie['Serie_Naam']) {
-                return TRUE;
-            }
-        }
+        $check = $this->checkDupl('series', ['name' => $name]);
 
-        return FALSE;
+        return boolval($check) ? TRUE : FALSE;
     }
 
-    // set serie in database for the admin
+    // W.I.P.
+    // Lacking a proper check and error return, for now it only has a useless name check.
+    /*  setSerie($data):
+            This functions set the a serie in the database, all filtering etc is done in the controller.
+
+            $data (Assoc Array) : The data that needs to be stored.
+
+            Return value        : Boolean
+     */
     public function setSerie($data) {
-        die(var_dump(print_r($data)));
+        $check = $this->checkDupl('series', ['name' => $data['Serie_Naam'] ]);
+        
+        if(!$check) {
+            App::get('database')->insert('series', $data);
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
     // remove serie in database for the admin
@@ -118,7 +176,7 @@ class Collection {
         }
     }
 
-    /* getAlbId($name):
+    /*  getAlbId($name):
             Get serie index based on album name.
 
             $name (String)  : The name of the album we want the index for.

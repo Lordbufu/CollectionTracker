@@ -1,6 +1,7 @@
 <?php
 
 //  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
+//  TODO: Change return view to redirects, when there is error set for the header/JS (example line: 150).
 
 namespace App\Controllers;
 
@@ -146,7 +147,7 @@ class LogicController {
                 if(isset($_POST['newSerName'])) {
                     if(App::get('collection')->cheSerName($_POST['newSerName'])) {
                         App::get('session')->setVariable('header', ['error' => $dupError]);
-                        return App::view('beheer');
+                        return App::redirect('beheer'); // redirect to clear post and thus the repeat of the error on page refresh.
                     } else {
                         App::get('session')->setVariable('page-data', ['new-serie' => $_POST['newSerName']]);
                         return App::redirect('/beheer#seriem-pop-in');
@@ -186,8 +187,6 @@ class LogicController {
             Return Value: JSON encoded data, for the JS fetch request.
      */
     public function serieM() {
-        //die(print_r($_POST));
-        
         // Authentication error.
         $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
         $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
@@ -212,30 +211,36 @@ class LogicController {
                         
                         // redirect to the pop-in
                         return App::redirect('beheer#seriem-pop-in');
+                    // Store and filter input for special chars.
                     } else {
                         $sqlData = [ 'Serie_Naam' => htmlspecialchars($_POST['serie-naam']) ];
                     }
                 }
 
                 // Ensure 'makers' has either a value or empty string
-                if(isset($_POST['makers'])) {
-                    $sqlData['Serie_Maker'] = htmlspecialchars($_POST['makers']);
-                } else { $sqlData['Serie_Maker'] = ''; }
+                $sqlData['Serie_Maker'] = isset($_POST['makers']) ? htmlspecialchars($_POST['makers']) : '';
 
                 // Ensure 'opmerking' has either a value or empty string
-                if(isset($_POST['opmerking'])) {
-                    $sqlData['Serie_Opmerk'] = htmlspecialchars($_POST['opmerking']);
-                } else { $sqlData['Serie_Opmerk'] = ''; }
+                $sqlData['Serie_Opmerk'] = isset($_POST['opmerking']) ? htmlspecialchars($_POST['opmerking']) : '';
 
                 // Attempt to store the data
-                $newSerie = App::get('collection')->setSerie($sqlData);
+                $store = App::get('collection')->setSerie($sqlData);
         
                 // Check if there where errors or not, and ensure the right feedback is returned to JS.
-                if(isset($newSerie)) {
-                    // return error from the collection class.
-                } else {
+                if($store === TRUE) {
                     // return user feedback that the serie was added.
-                    $temp = ['fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is gelukt !'];
+                    App::get('session')->setVariable('header', ['feedB' => [
+                        'fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is gelukt !']
+                    ]);
+
+                    return App::redirect('beheer');
+                } else {
+                    // return error from the collection class.
+                    App::get('session')->setVariable('header', ['error' => [
+                        'fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is niet gelukt !']
+                    ]);
+                    
+                    return App::redirect('beheer');
                 }
             // Notify user that authentication failed, and redirect to the landingpage
             } else {
@@ -247,60 +252,6 @@ class LogicController {
             App::get('session')->setVariable('header', ['error' => $authFailed]);
             return App::redirect('');  
         }
-
-        /*
-            // // Keep track of potential errors.
-            // $naamError = false;
-
-            // // Before we open the pop-in, we check for double names.
-            // if(isset($_POST['naam-check'])) {
-            //     $localSeries = App::get('database')->selectAll('series');
-
-            //     foreach($localSeries as $key => $value) {
-            //         if($value['Serie_Naam'] === $_POST['naam-check']) {
-            //             $naamError = true;
-            //         }
-            //     }
-
-            //     // And we give feedback to the user if there is an error.
-            //     if($naamError) {
-            //         echo json_encode("Deze serie naam bestaat al, gebruik een andere naam gebruiken !");
-            //     } else {
-            //         echo json_encode("Serie-Maken");
-            //     }
-
-            //     return;
-            // // If the submit was from the pop-in, we start with formating the data for SQL
-            // } else {
-            //     $sqlData = [ 'Serie_Naam' => $_POST['serie-naam'] ];
-
-            //     // Ensure 'makers' has either a value or empty string
-            //     if(isset($_POST['makers'])) {
-            //         $sqlData['Serie_Maker'] = $_POST['makers'];
-            //     } else {
-            //         $sqlData['Serie_Maker'] = '';
-            //     }
-
-            //     // Ensure 'opmerking' has either a value or empty string
-            //     if(isset($_POST['opmerking'])) {
-            //         $sqlData['Serie_Opmerk'] = $_POST['opmerking'];
-            //     } else {
-            //         $sqlData['Serie_Opmerk'] = '';
-            //     }
-        
-            //     // Attempt to store the data via my own Processing class.
-            //     $newSerie = App::get('processing')->set_Object('series', $sqlData);
-        
-            //     // Check if there where errors or not, and ensure the right feedback is returned to JS.
-            //     if(isset($newSerie)) {
-            //         echo json_encode($newSerie);
-            //     } else {
-            //         echo json_encode("Het toevoegen van: " . $_POST['serie-naam'] . " is gelukt !");
-            //     }
-
-            //     return;
-            // }
-         */
     }
 
     // '/albumT' function, add album to database.
