@@ -20,6 +20,7 @@ namespace App\Core;
                 - series (Assoc Array)      : All series that needs to be displayed.
                 - huidige-serie (string)    : The current selected serie, for both the user and admin.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
+                - add-album (int)           : The Series index key, that the user wants to add a album to.
  */
 
 //  TODO: Maybe figure out if the SID Length can be longer, not sure if even required tbh ?

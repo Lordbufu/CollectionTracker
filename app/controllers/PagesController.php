@@ -33,10 +33,8 @@ class PagesController {
 	public function beheer() {
 		$authFailed = [ "error" => [ "fetchResponse" => "Access denied, Account authentication failed !" ] ];
 
-		// Don't unset if 'new-serie' was set, else we get unexpected behavior.
-		if(!isset($_SESSION['page-data']['new-serie'])) {
-			unset($_SESSION['page-data']);
-		}
+		// Don't unset if 'new-serie' and 'add-album' were not set, to prevent unexpected behavior.
+		if(!isset($_SESSION['page-data']['new-serie']) && !isset($_SESSION['page-data']['add-album'])) { unset($_SESSION['page-data']); }
 
 		if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
 			App::get('session')->setVariable('page-data', App::get('collection')->getSeries());

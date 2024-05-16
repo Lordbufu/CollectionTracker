@@ -197,92 +197,6 @@ function albCovCheck(e) {
     }
 }
 
-// Add album function to open the pop-in
-function albumToevInv() {
-    let uInp = document.getElementById("album-toev").value;
-    let ind = localStorage.huidigeIndex;
-
-    // If there is a series index, i save it in the pop-in form, along with the name.
-    if(ind !== "" || ind !== null || ind !== undefined) {
-        document.getElementById("albumt-form-indexT").value = localStorage.huidigeIndex;
-        document.getElementById("albumt-form-seNaam").value = uInp;
-    // If there isnt i just pass on the serie name.
-    } else {
-        document.getElementById("albumt-form-seNaam").value = uInp;
-    }
-
-    // If a selection is made i open the pop-in, if not is give user feedback.
-    if(uInp !== "" && uInp !== null && uInp !== undefined) {
-        window.location.assign('/beheer#albumt-pop-in');
-    } else {
-        displayMessage("U kan geen album toevoegen, als u geen selectie maakt!");
-    }
-}
-
-// DEPRICATED
-/*
-    // Function to close pop-ins while on the '/beheer' page.
-    // function popInClose() {
-    //     // If a series index was stored, i need to request a new view from PhP
-    //     if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
-    //         let serieNaam = document.getElementById('beheer-albView-text').innerHTML;
-
-    //         let form = document.createElement('form');
-    //         form.setAttribute('method', 'post');
-    //         form.setAttribute('action', '/beheer');
-
-    //         let fInp1 = document.createElement('input');
-    //         fInp1.setAttribute('type', 'text');
-    //         fInp1.setAttribute('name', 'serie-index');
-    //         fInp1.setAttribute('value', localStorage.huidigeIndex);
-    //         fInp1.hidden = true;
-
-    //         let fInp2 = document.createElement('input');
-    //         fInp2.setAttribute('type', 'text');
-    //         fInp2.setAttribute('name', 'serie-naam');
-    //         fInp2.setAttribute('value', serieNaam);
-    //         fInp2.hidden = true;
-
-    //         form.appendChild(fInp1);
-    //         form.appendChild(fInp2);
-    //         document.body.appendChild(form);
-
-    //         form.submit();
-    //     // If there wasnt, we can just return to the '/beheer' page
-    //     } else {
-    //         window.location.assign('/beheer');
-    //     }
-    // }
- */
-
-// Add Album Submit function
-function albumToevSubm(e) {
-    // Get form, store as FormData, and prevent the default form submit
-    let form = document.getElementById('albumt-form');
-    let formData = new FormData(form);
-    e.preventDefault();
-
-    // Send fetch request to PhP, check for errors, store user feedback before closing the pop-in
-    fetchRequest('albumT', 'POST', formData)
-    .then((data) => {
-        if(typeof data != 'object') {
-            localStorage.setItem('fetchResponse', data);
-            popInClose();
-        // If we have errors, we ensure they are all displayed properly.
-        } else {
-            if(data.aNaamFailed != "") {
-                if(data.aIsbnFailed != "") {
-                    displayMessage(data.aNaamFailed, data.aIsbnFailed);
-                } else {
-                    displayMessage(data.aNaamFailed);
-                }
-            } else {
-                displayMessage(data.aIsbnFailed);
-            }
-        }
-    })
-}
-
 // Edit Album button
 function albumBewerken(e) {
     // Load all data required to display the current album info
@@ -396,60 +310,6 @@ function albumVerwijderen(e) {
             form.submit();
         });
     }
-}
-
-// DEPRICATED
-/*
-    // Create series controller button
-    // function serieSelSubmit(e) {
-    //     // Get input, create new FormData, and prevent the default submit.
-    //     let inp = document.getElementById("serie-maken-inp");
-    //     let formData = new FormData();
-    //     e.preventDefault();
-
-    //     // If there is input selected, add input to FormData and send said input to PhP,
-    //     if(inp.value !== "") {
-    //         formData.append('naam-check', inp.value);
-
-    //         fetchRequest('serieM', 'POST', formData)
-    //         // Check for errors, and provide feedback about said errors.
-    //         .then((data) => {
-    //             if(data !== "Serie-Maken") {
-    //                 displayMessage(data);
-    //             // If no errors
-    //             } else {
-    //                 // cast serie name into the form input first,
-    //                 document.getElementById('seriem-form-serieNaam').value = inp.value;
-    //                 // then dispatch the event so the serie name is actually checked,
-    //                 dispatchInputEvent(e);
-    //                 // and then redirect to the pop-in.
-    //                 window.location.assign('/beheer#seriem-pop-in');
-    //             }
-    //         })
-    //     // If there was no input selection for some reason, we provide user feedback.
-    //     } else {
-    //         displayMessage("Zonder opgegeven naam, kan er geen serie gemaakt worden!");
-    //     }
-    // }
- */
-
-// Creat series pop-in button
-function serieMakSubm(e) {
-    // Get form element, create new FormData from it, and prevent the default submit.
-    let form = document.getElementById('seriem-form');
-    let formData = new FormData(form);
-    e.preventDefault();
-
-    // Send form to PhP, check for error, store user feedback, and redirect back to the main view.
-    fetchRequest('serieM', 'POST', formData)
-    .then((data) => {
-        if(typeof(data) !== "object") {
-            localStorage.setItem('fetchResponse', data);
-            window.location.assign('/beheer');
-        } else {
-            displayMessage(data['Serie_Naam']);
-        }
-    })
 }
 
 // View Series button
@@ -566,3 +426,138 @@ function aResetBev(e) {
         displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals");
     }
 }
+
+// OLD CODE THAT IS DEPRICATED NOW
+    // Function to close pop-ins while on the '/beheer' page.
+    // function popInClose() {
+    //     // If a series index was stored, i need to request a new view from PhP
+    //     if(localStorage.huidigeIndex !== "" && localStorage.huidigeIndex !== null && localStorage.huidigeIndex !== undefined) {
+    //         let serieNaam = document.getElementById('beheer-albView-text').innerHTML;
+
+    //         let form = document.createElement('form');
+    //         form.setAttribute('method', 'post');
+    //         form.setAttribute('action', '/beheer');
+
+    //         let fInp1 = document.createElement('input');
+    //         fInp1.setAttribute('type', 'text');
+    //         fInp1.setAttribute('name', 'serie-index');
+    //         fInp1.setAttribute('value', localStorage.huidigeIndex);
+    //         fInp1.hidden = true;
+
+    //         let fInp2 = document.createElement('input');
+    //         fInp2.setAttribute('type', 'text');
+    //         fInp2.setAttribute('name', 'serie-naam');
+    //         fInp2.setAttribute('value', serieNaam);
+    //         fInp2.hidden = true;
+
+    //         form.appendChild(fInp1);
+    //         form.appendChild(fInp2);
+    //         document.body.appendChild(form);
+
+    //         form.submit();
+    //     // If there wasnt, we can just return to the '/beheer' page
+    //     } else {
+    //         window.location.assign('/beheer');
+    //     }
+    // }
+
+    // Create series controller button
+    // function serieSelSubmit(e) {
+    //     // Get input, create new FormData, and prevent the default submit.
+    //     let inp = document.getElementById("serie-maken-inp");
+    //     let formData = new FormData();
+    //     e.preventDefault();
+
+    //     // If there is input selected, add input to FormData and send said input to PhP,
+    //     if(inp.value !== "") {
+    //         formData.append('naam-check', inp.value);
+
+    //         fetchRequest('serieM', 'POST', formData)
+    //         // Check for errors, and provide feedback about said errors.
+    //         .then((data) => {
+    //             if(data !== "Serie-Maken") {
+    //                 displayMessage(data);
+    //             // If no errors
+    //             } else {
+    //                 // cast serie name into the form input first,
+    //                 document.getElementById('seriem-form-serieNaam').value = inp.value;
+    //                 // then dispatch the event so the serie name is actually checked,
+    //                 dispatchInputEvent(e);
+    //                 // and then redirect to the pop-in.
+    //                 window.location.assign('/beheer#seriem-pop-in');
+    //             }
+    //         })
+    //     // If there was no input selection for some reason, we provide user feedback.
+    //     } else {
+    //         displayMessage("Zonder opgegeven naam, kan er geen serie gemaakt worden!");
+    //     }
+    // }
+
+    // Creat series pop-in button
+    // function serieMakSubm(e) {
+    //     // Get form element, create new FormData from it, and prevent the default submit.
+    //     let form = document.getElementById('seriem-form');
+    //     let formData = new FormData(form);
+    //     e.preventDefault();
+
+    //     // Send form to PhP, check for error, store user feedback, and redirect back to the main view.
+    //     fetchRequest('serieM', 'POST', formData)
+    //     .then((data) => {
+    //         if(typeof(data) !== "object") {
+    //             localStorage.setItem('fetchResponse', data);
+    //             window.location.assign('/beheer');
+    //         } else {
+    //             displayMessage(data['Serie_Naam']);
+    //         }
+    //     })
+    // }
+
+    // Add album function to open the pop-in
+    // function albumToevInv() {
+    //     let uInp = document.getElementById("album-toev").value;
+    //     let ind = localStorage.huidigeIndex;
+
+    //     // If there is a series index, i save it in the pop-in form, along with the name.
+    //     if(ind !== "" || ind !== null || ind !== undefined) {
+    //         document.getElementById("albumt-form-indexT").value = localStorage.huidigeIndex;
+    //         document.getElementById("albumt-form-seNaam").value = uInp;
+    //     // If there isnt i just pass on the serie name.
+    //     } else {
+    //         document.getElementById("albumt-form-seNaam").value = uInp;
+    //     }
+
+    //     // If a selection is made i open the pop-in, if not is give user feedback.
+    //     if(uInp !== "" && uInp !== null && uInp !== undefined) {
+    //         window.location.assign('/beheer#albumt-pop-in');
+    //     } else {
+    //         displayMessage("U kan geen album toevoegen, als u geen selectie maakt!");
+    //     }
+    // }
+
+    // Add Album Submit function
+    // function albumToevSubm(e) {
+    //     // Get form, store as FormData, and prevent the default form submit
+    //     let form = document.getElementById('albumt-form');
+    //     let formData = new FormData(form);
+    //     e.preventDefault();
+
+    //     // Send fetch request to PhP, check for errors, store user feedback before closing the pop-in
+    //     fetchRequest('albumT', 'POST', formData)
+    //     .then((data) => {
+    //         if(typeof data != 'object') {
+    //             localStorage.setItem('fetchResponse', data);
+    //             popInClose();
+    //         // If we have errors, we ensure they are all displayed properly.
+    //         } else {
+    //             if(data.aNaamFailed != "") {
+    //                 if(data.aIsbnFailed != "") {
+    //                     displayMessage(data.aNaamFailed, data.aIsbnFailed);
+    //                 } else {
+    //                     displayMessage(data.aNaamFailed);
+    //                 }
+    //             } else {
+    //                 displayMessage(data.aIsbnFailed);
+    //             }
+    //         }
+    //     })
+    // }
