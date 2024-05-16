@@ -3,6 +3,7 @@ namespace App\Core;
 
 use App\Core\App;
 
+//  TODO: Go over all code, and adjust for database error returned from the collection class, since querry execution now returns the DB error as a string.
 class Collection {
     // Protected/Internal functions and variables.
     protected $albums;
@@ -41,13 +42,19 @@ class Collection {
             This function is desgined to check in all items, if there is a duplicated entry in the database.
 
             $type (String)          : The type of store i want to check, albums/series/collections.
-            $data (Assoc Array)     : The data required for the check, this varies depending on the store.
+            $data (Assoc Array)     : The data required for the check, this could vary depending on the store, but is usually the name.
 
             Return value            : Boolean.
      */
     public function checkDupl($type, $data = []) {
         if($type == 'albums') {
-            // W.I.P.
+            foreach($this->albums as $index => $album) {
+                if($data['name'] == $album['Album_Naam']) {
+                    return TRUE;
+                }
+            }
+
+            return FALSE;
         } elseif($type == 'series') {
             foreach($this->series as $index => $serie) {
                 if($data['name'] == $serie['Serie_Naam']) {
@@ -127,20 +134,22 @@ class Collection {
 
         $check = $this->checkDupl('series', ['name' => $name]);
 
-        return boolval($check) ? TRUE : FALSE;
+        return $check;
     }
 
-    // W.I.P.
-    // Need a FALSE condition, to see what happened with the querry.
     /*  setSerie($data):
             This functions set the a serie in the database, all filtering etc is done in the controller.
 
             $data (Assoc Array) : The data that needs to be stored.
 
-            Return value        : Boolean
+            Return Type:
+                On sucess   -> Boolean
+                On fail     -> String (the database error)
      */
     public function setSerie($data) {
-        return App::get('database')->insert('series', $data) ? TRUE : FALSE;
+        $store = App::get('database')->insert('series', $data);
+
+        return is_string($store) ? $store : TRUE;
     }
 
     // remove serie in database for the admin
@@ -184,8 +193,38 @@ class Collection {
         return $tempAlbum['Album_Index'];
     }
 
-    // set album in database for the admin
-    public function setAlbum($data) { }
+    /*  cheAlbName($serInd, $name):
+            Checks if the requested album name is duplicate for that specific series or not.
+
+            $setInd (INT)   - The index of the serie that contains the album.
+            $name (String)  - The album name that needs to be checked.
+
+            Return Type : Boolean.
+     */
+    public function cheAlbName($serInd, $name) {
+        if(!isset($this->albums)) {
+            $this->getAlbums($serInd);
+        }
+
+        $check = $this->checkDupl('albums', ['name' => $name]);
+
+        return $check;
+    }
+
+    /*  setAlbum($data):
+            This function simply sets the Album in the database, since all relevant checks have been done in advance.
+
+            $data (Assoc Array) : The Album data that needs to be stored.
+
+            Return types:
+                On-success  : Boolean
+                On-failure  : String
+     */
+    public function setAlbum($data) {
+        $store = App::get('database')->insert('albums', $data);
+
+        return is_string($store) ? $store : TRUE;
+    }
 
     // remove album in database for the admin
     public function remAlbum($data) { }
@@ -237,7 +276,6 @@ class Collection {
         return TRUE;                                                                // and indicate the data was stored.
     }
 
-    // Still needs a FALSE condition, or somekind of check to see what happened with the querry.
     /*  remColl($data):
             Function to remove specifc collection data from the database.
 
@@ -251,9 +289,9 @@ class Collection {
             "Alb_Index" => $data["Alb_Index"]
         ];
 
-        App::get('database')->remove('collecties', $colIds);
+        $temp = App::get('database')->remove('collecties', $colIds);
 
-        return TRUE;
+        return is_string($temp) ? $temp : TRUE;
     }
 }
 

@@ -12,7 +12,7 @@
     </div>
 
     <div class="album-toev-cont">
-        <form class="album-toev-form" id="album-toev-form" >
+        <form class="album-toev-form" id="album-toev-form" method="post" action="/beheer">
             <label for="album-toev" class="album-toev-lab"> Album Toevoegen: </label>
             <select class="album-toev" name="album-toev" id="album-toev" required>
                 <option value=""> Selecteer een serie </option>
@@ -26,7 +26,7 @@
                     endif;
                 ?>
             </select>
-            <input class="album-toev-subm" id="album-toev-subm" type="button" value="Invoeren" onclick="albumToevInv()" />
+            <input class="album-toev-subm" id="album-toev-subm" type="submit" value="Invoeren" />
         </form>
     </div>
     

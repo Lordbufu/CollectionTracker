@@ -2,6 +2,7 @@
 namespace App\Core\Database;
 
 use PDO;
+use PDOException;
 
 /* sprintf() reminder:
     The sprintf() function is very usefull to create querry string for the PDO class to execute/process.
@@ -182,17 +183,29 @@ class QueryBuilder {
     //  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
     //      $sql (string)       - The querry string with placeholders that has been prepared.
     //      $id (Assoc Array)   - The identifiers required to select/update/remove specific data
+    //      
+    //      Return Value:
+    //          On success  (Assoc Array)   - The data that was requested.
+    //          On fail     (String)        - The database error in full detail.
     public function executeQuerry($sql, $id = []) {
         // If the '$id' is empty, i dont need to worry about placeholders for identifying data.
         if(empty($id)) {
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute();
-            return $statement->fetchAll(PDO::FETCH_ASSOC);
+            try {
+                $statement = $this->pdo->prepare($sql);
+                $statement->execute();
+                return $statement->fetchAll(PDO::FETCH_ASSOC);
+            } catch(PDOException $e) {
+                return "Error: ". $e->getMessage();
+            }
         // In all other cases, i need to use '$id', to get the data casted into the right placeholders.
         } else {
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute($id);
-            return $statement->fetchAll(PDO::FETCH_ASSOC);
+            try {
+                $statement = $this->pdo->prepare($sql);
+                $statement->execute($id);
+                return $statement->fetchAll(PDO::FETCH_ASSOC);
+            } catch(PDOException $e) {
+                return "Error: ". $e->getMessage();
+            }
         }
     }
 
