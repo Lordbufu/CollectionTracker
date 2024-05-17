@@ -19,6 +19,7 @@ namespace App\Core;
                 - albums (Assoc Array)      : All albums that needs to be displayed.
                 - series (Assoc Array)      : All series that needs to be displayed.
                 - huidige-serie (string)    : The current selected serie, for both the user and admin.
+                - edit-serie (int)          : The series index of the serie that is requested for editing.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
                 - add-album (int)           : The Series index key, that the user wants to add a album to.
  */
@@ -116,9 +117,44 @@ class SessionMan {
         return;
     }
 
+    /*  checkVariable($store, $key):
+            For certain processes, i need to be able to check if certain variables are set, or a combination of variables.
+            Mostly designed to see if i can unset a variable, and not mess up the workflow of the App.
+
+                $store  - String        -> The name of the store, for example 'page-data'.
+                $keys   - Assoc Array   -> The keys in the store, that i need to know are set or not, can be a single key.
+
+            Return Value: Boolean.
+     */
+    public function checkVariable($store, $keys = []) {
+        // First we check if there was data in the session store.
+        if(isset($_SESSION[$store])) {
+            // Loop over each entry in the store
+            foreach($_SESSION[$store] as $entry => $value) {
+                // Check if keys is a string, and match it against the store.
+                if(is_string($keys) && $keys == $entry) {
+                    // Return TRUE if there is single match.
+                    return TRUE;
+                // If keys was not a string, we loop over the keys.
+                } else {
+                    foreach($keys as $key) {
+                        // Return TRUE if there is a single match.
+                        if($key === $entry) { return TRUE; }
+                    }
+                }
+            }
+            
+            // If there was no match i return FALSE.
+            return FALSE;
+        // If there is no store data, i return FALSE.
+        } else { return FALSE; }
+    }
+
     // W.I.P. ... i think its easier to just unset where i need it atm.
     public function clearVariable($key) {
         unset($_SESSION["$key"]);
     }
+
+
 }
 ?>

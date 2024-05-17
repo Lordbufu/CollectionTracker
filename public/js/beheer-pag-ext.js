@@ -3,6 +3,7 @@ let naamChecked = false, isbnChecked = false;
 // Create and edit series/albums form submit buttons.
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 
+//  TODO: Review listen events, some work less then ideal with the new changes to include session data.
 // Default page init function
 function initBeheer() {
     // Elements, states and events required for creating a serie.
@@ -11,11 +12,13 @@ function initBeheer() {
     createSerieSubm.disabled = true;
     serieCreateNameInput.addEventListener('input', naamCheck);
 
+    //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
+    //      Removed for now, untill a proper solution has been found.
     // Elements, states and events required for editing a serie.
-    let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
-    editSerieSubm = document.getElementById("serieb-form-button");
-    editSerieSubm.disabled = true;
-    serieEditNameInput.addEventListener('input', naamCheck);
+    // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    // editSerieSubm = document.getElementById("serieb-form-button");
+    // editSerieSubm.disabled = true;
+    // serieEditNameInput.addEventListener('input', naamCheck);
 
     // Elements required for adding and editing albums.
     createAlbumSubm = document.getElementById("albumt-form-button");
@@ -312,41 +315,7 @@ function albumVerwijderen(e) {
     }
 }
 
-// View Series button
-function serieBekijken(e) {
-    // Get the required elements, and set the series data in the hidden form.
-    let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
-    let rowArr = Array.from(rowCol);
-    let inp1 = document.getElementById("serie-bekijken-form-index-"+e.target.id);
-    inp1.value = e.target.id;
-
-    // Trigger submit based on if there was a valid input.
-    if (inp1.value === "" && inp2.value === "") {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-// Edit serie controller button
-function serieBewerken(e) {
-    // Get the current table row, and the serie-bewerken pop-in form
-    let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
-    let rowArr = Array.from(rowCol);
-    let form = document.getElementById('serieb-form');
-
-    // Cast row data into the form inputs, and redirect to said form.
-    form[0].value = replaceSpecChar(rowArr[0].children[3].innerHTML);
-    form[1].value = e.target.id;
-    form[2].value = replaceSpecChar(rowArr[0].children[4].innerHTML);
-    form[3].value = replaceSpecChar(rowArr[0].children[5].innerHTML);
-
-    // Dispatch event to 
-    dispatchInputEvent(e);
-
-    window.location.assign('#serieb-pop-in');
-}
-
+// REFACTOR IN PROGRESS, potentially obsolete.
 // Edit serie pop-in button
 function serieBewSubm(e) {
     // Get form element, create FormData from it, and prevent the default submit.
@@ -510,6 +479,41 @@ function aResetBev(e) {
     //             displayMessage(data['Serie_Naam']);
     //         }
     //     })
+    // }
+
+    // View Series button
+    // function serieBekijken(e) {
+    //     // Get the required elements, and set the series data in the hidden form.
+    //     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
+    //     let rowArr = Array.from(rowCol);
+    //     let inp1 = document.getElementById("serie-bekijken-form-index-"+e.target.id);
+    //     inp1.value = e.target.id;
+
+    //     // Trigger submit based on if there was a valid input.
+    //     if(inp1.value === "" && inp2.value === "") {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
+
+    // Edit serie controller button
+    // function serieBewerken(e) {
+    //     // Get the current table row, and the serie-bewerken pop-in form
+    //     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
+    //     let rowArr = Array.from(rowCol);
+    //     let form = document.getElementById('serieb-form');
+
+    //     // Cast row data into the form inputs, and redirect to said form.
+    //     form[0].value = replaceSpecChar(rowArr[0].children[3].innerHTML);
+    //     form[1].value = e.target.id;
+    //     form[2].value = replaceSpecChar(rowArr[0].children[4].innerHTML);
+    //     form[3].value = replaceSpecChar(rowArr[0].children[5].innerHTML);
+
+    //     // Dispatch event to 
+    //     dispatchInputEvent(e);
+
+    //     window.location.assign('#serieb-pop-in');
     // }
 
     // Add album function to open the pop-in

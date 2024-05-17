@@ -158,7 +158,7 @@ class LogicController {
                     return App::redirect('beheer'); // redirect to clear post and thus the repeat of the error on page refresh.
                 } else {
                     App::get('session')->setVariable('page-data', ['new-serie' => $_POST['newSerName']]);
-                    return App::redirect('/beheer#seriem-pop-in');
+                    return App::redirect('beheer#seriem-pop-in');
                 }
             }
 
@@ -168,11 +168,11 @@ class LogicController {
                     'add-album' => App::get('collection')->getSerInd($_POST['album-toev'])
                 ]);
 
-                return App::redirect('/beheer#albumt-pop-in');
+                return App::redirect('beheer#albumt-pop-in');
             }
 
-            // This seems to not work properly or there is another unset messing things up.
-            if(!isset($_SESSION['page-data']['add-album']) && !isset($_SESSION['page-data']['new-serie'])) {
+            // Session data checks, to prevent unexpected behavior in page logic.
+            if(!App::get('session')->checkVariable('page-data', [ 'add-album', 'new-serie', 'edit-serie' ] )) {
                 unset($_SESSION['page-data']);
             }
 
@@ -187,6 +187,13 @@ class LogicController {
                 App::get('session')->setVariable('page-data', ['huidige-serie' => App::get('collection')->getSerName($_POST['serie-index']) ] );
             }
 
+            // If the edit series button was clicked, we set the serie index in the session an return to the edit pop-in.
+            if(isset($_POST['serie-edit-index'])) {
+                App::get('session')->setVariable('page-data', ['edit-serie' => $_POST['serie-edit-index']]);
+
+                return App::redirect('beheer#serieb-pop-in');
+            }
+
             return App::view('beheer');
         } else {
             App::get('session')->setVariable('header', ['error' => $authFailed]);
@@ -195,7 +202,7 @@ class LogicController {
         }
     }
 
-    // TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     // Refactor: Paused
     /*  serieM():
             The POST route for '/serieM', for checking series names and creating series.
@@ -268,6 +275,7 @@ class LogicController {
     }
 
     // Refactor: In Progress
+    //  TODO: If edit found a duplicate name, you are put back to /beheer, better if that would be the pop-in + post data.
     // '/serieBew' function, edit\update serie data.
     /*  serieBew():
             This function deals with editing serie data on the admin page, and stores the changes made.
@@ -275,21 +283,50 @@ class LogicController {
             $serieData (Assoc Array) :
      */
     public function serieBew() {
-        // Prepare data for SQL
-        $serieData = [
-            'Serie_Naam' => $_POST['naam'],
-            'Serie_Maker' => $_POST['makers'],
-            'Serie_Opmerk' => $_POST['opmerking']
-        ];
+        // Non-database errors that can occure during this process.
+        $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
+        $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
 
-        // Attempt to update database.
-        $checkSerie = App::get('processing')->update_Object('series', ['Serie_Index' => $_POST['index']], $serieData);
+        // // Check session user data, and validate the user that is stored.
+        if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
+            // Since the user can change the serie-naam, we need to check if its duplicate or not.
+            if(isset($_POST['naam'])) {
+                if(App::get('collection')->cheSerName($_POST['naam'], $_POST['index'])) {
+                    // Store the error for user feedback.
+                    App::get('session')->setVariable('header', ['error' => $dupError]);
 
-        // Check for errors, and provide feedback for user via JS.
-        if(isset($checkSerie)) { 
-            echo json_encode($checkSerie);
+                    // redirect to the pop-in.
+                    return App::redirect('beheer');
+                // If not duplicate store in serieData array.
+                } else { $serieData['Serie_Naam'] = $_POST['naam']; }
+            }
+
+            if(isset($_POST['makers'])) { $serieData['Serie_Make'] = $_POST['makers']; }
+            if(isset($_POST['opmerking'])) { $serieData['Serie_Opmerk'] = $_POST['opmerking']; }
+
+            $store = App::get('collection')->setSerie($serieData, $_POST['index']);
+
+            if(!is_string($store)) {
+                // return error from the collection class.
+                App::get('session')->setVariable('header', ['error' => [
+                    'fetchResponse' => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!"
+                ]]);
+                
+                return App::redirect('beheer');
+            } else {
+                // return user feedback that the serie was added.
+                App::get('session')->setVariable('header', ['feedB' => [
+                    'fetchResponse' => 'Het aanpassen van: ' . $_POST['naam'] . ' is gelukt !']
+                ]);
+
+                return App::redirect('beheer');
+            }
+
+        // Notify user that authentication failed, and redirect to the landingpage
         } else {
-            echo json_encode('Het bijwerken van de Serie is gelukt !');
+            App::get('session')->setVariable('header', ['error' => $authFailed]);
+
+            return App::redirect('');  
         }
     }
 
