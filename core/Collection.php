@@ -46,7 +46,7 @@ class Collection {
 
             Return value            : Boolean.
      */
-    public function checkDupl($type, $data = []) {
+    protected function checkDupl($type, $data=[], $sIndex=null) {
         if($type == 'albums') {
             foreach($this->albums as $index => $album) {
                 if($data['name'] == $album['Album_Naam']) {
@@ -58,7 +58,13 @@ class Collection {
         } elseif($type == 'series') {
             foreach($this->series as $index => $serie) {
                 if($data['name'] == $serie['Serie_Naam']) {
-                    return TRUE;
+                    if($index === null) {
+                        return TRUE;
+                    } else {
+                        if($sIndex != $serie['Serie_Index']) {
+                            return TRUE;
+                        }
+                    }
                 }
             }
     
@@ -69,7 +75,6 @@ class Collection {
     }
 
     // Public get/set functions.
-
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
@@ -127,12 +132,12 @@ class Collection {
 
             Return Value    : Boolean
      */
-    public function cheSerName($name) {
+    public function cheSerName($name, $index=null) {
         if(!isset($this->series)) {
             $this->getSeries();
         }
 
-        $check = $this->checkDupl('series', ['name' => $name]);
+        $check = $this->checkDupl('series', ['name' => $name], $index);
 
         return $check;
     }
@@ -146,8 +151,12 @@ class Collection {
                 On sucess   -> Boolean
                 On fail     -> String (the database error)
      */
-    public function setSerie($data) {
-        $store = App::get('database')->insert('series', $data);
+    public function setSerie($data, $update=null) {
+        if($update === null) {
+            $store = App::get('database')->insert('series', $data);
+        } else {
+            $store = App::get('database')->update('series', $data, ['Serie_Index' => $update]);
+        }
 
         return is_string($store) ? $store : TRUE;
     }

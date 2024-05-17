@@ -31,7 +31,7 @@
             require('partials/beheer-albView-templ.php');
         }
         require('partials/beheer-serie-maken-pop-in.php');
-        require('partials/beheer-serie-bewerken-pop-in.html');
+        require('partials/beheer-serie-bewerken-pop-in.php');
         require('partials/beheer-album-toevoegen-pop-in.php');
         require('partials/beheer-album-bewerken-pop-in.html');
         require('partials/beheer-wachtwoord-reset2-pop-in.html');
