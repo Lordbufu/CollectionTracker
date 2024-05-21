@@ -34,6 +34,7 @@
             </form>
         </div>
         <?php
+            unset($_SESSION['page-data']['edit-serie']);
             endif;
             endforeach;
             endif;

@@ -200,6 +200,7 @@ function albCovCheck(e) {
     }
 }
 
+// REFACTOR IN PROGRESS, potentially obsolete.
 // Edit Album button
 function albumBewerken(e) {
     // Load all data required to display the current album info
@@ -315,49 +316,27 @@ function albumVerwijderen(e) {
     }
 }
 
-// REFACTOR IN PROGRESS, potentially obsolete.
-// Edit serie pop-in button
-function serieBewSubm(e) {
-    // Get form element, create FormData from it, and prevent the default submit.
-    let form = document.getElementById("serieb-form");
-    let formData = new FormData(form);
-    e.preventDefault();
-    
-    // Send FormData to PhP, check for errors, store the user feedback and redirect to default view.
-    fetchRequest('serieBew', 'POST', formData)
-    .then((data) => {
-        if(typeof data != 'object') {
-            localStorage.setItem('fetchResponse', data);
-            window.location.assign('/beheer');
-        } else {
-            displayMessage(data['Serie_Naam']);
-        }
-    })
-}
+/*  serieVerwijderen(e:
+        A simple confirmation check, that displays the serie name.
 
-// Remove serie button
+        Return Value: Boolean.
+ */
 function serieVerwijderen(e) {
     // Get table row, create new FormData, and ask for confirmation of the remove action.
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
-    let formData = new FormData();
+    // Ask the user for confirmation of the remove action.
     let conf = confirm("Weet u zeker dat de Serie: " + rowArr[0].children[3].innerHTML + "\n En al haar albums wilt verwijderen ?");
 
-    // If the confirm was made, add serie data to the FormData, and remove the table row.
+    // If the user confirmed the action submit the form, otherwhise not.
     if(conf) {
-        formData.append('serie-index', e.target.id);
-        formData.append('serie-naam', rowArr[0].children[3].innerHTML);
-        rowCol[0].remove();
-        
-        // Send request to PhP, and provide user feedback.
-        fetchRequest('serieVerw', 'POST', formData)
-        .then((data) => {
-            displayMessage(data);
-        });
-    }
+        return true;
+    } else { return false; }
 }
 
-// Password reset controller reset button, redirecting to the pop-in.
+/*  wwResetClick():
+        Redirect to the password reset pop-in.
+ */
 function wwResetClick() {
     window.location.assign('#ww-reset-pop-in');
 }
@@ -514,6 +493,25 @@ function aResetBev(e) {
     //     dispatchInputEvent(e);
 
     //     window.location.assign('#serieb-pop-in');
+    // }
+
+    // Edit serie pop-in button
+    // function serieBewSubm(e) {
+    //     // Get form element, create FormData from it, and prevent the default submit.
+    //     let form = document.getElementById("serieb-form");
+    //     let formData = new FormData(form);
+    //     e.preventDefault();
+        
+    //     // Send FormData to PhP, check for errors, store the user feedback and redirect to default view.
+    //     fetchRequest('serieBew', 'POST', formData)
+    //     .then((data) => {
+    //         if(typeof data != 'object') {
+    //             localStorage.setItem('fetchResponse', data);
+    //             window.location.assign('/beheer');
+    //         } else {
+    //             displayMessage(data['Serie_Naam']);
+    //         }
+    //     })
     // }
 
     // Add album function to open the pop-in

@@ -203,6 +203,7 @@ class LogicController {
     }
 
     //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
     // Refactor: Paused
     /*  serieM():
             The POST route for '/serieM', for checking series names and creating series.
@@ -219,8 +220,8 @@ class LogicController {
      */
     public function serieM() {
         // Non-database errors that can occure during this process.
-        $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
-        $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
+        $authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dupError = [ 'fetchResponse' => 'Deze serie naam bestaat al, gebruik een andere naam gebruiken !' ];
 
         // Check session user data, and validate the user that is stored.
         if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
@@ -228,10 +229,10 @@ class LogicController {
             if(isset($_POST['serie-naam'])) {
                 if(App::get('collection')->cheSerName($_POST['serie-naam'])) {
                     // Store the POST data for JS to fill out the form again.
-                    App::get('session')->setVariable('header', ["broSto" => [
-                        "serieNaam" => $_POST['serie-naam'],
-                        "makers" => $_POST['makers'],
-                        "opmerking" => $_POST['opmerking']
+                    App::get('session')->setVariable('header', [ 'broSto' => [
+                        'serieNaam' => $_POST['serie-naam'],
+                        'makers' => $_POST['makers'],
+                        'opmerking' => $_POST['opmerking']
                     ]]);
                     
                     // Store the error for user feedback.
@@ -252,7 +253,7 @@ class LogicController {
             $store = App::get('collection')->setSerie($sqlData);
 
             // Check if there where errors or not, and ensure the right feedback is returned to JS.
-            if(!$store) {
+            if(!is_string($store)) {
                 // return user feedback that the serie was added.
                 App::get('session')->setVariable('header', ['feedB' => [
                     'fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is gelukt !']
@@ -274,9 +275,8 @@ class LogicController {
         }
     }
 
-    // Refactor: In Progress
-    //  TODO: If edit found a duplicate name, you are put back to /beheer, better if that would be the pop-in + post data.
-    // '/serieBew' function, edit\update serie data.
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
     /*  serieBew():
             This function deals with editing serie data on the admin page, and stores the changes made.
 
@@ -284,35 +284,41 @@ class LogicController {
      */
     public function serieBew() {
         // Non-database errors that can occure during this process.
-        $authFailed = ["fetchResponse" => "Access denied, Account authentication failed !"];
-        $dupError = ["fetchResponse" => "Deze serie naam bestaat al, gebruik een andere naam gebruiken !"];
+        $authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dupError = [ 'fetchResponse' => 'Deze serie naam bestaat al, gebruik een andere naam gebruiken !' ];
+        $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
 
-        // // Check session user data, and validate the user that is stored.
+        // Check session user data, and validate the user that is stored.
         if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
             // Since the user can change the serie-naam, we need to check if its duplicate or not.
             if(isset($_POST['naam'])) {
                 if(App::get('collection')->cheSerName($_POST['naam'], $_POST['index'])) {
+                    // Store the index of the series, so the correct on is displayed in the pop-in.
+                    App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['index'] ]);
                     // Store the error for user feedback.
-                    App::get('session')->setVariable('header', ['error' => $dupError]);
+                    App::get('session')->setVariable('header', [ 'error' => $dupError ]);
 
-                    // redirect to the pop-in.
-                    return App::redirect('beheer');
+                    // Redirect to the pop-in.
+                    return App::redirect('beheer#serieb-pop-in');
+
                 // If not duplicate store in serieData array.
                 } else { $serieData['Serie_Naam'] = $_POST['naam']; }
             }
 
-            if(isset($_POST['makers'])) { $serieData['Serie_Make'] = $_POST['makers']; }
-            if(isset($_POST['opmerking'])) { $serieData['Serie_Opmerk'] = $_POST['opmerking']; }
+            // Set data to a empty string if not in the POST data.
+            $serieData['Serie_Maker'] = isset($_POST['makers']) ? $_POST['makers'] : '';
+            $serieData['Serie_Opmerk'] = isset($_POST['opmerking']) ? $_POST['opmerking'] : '';
 
             $store = App::get('collection')->setSerie($serieData, $_POST['index']);
 
-            if(!is_string($store)) {
+            if(is_string($store)) {
                 // return error from the collection class.
-                App::get('session')->setVariable('header', ['error' => [
-                    'fetchResponse' => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!"
-                ]]);
+                App::get('session')->setVariable('header', [ 'error' => $dbError ]);
+
+                // Store the index of the series, so the correct on is displayed in the pop-in.
+                App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['index'] ]);
                 
-                return App::redirect('beheer');
+                return App::redirect('beheer#serieb-pop-in');
             } else {
                 // return user feedback that the serie was added.
                 App::get('session')->setVariable('header', ['feedB' => [
@@ -331,17 +337,58 @@ class LogicController {
     }
 
     // Refactor: Pending
-    // 'serieVerw' function, remove serie and its albums from database.
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
+    /*  serieVerw():
+            This removes a serie and all its albums from the database, and gives back user feedback based on that.
+
+                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
+                $dbError (Assoc Array)      - Error message for when there are database errors.
+                $remove_# (String or Bool)  - Temp store for the results of the requested remove action.
+
+            Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Failed Database action   - Redirect -route-> '/beheer'
+                On Success                  - Redirect -route-> '/beheer'
+     */
     public function serieVerw() {
-        // Store the identifiers required for removing the entire serie.
-        $serieId = [ 'Serie_Index' => $_POST['serie-index'], 'Serie_Naam' => $_POST['serie-naam'] ];
+        // Non-database errors that can occure during this process.
+        $authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
 
-        // Remove the albums first, and then the serie to ensure there are not issues.
-        App::get('processing')->remove_Object('albums', ['Album_Serie' => $_POST['serie-index']]);
-        App::get('processing')->remove_Object('series', $serieId);
+        // Check session user data, and validate the user that is stored.
+        if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
 
-        // Provide feeback to user, using JS.
-        echo json_encode("Verwijderen van {$_POST['serie-naam']}, en alle albums is gelukt");
+            // Remove the albums from serie form the database.
+            $remove_1 = App::get('collection')->remSerie('albums', ['Album_Serie' => $_POST['serie-index'] ]);
+
+            // Remove the serie itself from the database.
+            $remove_2 = App::get('collection')->remSerie('series', [
+                'Serie_Index' => $_POST['serie-index'],
+                'Serie_Naam' => $_POST['serie-naam']
+            ]);
+
+            if(is_string($remove_1) || is_string($remove_2)) {
+                // Store user feedback if there was a error.
+                App::get('session')->setVariable('header', [ 'error' => $dbError ]);
+
+                // Redirect to the admin page.
+                App::redirect('beheer');
+            } else {
+                // Store user feedback if there where no errors.
+                App::get('session')->setVariable('header', ['feedB' => [
+                    'fetchResponse' => 'Het verwijderen van: ' . $_POST['serie-naam'] . ' is geslaagd!'
+                ]]);
+
+                // Redirect to the admin page.
+                App::redirect('beheer');
+            }
+        // Notify user that authentication failed, and redirect to the landingpage
+        } else {
+            App::get('session')->setVariable('header', ['error' => $authFailed]);
+
+            return App::redirect('');  
+        }
     }
 
     // TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
