@@ -155,14 +155,18 @@ class Collection {
         if($update === null) {
             $store = App::get('database')->insert('series', $data);
         } else {
-            $store = App::get('database')->update('series', $data, ['Serie_Index' => $update]);
+            $store = App::get('database')->update('series', $data, [ 'Serie_Index' => $update ] );
         }
 
         return is_string($store) ? $store : TRUE;
     }
 
     // remove serie in database for the admin
-    public function remSerie($data) { }
+    public function remSerie($data, $id) {
+        $store = App::get('database')->remove($data, $id);
+
+        return is_string($store) ? $store : TRUE;
+    }
 
     /*  getAlbums($seriesId):
             This function gets all albums from a series, based on a serie name or index.

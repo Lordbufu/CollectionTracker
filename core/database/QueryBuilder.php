@@ -180,13 +180,14 @@ class QueryBuilder {
         return $statement->fetchAll(PDO::FETCH_ASSOC)[0]['count(*)'];
     }
 
-    //  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
-    //      $sql (string)       - The querry string with placeholders that has been prepared.
-    //      $id (Assoc Array)   - The identifiers required to select/update/remove specific data
-    //      
-    //      Return Value:
-    //          On success  (Assoc Array)   - The data that was requested.
-    //          On fail     (String)        - The database error in full detail.
+    /*  executeQuerry($sql, $id = []): Seperate execute function, to reuse the same code.
+            $sql (string)       - The querry string with placeholders that has been prepared.
+            $id (Assoc Array)   - The identifiers required to select/update/remove specific data
+    
+            Return Value:
+                On success  (Assoc Array)   - The data that was requested.
+                On fail     (String)        - The database error in full detail.
+     */
     public function executeQuerry($sql, $id = []) {
         // If the '$id' is empty, i dont need to worry about placeholders for identifying data.
         if(empty($id)) {
@@ -204,7 +205,9 @@ class QueryBuilder {
                 $statement->execute($id);
                 return $statement->fetchAll(PDO::FETCH_ASSOC);
             } catch(PDOException $e) {
-                return "Error: ". $e->getMessage();
+                //die('test 2');
+                //die(var_dump(print_r("Error: " . $e->getMessage())));
+                return "Error: " . $e->getMessage();
             }
         }
     }
@@ -313,11 +316,11 @@ class QueryBuilder {
             'update %s set %s where %s = %s',
             $tafel,
             $update,
-            implode( array_keys(array_slice($id, 0, 1 ))),
-            ':' . implode( array_keys(array_slice($id, 0, 1 )))
+            implode( array_keys( array_slice($id, 0, 1 ) ) ),
+            ':' . implode( array_keys( array_slice($id, 0, 1 ) ) )
         );
 
-        $this->executeQuerry($sql, $id);
+        return $this->executeQuerry($sql, $id);
     }
 }
 ?>

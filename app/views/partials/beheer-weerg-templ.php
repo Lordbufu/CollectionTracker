@@ -31,14 +31,18 @@
                 <!-- Series Edit -->
                 <th class="serie-bewerken button" id="serie-bewerken">
                     <form id="serie-edit-form-<?=$value['Serie_Index'];?>" class="serie-edit-form" method="post" action="/beheer">
-                        <input id="serie-edit-form-index-<?=$value['Serie_Index'];?>" class="serie-edit-form-index" name="serie-edit-index" value="<?=$value['Serie_Index'];?>" hidden />
-                        <input id="<?=$value['Serie_Index'];?>" class="serie-bewerken-butt" type="submit" value="" />
+                        <input id="serie-edit-form-index-<?=$value['Serie_Index'];?>" class="serie-edit-form-index" name="serie-index" value="<?=$value['Serie_Index'];?>" hidden />
+                        <input id="edit-<?=$value['Serie_Index'];?>" class="serie-bewerken-butt" type="submit" value="" />
                     </form>
                 </th>
 
                 <!-- Series Delete -->
                 <th class="serie-verwijderen button">
-                    <button class="serie-verwijderen-butt" id="<?= $value['Serie_Index']; ?>" type="button" onclick="serieVerwijderen(event)"> </button>
+                    <form id="serie-verw-form-<?=$value['Serie_Index'];?>" class="serie-edit-form" method="post" action="/serieVerw" >
+                        <input id="serie-verw-form-index-<?=$value['Serie_Index'];?>" class="serie-verw-form-index" name="serie-index" value="<?=$value['Serie_Index'];?>" hidden />
+                        <input id="serie-verw-form-naam-<?=$value['Serie_Index'];?>" class="serie-verw-form-naam" name="serie-naam" value="<?=$value['Serie_Naam'];?>" hidden />
+                        <input id="<?=$value['Serie_Index'];?>" class="serie-verwijderen-butt" type="submit" value="" onclick="return serieVerwijderen(event)" />
+                    </form>
                 </th>
 
                 <th class="serie-naam" id="serieNaam"><?= $value['Serie_Naam']; ?></th>
