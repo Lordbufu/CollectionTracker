@@ -7,10 +7,10 @@ let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 // Default page init function
 function initBeheer() {
     // Elements, states and events required for creating a serie.
-    let serieCreateNameInput = document.getElementById('seriem-form-serieNaam');
+    let serieCreateNameInput = document.getElementById("seriem-form-serieNaam");
     createSerieSubm = document.getElementById("seriem-form-button");
     createSerieSubm.disabled = true;
-    serieCreateNameInput.addEventListener('input', naamCheck);
+    serieCreateNameInput.addEventListener("input", naamCheck);
 
     //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
     //      Removed for now, untill a proper solution has been found.
@@ -25,6 +25,7 @@ function initBeheer() {
     let inpTIndex = document.getElementById("albumt-form-indexT");
     let naamInpToev = document.getElementById("albumt-form-alb-naam");
     let isbnInpToev = document.getElementById("albumt-form-alb-isbn");
+
     editAlbumSubm = document.getElementById("albumb-form-button");
     let naamInpBew = document.getElementById("albumb-form-alb-naam");
     let isbnInpBew = document.getElementById("albumb-form-alb-isbn");
@@ -37,19 +38,21 @@ function initBeheer() {
     isbnInpBew.addEventListener("input", isbnCheck);
     naamInpBew.addEventListener("input", naamCheck);
     editAlbumSubm.disabled = true;
-    albCovInp.addEventListener('change', albCovCheck);
+    albCovInp.addEventListener("change", albCovCheck);
 
+    // Potentially obsolete
     // Check for the series name error from the controller
-    if(localStorage.sNaamFailed !== null) {
-        displayMessage(localStorage.sNaamFailed);
-        localStorage.removeItem('sNaamFailed');
-    }
+    // if(localStorage.sNaamFailed !== null) {
+    //     displayMessage(localStorage.sNaamFailed);
+    //     localStorage.removeItem('sNaamFailed');
+    // }
 
+    // Potentially obsolete
     // Ensure the series index is also used for adding a album to a series.
-    if(localStorage.albumToevIn != null) {
-        inpTIndex.value = localStorage.albumToevIn;
-        localStorage.removeItem('albumToevIn');
-    }
+    // if(localStorage.albumToevIn != null) {
+    //     inpTIndex.value = localStorage.albumToevIn;
+    //     localStorage.removeItem('albumToevIn');
+    // }
 
     // Display and remove the welcome message on login.
     if(localStorage.welcome) {
@@ -59,17 +62,37 @@ function initBeheer() {
 
     // Check if create serie had duplication issues
     if(localStorage.makers) {
-        let nameInp = document.getElementById('seriem-form-serieNaam');
-        let makerInp = document.getElementById('seriem-form-makers');
-        let commentInp = document.getElementById('seriem-form-opmerking');
+        let nameInp = document.getElementById("seriem-form-serieNaam");
+        let makerInp = document.getElementById("seriem-form-makers");
+        let commentInp = document.getElementById("seriem-form-opmerking");
 
         nameInp.value = localStorage.serieNaam;
         makerInp.value = localStorage.makers;
         commentInp.value = localStorage.opmerking;
 
-        localStorage.removeItem('serieNaam');
-        localStorage.removeItem('makers');
-        localStorage.removeItem('opmerking');
+        localStorage.removeItem("serieNaam");
+        localStorage.removeItem("makers");
+        localStorage.removeItem("opmerking");
+    }
+
+    // Check if there was error and returned input data with creating a album, and repopulate the form with said data.
+    if( localStorage.getItem("album-nummer") && window.location.hash === "#albumt-pop-in" ) {
+        let tempForm = document.getElementById("albumt-form");
+        let arrayForm = Array.from(tempForm);
+
+        // Index and cover are (hopefully) set via inline PhP.
+        // Check what input was returned, and set them in the associated fields.
+        if(localStorage.getItem("album-naam")) { arrayForm[1].value = localStorage.getItem("album-naam"); }
+        if(localStorage.getItem("album-nummer")) { arrayForm[2].value = localStorage.getItem("album-nummer"); }
+        if(localStorage.getItem("album-datum")) { arrayForm[3].value = localStorage.getItem("album-datum"); }
+        if(localStorage.getItem("album-isbn")) { arrayForm[5].value = localStorage.getItem("album-isbn"); }
+
+        localStorage.removeItem("album-naam");
+        localStorage.removeItem("album-nummer");
+        localStorage.removeItem("album-datum");
+        localStorage.removeItem("album-isbn");
+        // We do remove the index, since it is part of he input that is returned.
+        localStorage.removeItem("serie-index");
     }
 
     // Display feedback messages, that are stored before a page refresh.
@@ -204,10 +227,10 @@ function albCovCheck(e) {
 // Edit Album button
 function albumBewerken(e) {
     // Load all data required to display the current album info
-    let rowCol = document.getElementsByClassName('album-bewerken-inhoud-'+e.target.id);
+    let rowCol = document.getElementsByClassName("album-bewerken-inhoud-"+e.target.id);
     let rowArr = Array.from(rowCol);
     let div = rowArr[0].children[5];
-    let form = document.getElementById('albumb-form');
+    let form = document.getElementById("albumb-form");
     let covLab = document.getElementById("modal-form-albumB-cov-lab");
     let covInp = document.getElementById("modal-form-albumB-cov-lab").children[0];
     let albCov = document.getElementById("albumb-cover");
@@ -230,14 +253,14 @@ function albumBewerken(e) {
     if(rowArr[0].children[5].innerHTML.trim() != "") {
         let imgEl = document.createElement('img');
         imgEl.src = div.children[0].src;
-        imgEl.id = 'albumb-cover-img';
-        imgEl.className = 'modal-album-cover-img';
+        imgEl.id = "albumb-cover-img";
+        imgEl.className = "modal-album-cover-img";
         albCov.appendChild(imgEl);
-        covLab.innerHTML = 'Nieuwe Cover Selecteren';
+        covLab.innerHTML = "Nieuwe Cover Selecteren";
         covLab.appendChild(covInp);
     } else {
-        albCov.innerHTML = "Geen cover gevonden, u kun een cover selecteren, maar dit is niet verplicht.";
-        covLab.innerHTML = 'Album Cover Selecteren';
+        albCov.innerHTML = "Geen cover gevonden, u kunt een cover selecteren, maar dit is niet verplicht.";
+        covLab.innerHTML = "Album Cover Selecteren";
         covLab.appendChild(covInp);
     }
 

@@ -39,13 +39,13 @@ class User {
                 }
             }
         } else {
-            $errorMsg = ['error' => ['userError1' => $noUserErr]];
+            $errorMsg = [ 'error' => [ 'userError1' => $noUserErr ] ];
         }
 
         if(!empty($errorMsg)) {
             return $errorMsg;
         } else {
-            App::get('database')->insert('gebruikers', $data);
+            App::get('database')->insert( 'gebruikers', $data );
 
             return TRUE;
         }
@@ -138,19 +138,22 @@ class User {
     }
 
     //  TODO: Need to figure out if and when this can fails, so i know what to return when that happens.
+            // Only encountered it once so far, and that was because i forced an error, via unexpected results messing with session data etc.
     /*  getUserId(): W.I.P.
-            To bind users and sessions, i only need there Database index.
+            To bind users and sessions, i only need there Database index key.
 
             Return Value:
-                With Errors     - ....
+                With Errors     - String
                 Without Errors  - INT
 
      */
     public function getUserId() {
-        if(isset($this->user)) {                                                    // Check if a user was set,
-            return $this->user['Gebr_Index'];                                       // return said users index.
-        } else {                                                                    // If no user was set,
-            return 'No user defined';                                               // we return a string for now.
+        // If there is user data, i return there index value.
+        if(isset($this->user)) {
+            return $this->user['Gebr_Index'];
+        // If there is non, i return a simple error string for now.
+        } else {
+            return 'No user defined';
         }
     }
 
