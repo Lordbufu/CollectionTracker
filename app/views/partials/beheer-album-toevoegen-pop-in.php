@@ -29,9 +29,15 @@
                     <input type="date" class="modal-form-input" id="albumt-form-alb-date" name="album-datum" placeholder="" autocomplete="on" />
                     <span class="modal-form-span"> Album Uitgave Datum </span>
                 </label>
-                <div class="modal-album-cover" id="albumt-cover"> </div>
+                <div class="modal-album-cover" id="albumt-cover">
+                    <?php if( isset($_SESSION['page-data']['album-cover']) ) : ?>
+                        <div class="modal-album-cover" id="albumb-cover">
+                            <img src="<?= $_SESSION['page-data']['album-cover'] ?>" id="albumb-cover-img" class="modal-album-cover-img">
+                        </div>
+                    <?php endif; ?>
+                </div>
                 <label class="modal-form-alb-cov-lab" id="modal-form-alb-cov-lab" for="albumt-form-alb-cov">
-                    <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumt-form-alb-cov" name="album-cover" />
+                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumt-form-alb-cov" name="album-cover" />
                     Album Cover Selecteren
                 </label>
                 <label class="modal-form-label">
