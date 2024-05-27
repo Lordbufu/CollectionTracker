@@ -161,9 +161,10 @@ class Collection {
         return is_string($store) ? $store : TRUE;
     }
 
+    // Need to rename this to something more fitting for its universal use, current used for series and albums.
     // remove serie in database for the admin
-    public function remSerie($data, $id) {
-        $store = App::get('database')->remove($data, $id);
+    public function remSerie($table, $id) {
+        $store = App::get('database')->remove($table, $id);
 
         return is_string($store) ? $store : TRUE;
     }
@@ -219,9 +220,31 @@ class Collection {
             $this->getAlbums($serInd);
         }
 
-        $check = $this->checkDupl('albums', ['name' => $name]);
+        $check = $this->checkDupl( 'albums', [ 'name' => $name ] );
 
         return $check;
+    }
+
+    // It's likely best to combine all get name function, i will look into that at a later stage.
+    /*  getAlbumName($albId, $serId):
+            This functions sets the $albums to what ever series is being worked on, and compares the indexes to return the correct name.
+            In all cases i tested, its already set to load the admin-album-view, but to be sure i did include the isset condition.
+
+                $albId (string) - The album-index we want to get the name of.
+                $serId (string) - The serie-index that the album is a part of.
+            
+            Return Value: String.
+     */
+    public function getAlbumName($albId, $serId) {
+        if(!isset($this->albums)) {
+            $this->getAlbums($serId);
+        }
+
+        foreach($this->albums as $index => $album) {
+            if($albId == $album['Album_Index']) {
+                return $album['Album_Naam'];
+            }
+        }
     }
 
     /*  setAlbum($data):

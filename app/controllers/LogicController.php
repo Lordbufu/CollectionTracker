@@ -2,7 +2,7 @@
 
 //  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
 //  TODO: Change return view to redirects, when there is a error set for the header/JS (example line: 150).
-//  TODO: Go over all code, and adjust for database error returned from the collection class, since querry execution now returns the DB error as a string.
+//  TODO: Go over all code, and adjust for database error returned from the collection class, since querry execution now returns the DB error as a string (should be noted as comment).
 
 namespace App\Controllers;
 
@@ -39,10 +39,8 @@ class LogicController {
     
     /*  register():
             The POST route for account registration, that uses the user class to process the request.
-            I validate the process, based on what associated array item is set, after requesting to store the user.
-
-                $temp:  The user input that needs to be stored.
-                $eval:  The outcome of attempting to store the user input in the database.
+                $temp   : The user input that needs to be stored.
+                $store  : The outcome of the user class trying to store the user data.
             
             Return Value:
                 On sucess   - Redirect -route-> '/#login-pop-in'
@@ -73,7 +71,7 @@ class LogicController {
 
     /*  login():
             The POST route for the login process, where the user class is used to validate the user.
-            And where the SESSION data is set, linking a user to a session, so we can verify them later on.
+            And where the SESSION data is set, linking a user to a session, so we can verify the user later on.
 
                 $pw (string)    - The password input from the user.
                 $cred (string)  - The user credentials (e-mail or user name).
@@ -125,6 +123,7 @@ class LogicController {
     }
 
     /* Adminpage functions */
+    //  TODO: Finish\clean-up comments.
     /*  beheer():
             The POST route for '/beheer', this is similar to the GET route in the 'PageController'.
             But here is also deal with loading the Series view, and thus loading all related albums.
@@ -147,9 +146,9 @@ class LogicController {
         $dupError = [ 'fetchResponse' => 'Deze serie naam bestaat al, gebruik een andere naam gebruiken !' ];
 
         // Check session user data, and validate the user that is stored.
-        if(isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
+        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights') ) {
             // If a pop-in is closed, and a serie is selected, we return to the admin page.
-            if(isset($_POST['close-pop-in']) && isset($_SESSION['page-data']['huidige-serie'])) {
+            if( isset( $_POST['close-pop-in'] ) && isset( $_SESSION['page-data']['huidige-serie'] ) ) {
                 return App::view('beheer');
             }
 
@@ -174,8 +173,19 @@ class LogicController {
             }
 
             // Session data checks, to prevent unexpected behavior in page logic.
-            if(!App::get('session')->checkVariable('page-data', [ 'add-album', 'new-serie', 'edit-serie' ] )) {
+            if(!App::get('session')->checkVariable('page-data', [ 'add-album', 'new-serie', 'edit-serie', 'huidige-serie' ] )) {
                 unset($_SESSION['page-data']);
+            }
+
+            // If the admin want to return to the default view from the album view
+            if(isset($_POST['return'])) {
+                // Unset the album-view session data, to replace the templates.
+                unset($_SESSION['page-data']['huidige-serie']);
+                // Unset series session data, to trigger a refresh.
+                unset($_SESSION['page-data']['series']);
+
+                // Redirect to clear the browser POST data.
+                return App::redirect('beheer');
             }
 
             // If there is no series data in the session, populate the session data.
@@ -195,6 +205,8 @@ class LogicController {
 
                 return App::redirect('beheer#serieb-pop-in');
             }
+
+
 
             return App::view('beheer');
         } else {
@@ -333,7 +345,6 @@ class LogicController {
         }
     }
 
-    // Refactor: Pending
     //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     //  TODO: Finish\clean-up comments.
     /*  serieVerw():
@@ -357,7 +368,7 @@ class LogicController {
         if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
 
             // Remove the albums from serie form the database.
-            $remove_1 = App::get('collection')->remSerie('albums', ['Album_Serie' => $_POST['serie-index'] ]);
+            $remove_1 = App::get('collection')->remSerie('albums', [ 'Album_Serie' => $_POST['serie-index'] ]);
 
             // Remove the serie itself from the database.
             $remove_2 = App::get('collection')->remSerie('series', [
@@ -367,14 +378,14 @@ class LogicController {
 
             if(is_string($remove_1) || is_string($remove_2)) {
                 // Store user feedback if there was a error.
-                App::get('session')->setVariable('header', [ 'error' => $dbError ]);
+                App::get('session')->setVariable('header', [ 'error' => $dbError ] );
 
                 // Redirect to the admin page.
                 App::redirect('beheer');
             } else {
                 // Store user feedback if there where no errors.
-                App::get('session')->setVariable('header', ['feedB' => [
-                    'fetchResponse' => 'Het verwijderen van: ' . $_POST['serie-naam'] . ' is geslaagd!'
+                App::get('session')->setVariable('header', [ 'feedB' => [
+                    'fetchResponse' => 'Het verwijderen van: ' . $_POST['serie-naam'] . ' en alle albums is geslaagd!'
                 ]]);
 
                 // Redirect to the admin page.
@@ -382,7 +393,7 @@ class LogicController {
             }
         // Notify user that authentication failed, and redirect to the landingpage
         } else {
-            App::get('session')->setVariable('header', ['error' => $authFailed]);
+            App::get('session')->setVariable('header', [ 'error' => $authFailed ] );
 
             return App::redirect('');  
         }
@@ -438,7 +449,7 @@ class LogicController {
 
             // Check if optional data is there, and set the correct data where needed.
             $albumData['Album_ISBN'] = ( !empty( $_POST['album-isbn'] ) || $_POST['album-isbn'] !== '' ) ? $_POST['album-isbn'] : 0;
-            if( isset( $_POST['album-nummer'] ) ) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
+            $albumData['Album_Nummer'] = ( isset($_POST['album-nummer']) && !is_string($_POST['album-nummer']) ) ? $_POST['album-nummer'] : 0;
             if( !empty( $_POST['album-datum'] ) ) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
 
             // The album-cover requires some converting to base64_encoded blob data before we can store it.
@@ -468,6 +479,12 @@ class LogicController {
                     'fetchResponse' => 'Het toevoegen van: ' . $_POST['album-naam'] . ' is gelukt !'
                 ] ] );
 
+                // If the album-view is active
+                if(isset($_SESSION['page-data']['huidige-serie'])) {
+                    // Clear albums session data, so it can be repopulated after the redirect.
+                    unset( $_SESSION['page-data']['albums'] );
+                }
+
                 return App::redirect('beheer');
             }
         // Notify user that authentication failed, and redirect to the landing page.
@@ -478,17 +495,50 @@ class LogicController {
         }
     }
 
-    // Refactor: Pending
-    // '/albumV' function, remove album from database.
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
+    /*  albumV():
+            The remove album function
+     */
     public function albumV() {
-        // Because all user confirms are done client side, i simple remove the object.
-        App::get('processing')->remove_Object('albums',
-            [ 'Album_Index' => $_POST['album-index'] ],
-            [ 'Album_Naam' => $_POST['album-naam'] ]
-        );
+        // Errors that can occure during this process.
+		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
 
-        // And do some user feedback via JS.
-        echo json_encode("Verwijderen van {$_POST['album-naam']}, is gelukt.");
+        // Check session user data, and validate the user that is stored.
+        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
+            if( isset( $_POST['album-index'] ) ) {
+                // Store the album name as its gone after a delete querry xD
+                $albName = App::get('collection')->getAlbumName( $_POST['album-index'], $_POST['serie-index'] );
+                // The remSerie function still has to be renamed, as it removes both albums and series, and can likely also remove user collections.
+                $store = App::get('collection')->remSerie( 'albums', [ 'Album_Index' => $_POST['album-index'] ] );
+
+                // Check if there is a error string returned.
+                if(is_string($store)) {
+                    // Store user feedback if there was a error.
+                    App::get('session')->setVariable( 'header', [ 'error' => $dbError ]);
+
+                    // Redirect to the admin page.
+                    App::redirect('beheer');
+                } else {
+                    // Store user feedback if there was a error.
+                    App::get('session')->setVariable( 'header', [ 'feedB' => [
+                        'fetchResponse' => 'Het verwijderen van: ' . $albName . ' is geslaagd!'
+                    ]]);
+
+                    // Clear albums session data, so it can be repopulated
+                    unset( $_SESSION['page-data']['albums'] );
+
+                    // Redirect to the admin page.
+                    return App::redirect('beheer');
+                }
+            } else { return App::redirect('beheer'); }
+        // Notify user that authentication failed, and redirect to the landing page.
+        } else {
+            App::get('session')->setVariable('header', [ 'error' => $authFailed ] );
+
+            return App::redirect('');  
+        }
     }
 
     // Refactor: Pending

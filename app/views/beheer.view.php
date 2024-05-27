@@ -12,7 +12,8 @@
             </form>
             <?php if(isset($_SESSION['page-data']['huidige-serie'])): ?>
                 <form class="back-form" id="back-form" method="post" action="/beheer">
-                    <button id="beheer-back-butt" class="beheer-back-butt" type="submit"> < Series </button>
+                    <input id="beheer-back-inp" class="beheer-back-inp" name="return" value="back" hidden />
+                    <input id="beheer-back-butt" class="beheer-back-butt" type="submit" value="< Series" />
                 </form>
             <?php endif; ?>
         </div>
