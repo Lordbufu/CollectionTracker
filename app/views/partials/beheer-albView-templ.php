@@ -29,7 +29,11 @@
                     <button class="album-bewerken-butt" id="<?= $value['Album_Index']; ?>" type="button" onclick="albumBewerken(event)"></button>
                 </th>
                 <th id="album-verwijderen" class="album-verwijderen button">
-                    <button class="album-verwijderen-butt" id="<?= $value['Album_Index']; ?>" type="button" onclick="albumVerwijderen(event)"></button>
+                    <form class="album-verwijderen-form" id="album-verwijderen-form" method="post" action="/albumV">
+                        <input class="album-verwijderen-inp" id="album-verwijderen-inp" name="album-index" value="<?=$value['Album_Index'];?>" hidden />
+                        <input class="album-verwijderen-inp" id="album-verwijderen-inp" name="serie-index" value="<?=$value['Album_Serie'];?>" hidden />
+                        <input class="album-verwijderen-butt" id="<?= $value['Album_Index']; ?>" type="submit" value="" />
+                    </form>
                 </th>
                 <th id="album-naam" class="album-naam"><?=$value['Album_Naam']?></th>
                 <th id="album-nummer" class="album-nummer"><?=$value['Album_Nummer']?></th>

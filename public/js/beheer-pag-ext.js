@@ -4,6 +4,7 @@ let naamChecked = false, isbnChecked = false;
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 
 //  TODO: Review listen events, some work less then ideal with the new changes to include session data.
+//  TODO: Review what code can be re-factored/removed, once the PhP re-factor is complete.
 // Default page init function
 function initBeheer() {
     // Elements, states and events required for creating a serie.
@@ -11,14 +12,6 @@ function initBeheer() {
     createSerieSubm = document.getElementById("seriem-form-button");
     createSerieSubm.disabled = true;
     serieCreateNameInput.addEventListener("input", naamCheck);
-
-    //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
-    //      Removed for now, untill a proper solution has been found.
-    // Elements, states and events required for editing a serie.
-    // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
-    // editSerieSubm = document.getElementById("serieb-form-button");
-    // editSerieSubm.disabled = true;
-    // serieEditNameInput.addEventListener('input', naamCheck);
 
     // Elements required for adding and editing albums.
     createAlbumSubm = document.getElementById("albumt-form-button");
@@ -39,20 +32,6 @@ function initBeheer() {
     naamInpBew.addEventListener("input", naamCheck);
     editAlbumSubm.disabled = true;
     albCovInp.addEventListener("change", albCovCheck);
-
-    // Potentially obsolete
-    // Check for the series name error from the controller
-    // if(localStorage.sNaamFailed !== null) {
-    //     displayMessage(localStorage.sNaamFailed);
-    //     localStorage.removeItem('sNaamFailed');
-    // }
-
-    // Potentially obsolete
-    // Ensure the series index is also used for adding a album to a series.
-    // if(localStorage.albumToevIn != null) {
-    //     inpTIndex.value = localStorage.albumToevIn;
-    //     localStorage.removeItem('albumToevIn');
-    // }
 
     // Display and remove the welcome message on login.
     if(localStorage.welcome) {
@@ -91,7 +70,8 @@ function initBeheer() {
         localStorage.removeItem("album-nummer");
         localStorage.removeItem("album-datum");
         localStorage.removeItem("album-isbn");
-        // We do remove the index, since it is part of he input that is returned.
+
+        // The serie-index is also part of the returned POST data, so we remove that aswell for now.
         localStorage.removeItem("serie-index");
     }
 
@@ -100,6 +80,28 @@ function initBeheer() {
         displayMessage(localStorage.fetchResponse);
         localStorage.removeItem("fetchResponse");
     }
+
+    // OBSOLETE CODE:
+
+    //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
+    //      Removed for now, untill a proper solution has been found.
+    // Elements, states and events required for editing a serie.
+    // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    // editSerieSubm = document.getElementById("serieb-form-button");
+    // editSerieSubm.disabled = true;
+    // serieEditNameInput.addEventListener('input', naamCheck);
+
+    // Check for the series name error from the controller
+    // if(localStorage.sNaamFailed !== null) {
+    //     displayMessage(localStorage.sNaamFailed);
+    //     localStorage.removeItem('sNaamFailed');
+    // }
+
+    // Ensure the series index is also used for adding a album to a series.
+    // if(localStorage.albumToevIn != null) {
+    //     inpTIndex.value = localStorage.albumToevIn;
+    //     localStorage.removeItem('albumToevIn');
+    // }
 }
 
 // Check the name input
@@ -268,6 +270,7 @@ function albumBewerken(e) {
     window.location.assign('#albumb-pop-in');
 }
 
+// REFACTOR IN PROGRESS, potentially obsolete.
 // Edit Album pop-in submit button.
 function albumBewSubm(e) {
     // Get form, create FormData from it, and prevent the default form submit.
@@ -296,51 +299,8 @@ function albumBewSubm(e) {
     });
 }
 
-// Remove Album function.
-function albumVerwijderen(e) {
-    // Get all Album info, and make new empty FormData
-    let rowCol = document.getElementsByClassName('album-bewerken-inhoud-'+e.target.id);
-    let rowArr = Array.from(rowCol);
-    let formData = new FormData();
-    let conf = confirm("Weet u zeker dat u het album: " + rowArr[0].children[2].innerHTML + " wilt verwijderen ?");
-
-    // Add relevant album info to the FormData
-    formData.append('serie-index', localStorage.huidigeIndex);
-    formData.append('album-index', e.target.id);
-    formData.append('album-naam', rowArr[0].children[2].innerHTML);
-
-    if(conf) {
-        // Send Request to PhP
-        fetchRequest('albumV', 'POST', formData)
-        // Store the response and request a page reload for the current view.
-        .then((data) => {
-            localStorage.setItem('fetchResponse', data);
-                    
-            let form = document.createElement('form');
-            form.setAttribute('method', 'post');
-            form.setAttribute('action', '/beheer');
-
-            let fInp1 = document.createElement('input');
-            fInp1.setAttribute('type', 'text');
-            fInp1.setAttribute('name', 'serie-index');
-            fInp1.setAttribute('value', localStorage.huidigeIndex);
-
-            let fInp2 = document.createElement('input');
-            fInp2.setAttribute('type', 'text');
-            fInp2.setAttribute('name', 'serie-naam');
-            fInp2.setAttribute('value', document.getElementById('beheer-albView-text').innerHTML);
-
-            form.appendChild(fInp1);
-            form.appendChild(fInp2);
-            document.body.appendChild(form);
-
-            form.submit();
-        });
-    }
-}
-
 /*  serieVerwijderen(e:
-        A simple confirmation check, that displays the serie name.
+        A simple confirmation check, that displays the serie name, that triggers the submit button.
 
         Return Value: Boolean.
  */
@@ -585,4 +545,47 @@ function aResetBev(e) {
     //             }
     //         }
     //     })
+    // }
+
+    // Remove Album function.
+    // function albumVerwijderen(e) {
+    //     // Get all Album info, and make new empty FormData
+    //     let rowCol = document.getElementsByClassName('album-bewerken-inhoud-'+e.target.id);
+    //     let rowArr = Array.from(rowCol);
+    //     let formData = new FormData();
+    //     let conf = confirm("Weet u zeker dat u het album: " + rowArr[0].children[2].innerHTML + " wilt verwijderen ?");
+
+    //     // Add relevant album info to the FormData
+    //     formData.append('serie-index', localStorage.huidigeIndex);
+    //     formData.append('album-index', e.target.id);
+    //     formData.append('album-naam', rowArr[0].children[2].innerHTML);
+
+    //     if(conf) {
+    //         // Send Request to PhP
+    //         fetchRequest('albumV', 'POST', formData)
+    //         // Store the response and request a page reload for the current view.
+    //         .then((data) => {
+    //             localStorage.setItem('fetchResponse', data);
+                        
+    //             let form = document.createElement('form');
+    //             form.setAttribute('method', 'post');
+    //             form.setAttribute('action', '/beheer');
+
+    //             let fInp1 = document.createElement('input');
+    //             fInp1.setAttribute('type', 'text');
+    //             fInp1.setAttribute('name', 'serie-index');
+    //             fInp1.setAttribute('value', localStorage.huidigeIndex);
+
+    //             let fInp2 = document.createElement('input');
+    //             fInp2.setAttribute('type', 'text');
+    //             fInp2.setAttribute('name', 'serie-naam');
+    //             fInp2.setAttribute('value', document.getElementById('beheer-albView-text').innerHTML);
+
+    //             form.appendChild(fInp1);
+    //             form.appendChild(fInp2);
+    //             document.body.appendChild(form);
+
+    //             form.submit();
+    //         });
+    //     }
     // }

@@ -34,12 +34,20 @@ class PagesController {
 		$authFailed = [ "error" => [ "fetchResponse" => "Access denied, Account authentication failed !" ] ];
 
 		// Session data checks, to prevent unexpected behavior in page logic.
-		if(!App::get('session')->checkVariable('page-data', [ 'add-album', 'new-serie', 'edit-serie' ] )) {
+		if(!App::get('session')->checkVariable('page-data', [ 'add-album', 'new-serie', 'edit-serie', 'huidige-serie' ] )) {
 			unset($_SESSION['page-data']);
 		}
 
 		if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
-			App::get('session')->setVariable('page-data', App::get('collection')->getSeries());
+			// Get series if non are set.
+            if(empty($_SESSION['page-data']['series'])) {
+                App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() );
+            }
+
+			// Get albums if non are set, and admin is in the albums view.
+			if(empty($_SESSION['page-data']['albums']) && isset($_SESSION['page-data']['huidige-serie']) ) {
+				App::get('session')->setVariable('page-data', App::get('collection')->getAlbums($_SESSION['page-data']['huidige-serie']) );
+			}
 
 			return App::view('beheer');
 		} else {
