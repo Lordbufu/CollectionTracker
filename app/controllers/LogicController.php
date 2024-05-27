@@ -381,7 +381,7 @@ class LogicController {
                 App::get('session')->setVariable('header', [ 'error' => $dbError ] );
 
                 // Redirect to the admin page.
-                App::redirect('beheer');
+                return App::redirect('beheer');
             } else {
                 // Store user feedback if there where no errors.
                 App::get('session')->setVariable('header', [ 'feedB' => [
@@ -389,7 +389,7 @@ class LogicController {
                 ]]);
 
                 // Redirect to the admin page.
-                App::redirect('beheer');
+                return App::redirect('beheer');
             }
         // Notify user that authentication failed, and redirect to the landingpage
         } else {
@@ -498,7 +498,16 @@ class LogicController {
     //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     //  TODO: Finish\clean-up comments.
     /*  albumV():
-            The remove album function
+            The remove album function, with a trigger to repopulate the session data after removal.
+                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
+                $dbError (Assoc Array)      - Error message for when there are database errors.
+                $albName (String)           - Temp storage for the album name that is being removed, for user feedback reasons.
+                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+
+            Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Failed Database action   - Redirect -route-> '/beheer'
+                On Success                  - Redirect -route-> '/beheer'
      */
     public function albumV() {
         // Errors that can occure during this process.
@@ -519,7 +528,7 @@ class LogicController {
                     App::get('session')->setVariable( 'header', [ 'error' => $dbError ]);
 
                     // Redirect to the admin page.
-                    App::redirect('beheer');
+                    return App::redirect('beheer');
                 } else {
                     // Store user feedback if there was a error.
                     App::get('session')->setVariable( 'header', [ 'feedB' => [
