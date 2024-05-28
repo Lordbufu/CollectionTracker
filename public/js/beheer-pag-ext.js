@@ -33,6 +33,10 @@ function initBeheer() {
     editAlbumSubm.disabled = true;
     albCovInp.addEventListener("change", albCovCheck);
 
+    // Refactored ListenEvents
+    let coverInp = document.getElementById("albumb-form-alb-cov");
+    coverInp.addEventListener("change", coverInpCheck);
+
     // Display and remove the welcome message on login.
     if(localStorage.welcome) {
         displayMessage(localStorage.welcome);
@@ -225,80 +229,28 @@ function albCovCheck(e) {
     }
 }
 
-// REFACTOR IN PROGRESS, potentially obsolete.
-// Edit Album button
-function albumBewerken(e) {
-    // Load all data required to display the current album info
-    let rowCol = document.getElementsByClassName("album-bewerken-inhoud-"+e.target.id);
-    let rowArr = Array.from(rowCol);
-    let div = rowArr[0].children[5];
-    let form = document.getElementById("albumb-form");
-    let covLab = document.getElementById("modal-form-albumB-cov-lab");
-    let covInp = document.getElementById("modal-form-albumB-cov-lab").children[0];
-    let albCov = document.getElementById("albumb-cover");
-
-    // Enable the button by default
-    editAlbumSubm.disabled = false;
-
-    // Inject all album info in to the pop-in form.
-    form[0].value = e.target.id;
-    form[1].value = rowArr[0].children[2].innerHTML;
-    form[2].value = rowArr[0].children[3].innerHTML;
-    form[3].value = rowArr[0].children[4].innerHTML;
-    form[4].value = "";
-    form[5].value = rowArr[0].children[6].innerHTML;
-    form[6].value = rowArr[0].children[7].innerHTML;
-
-    dispatchInputEvent(e);
-
-    // Extra check for the album cover.
-    if(rowArr[0].children[5].innerHTML.trim() != "") {
-        let imgEl = document.createElement('img');
-        imgEl.src = div.children[0].src;
-        imgEl.id = "albumb-cover-img";
-        imgEl.className = "modal-album-cover-img";
-        albCov.appendChild(imgEl);
-        covLab.innerHTML = "Nieuwe Cover Selecteren";
-        covLab.appendChild(covInp);
-    } else {
-        albCov.innerHTML = "Geen cover gevonden, u kunt een cover selecteren, maar dit is niet verplicht.";
-        covLab.innerHTML = "Album Cover Selecteren";
-        covLab.appendChild(covInp);
-    }
-
-    // Display the pop-in.
-    window.location.assign('#albumb-pop-in');
+// W.I.P.
+// Check the input and remove some text clutter if there was.
+function coverInpCheck(e) {
+    // Get the div element.
+    let divCov = document.getElementById("albumb-cover");
+    // Get the uploaded file.
+    let imageFile = e.target.files[0];
+    // Create a new img element.
+    let imgEl = document.createElement('img');
+    // Remove any text in the div.
+    divCov.innerHTML = "";
+    // Load the image into the element source.
+    imgEl.src = URL.createObjectURL(imageFile);
+    // Give the element the correct id.
+    imgEl.id = "albumb-cover-img";
+    // Give the element the correct class.
+    imgEl.className = "modal-album-cover-img";
+    // Append element to div.
+    divCov.appendChild(imgEl);
 }
 
 // REFACTOR IN PROGRESS, potentially obsolete.
-// Edit Album pop-in submit button.
-function albumBewSubm(e) {
-    // Get form, create FormData from it, and prevent the default form submit.
-    let form = document.getElementById('albumb-form');
-    let formData = new FormData(form);
-    e.preventDefault();
-
-    // Send request to PhP, check for errors, and store user feedback before closing the pop-in
-    fetchRequest('albumBew', 'POST', formData)
-    .then((data) => {
-        if(typeof(data) !== 'object') {
-            localStorage.setItem('fetchResponse', data);
-            popInClose();
-        // If there are errors, display them properly to the user.
-        } else {
-            if(data.albumNaam != "") {
-                if(data.albumIsbn != "") {
-                    displayMessage(data.albumNaam, data.albumIsbn);
-                } else {
-                    displayMessage(data.albumNaam);
-                }
-            } else {
-                displayMessage(data.albumIsbn);
-            }
-        }
-    });
-}
-
 /*  serieVerwijderen(e:
         A simple confirmation check, that displays the serie name, that triggers the submit button.
 
@@ -588,4 +540,76 @@ function aResetBev(e) {
     //             form.submit();
     //         });
     //     }
+    // }
+
+    // Edit Album button
+    // function albumBewerken(e) {
+    //     // Load all data required to display the current album info
+    //     let rowCol = document.getElementsByClassName("album-bewerken-inhoud-"+e.target.id);
+    //     let rowArr = Array.from(rowCol);
+    //     let div = rowArr[0].children[5];
+    //     let form = document.getElementById("albumb-form");
+    //     let covLab = document.getElementById("modal-form-albumB-cov-lab");
+    //     let covInp = document.getElementById("modal-form-albumB-cov-lab").children[0];
+    //     let albCov = document.getElementById("albumb-cover");
+
+    //     // Enable the button by default
+    //     editAlbumSubm.disabled = false;
+
+    //     // Inject all album info in to the pop-in form.
+    //     form[0].value = e.target.id;
+    //     form[1].value = rowArr[0].children[2].innerHTML;
+    //     form[2].value = rowArr[0].children[3].innerHTML;
+    //     form[3].value = rowArr[0].children[4].innerHTML;
+    //     form[4].value = "";
+    //     form[5].value = rowArr[0].children[6].innerHTML;
+    //     form[6].value = rowArr[0].children[7].innerHTML;
+
+    //     dispatchInputEvent(e);
+
+    //     // Extra check for the album cover.
+    //     if(rowArr[0].children[5].innerHTML.trim() != "") {
+    //         let imgEl = document.createElement('img');
+    //         imgEl.src = div.children[0].src;
+    //         imgEl.id = "albumb-cover-img";
+    //         imgEl.className = "modal-album-cover-img";
+    //         albCov.appendChild(imgEl);
+    //         covLab.innerHTML = "Nieuwe Cover Selecteren";
+    //         covLab.appendChild(covInp);
+    //     } else {
+    //         albCov.innerHTML = "Geen cover gevonden, u kunt een cover selecteren, maar dit is niet verplicht.";
+    //         covLab.innerHTML = "Album Cover Selecteren";
+    //         covLab.appendChild(covInp);
+    //     }
+
+    //     // Display the pop-in.
+    //     window.location.assign('#albumb-pop-in');
+    // }
+
+    // Edit Album pop-in submit button.
+    // function albumBewSubm(e) {
+    //     // Get form, create FormData from it, and prevent the default form submit.
+    //     let form = document.getElementById('albumb-form');
+    //     let formData = new FormData(form);
+    //     e.preventDefault();
+
+    //     // Send request to PhP, check for errors, and store user feedback before closing the pop-in
+    //     fetchRequest('albumBew', 'POST', formData)
+    //     .then((data) => {
+    //         if(typeof(data) !== 'object') {
+    //             localStorage.setItem('fetchResponse', data);
+    //             popInClose();
+    //         // If there are errors, display them properly to the user.
+    //         } else {
+    //             if(data.albumNaam != "") {
+    //                 if(data.albumIsbn != "") {
+    //                     displayMessage(data.albumNaam, data.albumIsbn);
+    //                 } else {
+    //                     displayMessage(data.albumNaam);
+    //                 }
+    //             } else {
+    //                 displayMessage(data.albumIsbn);
+    //             }
+    //         }
+    //     });
     // }
