@@ -417,7 +417,7 @@ class LogicController {
     public function albumT() {
         // Errors that can occure during this process.
 		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
-        $dupError = [ 'fetchResponse' => 'Deze album naam bestaat al, gebruik een andere naam !' ];
+        $dupError = [ 'fetchResponse' => 'Dit album naam bestaat al, gebruik een andere naam !' ];
         $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
 
         // Check session user data, and validate the user that is stored.
@@ -551,46 +551,121 @@ class LogicController {
     }
 
     // Refactor: Pending
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
     // 'albumBew' function, edit\update album data.
     public function albumBew() {
-        // Prepare album and error check data.
-        $albumData = [];
-        $erroCheck;
+        // Errors that can occure during this process.
+		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
+        $dupError = [ 'fetchResponse' => 'Dit album naam bestaat al, gebruik een andere naam !' ];
 
-        // Get all current album data from the database.
-        $tempAlbum = App::get('database')->selectAllWhere('albums', ['Album_Index' => $_POST['album-index']])[0];
+        // Check session user data, and validate the user that is stored.
+        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
+            // If a albumEdit is requested, i need to set that data in the session, so the correct data can be displayed.
+            if( isset( $_POST['albumEdit'] ) ) {
+                App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['albumEdit'] ] );
 
-        // Prepare mandatory album data for SQL
-        $albumData['Album_Serie'] = $tempAlbum['Album_Serie'];
-        $albumData['Album_Naam'] = $_POST['album-naam'];
-        $albumData['Album_ISBN'] = $_POST['album-isbn'];
+                return App::redirect('beheer#albumb-pop-in');
+            }
 
-        // Check non-mandatory data for SQL.
-        if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
-        if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
+            // If the album-naam is duplicate, i set a new album-edit and a feedback message in the session, and return to the pop-in.
+            if(App::get('collection')->cheAlbName( $_POST['serie-index'], $_POST['album-naam'] ) ) {
 
-        // Prepare the cover in a base64_encoded string (blob).
-        if(!empty($_FILES['album-cover']['name'])) {
-            $fileName = basename($_FILES["album-cover"]["name"]);
-            $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['album-index'] ] );
+                App::get('session')->setVariable( 'header', [ 'error' => $dupError ] );
 
-            $image = $_FILES['album-cover']['tmp_name'];
-            $imgContent = file_get_contents($image);
-            $dbImage = 'data:image/'.$fileType.';charset=utf8;base64,'.base64_encode($imgContent);
+                return App::redirect('beheer#albumb-pop-in');
+            // Else i filter and store the name for processing.
+            } else { $albumData['Album_Naam'] = htmlspecialchars( $_POST['album-naam'] ); }
 
-            $albumData['Album_Cover'] = $dbImage;
-        }
+            // Set the remaining POST data in the albumData.
+            $albumData['Album_Index'] = $_POST['album-index'];
+            if( isset($_POST['album-nummer']) ) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
+            if( !empty( $_POST['album-datum'] ) ) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
+            $albumData['Album_Isbn'] = isset($_POST['album-isbn']) ? $_POST['album-isbn'] : 0;
+            $albumData['Album_Opm'] = isset($_POST['album-opm']) ? $_POST['album-opm'] : 'W.I.P';
 
-        // Attempt to store album in database.
-        $infoAlbum = App::get('processing')->update_Object('albums', ['Album_Index' => $_POST['album-index']], $albumData);
+            // Check if there was a cover, and convert it to a base64 string for the database.
+            if( $_FILES['album-cover']['error'] === 0 ) {
+                $fileName = basename( $_FILES['album-cover']['name'] );
+                $fileType = pathinfo( $fileName, PATHINFO_EXTENSION );
+                $image = $_FILES['album-cover']['tmp_name'];
+                $imgContent = file_get_contents($image);
+                $dbImage = 'data:image/' . $fileType . ';charset=utf8;base64,' . base64_encode($imgContent);
+                $albumData['Album_Cover'] = $dbImage;
+            }
 
-        // If there are errors, pass them to JS for user feedback.
-        if(isset($infoAlbum) && $infoAlbum != 0) {
-            echo json_encode($infoAlbum);
-        // If there are no errors, give feedback to user via JS.
+            $store = App::get('collection')->setAlbum($albumData, [
+                'Album_Index' => $_POST['album-index'],
+                'Album_Serie' => $_POST['serie-index']
+            ]);
+
+            //die(var_dump(print_r($store)));
+
+            // If there is an error, store a generic error message and redirect to the main admin page.
+            if(is_string($store)) {
+                App::get('session')->setVariable('header', [ 'error' => $dbError ] );
+
+                return App::redirect('beheer');
+            } else {
+                App::get('session')->setVariable('header', [ 'feedB' => [
+                    'fetchResponse' => 'Het aanpassen van: ' . $_POST['album-naam'] . ' is gelukt !'
+                ] ] );
+
+                // If the album-view is active
+                if(isset($_SESSION['page-data']['huidige-serie'])) {
+                    // Clear albums session data, so it can be repopulated after the redirect.
+                    unset( $_SESSION['page-data']['albums'] );
+                }
+
+                return App::redirect('beheer');
+            }
+        // Notify user that authentication failed, and redirect to the landing page.
         } else {
-            echo json_encode("Het album: " . $_POST['album-naam'] . " is bijgewerkt.");
+            App::get('session')->setVariable( 'header', [ 'error' => $authFailed ] );
+
+            return App::redirect('');  
         }
+
+        // // Prepare album and error check data.
+        // $albumData = [];
+        // $erroCheck;
+
+        // // Get all current album data from the database.
+        // $tempAlbum = App::get('database')->selectAllWhere('albums', ['Album_Index' => $_POST['album-index']])[0];
+
+        // // Prepare mandatory album data for SQL
+        // $albumData['Album_Serie'] = $tempAlbum['Album_Serie'];
+        // $albumData['Album_Naam'] = $_POST['album-naam'];
+        // $albumData['Album_ISBN'] = $_POST['album-isbn'];
+
+        // // Check non-mandatory data for SQL.
+        // if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
+        // if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
+
+        // // Prepare the cover in a base64_encoded string (blob).
+        // if(!empty($_FILES['album-cover']['name'])) {
+        //     $fileName = basename($_FILES["album-cover"]["name"]);
+        //     $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+
+        //     $image = $_FILES['album-cover']['tmp_name'];
+        //     $imgContent = file_get_contents($image);
+        //     $dbImage = 'data:image/'.$fileType.';charset=utf8;base64,'.base64_encode($imgContent);
+
+        //     $albumData['Album_Cover'] = $dbImage;
+        // }
+
+        // // Attempt to store album in database.
+        // $infoAlbum = App::get('processing')->update_Object('albums', ['Album_Index' => $_POST['album-index']], $albumData);
+
+        // // If there are errors, pass them to JS for user feedback.
+        // if(isset($infoAlbum) && $infoAlbum != 0) {
+        //     echo json_encode($infoAlbum);
+        // // If there are no errors, give feedback to user via JS.
+        // } else {
+        //     echo json_encode("Het album: " . $_POST['album-naam'] . " is bijgewerkt.");
+        // }
     }
 
     // Refactor: Pending

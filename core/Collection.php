@@ -208,21 +208,36 @@ class Collection {
     }
 
     /*  cheAlbName($serInd, $name):
-            Checks if the requested album name is duplicate for that specific series or not.
+            Checks if the requested album name using the global function, and then check if that album was in the same serie.
+            If it was in the same serie, it was likely being edited, and thus not duplicate.
 
-            $setInd (INT)   - The index of the serie that contains the album.
-            $name (String)  - The album name that needs to be checked.
+                $setInd (INT)           - The index of the serie that contains the album.
+                $name (String)          - The album name that needs to be checked.
+                $duplicate (Boolean)    - Local variable to return the final eval of the duplication check.
+                $check (Boolean)        - The result of the checkDupl() function.
 
             Return Type : Boolean.
      */
     public function cheAlbName($serInd, $name) {
+        $duplicate;
+
         if(!isset($this->albums)) {
             $this->getAlbums($serInd);
         }
 
         $check = $this->checkDupl( 'albums', [ 'name' => $name ] );
 
-        return $check;
+        if($check) {
+            foreach($this->albums as $index => $album) {
+                if($album['Album_Naam'] === $name) {
+                    $duplicate = FALSE;
+                }
+            }
+
+            if(!isset($duplicate)) { $duplicate = TRUE; }
+        }
+
+        return $duplicate;
     }
 
     // It's likely best to combine all get name function, i will look into that at a later stage.
@@ -247,6 +262,7 @@ class Collection {
         }
     }
 
+    // W.I.P.
     /*  setAlbum($data):
             This function simply sets the Album in the database, since all relevant checks have been done in advance.
 
@@ -256,8 +272,12 @@ class Collection {
                 On-success  : Boolean
                 On-failure  : String
      */
-    public function setAlbum($data) {
-        $store = App::get('database')->insert('albums', $data);
+    public function setAlbum($data, $update=null) {
+        if($update === null) {
+            $store = App::get('database')->insert('albums', $data);
+        } else {
+            $store = App::get('database')->update('albums', $data, $update);
+        }
 
         return is_string($store) ? $store : TRUE;
     }

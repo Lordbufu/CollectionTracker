@@ -311,14 +311,26 @@ class QueryBuilder {
             } elseif(isset($update)) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
         }
 
-        // I create the querry string using sprintf (details at the top)
-        $sql = sprintf(
-            'update %s set %s where %s = %s',
-            $tafel,
-            $update,
-            implode( array_keys( array_slice($id, 0, 1 ) ) ),
-            ':' . implode( array_keys( array_slice($id, 0, 1 ) ) )
-        );
+        if(count($id) > 1) {
+            // I create the querry string using sprintf (details at the top)
+            $sql = sprintf(
+                'update %s set %s where %s = %s and %s = %s',
+                $tafel,
+                $update,
+                implode( array_keys( array_slice($id, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice($id, 0, 1 ) ) ),
+                implode( array_keys( array_slice($id, 1, 2 ) ) ),
+                ':' . implode( array_keys( array_slice($id, 1, 2 ) ) )
+            );
+        } else {
+            $sql = sprintf(
+                'update %s set %s where %s = %s',
+                $tafel,
+                $update,
+                implode( array_keys( array_slice($id, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice($id, 0, 1 ) ) )
+            );
+        }
 
         return $this->executeQuerry($sql, $id);
     }

@@ -26,13 +26,16 @@
 
             <tr class='album-bewerken-inhoud-<?=$value['Album_Index']?>' id='album-bewerken-inhoud-<?=$value['Album_Index']?>'>
                 <th id="album-bewerken" class="album-bewerken button">
-                    <button class="album-bewerken-butt" id="<?= $value['Album_Index']; ?>" type="button" onclick="albumBewerken(event)"></button>
+                    <form class="album-bewerken-form" id="album-bewerken-form-<?=$value['Album_Index'];?>" method="post" action="/albumBew" >
+                        <input class="album-bewerken-inp" id="album-bew-inp-<?=$value['Album_Index'];?>" name="albumEdit" value="<?=$value['Album_Index'];?>" hidden />
+                        <input class="album-bewerken-butt" id="album-bew-butt-<?=$value['Album_Index'];?>" type="submit" value="" />
+                    </form>
                 </th>
                 <th id="album-verwijderen" class="album-verwijderen button">
-                    <form class="album-verwijderen-form" id="album-verwijderen-form" method="post" action="/albumV">
-                        <input class="album-verwijderen-inp" id="album-verwijderen-inp" name="album-index" value="<?=$value['Album_Index'];?>" hidden />
-                        <input class="album-verwijderen-inp" id="album-verwijderen-inp" name="serie-index" value="<?=$value['Album_Serie'];?>" hidden />
-                        <input class="album-verwijderen-butt" id="<?= $value['Album_Index']; ?>" type="submit" value="" />
+                    <form class="album-verwijderen-form" id="album-verwijderen-form-<?=$value['Album_Index'];?>" method="post" action="/albumV">
+                        <input class="album-verwijderen-inp" id="album-verw-inp1-<?=$value['Album_Index'];?>" name="album-index" value="<?=$value['Album_Index'];?>" hidden />
+                        <input class="album-verwijderen-inp" id="album-verw-inp2-<?=$value['Album_Index'];?>" name="serie-index" value="<?=$value['Album_Serie'];?>" hidden />
+                        <input class="album-verwijderen-butt" id="album-verw-butt<?= $value['Album_Index']; ?>" type="submit" value="" />
                     </form>
                 </th>
                 <th id="album-naam" class="album-naam"><?=$value['Album_Naam']?></th>
