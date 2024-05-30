@@ -263,6 +263,7 @@ class Collection {
     }
 
     // W.I.P.
+    // Adjust comments for the added update functionality.
     /*  setAlbum($data):
             This function simply sets the Album in the database, since all relevant checks have been done in advance.
 
