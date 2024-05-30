@@ -20,22 +20,22 @@
             </tr>
 
 <?php
-    if(isset($_SESSION['page-data']['albums'])):
-        foreach($_SESSION['page-data']['albums'] as $key => $value):
+    if( isset( $_SESSION['page-data']['albums'] ) ) :
+        foreach( $_SESSION['page-data']['albums'] as $key => $value ) :
 ?>
 
             <tr class='album-bewerken-inhoud-<?=$value['Album_Index']?>' id='album-bewerken-inhoud-<?=$value['Album_Index']?>'>
                 <th id="album-bewerken" class="album-bewerken button">
-                    <form class="album-bewerken-form" id="album-bewerken-form-<?=$value['Album_Index'];?>" method="post" action="/albumBew" >
+                    <form class="album-bewerken-form" id="album-bewerken-form-<?=$value['Album_Index'];?>" >
                         <input class="album-bewerken-inp" id="album-bew-inp-<?=$value['Album_Index'];?>" name="albumEdit" value="<?=$value['Album_Index'];?>" hidden />
-                        <input class="album-bewerken-butt" id="album-bew-butt-<?=$value['Album_Index'];?>" type="submit" value="" />
+                        <input class="album-bewerken-butt" id="album-bew-<?=$value['Album_Index'];?>" type="button" value="" onclick="openPopIn(event, <?=$value['Album_Index'];?>)"/>
                     </form>
                 </th>
                 <th id="album-verwijderen" class="album-verwijderen button">
                     <form class="album-verwijderen-form" id="album-verwijderen-form-<?=$value['Album_Index'];?>" method="post" action="/albumV">
                         <input class="album-verwijderen-inp" id="album-verw-inp1-<?=$value['Album_Index'];?>" name="album-index" value="<?=$value['Album_Index'];?>" hidden />
                         <input class="album-verwijderen-inp" id="album-verw-inp2-<?=$value['Album_Index'];?>" name="serie-index" value="<?=$value['Album_Serie'];?>" hidden />
-                        <input class="album-verwijderen-butt" id="album-verw-butt<?= $value['Album_Index']; ?>" type="submit" value="" />
+                        <input class="album-verwijderen-butt" id="album-verw-<?= $value['Album_Index']; ?>" type="submit" value="" />
                     </form>
                 </th>
                 <th id="album-naam" class="album-naam"><?=$value['Album_Naam']?></th>
@@ -43,8 +43,8 @@
                 <th id="album-uitgave" class="album-uitgave"><?=$value['Album_UitgDatum']?></th>
                 <th id="album-cover" class="album-cover">
 
-<?php if(isset($value['Album_Cover'])): ?>
-                    <img id='album-cover-img' class='album-cover-img' src='<?= $value['Album_Cover'] ?>' alt='album-cover'/>
+<?php if( isset( $value['Album_Cover'] ) ) : ?>
+                    <img id="album-cover-img" class="album-cover-img" src="<?=$value['Album_Cover']?>" alt="album-cover" />
 <?php endif; ?>
 
                 </th>

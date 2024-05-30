@@ -3,6 +3,8 @@ let naamChecked = false, isbnChecked = false;
 // Create and edit series/albums form submit buttons.
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 
+let scrollPos = 0;
+
 //  TODO: Review listen events, some work less then ideal with the new changes to include session data.
 //  TODO: Review what code can be re-factored/removed, once the PhP re-factor is complete.
 // Default page init function
@@ -37,7 +39,8 @@ function initBeheer() {
     let coverInp = document.getElementById("albumb-form-alb-cov");
     coverInp.addEventListener("change", coverInpCheck);
 
-    // Display and remove the welcome message on login.
+    // Refactored browser storage triggers.
+    // Welcome message for the admin.
     if(localStorage.welcome) {
         displayMessage(localStorage.welcome);
         localStorage.removeItem("welcome");
@@ -85,61 +88,36 @@ function initBeheer() {
         localStorage.removeItem("fetchResponse");
     }
 
-    // OBSOLETE CODE:
-
-    //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
-    //      Removed for now, untill a proper solution has been found.
-    // Elements, states and events required for editing a serie.
-    // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
-    // editSerieSubm = document.getElementById("serieb-form-button");
-    // editSerieSubm.disabled = true;
-    // serieEditNameInput.addEventListener('input', naamCheck);
-
-    // Check for the series name error from the controller
-    // if(localStorage.sNaamFailed !== null) {
-    //     displayMessage(localStorage.sNaamFailed);
-    //     localStorage.removeItem('sNaamFailed');
-    // }
-
-    // Ensure the series index is also used for adding a album to a series.
-    // if(localStorage.albumToevIn != null) {
-    //     inpTIndex.value = localStorage.albumToevIn;
-    //     localStorage.removeItem('albumToevIn');
-    // }
+    // Reset any stored browser scroll position, used when closing pop-in's
+    if(sessionStorage.scrollPos) {
+        window.scrollTo(0, sessionStorage.scrollPos);
+        sessionStorage.removeItem("scrollPos");
+    }
 }
 
 // Check the name input
 function naamCheck(e) {
-    // Get user input,
+    // Get user input, get element style, get element id,
     let uInp = e.target.value;
-    // get element style,
     let elStyle = e.target.style;
-    // get element id,
     let elId = e.target.id;
 
-    // evaluate if there was a input at all,
+    // evaluate if there was a input at all, make the outline green for user feedback,
     if(uInp !== "" && uInp !== null && uInp !== undefined) {
-        // make the outline green for user feedback,
         elStyle.outline = "3px solid green";
 
-        // Check if we are doing something with series,
+        // Check if we are doing something with series, disabled all create and edit serie form submit buttons.
         if(elId === "serieb-form-serieNaam" || elId === "seriem-form-serieNaam") {
-            // disabled all create and edit serie form submit buttons.
             createSerieSubm.disabled = false, editSerieSubm.disabled = false;
-        // We are doing things with albums instead,
+        // We are doing things with albums instead, set the checked state to true,
         } else {
-            // set the checked state to true,
             naamChecked = true;
 
-            // if the isbn was also checked,
+            // if the isbn was also checked, enable the create and edit form submit buttons.
             if(isbnChecked) {
-                // enable the create and edit form submit buttons.
                 createAlbumSubm.disabled = false, editAlbumSubm.disabled = false;
-            // If the isbn was not checked,
-            } else {
-                // disable the create and edit form submit buttons.
-                createAlbumSubm.disabled = true, editAlbumSubm.disabled = true;
-            }
+            // If the isbn was not checked, disable the create and edit form submit buttons.
+            } else { createAlbumSubm.disabled = true, editAlbumSubm.disabled = true; }
         }
     // If there is not valid input,
     } else {
@@ -229,41 +207,45 @@ function albCovCheck(e) {
     }
 }
 
-// W.I.P.
-// Check the input and remove some text clutter if there was.
+/*  coverInpCheck(e):
+        The Event function for the cover input, to change the preview and text in related pop-ins.
+            divCov      - The div container that should include the preview image.
+            imageFile   - The uploaded file its temp location (in blob format).
+            imgEl       - The new image element for the cover preview.
+            labEl       - The label element from the cover input.
+        
+        Return Value: None.
+ */
 function coverInpCheck(e) {
-    // Get the div element.
     let divCov = document.getElementById("albumb-cover");
-    // Get the uploaded file.
     let imageFile = e.target.files[0];
-    // Create a new img element.
     let imgEl = document.createElement('img');
-    // Remove any text in the div.
-    divCov.innerHTML = "";
-    // Load the image into the element source.
+    let labEl = document.getElementById("modal-form-albumB-cov-lab");
+
     imgEl.src = URL.createObjectURL(imageFile);
-    // Give the element the correct id.
     imgEl.id = "albumb-cover-img";
-    // Give the element the correct class.
     imgEl.className = "modal-album-cover-img";
-    // Append element to div.
+
+    divCov.innerHTML = "";
     divCov.appendChild(imgEl);
+
+    labEl.innerHTML = "Nieuwe Cover Selecteren";
+    labEl.appendChild(e.target);
 }
 
-// REFACTOR IN PROGRESS, potentially obsolete.
 /*  serieVerwijderen(e:
-        A simple confirmation check, that displays the serie name, that triggers the submit button.
+        A simple confirmation check, that displays the serie name, and triggers the submit button base on said confirmation.
+            rowCol  - The table row in witch the button was pressed.
+            rowArr  - The table row in array format for easier access.
+            conf    - The confirmation box when the button is pressed.
 
         Return Value: Boolean.
  */
 function serieVerwijderen(e) {
-    // Get table row, create new FormData, and ask for confirmation of the remove action.
     let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
     let rowArr = Array.from(rowCol);
-    // Ask the user for confirmation of the remove action.
     let conf = confirm("Weet u zeker dat de Serie: " + rowArr[0].children[3].innerHTML + "\n En al haar albums wilt verwijderen ?");
 
-    // If the user confirmed the action submit the form, otherwhise not.
     if(conf) {
         return true;
     } else { return false; }
@@ -272,9 +254,7 @@ function serieVerwijderen(e) {
 /*  wwResetClick():
         Redirect to the password reset pop-in.
  */
-function wwResetClick() {
-    window.location.assign('#ww-reset-pop-in');
-}
+function wwResetClick() { window.location.assign('#ww-reset-pop-in') }
 
 // Password reset pop-in button
 function aResetBev(e) {
@@ -297,20 +277,80 @@ function aResetBev(e) {
                     popInClose();
                 })
             // If not confirmend provide feedback.
-            } else {
-                displayMessage("Reset afgbroken, verander de gegevens en probeer het nogmaals.");
-            }
+            } else { displayMessage("Reset afgbroken, verander de gegevens en probeer het nogmaals."); }
         // If passwords are not equal, provide feedback.
-        } else {
-            displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals.");
-        }
+        } else { displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals."); }
     // If inputs are missing, provide feedback
-    } else {
-        displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals");
-    }
+    } else { displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals"); }
+}
+
+// Place-holder for closing pop-ins.
+/*  closePopIn:
+        A concept for a generic close pop-in function, so the page does not reset you scroll.
+            formData    - The FormData, from the form the button is located in.
+            scrollPos   - The current vertical scroll position, stored in the browser session storage.
+
+        PhP Return Value:
+            On sucess   - Boolean.
+            On Failure  - Nothing ?
+ */
+function closePopIn(e) {
+    let formData = new FormData(e.target.closest('form'));
+    sessionStorage.setItem('scrollPos', window.scrollY);
+
+    fetchRequest("beheer", "post", formData)
+    .then((data) => {
+        // If there was a responce, redirect to the main 'beheer' page.
+        if(data) {
+            window.location.assign("/beheer");
+        // If there wasnt a responce, display a generic error message.
+        } else { displayMessage("Er ging iets mis met JavaScript, neem contact op met de Administrator als dit blijft gebeuren !!"); }
+    });
+}
+
+// Place-holder for opening pop-ins.
+function openPopIn(e, id) {
+    // Send and process data for the album edit pop-in.
+    if(e.target.className == "album-bewerken-butt") {
+        // Get form element, and make new form data from it.
+        let formData = new FormData(document.getElementById("album-bewerken-form-" + id));
+
+        // Send the request to PhP
+        fetchRequest("albumBew", "post", formData)
+        .then((data) => {
+            // If there is a responce, dispatch the event for the input verification, and redirect to the pop-in.
+            if(data) {
+                dispatchInputEvent(e);
+                window.location.assign("/beheer#albumb-pop-in");
+            // If there wasnt a responce, display a generic error message.
+            } else { displayMessage("Er ging iets mis met JavaScript, neem contact op met de Administrator als dit blijft gebeuren !!"); }
+        });
+    } else { console.log('W.I.P.'); }
 }
 
 // OLD CODE THAT IS DEPRICATED NOW
+    // OBSOLETE CONSTRUCTOR CODE:
+    //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
+    //      Removed for now, untill a proper solution has been found.
+    // Elements, states and events required for editing a serie.
+    // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    // editSerieSubm = document.getElementById("serieb-form-button");
+    // editSerieSubm.disabled = true;
+    // serieEditNameInput.addEventListener('input', naamCheck);
+
+    // Check for the series name error from the controller
+    // if(localStorage.sNaamFailed !== null) {
+    //     displayMessage(localStorage.sNaamFailed);
+    //     localStorage.removeItem('sNaamFailed');
+    // }
+
+    // Ensure the series index is also used for adding a album to a series.
+    // if(localStorage.albumToevIn != null) {
+    //     inpTIndex.value = localStorage.albumToevIn;
+    //     localStorage.removeItem('albumToevIn');
+    // }
+
+    // OBSOLETE CODE FROM THE REST OF THE PAGE:
     // Function to close pop-ins while on the '/beheer' page.
     // function popInClose() {
     //     // If a series index was stored, i need to request a new view from PhP

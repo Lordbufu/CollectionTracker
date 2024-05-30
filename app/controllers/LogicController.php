@@ -147,9 +147,14 @@ class LogicController {
 
         // Check session user data, and validate the user that is stored.
         if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights') ) {
-            // If a pop-in is closed, and a serie is selected, we return to the admin page.
+            // If a pop-in is closed in the series view, we tell JS to process the pop-in close actions.
             if( isset( $_POST['close-pop-in'] ) && isset( $_SESSION['page-data']['huidige-serie'] ) ) {
-                return App::view('beheer');
+                echo json_encode(true);
+                return;
+            // If the post in series view is empty, we tell JS no to process the pop-in close actions.
+            } else if ( isset( $_SESSION['page-data']['huidige-serie'] ) && empty( $_POST ) ) {
+                echo json_encode(false);
+                return;
             }
 
             // Check for duplicate serie names for the serie-maken controller.
@@ -403,7 +408,6 @@ class LogicController {
     //  TODO: Finish\clean-up comments.
     /*  albumT():
             This function checks the album name, and either stores that user input, or returns it for the user to correct it.
-
                 $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
                 $dupError (Assoc Array)     - Error message for when the album name is duplicate within that series.
                 $dbError (Assoc Array)      - Error message for when there are database errors.
@@ -550,10 +554,22 @@ class LogicController {
         }
     }
 
-    // Refactor: Pending
     //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     //  TODO: Finish\clean-up comments.
-    // 'albumBew' function, edit\update album data.
+    /*  albumBew():
+            This function deal with all album-bewerken actions, but does currently cause unwanted page refreshes.
+                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
+                $dbError (Assoc Array)      - Error message for when there are database errors.
+                $dupError (Assoc Array)     - Error message for when the album name is duplicate within that series.
+                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+            
+            Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Failed Database action   - Redirect -route-> '/beheer'
+                On Album Edit Request       - Redirect -route-> '/beheer#albumb-pop-in'
+                On Duplicate Name Check     - Redirect -route-> '/beheer#albumb-pop-in'
+                On Success                  - Redirect -route-> '/beheer'
+     */
     public function albumBew() {
         // Errors that can occure during this process.
 		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
@@ -566,12 +582,13 @@ class LogicController {
             if( isset( $_POST['albumEdit'] ) ) {
                 App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['albumEdit'] ] );
 
-                return App::redirect('beheer#albumb-pop-in');
+                // Echo that task is finished to JS, and return to end this loop here.
+                echo json_encode(true);
+                return;
             }
 
             // If the album-naam is duplicate, i set a new album-edit and a feedback message in the session, and return to the pop-in.
             if(App::get('collection')->cheAlbName( $_POST['serie-index'], $_POST['album-naam'] ) ) {
-
                 App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['album-index'] ] );
                 App::get('session')->setVariable( 'header', [ 'error' => $dupError ] );
 
@@ -601,23 +618,16 @@ class LogicController {
                 'Album_Serie' => $_POST['serie-index']
             ]);
 
-            //die(var_dump(print_r($store)));
-
             // If there is an error, store a generic error message and redirect to the main admin page.
             if(is_string($store)) {
                 App::get('session')->setVariable('header', [ 'error' => $dbError ] );
 
                 return App::redirect('beheer');
             } else {
-                App::get('session')->setVariable('header', [ 'feedB' => [
-                    'fetchResponse' => 'Het aanpassen van: ' . $_POST['album-naam'] . ' is gelukt !'
-                ] ] );
+                App::get('session')->setVariable('header', [ 'feedB' => [ 'fetchResponse' => 'Het aanpassen van: ' . $_POST['album-naam'] . ' is gelukt !' ] ] );
 
-                // If the album-view is active
-                if(isset($_SESSION['page-data']['huidige-serie'])) {
-                    // Clear albums session data, so it can be repopulated after the redirect.
-                    unset( $_SESSION['page-data']['albums'] );
-                }
+                // If the album-view is active, clear albums session data, so it can be repopulated after the redirect.
+                if(isset($_SESSION['page-data']['huidige-serie'])) { unset( $_SESSION['page-data']['albums'] ); }
 
                 return App::redirect('beheer');
             }
@@ -627,59 +637,35 @@ class LogicController {
 
             return App::redirect('');  
         }
-
-        // // Prepare album and error check data.
-        // $albumData = [];
-        // $erroCheck;
-
-        // // Get all current album data from the database.
-        // $tempAlbum = App::get('database')->selectAllWhere('albums', ['Album_Index' => $_POST['album-index']])[0];
-
-        // // Prepare mandatory album data for SQL
-        // $albumData['Album_Serie'] = $tempAlbum['Album_Serie'];
-        // $albumData['Album_Naam'] = $_POST['album-naam'];
-        // $albumData['Album_ISBN'] = $_POST['album-isbn'];
-
-        // // Check non-mandatory data for SQL.
-        // if(isset($_POST['album-nummer'])) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
-        // if(isset($_POST['album-datum'])) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
-
-        // // Prepare the cover in a base64_encoded string (blob).
-        // if(!empty($_FILES['album-cover']['name'])) {
-        //     $fileName = basename($_FILES["album-cover"]["name"]);
-        //     $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-
-        //     $image = $_FILES['album-cover']['tmp_name'];
-        //     $imgContent = file_get_contents($image);
-        //     $dbImage = 'data:image/'.$fileType.';charset=utf8;base64,'.base64_encode($imgContent);
-
-        //     $albumData['Album_Cover'] = $dbImage;
-        // }
-
-        // // Attempt to store album in database.
-        // $infoAlbum = App::get('processing')->update_Object('albums', ['Album_Index' => $_POST['album-index']], $albumData);
-
-        // // If there are errors, pass them to JS for user feedback.
-        // if(isset($infoAlbum) && $infoAlbum != 0) {
-        //     echo json_encode($infoAlbum);
-        // // If there are no errors, give feedback to user via JS.
-        // } else {
-        //     echo json_encode("Het album: " . $_POST['album-naam'] . " is bijgewerkt.");
-        // }
     }
 
     // Refactor: Pending
     // 'adminReset' function, user password reset so only the admin can reset passwords.
     public function adminReset() {
-        // Attempt to update the user table with the new password
-        $reset = App::get('processing')->update_Object('gebruikers', ['Gebr_Email' => $_POST['email']], ['Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT)]);
+        // Errors that can occure during this process.
+		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
+        $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
+        $dupError = [ 'fetchResponse' => 'Dit album naam bestaat al, gebruik een andere naam !' ];
 
-        // Check if there where errors trying to update the information.
-        if(isset($reset)) {
-            echo json_encode('De wachtwoord reset is niet gelukt');
+        // Check session user data, and validate the user that is stored.
+        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
+
+        // Notify user that authentication failed, and redirect to the landing page.
         } else {
-            echo json_encode('De wachtwoord reset is geslaagd');
+            App::get('session')->setVariable( 'header', [ 'error' => $authFailed ] );
+
+            return App::redirect('');  
         }
+
+
+        // Attempt to update the user table with the new password
+        //$reset = App::get('processing')->update_Object('gebruikers', ['Gebr_Email' => $_POST['email']], ['Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT)]);
+        // Check if there where errors trying to update the information.
+        // if(isset($reset)) {
+        //     echo json_encode('De wachtwoord reset is niet gelukt');
+        // } else {
+        //     echo json_encode('De wachtwoord reset is geslaagd');
+        // }
     }
 
     /* User-Page functions */

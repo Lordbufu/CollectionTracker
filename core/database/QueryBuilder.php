@@ -296,7 +296,7 @@ class QueryBuilder {
     //  update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().
     //      $tafel (string)     - The table name i want to update specific data in.
     //      $data (Assoc Array) - The data i want to update, paired by column name (key) and the value it should have.
-    //      $id (Assoc Array)   - The identifiers to find the data i want to update.
+    //      $id (Assoc Array)   - The identifier(s) to find the data i want to update.
     public function update($tafel, $data, $id) { 
         // Variable to re-format the data array, into something more easily worked with.
         $update;
@@ -311,8 +311,8 @@ class QueryBuilder {
             } elseif(isset($update)) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
         }
 
+        // Check if $id contains more then 1 data pair,
         if(count($id) > 1) {
-            // I create the querry string using sprintf (details at the top)
             $sql = sprintf(
                 'update %s set %s where %s = %s and %s = %s',
                 $tafel,
@@ -322,6 +322,7 @@ class QueryBuilder {
                 implode( array_keys( array_slice($id, 1, 2 ) ) ),
                 ':' . implode( array_keys( array_slice($id, 1, 2 ) ) )
             );
+        // If not adjust query string and $id implodes
         } else {
             $sql = sprintf(
                 'update %s set %s where %s = %s',
