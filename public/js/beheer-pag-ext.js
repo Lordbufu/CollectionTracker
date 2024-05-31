@@ -11,7 +11,7 @@ function initBeheer() {
     let serieCreateNameInput = document.getElementById("seriem-form-serieNaam");
     createSerieSubm = document.getElementById("seriem-form-button");
     createSerieSubm.disabled = true;
-    serieCreateNameInput.addEventListener("input", naamCheck);
+    serieCreateNameInput.addEventListener("input", naamCheck, true);
 
     // Elements required for adding and editing albums.
     createAlbumSubm = document.getElementById("albumt-form-button");
@@ -25,15 +25,20 @@ function initBeheer() {
     let albCovInp = document.getElementById('albumb-form-alb-cov');
 
     // Elements and events associated with adding and editing albums.
-    isbnInpToev.addEventListener("input", isbnCheck);
-    naamInpToev.addEventListener("input", naamCheck);
+    isbnInpToev.addEventListener("input", isbnCheck, true);
+    naamInpToev.addEventListener("input", naamCheck, true);
     createAlbumSubm.disabled = true;
-    isbnInpBew.addEventListener("input", isbnCheck);
-    naamInpBew.addEventListener("input", naamCheck);
+    isbnInpBew.addEventListener("input", isbnCheck, false);
+    naamInpBew.addEventListener("input", naamCheck, false);
     editAlbumSubm.disabled = true;
-    albCovInp.addEventListener("change", albCovCheck);
+    albCovInp.addEventListener("change", albCovCheck, true);
 
     // Test Code
+    // Elements, states and events required for editing a serie.
+    let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    editSerieSubm = document.getElementById("serieb-form-button");
+    editSerieSubm.disabled = true;
+    serieEditNameInput.addEventListener('input', naamCheck);
 
     // Refactored ListenEvents
     // Get all pop-in form submit buttons, and add a listen event to save the browser scroll position.
@@ -128,7 +133,15 @@ function initBeheer() {
     // Reset any stored browser scroll position, used when closing pop-in's
     if(sessionStorage.scrollPos) {
         window.scrollTo(0, sessionStorage.scrollPos);
+
+        if(window.location.hash === "#albumb-pop-in") {
+            dispatchInputEvent(sessionStorage.event);
+        } else if(window.location.hash === "#serieb-pop-in") {
+            dispatchInputEvent(sessionStorage.event);
+        }
+
         sessionStorage.removeItem("scrollPos");
+
     }
 }
 
@@ -297,36 +310,12 @@ function wwResetClick() { window.location.assign('#ww-reset-pop-in') }
 
 // Password reset pop-in button
 function aResetBev(e) {
-    // Get form element, create new FormData from it and prevent the default submit.
-    let form = document.getElementById('ww-reset-form');
-    let formData = new FormData(form);
-    e.preventDefault();
+    let conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?");
 
-    // Check if the form has inputs, and see if the passwords are identical.
-    if(form[0].value != '' && form[1].value != '' && form[2].value != '') {
-        if(form[1].value === form[2].value) {
-            // Ask for confirmation since its a remove action.
-            let conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?");
-
-            // When confirmed, send request to PhP, provide user feedback and close the pop-in.
-            if(conf) {
-                fetchRequest('aReset', 'POST', formData)
-                .then((data) => {
-                    localStorage.setItem('fetchResponse', data);
-                    popInClose();
-                })
-            // If not confirmend provide feedback.
-            } else { displayMessage("Reset afgebroken, verander de gegevens en probeer het nogmaals."); }
-        // If passwords are not equal, provide feedback.
-        } else { displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals."); }
-    // If inputs are missing, provide feedback
-    } else { displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals"); }
+    if(conf) {
+        return true;
+    } else { return false; }
 }
-
-// Test Code
-//  TODO: Move this to the main.js file, so it can be used/called on all pages.
-// Simple one-liner to store the current browser scroll position, to restore it on page-load.
-function saveScroll() { sessionStorage.setItem('scrollPos', window.scrollY); }
 
 // OLD CODE THAT IS DEPRICATED NOW
     // OBSOLETE CONSTRUCTOR CODE:

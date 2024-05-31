@@ -52,6 +52,11 @@ class User {
     }
 
     // W.I.P.
+    public function getUserName() {
+        return $this->user['Gebr_Naam'];
+    }
+
+    // W.I.P.
     /*  validateUser($id, $pw):
             Validate if the user id is in the database, and validate if the stored PW matches the user input.
 
@@ -158,11 +163,6 @@ class User {
     }
 
     // W.I.P.
-    public function getUserName() {
-        return $this->user['Gebr_Naam'];
-    }
-
-    // W.I.P.
     public function evalUser() {
         $rightsError = [ 'loginFailed' => 'U heeft geen rechten om de website te bezoeken !!' ];
 
@@ -173,5 +173,14 @@ class User {
         } else {
             return $rightsError;
         }
+    }
+
+    // W.I.P.
+    public function updateUser($table, $data, $id) {
+        $store = App::get('database')->update($table, $data, $id);
+
+        if(!is_string($store)) {
+            return TRUE;
+        } else { return FALSE; }
     }
 }

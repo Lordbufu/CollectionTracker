@@ -202,6 +202,7 @@ class LogicController {
             // If the edit series button was clicked, we set the serie index in the session an return to the edit pop-in.
             if(isset($_POST['serie-edit-index'])) {
                 App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['serie-edit-index'] ] );
+                //die(var_dump(print_r($_SESSION)));
 
                 return App::redirect('beheer#serieb-pop-in');
             }
@@ -632,33 +633,48 @@ class LogicController {
         }
     }
 
-    // Refactor: Pending
-    // 'adminReset' function, user password reset so only the admin can reset passwords.
+    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
+    //  TODO: Finish\clean-up comments.
+    /*  adminReset():
+            This function can reset user passwords, since that is missing from the main page login-pop-in.
+                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
+                $dbError (Assoc Array)      - Error message for when there are database errors.
+                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+
+            Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Failed Database action   - Redirect -route-> '/beheer#ww-reset-pop-in'
+                On Success                  - Redirect -route-> '/beheer'
+     */
     public function adminReset() {
         // Errors that can occure during this process.
 		$authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
         $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
-        $dupError = [ 'fetchResponse' => 'Dit album naam bestaat al, gebruik een andere naam !' ];
 
         // Check session user data, and validate the user that is stored.
         if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
+            // Attempt to update the user in the database.
+            $store = App::get('user')->updateUser('gebruikers',
+                [ 'Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT) ],
+                [ 'Gebr_Email' => $_POST['email'] ] );
 
+            // If updated, store user feedback in session, and redirect to the admin page.
+            if($store) {
+                App::get('session')->setVariable('header', [ 'feedB' => ['fetchResponse' => 'Het wachtwoord van: ' . $_POST['email'] . ' is aangepast !' ] ] );
+
+                return App::redirect('beheer');
+            // If the update failed, store user feedback in session, and redirect to the pop-in
+            } else {
+                App::get('session')->setVariable('header', [ 'error' => $dbError ] );
+
+                return App::redirect('beheer#ww-reset-pop-in');
+            }
         // Notify user that authentication failed, and redirect to the landing page.
         } else {
             App::get('session')->setVariable( 'header', [ 'error' => $authFailed ] );
 
             return App::redirect('');  
         }
-
-
-        // Attempt to update the user table with the new password
-        //$reset = App::get('processing')->update_Object('gebruikers', ['Gebr_Email' => $_POST['email']], ['Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT)]);
-        // Check if there where errors trying to update the information.
-        // if(isset($reset)) {
-        //     echo json_encode('De wachtwoord reset is niet gelukt');
-        // } else {
-        //     echo json_encode('De wachtwoord reset is geslaagd');
-        // }
     }
 
     /* User-Page functions */
@@ -712,40 +728,35 @@ class LogicController {
         $collComp = "Toevoegen van het album aan de collectie is gelukt";
         $collRemo = "Verwijderen van het album uit de collectie is gelukt";
 
-        if(isset($_SESSION['user']['id'])) {
-            if(App::get('user')->checkUSer($_SESSION['user']['id'])) {
-                $checkCol;
+        if(isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'])) {
+            $checkCol;
 
-                if(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'true') {
-                    $tempData = [
-                        'Gebr_Index' => $_SESSION['user']['id'],
-                        'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
-                    ];
+            if(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'true') {
+                $tempData = [
+                    'Gebr_Index' => $_SESSION['user']['id'],
+                    'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
+                ];
 
-                    $checkCol = App::get('collection')->setColl($tempData);
-                } elseif(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'false') {
-                    $tempData = [
-                        'Gebr_Index' => $_SESSION['user']['id'],
-                        'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
-                    ];
+                $checkCol = App::get('collection')->setColl($tempData);
+            } elseif(isset($_POST['aanwezig']) && $_POST['aanwezig'] === 'false') {
+                $tempData = [
+                    'Gebr_Index' => $_SESSION['user']['id'],
+                    'Alb_Index' => App::get('collection')->getAlbId($_POST['album_naam'])
+                ];
 
-                    $checkCol = App::get('collection')->remColl($tempData);
-                }
+                $checkCol = App::get('collection')->remColl($tempData);
+            }
 
-                if($checkCol) {
-                    if($_POST['aanwezig'] === 'true') {
-                        echo json_encode($collComp);
-                        return;
-                    } elseif($_POST['aanwezig'] === 'false') {
-                        echo json_encode($collRemo);
-                        return;
-                    }
-                } else {
-                    echo json_encode($collErr);
+            if($checkCol) {
+                if($_POST['aanwezig'] === 'true') {
+                    echo json_encode($collComp);
+                    return;
+                } elseif($_POST['aanwezig'] === 'false') {
+                    echo json_encode($collRemo);
                     return;
                 }
             } else {
-                echo json_encode($authFailed);
+                echo json_encode($collErr);
                 return;
             }
         } else {
