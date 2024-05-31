@@ -7,9 +7,7 @@ let header, sticky;
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         /* On scroll code for the title banner */
-        window.onscroll = function() {
-            onScroll()
-        };
+        window.onscroll = function() { onScroll() };
 
         header = document.getElementById("title-banner");
         sticky = header.offsetTop;
@@ -27,9 +25,7 @@ document.onreadystatechange = () => {
         } else if(window.location.pathname === '/gebruik') {
             initGebruik();
         // If we are on the admnin (/beheer) page, we init that the code required there.
-        } else if(window.location.pathname === '/beheer') {
-            initBeheer();
-        }
+        } else if(window.location.pathname === '/beheer') { initBeheer(); }
     }
 }
 
