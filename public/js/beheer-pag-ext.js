@@ -11,7 +11,7 @@ function initBeheer() {
     let serieCreateNameInput = document.getElementById("seriem-form-serieNaam");
     createSerieSubm = document.getElementById("seriem-form-button");
     createSerieSubm.disabled = true;
-    serieCreateNameInput.addEventListener("input", naamCheck, true);
+    serieCreateNameInput.addEventListener("input", naamCheck);
 
     // Elements required for adding and editing albums.
     createAlbumSubm = document.getElementById("albumt-form-button");
@@ -25,13 +25,13 @@ function initBeheer() {
     let albCovInp = document.getElementById('albumb-form-alb-cov');
 
     // Elements and events associated with adding and editing albums.
-    isbnInpToev.addEventListener("input", isbnCheck, true);
-    naamInpToev.addEventListener("input", naamCheck, true);
+    isbnInpToev.addEventListener("input", isbnCheck);
+    naamInpToev.addEventListener("input", naamCheck);
     createAlbumSubm.disabled = true;
-    isbnInpBew.addEventListener("input", isbnCheck, false);
-    naamInpBew.addEventListener("input", naamCheck, false);
+    isbnInpBew.addEventListener("input", isbnCheck);
+    naamInpBew.addEventListener("input", naamCheck);
     editAlbumSubm.disabled = true;
-    albCovInp.addEventListener("change", albCovCheck, true);
+    albCovInp.addEventListener("change", albCovCheck);
 
     // Test Code
     // Elements, states and events required for editing a serie.

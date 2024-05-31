@@ -202,7 +202,6 @@ class LogicController {
             // If the edit series button was clicked, we set the serie index in the session an return to the edit pop-in.
             if(isset($_POST['serie-edit-index'])) {
                 App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['serie-edit-index'] ] );
-                //die(var_dump(print_r($_SESSION)));
 
                 return App::redirect('beheer#serieb-pop-in');
             }

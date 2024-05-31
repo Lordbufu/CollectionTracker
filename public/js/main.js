@@ -58,22 +58,6 @@ function dispatchInputEvent(caller) {
             document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
             return;
     }
-
-    // OLD CODE THAT USED THE EVENT TO SEE THE CALLER
-    // if(caller !== "" || caller !== null || caller !== undefined) {                                      // Check if caller was set, not sure if really required.
-    //     switch(caller.target.className) {                                                               // Switch the callers element class name.
-    //         case "album-bewerken-butt":
-    //             document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);              // Assign event to the desired input element
-    //             document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);              // Assign event to the desired input element
-    //             return;                                                                                 // Return to caller.
-    //         case "serie-maken-subm":
-    //             document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
-    //             return;
-    //         case "serie-bewerken-butt":
-    //             document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
-    //             return;
-    //     }
-    // }
 }
 
 // Simple function to store the current browser scroll position, to restore it on page-load.
