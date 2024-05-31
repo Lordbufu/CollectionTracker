@@ -34,9 +34,32 @@
             </form>
         </div>
         <?php
+            
+                    endif;
+                endforeach;
             unset($_SESSION['page-data']['edit-serie']);
-            endif;
-            endforeach;
+            elseif(!isset($_SESSION['page-data']['edit-serie'])) :
+        ?>
+        <!-- For script reasons i need a empty pop-in, might remove this later -->
+        <div class="modal-body">
+            <form class="modal-form" id="serieb-form" method="post" action="/serieBew">
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-serieNaam" name="naam" placeholder="" value="" autocomplete="on" required />
+                    <span class="modal-form-span"> Serie Naam </span>
+                </label>
+                <input type="text" class="modal-form-input" id="serieb-form-index" name="index" value="" hidden />
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-makers" name="makers" placeholder="" value="" autocomplete="on" />
+                    <span class="modal-form-span"> Makers/Artiesten </span>
+                </label>
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="serieb-form-opmerking" name="opmerking" placeholder="" value="" autocomplete="on" />
+                    <span class="modal-form-span"> Opmerking/Notitie </span>
+                </label>
+                <input class="modal-form-button" id="serieb-form-button" type="submit" value="Bevestigen" />
+            </form>
+        </div>
+        <?php
             endif;
         ?>
 

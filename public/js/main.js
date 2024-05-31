@@ -41,27 +41,52 @@ async function fetchRequest(url=null, method=null, data=null ) {
 }
 
 //  dispatchInputEvent(caller):
-//      caller (object) - The event from the caller function.
+//      caller (string) - A string that allows me to see what called the event.
 function dispatchInputEvent(caller) {
-    let inputEvent = new Event('input', {                                                               // Create new input event
-        'bubbles': true,
-        'cancelable': false
-    });
+    let inputEvent = new Event('input', { 'bubbles': true, 'cancelable': false });                  // Create new input event
 
-    if(caller !== "" || caller !== null || caller !== undefined) {                                      // Check if caller was set, not sure if really required.
-        switch(caller.target.className) {                                                               // Switch the callers element class name.
-            case "album-bewerken-butt":
-                document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);              // Assign event to the desired input element
-                document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);              // Assign event to the desired input element
-                return;                                                                                 // Return to caller.
-            case "serie-maken-subm":
-                document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
-                return;
-            case "serie-bewerken-butt":
-                document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
-                return;
-        }
+    switch(caller) {                                                                                // Switch the callers element class name.
+        case "album-bew":
+            document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);              // Assign event to the desired input element
+            document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);              // Assign event to the desired input element
+            return;                                                                                 // Return to caller.
+        case "serie-maken":
+            document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
+            return;
+        case "serie-bew":
+            console.log('test');
+            document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
+            return;
     }
+
+    // OLD CODE THAT USED THE EVENT TO SEE THE CALLER
+    // if(caller !== "" || caller !== null || caller !== undefined) {                                      // Check if caller was set, not sure if really required.
+    //     switch(caller.target.className) {                                                               // Switch the callers element class name.
+    //         case "album-bewerken-butt":
+    //             document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);              // Assign event to the desired input element
+    //             document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);              // Assign event to the desired input element
+    //             return;                                                                                 // Return to caller.
+    //         case "serie-maken-subm":
+    //             document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
+    //             return;
+    //         case "serie-bewerken-butt":
+    //             document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
+    //             return;
+    //     }
+    // }
+}
+
+// Simple function to store the current browser scroll position, to restore it on page-load.
+function saveScroll(e) {
+    sessionStorage.setItem('scrollPos', window.scrollY);
+
+    if(e.target.className === "album-bewerken-butt") {
+        sessionStorage.setItem('event', "album-bew");
+    } else if(e.target.className === "serie-bewerken-butt") {
+        sessionStorage.setItem("event", "serie-bew");
+    } 
+
+    return;
 }
 
 // onScroll function

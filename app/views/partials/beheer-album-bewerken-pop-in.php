@@ -34,7 +34,7 @@
                     <span class="modal-form-span"> Album Uitgave Datum </span>
                 </label>
 
-            <?php if( !empty( $store['Album_Cover'] ) ) : ?>
+                <?php if( !empty( $store['Album_Cover'] ) ) : ?>
                 <div class="modal-album-cover" id="albumb-cover">
                     <img class="modal-album-cover-img" id="albumb-cover-img" src="<?=$store['Album_Cover']?>" alt='album-cover'/>
                 </div>
@@ -42,13 +42,13 @@
                     Nieuwe Cover Selecteren
                     <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumb-form-alb-cov" name="album-cover" />
                 </label>
-            <?php else : ?>
+                <?php else : ?>
                 <div class="modal-album-cover" id="albumb-cover"> Geen cover gevonden, u kunt een cover selecteren, maar dit is niet verplicht. </div>
                 <label class="modal-form-alb-cov-lab" id="modal-form-albumB-cov-lab" for="albumb-form-alb-cov" >
                     Album Cover Selecteren
                     <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumb-form-alb-cov" name="album-cover" />
                 </label>
-            <?php endif; ?>
+                <?php endif; ?>
 
                 <label class="modal-form-label">
                     <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="<?=$store['Album_ISBN']?>" autocomplete="on" required />
@@ -60,7 +60,8 @@
                 <!-- </label> -->
                 <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" />
             </form>
-            
+
+            <!-- For script reasons i need a empty pop-in, might remove this later -->
             <?php else : ?>
                 <form class="modal-form" id="albumb-form" enctype="multipart/form-data" method="post" action="/albumBew">
                 <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="" hidden />

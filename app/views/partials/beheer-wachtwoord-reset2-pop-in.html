@@ -10,7 +10,7 @@
         </div>
           
         <div class="modal-body">
-            <form class="modal-form" id="ww-reset-form" >
+            <form class="modal-form" id="ww-reset-form" method="post" action="/aReset">
                 <label class="modal-form-label">
                     <input type="email" class="modal-form-input" id="emailField" name="email" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span"> E-mail </span>
@@ -23,7 +23,7 @@
                     <input type="password" class="modal-form-input" id="resetVeld2" name="wachtwoord2" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span"> Wachtwoord Bevestigen </span>
                 </label>
-                <input class="modal-form-button" id="reset-submit" type="submit" value="Bevestigen" onclick="aResetBev(event)">
+                <input class="modal-form-button" id="reset-submit" type="submit" value="Bevestigen" onclick="return aResetBev(event)">
             </form>
         </div>
 
