@@ -24,11 +24,11 @@
         foreach( $_SESSION['page-data']['albums'] as $key => $value ) :
 ?>
 
-            <tr class='album-bewerken-inhoud-<?=$value['Album_Index']?>' id='album-bewerken-inhoud-<?=$value['Album_Index']?>'>
+            <tr class="album-bewerken-inhoud-<?=$value['Album_Index']?>" id="album-bewerken-inhoud-<?=$value['Album_Index']?>">
                 <th id="album-bewerken" class="album-bewerken button">
-                    <form class="album-bewerken-form" id="album-bewerken-form-<?=$value['Album_Index'];?>" >
+                    <form class="album-bewerken-form" id="album-bewerken-form-<?=$value['Album_Index'];?>" method="post" action="/albumBew" >
                         <input class="album-bewerken-inp" id="album-bew-inp-<?=$value['Album_Index'];?>" name="albumEdit" value="<?=$value['Album_Index'];?>" hidden />
-                        <input class="album-bewerken-butt" id="album-bew-<?=$value['Album_Index'];?>" type="button" value="" onclick="openPopIn(event, <?=$value['Album_Index'];?>)"/>
+                        <input class="album-bewerken-butt" id="album-bew-<?=$value['Album_Index'];?>" type="submit" value="" />
                     </form>
                 </th>
                 <th id="album-verwijderen" class="album-verwijderen button">

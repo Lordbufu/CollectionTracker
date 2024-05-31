@@ -149,12 +149,7 @@ class LogicController {
         if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights') ) {
             // If a pop-in is closed in the series view, we tell JS to process the pop-in close actions.
             if( isset( $_POST['close-pop-in'] ) && isset( $_SESSION['page-data']['huidige-serie'] ) ) {
-                echo json_encode(true);
-                return;
-            // If the post in series view is empty, we tell JS no to process the pop-in close actions.
-            } else if ( isset( $_SESSION['page-data']['huidige-serie'] ) && empty( $_POST ) ) {
-                echo json_encode(false);
-                return;
+                return App::view('beheer');
             }
 
             // Check for duplicate serie names for the serie-maken controller.
@@ -582,9 +577,7 @@ class LogicController {
             if( isset( $_POST['albumEdit'] ) ) {
                 App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['albumEdit'] ] );
 
-                // Echo that task is finished to JS, and return to end this loop here.
-                echo json_encode(true);
-                return;
+                return App::redirect("beheer#albumb-pop-in");
             }
 
             // If the album-naam is duplicate, i set a new album-edit and a feedback message in the session, and return to the pop-in.

@@ -3,9 +3,9 @@
 
         <div class="modal-header">  
             <h1 class="modal-header-text"> Album Bewerken </h1>
-            <form class="modal-header-close-form" >
+            <form class="modal-header-close-form" method="post" action="/beheer">
                 <input class="modal-header-input" name="close-pop-in" value="" hidden/>
-                <input class="modal-header-close" type="button" value="&times;" onclick="closePopIn(event)" />
+                <input class="modal-header-close" type="submit" value="&times;" />
             </form>
         </div>
 
@@ -88,11 +88,11 @@
                 </label>
 
                 <label class="modal-form-label">
-                    <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="<?=$store['Album_ISBN']?>" autocomplete="on" required />
+                    <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="" autocomplete="on" required />
                     <span class="modal-form-span"> Album ISBN </span>
                 </label>
                 <!-- <label class="modal-form-label"> -->
-                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="<?=$store['Album_Opm']?>" autocomplete="on" hidden />
+                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" hidden />
                     <!-- <span class="modal-form-span" hidden> Album Opmerking </span> -->
                 <!-- </label> -->
                 <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" />

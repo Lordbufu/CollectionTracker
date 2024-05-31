@@ -31,7 +31,7 @@
                 <!-- Series Edit -->
                 <th class="serie-bewerken button" id="serie-bewerken">
                     <form id="serie-edit-form-<?=$value['Serie_Index'];?>" class="serie-edit-form" method="post" action="/beheer">
-                        <input id="serie-edit-form-index-<?=$value['Serie_Index'];?>" class="serie-edit-form-index" name="serie-index" value="<?=$value['Serie_Index'];?>" hidden />
+                        <input id="serie-edit-form-index-<?=$value['Serie_Index'];?>" class="serie-edit-form-index" name="serie-edit-index" value="<?=$value['Serie_Index'];?>" hidden />
                         <input id="edit-<?=$value['Serie_Index'];?>" class="serie-bewerken-butt" type="submit" value="" />
                     </form>
                 </th>

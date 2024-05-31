@@ -3,8 +3,6 @@ let naamChecked = false, isbnChecked = false;
 // Create and edit series/albums form submit buttons.
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 
-let scrollPos = 0;
-
 //  TODO: Review listen events, some work less then ideal with the new changes to include session data.
 //  TODO: Review what code can be re-factored/removed, once the PhP re-factor is complete.
 // Default page init function
@@ -35,7 +33,47 @@ function initBeheer() {
     editAlbumSubm.disabled = true;
     albCovInp.addEventListener("change", albCovCheck);
 
+    // Test Code
+
     // Refactored ListenEvents
+    // Get all pop-in form submit buttons, and add a listen event to save the browser scroll position.
+    let modalFormButt = document.getElementsByClassName("modal-form-button");
+    let modalFormButtArr = Array.from(modalFormButt);
+
+    for(key in modalFormButtArr) { modalFormButtArr[key].addEventListener("click", saveScroll); }
+
+    // Get all pop-in close button, and add a listen event to save the browser scroll position.
+    let popInClButt = document.getElementsByClassName("modal-header-close");
+    let clButtArr = Array.from(popInClButt);
+
+    for(key in clButtArr) { clButtArr[key].addEventListener("click", saveScroll); }
+
+    // Serie bewerken buttons
+    let serieBewButt = document.getElementsByClassName("serie-bewerken-butt");
+    let serieBewButtArr = Array.from(serieBewButt);
+
+    for(key in serieBewButtArr) { serieBewButtArr[key].addEventListener("click", saveScroll); }
+
+    // Serie verwijderen buttons
+    let serieVerButt = document.getElementsByClassName("serie-verwijderen-butt");
+    let serieVerButtArr = Array.from(serieVerButt);
+
+    for(key in serieVerButtArr) { serieVerButtArr[key].addEventListener("click", saveScroll); }
+
+    // Album related Code
+    // Get all album-bewerken buttons, and add a listen event to save the browser scroll position.
+    let albBewButt = document.getElementsByClassName("album-bewerken-butt");
+    let albBewButtArr = Array.from(albBewButt);
+
+    for(key in albBewButtArr) { albBewButtArr[key].addEventListener("click", saveScroll); }
+
+    // Get all buttons from album-verwijderen, and add a listen event to save the browser scroll position.
+    let verwButt = document.getElementsByClassName("album-verwijderen-butt");
+    let verwButtArr = Array.from(verwButt);
+
+    for(key in verwButtArr) { verwButtArr[key].addEventListener("click", saveScroll); }
+
+    // Regular listen events
     let coverInp = document.getElementById("albumb-form-alb-cov");
     coverInp.addEventListener("change", coverInpCheck);
 
@@ -66,7 +104,6 @@ function initBeheer() {
         let tempForm = document.getElementById("albumt-form");
         let arrayForm = Array.from(tempForm);
 
-        // Index and cover are (hopefully) set via inline PhP.
         // Check what input was returned, and set them in the associated fields.
         if(localStorage.getItem("album-naam")) { arrayForm[1].value = localStorage.getItem("album-naam"); }
         if(localStorage.getItem("album-nummer")) { arrayForm[2].value = localStorage.getItem("album-nummer"); }
@@ -248,12 +285,14 @@ function serieVerwijderen(e) {
 
     if(conf) {
         return true;
-    } else { return false; }
+    } else {
+        // Ensure the scrollPos is removed, as its obsolete in this case.
+        if(sessionStorage.scrollPos) { sessionStorage.removeItem("scrollPos"); }
+        return false;
+    }
 }
 
-/*  wwResetClick():
-        Redirect to the password reset pop-in.
- */
+/*  wwResetClick(): Redirect to the password reset pop-in. */
 function wwResetClick() { window.location.assign('#ww-reset-pop-in') }
 
 // Password reset pop-in button
@@ -277,56 +316,17 @@ function aResetBev(e) {
                     popInClose();
                 })
             // If not confirmend provide feedback.
-            } else { displayMessage("Reset afgbroken, verander de gegevens en probeer het nogmaals."); }
+            } else { displayMessage("Reset afgebroken, verander de gegevens en probeer het nogmaals."); }
         // If passwords are not equal, provide feedback.
         } else { displayMessage("De opgegeven wachtwoorden zijn niet gelijk, probeer het nogmaals."); }
     // If inputs are missing, provide feedback
     } else { displayMessage("Niet alles is ingevuld, vul de juiste gegevens in, en probeer het nogmaals"); }
 }
 
-// Place-holder for closing pop-ins.
-/*  closePopIn:
-        A concept for a generic close pop-in function, so the page does not reset you scroll.
-            formData    - The FormData, from the form the button is located in.
-            scrollPos   - The current vertical scroll position, stored in the browser session storage.
-
-        PhP Return Value:
-            On sucess   - Boolean.
-            On Failure  - Nothing ?
- */
-function closePopIn(e) {
-    let formData = new FormData(e.target.closest('form'));
-    sessionStorage.setItem('scrollPos', window.scrollY);
-
-    fetchRequest("beheer", "post", formData)
-    .then((data) => {
-        // If there was a responce, redirect to the main 'beheer' page.
-        if(data) {
-            window.location.assign("/beheer");
-        // If there wasnt a responce, display a generic error message.
-        } else { displayMessage("Er ging iets mis met JavaScript, neem contact op met de Administrator als dit blijft gebeuren !!"); }
-    });
-}
-
-// Place-holder for opening pop-ins.
-function openPopIn(e, id) {
-    // Send and process data for the album edit pop-in.
-    if(e.target.className == "album-bewerken-butt") {
-        // Get form element, and make new form data from it.
-        let formData = new FormData(document.getElementById("album-bewerken-form-" + id));
-
-        // Send the request to PhP
-        fetchRequest("albumBew", "post", formData)
-        .then((data) => {
-            // If there is a responce, dispatch the event for the input verification, and redirect to the pop-in.
-            if(data) {
-                dispatchInputEvent(e);
-                window.location.assign("/beheer#albumb-pop-in");
-            // If there wasnt a responce, display a generic error message.
-            } else { displayMessage("Er ging iets mis met JavaScript, neem contact op met de Administrator als dit blijft gebeuren !!"); }
-        });
-    } else { console.log('W.I.P.'); }
-}
+// Test Code
+//  TODO: Move this to the main.js file, so it can be used/called on all pages.
+// Simple one-liner to store the current browser scroll position, to restore it on page-load.
+function saveScroll() { sessionStorage.setItem('scrollPos', window.scrollY); }
 
 // OLD CODE THAT IS DEPRICATED NOW
     // OBSOLETE CONSTRUCTOR CODE:
