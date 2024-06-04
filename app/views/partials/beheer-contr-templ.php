@@ -4,7 +4,7 @@
         <form class="serie-maken-form" id="serie-maken-form" method="post" action="/beheer">
             <label for="serie-maken-inp" class="serie-maken-lab"> Serie Maken: </label>
             <label class="modal-form-label">
-                <input type="text" class="modal-form-input" id="serie-maken-inp" name="newSerName" placeholder="" autocomplete="on"/>
+                <input type="text" class="modal-form-input" id="serie-maken-inp" name="newSerName" placeholder="" autocomplete="on" required/>
                 <span class="modal-form-span"> Serie Naam </span>
             </label>
             <input class="serie-maken-subm" id="serie-maken-subm" type="submit" value="Bevestigen" />
