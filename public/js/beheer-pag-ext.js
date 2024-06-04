@@ -1,260 +1,179 @@
-// Check states for name and isbn user inputs.
+/* Globals for the input listen events */
 let naamChecked = false, isbnChecked = false;
-// Create and edit series/albums form submit buttons.
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
 
-//  TODO: Review listen events, some work less then ideal with the new changes to include session data.
-//  TODO: Review what code can be re-factored/removed, once the PhP re-factor is complete.
-// Default page init function
+/* On-pageload init function, triggered from main.js */
 function initBeheer() {
-    // Elements, states and events required for creating a serie.
-    let serieCreateNameInput = document.getElementById("seriem-form-serieNaam");
+    /* Elements, button states and listen events for creating a serie */
+    const serieCreateNameInput = document.getElementById("seriem-form-serieNaam");
+    const serieCreateButt = document.getElementById("serie-maken-subm");
     createSerieSubm = document.getElementById("seriem-form-button");
-    createSerieSubm.disabled = true;
     serieCreateNameInput.addEventListener("input", naamCheck);
+    serieCreateButt.addEventListener("click", saveScroll);
+    createSerieSubm.disabled = true;
 
-    // Elements required for adding and editing albums.
-    createAlbumSubm = document.getElementById("albumt-form-button");
-    let inpTIndex = document.getElementById("albumt-form-indexT");
-    let naamInpToev = document.getElementById("albumt-form-alb-naam");
-    let isbnInpToev = document.getElementById("albumt-form-alb-isbn");
-
-    editAlbumSubm = document.getElementById("albumb-form-button");
-    let naamInpBew = document.getElementById("albumb-form-alb-naam");
-    let isbnInpBew = document.getElementById("albumb-form-alb-isbn");
-    let albCovInp = document.getElementById('albumb-form-alb-cov');
-
-    // Elements and events associated with adding and editing albums.
-    isbnInpToev.addEventListener("input", isbnCheck);
-    naamInpToev.addEventListener("input", naamCheck);
-    createAlbumSubm.disabled = true;
-    isbnInpBew.addEventListener("input", isbnCheck);
-    naamInpBew.addEventListener("input", naamCheck);
-    editAlbumSubm.disabled = true;
-    albCovInp.addEventListener("change", albCovCheck);
-
-    // Test Code
-    // Elements, states and events required for editing a serie.
-    let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    /* Elements, button states and listen events for editing a serie */
+    const serieEditNameInput = document.getElementById("serieb-form-serieNaam");
+    const serieBewButt = document.getElementsByClassName("serie-bewerken-butt");
+    const serieBewButtArr = Array.from(serieBewButt);
     editSerieSubm = document.getElementById("serieb-form-button");
+    serieEditNameInput.addEventListener("input", naamCheck);
     editSerieSubm.disabled = true;
-    serieEditNameInput.addEventListener('input', naamCheck);
-
-    // Refactored ListenEvents
-    // Get all pop-in form submit buttons, and add a listen event to save the browser scroll position.
-    let modalFormButt = document.getElementsByClassName("modal-form-button");
-    let modalFormButtArr = Array.from(modalFormButt);
-
-    for(key in modalFormButtArr) { modalFormButtArr[key].addEventListener("click", saveScroll); }
-
-    // Get all pop-in close button, and add a listen event to save the browser scroll position.
-    let popInClButt = document.getElementsByClassName("modal-header-close");
-    let clButtArr = Array.from(popInClButt);
-
-    for(key in clButtArr) { clButtArr[key].addEventListener("click", saveScroll); }
-
-    // Serie bewerken buttons
-    let serieBewButt = document.getElementsByClassName("serie-bewerken-butt");
-    let serieBewButtArr = Array.from(serieBewButt);
 
     for(key in serieBewButtArr) { serieBewButtArr[key].addEventListener("click", saveScroll); }
 
-    // Serie verwijderen buttons
-    let serieVerButt = document.getElementsByClassName("serie-verwijderen-butt");
-    let serieVerButtArr = Array.from(serieVerButt);
+    /* Elements and listen events for removing series */
+    const serieVerButt = document.getElementsByClassName("serie-verwijderen-butt");
+    const serieVerButtArr = Array.from(serieVerButt);
 
     for(key in serieVerButtArr) { serieVerButtArr[key].addEventListener("click", saveScroll); }
 
-    // Album related Code
-    // Get all album-bewerken buttons, and add a listen event to save the browser scroll position.
-    let albBewButt = document.getElementsByClassName("album-bewerken-butt");
-    let albBewButtArr = Array.from(albBewButt);
+    /* Elements, button states and listen events for creating a album */
+    const naamInpToev = document.getElementById("albumt-form-alb-naam");
+    const isbnInpToev = document.getElementById("albumt-form-alb-isbn");
+    const coverInp = document.getElementById("albumt-form-alb-cov");
+    createAlbumSubm = document.getElementById("albumt-form-button");
+    isbnInpToev.addEventListener("input", isbnCheck);
+    naamInpToev.addEventListener("input", naamCheck);
+    coverInp.addEventListener("change", coverInpCheck);
+    createAlbumSubm.addEventListener("click", saveScroll);
+    createAlbumSubm.disabled = true;
+
+    /* Required elements for editing a album */
+    editAlbumSubm = document.getElementById("albumb-form-button");
+    const naamInpBew = document.getElementById("albumb-form-alb-naam");
+    const isbnInpBew = document.getElementById("albumb-form-alb-isbn");
+    const covInpBew = document.getElementById('albumb-form-alb-cov');
+    const albBewButt = document.getElementsByClassName("album-bewerken-butt");
+    const albBewButtArr = Array.from(albBewButt);
+    isbnInpBew.addEventListener("input", isbnCheck);
+    naamInpBew.addEventListener("input", naamCheck);
+    covInpBew.addEventListener("change", coverInpCheck);
+    editAlbumSubm.disabled = true;
 
     for(key in albBewButtArr) { albBewButtArr[key].addEventListener("click", saveScroll); }
 
-    // Get all buttons from album-verwijderen, and add a listen event to save the browser scroll position.
-    let verwButt = document.getElementsByClassName("album-verwijderen-butt");
-    let verwButtArr = Array.from(verwButt);
+    /* Elements and listen events for removing a album */
+    const verwButt = document.getElementsByClassName("album-verwijderen-butt");
+    const verwButtArr = Array.from(verwButt);
 
     for(key in verwButtArr) { verwButtArr[key].addEventListener("click", saveScroll); }
 
-    // Regular listen events
-    let coverInp = document.getElementById("albumb-form-alb-cov");
-    coverInp.addEventListener("change", coverInpCheck);
+    /* Elements and listen events for buttons */
+    const modalFormButt = document.getElementsByClassName("modal-form-button");
+    const modalFormButtArr = Array.from(modalFormButt);
 
-    // Refactored browser storage triggers.
-    // Welcome message for the admin.
+    for(key in modalFormButtArr) { modalFormButtArr[key].addEventListener("click", saveScroll); }
+
+    const popInClButt = document.getElementsByClassName("modal-header-close");
+    const clButtArr = Array.from(popInClButt);
+
+    for(key in clButtArr) { clButtArr[key].addEventListener("click", saveScroll); }
+
+    /* Triggers based on browser storage variables */
     if(localStorage.welcome) {
         displayMessage(localStorage.welcome);
         localStorage.removeItem("welcome");
     }
 
-    // Check if create serie had duplication issues
-    if(localStorage.makers) {
-        let nameInp = document.getElementById("seriem-form-serieNaam");
-        let makerInp = document.getElementById("seriem-form-makers");
-        let commentInp = document.getElementById("seriem-form-opmerking");
-
-        nameInp.value = localStorage.serieNaam;
-        makerInp.value = localStorage.makers;
-        commentInp.value = localStorage.opmerking;
-
-        localStorage.removeItem("serieNaam");
-        localStorage.removeItem("makers");
-        localStorage.removeItem("opmerking");
-    }
-
-    // Check if there was error and returned input data with creating a album, and repopulate the form with said data.
-    if( localStorage.getItem("album-nummer") && window.location.hash === "#albumt-pop-in" ) {
-        let tempForm = document.getElementById("albumt-form");
-        let arrayForm = Array.from(tempForm);
-
-        // Check what input was returned, and set them in the associated fields.
-        if(localStorage.getItem("album-naam")) { arrayForm[1].value = localStorage.getItem("album-naam"); }
-        if(localStorage.getItem("album-nummer")) { arrayForm[2].value = localStorage.getItem("album-nummer"); }
-        if(localStorage.getItem("album-datum")) { arrayForm[3].value = localStorage.getItem("album-datum"); }
-        if(localStorage.getItem("album-isbn")) { arrayForm[5].value = localStorage.getItem("album-isbn"); }
-
-        localStorage.removeItem("album-naam");
-        localStorage.removeItem("album-nummer");
-        localStorage.removeItem("album-datum");
-        localStorage.removeItem("album-isbn");
-
-        // The serie-index is also part of the returned POST data, so we remove that aswell for now.
-        localStorage.removeItem("serie-index");
-    }
-
-    // Display feedback messages, that are stored before a page refresh.
     if(localStorage.fetchResponse !== null) {
         displayMessage(localStorage.fetchResponse);
         localStorage.removeItem("fetchResponse");
     }
 
-    // Reset any stored browser scroll position, used when closing pop-in's
     if(sessionStorage.scrollPos) {
         window.scrollTo(0, sessionStorage.scrollPos);
 
         if(window.location.hash === "#albumb-pop-in") {
-            dispatchInputEvent(sessionStorage.event);
+            dispatchInputEvent(localStorage.event);
         } else if(window.location.hash === "#serieb-pop-in") {
-            dispatchInputEvent(sessionStorage.event);
+            dispatchInputEvent(localStorage.event);
+        } else if(window.location.hash === "#albumt-pop-in") {
+            dispatchInputEvent(localStorage.event);
+        } else if(window.location.hash === "#seriem-pop-in") {
+            dispatchInputEvent(localStorage.event);
         }
 
+        localStorage.removeItem("event");
         sessionStorage.removeItem("scrollPos");
-
     }
 }
 
-// Check the name input
-function naamCheck(e) {
-    // Get user input, get element style, get element id,
-    let uInp = e.target.value;
-    let elStyle = e.target.style;
-    let elId = e.target.id;
+/*  naamCheck(e):
+        This function listens to input changes in serie/album name fields, and evaluates if valid and enables/disabled the submit button.
+        It also change the input style, based on the evaluation, and works in tandem with isbnCheck(e).
+            e       - The listen event object.
+            uInp    - The user input, set from the listen event object.
+            elStyle - The element style of the input element, set from the listen event object.
 
-    // evaluate if there was a input at all, make the outline green for user feedback,
+        External Variables (defined globally, instanced in the init):
+            createSerieSubm / editSerieSubm - Create/Edit subm buttons for series.
+            createAlbumSubm / editAlbumSubm - Create/Edit subm buttons for albums.
+        
+        Return Value: None.
+ */
+function naamCheck(e) {
+    const uInp = e.target.value;
+    let elStyle = e.target.style;
+
     if(uInp !== "" && uInp !== null && uInp !== undefined) {
         elStyle.outline = "3px solid green";
+        naamChecked = true;
 
-        // Check if we are doing something with series, disabled all create and edit serie form submit buttons.
-        if(elId === "serieb-form-serieNaam" || elId === "seriem-form-serieNaam") {
-            createSerieSubm.disabled = false, editSerieSubm.disabled = false;
-        // We are doing things with albums instead, set the checked state to true,
-        } else {
-            naamChecked = true;
+        if(isbnChecked) {
+            createAlbumSubm.disabled = false, editAlbumSubm.disabled = false;
+        } else { createAlbumSubm.disabled = true, editAlbumSubm.disabled = true, createSerieSubm.disabled = false, editSerieSubm.disabled = false; }
 
-            // if the isbn was also checked, enable the create and edit form submit buttons.
-            if(isbnChecked) {
-                createAlbumSubm.disabled = false, editAlbumSubm.disabled = false;
-            // If the isbn was not checked, disable the create and edit form submit buttons.
-            } else { createAlbumSubm.disabled = true, editAlbumSubm.disabled = true; }
-        }
-    // If there is not valid input,
     } else {
-        // make the outline red for user feedback,
         elStyle.outline = "3px solid red";
-
-        // Check if we are in a series or albums pop-in,
-        if(elId === "serieb-form-serieNaam" || elId === "seriem-form-serieNaam") {
-            // diabled all serie form submit buttons
-            createSerieSubm.disabled = true, editSerieSubm.disabled = true;
-        } else {
-            // set checked state to false,
-            naamChecked = false;
-            // disabled all album form submit buttons,
-            editAlbumSubm.disabled = true, createAlbumSubm.disabled = true;
-        }
+        naamChecked = false, editAlbumSubm.disabled = true, createAlbumSubm.disabled = true, createSerieSubm.disabled = true, editSerieSubm.disabled = true;
     }
 }
 
-// Check and filter the isbn input
+/*  isbnCheck(e):
+        This function listens to input changes in album isbn fields, and evaluates if valid and enables/disabled the submit button.
+        It also change the input style, based on the evaluation, and works in tandem with naamCheck(e).
+            e       - The listen event object.
+            uInp    - The user input, set from the listen event object.
+            elStyle - The element style of the input element, set from the listen event object.
+
+        External Variables (defined globally, instanced in the init):
+            createSerieSubm / editSerieSubm - Create/Edit subm buttons for series.
+            createAlbumSubm / editAlbumSubm - Create/Edit subm buttons for albums.
+
+        Return Value: None.
+ */
 function isbnCheck(e) {
-    // Get user input,
-    let uInp = e.target.value;
-    // get element style,
+    const uInp = e.target.value;
     let elStyle = e.target.style;
 
-    // if there is an input,
     if(uInp !== "" && uInp !== null && uInp !== undefined) {
-        // replace any '-' from the input,
-        let isbn = uInp.replace(/-/g, "");
-        // set filter to all lower- and uppercase letters,
-        let filter = /[a-zA-z]/g;
-        // test filter against input creating a true/false value,
-        let letters = filter.test(isbn);
+        const isbn = uInp.replace(/-/g, ""), filter = /[a-zA-z]/g, letters = filter.test(isbn);
 
-        // evaluate if the filter found letters,
         if(!letters) {
-            // and if the filtered isbn value is 0 or the length is 10 or 13,
             if(isbn === '0' || isbn.length === 10 || isbn.length === 13) {
-                // we change the border color,
-                elStyle.outline = "3px solid green";
-                // set the input to the filtered value,
-                e.target.value = isbn;
-                // set global checked state to true,
-                isbnChecked = true;
-                // if the name was also valid
-                if(naamChecked) {
-                    // enable the create and edit album form submit buttons,
-                    createAlbumSubm.disabled = false, editAlbumSubm.disabled = false;
-                }
-            // if the isbn is not valid,
-            } else {
-                // change the border color,
-                elStyle.outline = "3px solid red";
-                // disable all buttons,
-                createAlbumSubm.disabled = true, editAlbumSubm.disabled = true;
-                // and set the global checked state to false.
-                isbnChecked = false;
-            }
-        // If the filter found letters,
-        } else {
-            // change the border color,
-            elStyle.outline = "3px solid red";
-            // disable all buttons,
-            createAlbumSubm.disabled = true, editAlbumSubm.disabled = true;
-            // and set the global checked state to false.
-            isbnChecked = false;
-        }
-    // If there is no input,
-    } else {
-        // change the border color,
-        elStyle.outline = "3px solid red";
-        // disable all buttons,
-        createAlbumSubm.disabled = true, editAlbumSubm.disabled = true;
-        // and set the global checked state to false.
-        isbnChecked = false;
-    }
+                elStyle.outline = "3px solid green", e.target.value = isbn, isbnChecked = true;
+                
+                if(naamChecked) { createAlbumSubm.disabled = false, editAlbumSubm.disabled = false; }
+
+            } else { elStyle.outline = "3px solid red", createAlbumSubm.disabled = true, editAlbumSubm.disabled = true, isbnChecked = false; }
+
+        } else { elStyle.outline = "3px solid red", createAlbumSubm.disabled = true, editAlbumSubm.disabled = true, isbnChecked = false; }
+
+    } else { elStyle.outline = "3px solid red", createAlbumSubm.disabled = true, editAlbumSubm.disabled = true, isbnChecked = false; }
 }
 
 // I check if the cover file size isnt larger then 4MB
 function albCovCheck(e) {
-    let file = e.target.files;
+    const file = e.target.files;
 
     if(file[0].size > 4096000) {
         displayMessage("Bestand is te groot, graag iets van 4MB of kleiner.");
         e.target.value = "";
+        return false;
     }
+
+    return true;
 }
 
 /*  coverInpCheck(e):
@@ -267,20 +186,27 @@ function albCovCheck(e) {
         Return Value: None.
  */
 function coverInpCheck(e) {
-    let divCov = document.getElementById("albumb-cover");
-    let imageFile = e.target.files[0];
-    let imgEl = document.createElement('img');
-    let labEl = document.getElementById("modal-form-albumB-cov-lab");
+    const imgEl = document.createElement('img'), imageFile = e.target.files[0], check = albCovCheck(e);
+    let labEl;
 
-    imgEl.src = URL.createObjectURL(imageFile);
-    imgEl.id = "albumb-cover-img";
-    imgEl.className = "modal-album-cover-img";
+    if(check) {
+        imgEl.src = URL.createObjectURL(imageFile);
+        imgEl.id = "albumb-cover-img";
+        imgEl.className = "modal-album-cover-img";
 
-    divCov.innerHTML = "";
-    divCov.appendChild(imgEl);
+        if(e.target.id === "albumb-form-alb-cov") {
+            const divCov = document.getElementById("albumB-cover");
+            labEl = document.getElementById("modal-form-albumB-cov-lab");
+            divCov.appendChild(imgEl);
+        } else if(e.target.id === "albumt-form-alb-cov") {
+            const divCov = document.getElementById("albumT-cover");
+            labEl = document.getElementById("modal-form-albumt-cov-lab");
+            divCov.appendChild(imgEl);
+        }
 
-    labEl.innerHTML = "Nieuwe Cover Selecteren";
-    labEl.appendChild(e.target);
+        labEl.innerHTML = "Nieuwe Cover Selecteren";
+        labEl.appendChild(e.target);
+    }
 }
 
 /*  serieVerwijderen(e:
@@ -292,9 +218,9 @@ function coverInpCheck(e) {
         Return Value: Boolean.
  */
 function serieVerwijderen(e) {
-    let rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
-    let rowArr = Array.from(rowCol);
-    let conf = confirm("Weet u zeker dat de Serie: " + rowArr[0].children[3].innerHTML + "\n En al haar albums wilt verwijderen ?");
+    const rowCol = document.getElementsByClassName('serie-tafel-inhoud-'+e.target.id);
+    const rowArr = Array.from(rowCol);
+    const conf = confirm("Weet u zeker dat de Serie: " + rowArr[0].children[3].innerHTML + "\n En al haar albums wilt verwijderen ?");
 
     if(conf) {
         return true;
@@ -310,7 +236,7 @@ function wwResetClick() { window.location.assign('#ww-reset-pop-in') }
 
 // Password reset pop-in button
 function aResetBev(e) {
-    let conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?");
+    const conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?");
 
     if(conf) {
         return true;
@@ -321,6 +247,7 @@ function aResetBev(e) {
     // OBSOLETE CONSTRUCTOR CODE:
     //  TODO: Needs some kind of trigger, that also checks the input on pageload rather then only input change.
     //      Removed for now, untill a proper solution has been found.
+    //const inpTIndex = document.getElementById("albumt-form-indexT"); I think this one is obsolete now ?
     // Elements, states and events required for editing a serie.
     // let serieEditNameInput = document.getElementById("serieb-form-serieNaam");
     // editSerieSubm = document.getElementById("serieb-form-button");
@@ -337,6 +264,42 @@ function aResetBev(e) {
     // if(localStorage.albumToevIn != null) {
     //     inpTIndex.value = localStorage.albumToevIn;
     //     localStorage.removeItem('albumToevIn');
+    // }
+
+    // Check if create serie had duplication issues
+    // if(localStorage.makers) {
+    //     const nameInp = document.getElementById("seriem-form-serieNaam");
+    //     const makerInp = document.getElementById("seriem-form-makers");
+    //     const commentInp = document.getElementById("seriem-form-opmerking");
+
+    //     nameInp.value = localStorage.serieNaam;
+    //     makerInp.value = localStorage.makers;
+    //     commentInp.value = localStorage.opmerking;
+
+    //     localStorage.removeItem("serieNaam");
+    //     localStorage.removeItem("makers");
+    //     localStorage.removeItem("opmerking");
+    // }
+
+    // Check if there was error and returned input data with creating a album, and repopulate the form with said data.
+    // if( localStorage.getItem("album-nummer") && window.location.hash === "#albumt-pop-in" ) {
+    //     const tempForm = document.getElementById("albumt-form");
+    //     const arrayForm = Array.from(tempForm);
+
+    //     // Check what input was returned, and set them in the associated fields.
+    //     if(localStorage.getItem("album-naam")) { arrayForm[1].value = localStorage.getItem("album-naam"); }
+    //     if(localStorage.getItem("album-nummer")) { arrayForm[2].value = localStorage.getItem("album-nummer"); }
+    //     if(localStorage.getItem("album-datum")) { arrayForm[3].value = localStorage.getItem("album-datum"); }
+    //     if(localStorage.getItem("album-isbn")) { arrayForm[5].value = localStorage.getItem("album-isbn"); }
+
+    //     // Remove the items from the browser storage
+    //     localStorage.removeItem("album-naam");
+    //     localStorage.removeItem("album-nummer");
+    //     localStorage.removeItem("album-datum");
+    //     localStorage.removeItem("album-isbn");
+
+    //     // The serie-index is also part of the returned POST data, so we remove that aswell for now.
+    //     localStorage.removeItem("serie-index");
     // }
 
     // OBSOLETE CODE FROM THE REST OF THE PAGE:
