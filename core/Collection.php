@@ -83,9 +83,9 @@ class Collection {
     // Generic public functions.
     /*  remItem($table, $id):
             This function deals with all delete/remove requests.
-                $table
-                $id
-                $store
+                $table  - The database table where items need to be removed from.
+                $id     - The id's associated with said item.
+                $store  - The temp store to evaluate the execution of the query.
             
             Return Value:
                 On sucess   -> Boolean
@@ -284,22 +284,26 @@ class Collection {
         return is_string($store) ? $store : TRUE;
     }
 
-    // W.I.P.
     /*  getColl($userId):
             Get collection for a specific user from the database.
+                $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
                 $userId (int)   - User id from the session data.
             
             Return Type: Multi-Dimensional Array.
      */
-    public function getColl($userId) {
-        $id = [ 'Gebr_Index' => $userId ];
+    public function getColl($table, $userId) {
+        if( !is_string($userId) ) {
+            $id = $userId;
+        } else { $id = [ 'Gebr_Index' => $userId ]; }
 
-        $this->collections = App::get('database')->selectAllWhere('collecties', $id);
+        $this->collections = App::get('database')->selectAllWhere($table, $id);
 
-        return $this->collection;
+        return $this->collections;
     }
 
     // W.I.P.
+    //  TODO: Replace $tempCol, and add any missing data to the $data parameter instead.
+    //  TODO: Needs a better check for duplicate entries.
     /*  setColl($data):
             Function to set collection data, so the user can add items to a collection.
 
@@ -307,14 +311,15 @@ class Collection {
 
             Return Value: boolean.
      */
-    public function setColl($data) {
+    public function setColl($table, $data) {
         // Ensure the correct collection data is stored.
-        $this->collections = $this->getColl( 'collecties', [ 'Gebr_Index' => $data['Gebr_Index'] ] );
-        //$this->collections = App::get('database')->selectAllWhere( 'collecties', [ 'Gebr_Index' => $data['Gebr_Index'] ] );
-
+        $this->collections = $this->getColl( $table, [ 'Gebr_Index' => $data['Gebr_Index'] ] );
+        
         // Check if the album is already added to the collection, and return FALSE to caller if that is the case.
-        foreach($this->collections as $key => $value) {   
-            if($value === $data["Alb_Index"]) { return FALSE; }
+        foreach($this->collections as $key => $value) {
+            if($value['Alb_Index'] == $data['Alb_Index']) {
+                return FALSE;
+            }
         }
 
         // Then we prepare the data that needs to be added,
@@ -328,29 +333,7 @@ class Collection {
         ];
 
         // and store the data in the database.
-        $store = App::get('database')->insert('collecties', $tempCol);
-
-        // Return the expected value, based on the querry return value.
-        return is_string($store) ? $store : TRUE;
-    }
-
-    // W.I.P.
-    /*  remColl($data):
-            Function to remove specifc collection data from the database.
-
-            $data (Associative Array)   - The data required to remove series data.
-
-            Return Type: boolean.
-     */
-    public function remColl($data) {
-        // Should be obsolete, since the correct data is already stored ?
-        // $colIds = [
-        //     "Gebr_Index" => $data["Gebr_Index"],
-        //     "Alb_Index" => $data["Alb_Index"]
-        // ];
-
-        // Attempt to remove the collection from the database.
-        $store = App::get('database')->remove('collecties', $data);
+        $store = App::get('database')->insert($table, $tempCol);
 
         // Return the expected value, based on the querry return value.
         return is_string($store) ? $store : TRUE;

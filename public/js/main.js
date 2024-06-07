@@ -16,11 +16,13 @@ document.onreadystatechange = () => {
                 displayMessage(localStorage.fetchResponse);
                 localStorage.removeItem('fetchResponse');
             }
-            
-            initLanding();
+
+            return initLanding();
         } else if(window.location.pathname === '/gebruik') {
-            initGebruik();
-        } else if(window.location.pathname === '/beheer') { initBeheer(); }
+            return initGebruik();
+        } else if(window.location.pathname === '/beheer') {
+            return initBeheer();
+        }
     }
 }
 
@@ -45,13 +47,17 @@ function dispatchInputEvent(caller) {
         case "album-bew":
             document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);
             document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
+            return;
         case "serie-maken":
             document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
+            return;
         case "serie-bew":
             document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
+            return;
         case "album-maken":
             document.getElementById("albumt-form-alb-naam").dispatchEvent(inputEvent);
             document.getElementById("albumt-form-alb-isbn").dispatchEvent(inputEvent);
+            return;
     }
 }
 
@@ -64,11 +70,11 @@ function saveScroll(e) {
     sessionStorage.setItem("scrollPos", window.scrollY);
 
     if(e.target.className === "album-bewerken-butt") {
-        localStorage.setItem("event", "album-bew");
+        return localStorage.setItem("event", "album-bew");
     } else if(e.target.className === "serie-bewerken-butt") {
-        localStorage.setItem("event", "serie-bew");
+        return localStorage.setItem("event", "serie-bew");
     } else if(e.target.className === "serie-maken-subm") {
-        localStorage.setItem("event", "serie-maken");
+        return localStorage.setItem("event", "serie-maken");
     }
 }
 
@@ -77,8 +83,10 @@ function saveScroll(e) {
  */
 function onScroll() {
     if(window.scrollY > sticky) {
-        header.classList.add("sticky");
-    } else { header.classList.remove("sticky"); }
+        return header.classList.add("sticky");
+    } else {
+        return header.classList.remove("sticky");
+    }
 }
 
 /*  replaceSpecChar(text):
@@ -115,5 +123,7 @@ function displayMessage(text1="", text2="") {
             header1.innerHTML = "";
             header2.innerHTML = "";
         }, 3000);
+
+        return;
     }
 }
