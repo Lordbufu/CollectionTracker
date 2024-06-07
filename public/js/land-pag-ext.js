@@ -6,8 +6,8 @@ function initLanding() {
     pwField1 = document.getElementById("register1");
     pwField2 = document.getElementById("register2");
     submButton = document.getElementById("reg-submit");
-    let chBox = document.getElementById("chBox");
-    let resetLink = document.getElementById("reset-link");
+    const chBox = document.getElementById("chBox");
+    const resetLink = document.getElementById("reset-link");
 
     // Listen events
     pwField2.addEventListener("input", pwCheck);
@@ -66,14 +66,14 @@ function pwCheck(e) {
         e.target.style.outline = "3px solid green";
         // enable the submit button if checkbox was also checked
         if(inputChecked) {
-            submButton.disabled = false;
+            return submButton.disabled = false;
         }
     } else {
         // set the checked state and create visual user feedback
         pwChecked = false;
         e.target.style.outline = "3px solid red";
         // disable the submit button
-        submButton.disabled = true;
+        return submButton.disabled = true;
     }
 }
 
@@ -85,12 +85,12 @@ function checkBox(e) {
         inputChecked = e.target.checked;
         // enable submit button is pw was checked
         if (pwChecked) {
-            submButton.disabled = false;
+            return submButton.disabled = false;
         }
     } else {
         // pass on the state
         inputChecked = e.target.checked;
         // disable the submit button
-        submButton.disabled = true;
+        return submButton.disabled = true;
     }
 }

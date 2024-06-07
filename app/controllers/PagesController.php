@@ -35,7 +35,9 @@ class PagesController {
 		}
 
 		if(App::get('user')->checkUSer($_SESSION['user']['id'], 'rights')) {
-            if(empty($_SESSION['page-data']['series'])) { App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() ); }
+            if(empty($_SESSION['page-data']['series'])) {
+				App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() );
+			}
 
 			if(empty($_SESSION['page-data']['albums']) && isset($_SESSION['page-data']['huidige-serie']) ) {
 				App::get('session')->setVariable('page-data', App::get('collection')->getAlbums( $_SESSION['page-data']['huidige-serie'] ) );
@@ -61,10 +63,18 @@ class PagesController {
 	public function gebruik() {
 		$authFailed = [ "error" => [ "fetchResponse" => "Access denied, Account authentication failed !" ] ];
 
-		unset($_SESSION['page-data']);
+		if( App::get('user')->checkUSer( $_SESSION['user']['id'] ) ) {
+			/* Set serie page data if not set, else clean serie page data, and set to refresh said data. */
+			if( !isset( $_SESSION['page-data']['series'] ) ) {
+				App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() ); 
+			} else {
+				unset( $_SESSION['page-data']['series'] );
+				App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() );
+			}
 
-		if(App::get('user')->checkUSer($_SESSION['user']['id'])) {
-			App::get('session')->setVariable('page-data', App::get('collection')->getSeries());
+			/* Always refresh the user its collection data. */
+			unset( $_SESSION['page-data']['collections'] );
+			App::get('session')->setVariable( 'page-data', App::get('collection')->getColl( 'collecties', [ 'Gebr_Index' => $_SESSION['user']['id'] ] ) );
 
 			return App::view('gebruik');
 		} else {

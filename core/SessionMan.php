@@ -88,9 +88,6 @@ class SessionMan {
      */
     public function setVariable($name, $data) {
         foreach($data as $key => $value) {
-            //die(print_r($data));    // Debug-line.
-            //die(print_r($key));    // Debug-line.
-            //die(print_r($value));    // Debug-line.
             if(!is_array($value)) {
                 $_SESSION[$name][$key] = $value;
             } else {
@@ -115,11 +112,6 @@ class SessionMan {
                 // When a album name is duplicate, i need that albums post data in the session.
                 } elseif($key == 'album-dupl') {
                     $_SESSION[$name][$key] = $value;
-                } else {
-                    //die(print_r($data));    // Debug-line.
-                    //die(print_r($key));    // Debug-line.
-                    //die(print_r($value));    // Debug-line.
-                    die('New condition required in setVariable()!!');   // Debug-line/condition.
                 }
             }
         }
