@@ -3,14 +3,11 @@ namespace App\Core;
 
 use App\Core\App;
 
-//  TODO: Go over all code, and adjust for database error returned from the collection class, since querry execution now returns the DB error as a string.
 class Collection {
-    // Protected/Internal functions and variables.
     protected $albums;
     protected $series;
     protected $collections;
 
-    // Local protected functions
     /*  getSetId($name):
             Get serie index based on serie name.
 
@@ -19,11 +16,9 @@ class Collection {
             Return Value    : INT
      */
     protected function getSerId($name) {
-        $tempSerie = App::get('database')->selectAllWhere('series', [
-            'Serie_Naam' => $name
-        ])[0];
+        $tempSerie = App::get("database")->selectAllWhere("series", [ "Serie_Naam" => $name ] )[0];
 
-        return $tempSerie['Serie_Index'];
+        return $tempSerie["Serie_Index"];
     }
 
     /*  countAlbums():
@@ -31,14 +26,11 @@ class Collection {
             So it can be displayed, each time getSeries is called, the number is updated.
      */
     protected function countAlbums() {
-        foreach($this->series as $key => $value) {
-            $this->series[$key]['Album_Aantal'] = App::get('database')->countAlbums($value['Serie_Index']);
-        }
+        foreach($this->series as $key => $value) { $this->series[$key]["Album_Aantal"] = App::get("database")->countAlbums( $value["Serie_Index"] ); }
 
         return;
     }
 
-    // W.I.P.
     /*  checkDupl($type, $data = []):
             This function is desgined to check all items for duplicate entries in the database.
                 $type (String)          : The type of store i want to check, albums/series/collections.
@@ -48,39 +40,52 @@ class Collection {
             Return value: Boolean.
      */
     protected function checkDupl($type, $data, $sIndex=null) {
-        /*  I check with all stored albums, if the name matches the new name,
-            If sIndex is set and not equal to the stored Album_Serie or not set, its a duplicate entry.
-         */
-        if($type == 'albums') {
+        if($type == "albums") {
             foreach($this->albums as $index => $album) {
-                if($album['Album_Naam'] === $data) {
-                    if($sIndex !== null && $sIndex !== $album['Album_Serie']) {
+                if($album["Album_Naam"] === $data) {
+                    if($sIndex !== null && $sIndex !== $album["Album_Serie"]) {
                         return TRUE;
                     } else if ($sIndex === null) { return TRUE; }
                 }
             }
-
-            // Otherwhise the album name is not duplicate.
             return FALSE;
-        } elseif($type == 'series') {
+        } elseif($type == "series") {
             foreach($this->series as $index => $serie) {
-                if($data['name'] == $serie['Serie_Naam']) {
-                    // Need to review this loop, something seems off here.
-                    if($index === null) {
+                if($data["name"] == $serie["Serie_Naam"]) {
+                    if($sIndex !== null && $sIndex !== $serie["Serie_Index"]) {
                         return TRUE;
-                    } else {
-                        if($sIndex != $serie['Serie_Index']) { return TRUE; }
-                    }
+                    } else if ($sIndex === null) { return TRUE; }
                 }
             }
-    
             return FALSE;
-        } elseif($type == 'collections') {
-            // W.I.P.
         }
     }
 
-    // Generic public functions.
+    /*  getItemName($type, $id1, $id2):
+            This function gets all name requests, depending on the type that was passed.
+                $type   - The type name of the item we want to get the name of (album/serie).
+                $id1    - The serie id of either the serie where the albums is in, or the serie we want the name of.
+                $id2    - The album id that we want the name of, defaulting to null so it doesnt have to be set.
+            
+            Return Value = String.
+     */
+    public function getItemName($type, $id1, $id2=null) {
+        switch($type) {
+            case "serie":
+                if(!isset($this->series)) { $this->getSeries(); }
+
+                foreach($this->series as $index => $serie) {
+                    if($id1 == $serie["Serie_Index"]) { return $serie["Serie_Naam"]; }
+                }
+            case "album":
+                if(!isset($this->albums)) { $this->getAlbums($id1); }
+
+                foreach($this->albums as $index => $album) {
+                    if($id2 == $album["Album_Index"]) { return $album["Album_Naam"]; }
+                }
+        }
+    }
+
     /*  remItem($table, $id):
             This function deals with all delete/remove requests.
                 $table  - The database table where items need to be removed from.
@@ -92,41 +97,21 @@ class Collection {
                 On fail     -> String (the database error)
      */
     public function remItem($table, $id) {
-        $store = App::get('database')->remove($table, $id);
+        $store = App::get("database")->remove($table, $id);
 
         return is_string($store) ? $store : TRUE;
     }
 
-    // Specific public serie functions
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
             Return Value: Multi-Dimensional Array.
      */
     public function getSeries() {
-        $this->series = App::get('database')->selectAll('series');
+        $this->series = App::get("database")->selectAll("series");
         $this->countAlbums();
 
         return $this->series;
-    }
-
-    /*  getSerName($ind):
-            This function takes the serie index number, and finds the matching serie naam.
-
-            $ind (INT)      : The index of the serie.
-
-            Return Value    : String
-     */
-    public function getSerName($ind) {
-        if(!isset($this->series)) {
-            $this->getSeries();
-        }
-
-        foreach($this->series as $index => $serie) {
-            if($ind == $serie['Serie_Index']) {
-                return $this->series[$index]['Serie_Naam'];
-            }
-        }
     }
 
     /*  getSerInd($name):
@@ -142,9 +127,7 @@ class Collection {
         }
 
         foreach($this->series as $index => $serie) {
-            if($name == $serie['Serie_Naam']) {
-                return $this->series[$index]['Serie_Index'];
-            }
+            if($name == $serie["Serie_Naam"]) { return $serie["Serie_Index"]; }
         }
     }
 
@@ -156,11 +139,9 @@ class Collection {
             Return Value    : Boolean
      */
     public function cheSerName($name, $index=null) {
-        if(!isset($this->series)) {
-            $this->getSeries();
-        }
+        if(!isset($this->series)) { $this->getSeries(); }
 
-        $check = $this->checkDupl('series', ['name' => $name], $index);
+        $check = $this->checkDupl("series", [ "name" => $name ], $index);
 
         return $check;
     }
@@ -176,15 +157,14 @@ class Collection {
      */
     public function setSerie($data, $update=null) {
         if($update === null) {
-            $store = App::get('database')->insert('series', $data);
+            $store = App::get("database")->insert("series", $data);
         } else {
-            $store = App::get('database')->update('series', $data, [ 'Serie_Index' => $update ] );
+            $store = App::get("database")->update("series", $data, [ "Serie_Index" => $update ] );
         }
 
         return is_string($store) ? $store : TRUE;
     }
 
-    // Specific public serie functions
     /*  getAlbums($seriesId):
             This function gets all albums from a series, based on a serie name or index.
 
@@ -194,16 +174,10 @@ class Collection {
      */
     public function getAlbums($partId) {
         if(!is_numeric($partId)) {
-            $this->albums = App::get('database')->selectAllWhere('albums', [
-                'Album_Serie' => $this->getSerId($partId)
-            ]);
-
+            $this->albums = App::get("database")->selectAllWhere("albums", [ "Album_Serie" => $this->getSerId($partId) ] );
             return $this->albums;
         } else {
-            $this->albums = App::get('database')->selectAllWhere('albums', [
-                'Album_Serie' => $partId
-            ]);
-
+            $this->albums = App::get("database")->selectAllWhere("albums", [ "Album_Serie" => $partId ] );
             return $this->albums;
         }
     }
@@ -216,11 +190,8 @@ class Collection {
             Return Value: INT
      */
     public function getAlbId($name) {
-        $tempAlbum = App::get('database')->selectAllWhere('albums', [
-            'Album_Naam' => $name
-        ])[0];
-        
-        return $tempAlbum['Album_Index'];
+        $tempAlbum = App::get("database")->selectAllWhere("albums", [ "Album_Naam" => $name ] )[0];
+        return $tempAlbum["Album_Index"];
     }
 
     /*  cheAlbName($serInd, $name):
@@ -238,32 +209,10 @@ class Collection {
 
         if($edit !== null) {
             $newInd = (int)$serInd;
-            $check = $this->checkDupl( 'albums', $name, $newInd );
-        } else { $check = $this->checkDupl( 'albums', $name ); }
+            $check = $this->checkDupl( "albums", $name, $newInd );
+        } else { $check = $this->checkDupl( "albums", $name ); }
 
         return $check;
-    }
-
-    // It's likely best to combine all get name function, i will look into that at a later stage.
-    /*  getAlbumName($albId, $serId):
-            This functions sets the $albums to what ever series is being worked on, and compares the indexes to return the correct name.
-            In all cases i tested, its already set to load the admin-album-view, but to be sure i did include the isset condition.
-
-                $albId (string) - The album-index we want to get the name of.
-                $serId (string) - The serie-index that the album is a part of.
-            
-            Return Value: String.
-     */
-    public function getAlbumName($albId, $serId) {
-        if(!isset($this->albums)) {
-            $this->getAlbums($serId);
-        }
-
-        foreach($this->albums as $index => $album) {
-            if($albId == $album['Album_Index']) {
-                return $album['Album_Naam'];
-            }
-        }
     }
 
     /*  setAlbum($data):
@@ -278,8 +227,8 @@ class Collection {
      */
     public function setAlbum($data, $update=null) {
         if($update === null) {
-            $store = App::get('database')->insert('albums', $data);
-        } else { $store = App::get('database')->update('albums', $data, $update); }
+            $store = App::get("database")->insert("albums", $data);
+        } else { $store = App::get("database")->update("albums", $data, $update); }
 
         return is_string($store) ? $store : TRUE;
     }
@@ -294,16 +243,13 @@ class Collection {
     public function getColl($table, $userId) {
         if( !is_string($userId) ) {
             $id = $userId;
-        } else { $id = [ 'Gebr_Index' => $userId ]; }
+        } else { $id = [ "Gebr_Index" => $userId ]; }
 
-        $this->collections = App::get('database')->selectAllWhere($table, $id);
+        $this->collections = App::get("database")->selectAllWhere($table, $id);
 
         return $this->collections;
     }
 
-    // W.I.P.
-    //  TODO: Replace $tempCol, and add any missing data to the $data parameter instead.
-    //  TODO: Needs a better check for duplicate entries.
     /*  setColl($data):
             Function to set collection data, so the user can add items to a collection.
 
@@ -312,30 +258,16 @@ class Collection {
             Return Value: boolean.
      */
     public function setColl($table, $data) {
-        // Ensure the correct collection data is stored.
-        $this->collections = $this->getColl( $table, [ 'Gebr_Index' => $data['Gebr_Index'] ] );
-        
-        // Check if the album is already added to the collection, and return FALSE to caller if that is the case.
-        foreach($this->collections as $key => $value) {
-            if($value['Alb_Index'] == $data['Alb_Index']) {
-                return FALSE;
-            }
-        }
+        $this->collections = $this->getColl( $table, [ "Gebr_Index" => $data["Gebr_Index"] ] );
+        foreach($this->collections as $key => $value) { if($value["Alb_Index"] == $data["Alb_Index"]) { return FALSE; } }
 
-        // Then we prepare the data that needs to be added,
-        $tempCol = [
-            "Gebr_Index" => $data["Gebr_Index"],
-            "Alb_Index" => $data["Alb_Index"],
-            "Alb_Staat" => "",
-            "Alb_DatumVerkr" => date('Y-m-d'),
-            "Alb_Aantal" => 1,
-            "Alb_Opmerk" => ""
-        ];
+        $data["Alb_Staat"] = "";
+        $data["Alb_Aantal"] = 1;
+        $data["Alb_Opmerk"] = "";
+        $data["Alb_DatumVerkr"] = date("Y-m-d");
 
-        // and store the data in the database.
-        $store = App::get('database')->insert($table, $tempCol);
+        $store = App::get("database")->insert($table, $data);
 
-        // Return the expected value, based on the querry return value.
         return is_string($store) ? $store : TRUE;
     }
 }

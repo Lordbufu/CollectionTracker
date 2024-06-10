@@ -6,33 +6,23 @@ document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         /* On scroll code for the title banner */
         window.onscroll = function() { onScroll() };
-
         header = document.getElementById("title-banner");
         sticky = header.offsetTop;
-
         /* Page specific init and feedback code */
         if(window.location.pathname === '/') {
-            if(localStorage.fetchResponse) {
-                displayMessage(localStorage.fetchResponse);
-                localStorage.removeItem('fetchResponse');
-            }
-
+            if(localStorage.fetchResponse) { displayMessage(localStorage.fetchResponse), localStorage.removeItem("fetchResponse"); }
             return initLanding();
-        } else if(window.location.pathname === '/gebruik') {
+        } else if(window.location.pathname === "/gebruik") {
             return initGebruik();
-        } else if(window.location.pathname === '/beheer') {
+        } else if(window.location.pathname === "/beheer") {
             return initBeheer();
         }
     }
 }
 
 /* Fetch function, used in certain cases to avoid a page reload */
-async function fetchRequest(url=null, method=null, data=null ) {
-    const response = await fetch(url, {
-        method: method,
-        body: data
-    })
-
+async function fetchRequest(url, method, data) {
+    const response = await fetch( url, { method: method, body: data } );
     return response.json();
 }
 
@@ -41,23 +31,16 @@ async function fetchRequest(url=null, method=null, data=null ) {
             caller (string) - A string that allows me to see what called the event.
  */
 function dispatchInputEvent(caller) {
-    let inputEvent = new Event( 'input', { 'bubbles': true, 'cancelable': false } );
-
+    let inputEvent = new Event( "input", { "bubbles": true, "cancelable": false } );
     switch(caller) {
         case "album-bew":
-            document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent);
-            document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
-            return;
+            return document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent), document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
         case "serie-maken":
-            document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
-            return;
+            return document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
         case "serie-bew":
-            document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
-            return;
+            return document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
         case "album-maken":
-            document.getElementById("albumt-form-alb-naam").dispatchEvent(inputEvent);
-            document.getElementById("albumt-form-alb-isbn").dispatchEvent(inputEvent);
-            return;
+            return document.getElementById("albumt-form-alb-naam").dispatchEvent(inputEvent), document.getElementById("albumt-form-alb-isbn").dispatchEvent(inputEvent);
     }
 }
 
@@ -68,14 +51,11 @@ function dispatchInputEvent(caller) {
  */
 function saveScroll(e) {
     sessionStorage.setItem("scrollPos", window.scrollY);
-
     if(e.target.className === "album-bewerken-butt") {
         return localStorage.setItem("event", "album-bew");
     } else if(e.target.className === "serie-bewerken-butt") {
         return localStorage.setItem("event", "serie-bew");
-    } else if(e.target.className === "serie-maken-subm") {
-        return localStorage.setItem("event", "serie-maken");
-    }
+    } else if(e.target.className === "serie-maken-subm") { return localStorage.setItem("event", "serie-maken"); }
 }
 
 /*  onScroll():
@@ -84,9 +64,7 @@ function saveScroll(e) {
 function onScroll() {
     if(window.scrollY > sticky) {
         return header.classList.add("sticky");
-    } else {
-        return header.classList.remove("sticky");
-    }
+    } else { return header.classList.remove("sticky"); }
 }
 
 /*  replaceSpecChar(text):
@@ -104,26 +82,20 @@ function replaceSpecChar(text) {
             text2 (string)  - The second feedback text that needs to be displayed.
  */
 function displayMessage(text1="", text2="") {
-    let container = document.getElementById("message-pop-in");
-    let header1 = document.getElementById("response-message1");
-    let header2 = document.getElementById("response-message2");
+    const container = document.getElementById("message-pop-in"), header1 = document.getElementById("response-message1"), header2 = document.getElementById("response-message2");
 
     if(text1 !== "" || text2 !== "") {
-        container.style.display = "block";
-        container.style.top = "0%";
-        container.style.zIndex = "3";
+        container.style.display = "block", container.style.top = "0%", container.style.zIndex = "3";
 
         if(text1 !== "") { header1.innerHTML = text1; }
         if(text2 !== "") { header2.innerHTML = text2; }
 
-        setTimeout( function() {
+        return setTimeout( function() {
             container.style.display = "none";
             container.style.top = "-10%";
             container.style.zIndex = "1";
             header1.innerHTML = "";
             header2.innerHTML = "";
         }, 3000);
-
-        return;
     }
 }
