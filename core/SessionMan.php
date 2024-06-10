@@ -19,13 +19,14 @@ namespace App\Core;
                 - series (Assoc Array)      : All serie data that needs to be displayed.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
                 - huidige-serie (string)    : The current selected serie, for both the user and admin.
+                - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
                 - edit-serie (int)          : The series index of the serie that is requested for editing.
                 - add-album (int)           : The Series index key, that the user wants to add a album to.
+                - alb-dupl (string)         : To indicate that a album is duplicate.
+                - album-cover (blob)        : Temp store for any uploaded album covers, when a duplicate name was detected.
  */
-
-//  TODO: Maybe figure out if the SID Length can be longer, not sure if even required tbh ?
 class SessionMan {
-    protected $savePath = '../tmp/sessions/';
+    protected $savePath = "../tmp/sessions/";
 
     /*  __construct():
             The session manager constructor, that ensure all settings are applied correctly.
@@ -34,35 +35,28 @@ class SessionMan {
             And it starts the session, since this is triggered via the user entry point.
      */
     function __construct() {
-        $adress = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];   // Set current hostname + uri.
+        $adress = "https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
         
-        // Various ini settings to improve session security.
-        ini_set('session.gc_probability', '1');
-        ini_set('session.gc_divisor', '10');
-        ini_set('session.gc_maxlifetime', '1800');
-        ini_set('session.user_strict_mode', '1');
-        ini_set('session.cookie_httponly', '1');
-        ini_set('session.cookie_secure', '1');
-        ini_set('session.cookie_samesite', 'Strict');
-        ini_set('session.use_trans_sid', '1');
-        ini_set('session.referer_check', $adress);
-        ini_set('session.cache_limiter', 'private');
-        ini_set('session.sid_length', '128');                                       // Changed to 128 as adviced, because 256 (max) is a to long file name ?
-        ini_set('session.side_bits_per_character', '6');
-        ini_set('session.hash_function', 'sha512');
+        ini_set("session.gc_probability", "1");
+        ini_set("session.gc_divisor", "10");
+        ini_set("session.gc_maxlifetime", "1800");
+        ini_set("session.user_strict_mode", "1");
+        ini_set("session.cookie_httponly", "1");
+        ini_set("session.cookie_secure", "1");
+        ini_set("session.cookie_samesite", "Strict");
+        ini_set("session.use_trans_sid", "1");
+        ini_set("session.referer_check", $adress);
+        ini_set("session.cache_limiter", "private");
+        ini_set("session.sid_length", "128");
+        ini_set("session.side_bits_per_character", "6");
+        ini_set("session.hash_function", "sha512");
 
-        // If the save path is not there, recursivly create the savepath, and set session savepath.
         if(!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777, true);
             session_save_path($this->savePath);
-        // If the path is there, just set the session to be stored there.
-        } else {
-            session_save_path($this->savePath);
-        }
+        } else { session_save_path($this->savePath); }
 
-        session_start();
-
-        return;
+        return session_start();
     }
 
     /*  endSession():
@@ -77,7 +71,7 @@ class SessionMan {
         return;
     }
 
-    //  TODO: This function needs a refactor, as many items here as passed in a similar way.
+    // Still contains a debug line that needs to be removed.
     /*  setVariable($data):
             Desgined to append data to session data keys, since i have to do this a lot, i made a function for it.
 
@@ -88,35 +82,27 @@ class SessionMan {
      */
     public function setVariable($name, $data) {
         foreach($data as $key => $value) {
-            if(!is_array($value)) {
-                $_SESSION[$name][$key] = $value;
+            if( !is_array( $value ) ) {
+                return $_SESSION[$name][$key] = $value;
             } else {
-                // Serie data that needs to be stored.
-                if(isset($value['Serie_Index'])) {
-                    $_SESSION[$name]['series'] = $data;
-                // Album data that needs to be stored.
-                } elseif(isset($value['Album_Index'])) {
-                    $_SESSION[$name]['albums'] = $data;
-                // Collection data that needs to be stored.
-                } elseif(isset($value['Col_Index'])) {
-                    $_SESSION[$name]['collections'] = $data;
-                // All user feedback message that need to be displayed.
-                } elseif($key == 'feedB') {
-                    $_SESSION[$name][$key] = $value;
-                // All errors that need to be displayed on screen.
-                } elseif($key == 'error') {
-                    $_SESSION[$name][$key] = $value;
-                // All items stored that need to be store in the browser storage.
-                } elseif($key == 'broSto') {
-                    $_SESSION[$name][$key] = $value;
-                // When a album name is duplicate, i need that albums post data in the session.
-                } elseif($key == 'album-dupl') {
-                    $_SESSION[$name][$key] = $value;
+                if( isset($value["Serie_Index"] ) ) {
+                    return $_SESSION[$name]["series"] = $data;
+                } elseif( isset( $value["Album_Index"] ) ) {
+                    return $_SESSION[$name]["albums"] = $data;
+                } elseif( isset( $value["Col_Index"] ) ) {
+                    return $_SESSION[$name]["collections"] = $data;
+                } elseif($key == "feedB") {
+                    return $_SESSION[$name][$key] = $value;
+                } elseif($key == "error") {
+                    return $_SESSION[$name][$key] = $value;
+                } elseif($key == "broSto") {
+                    return $_SESSION[$name][$key] = $value;
+                } else {
+                    // Debugline, need to remove this before going live !
+                    die("setVariable did not account for this condition.");
                 }
             }
         }
-
-        return;
     }
 
     /*  checkVariable($store, $key):
@@ -129,34 +115,20 @@ class SessionMan {
             Return Value: Boolean.
      */
     public function checkVariable($store, $keys = []) {
-        // First we check if there was data in the session store.
-        if(isset($_SESSION[$store])) {
-            // Loop over each entry in the store
-            foreach($_SESSION[$store] as $entry => $value) {
-                // Check if keys is a string, and match it against the store.
-                if(is_string($keys) && $keys == $entry) {
-                    // Return TRUE if there is single match.
+        if( isset( $_SESSION[$store] ) ) {
+            foreach( $_SESSION[$store] as $entry => $value ) {
+                if( is_string($keys) && $keys == $entry ) {
                     return TRUE;
-                // If keys was not a string, we loop over the keys.
                 } else {
                     foreach($keys as $key) {
-                        // Return TRUE if there is a single match.
-                        if($key === $entry) { return TRUE; }
+                        if($key === $entry) {
+                            return TRUE;
+                        }
                     }
                 }
             }
-            
-            // If there was no match i return FALSE.
             return FALSE;
-        // If there is no store data, i return FALSE.
         } else { return FALSE; }
     }
-
-    // W.I.P. ... i think its easier to just unset where i need it atm.
-    public function clearVariable($key) {
-        unset($_SESSION["$key"]);
-    }
-
-
 }
 ?>

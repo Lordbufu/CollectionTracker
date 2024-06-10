@@ -1,55 +1,45 @@
-// Variables shared between init and function
+/* Global variables required for event functions */
 let pwField1, pwField2, pwChecked, inputChecked, submButton;
 
 function initLanding() {
-    // Elements required for account registration.
+    /* Elements, events and states required for account registration */
     pwField1 = document.getElementById("register1");
     pwField2 = document.getElementById("register2");
     submButton = document.getElementById("reg-submit");
     const chBox = document.getElementById("chBox");
     const resetLink = document.getElementById("reset-link");
-
-    // Listen events
     pwField2.addEventListener("input", pwCheck);
     chBox.addEventListener("change", checkBox);
-
-    // Button and value check states
     submButton.disabled = true;
     pwChecked, inputChecked = false;
 
-    // Check if registering an account had errors
+    /* The error loop, for detecting and displaying erors during account registration */
     if(localStorage.userError1 != null || localStorage.userError2 != null) {
-        // If there the first error happened, 
         if(localStorage.userError1 != null) {
-            // check for a second and display and remove both.
             if(localStorage.userError2 != null) {
                 displayMessage(localStorage.userError1, localStorage.userError2);
                 localStorage.removeItem("userError1");
                 localStorage.removeItem("userError2");
-            // Else just display and remove the one.
             } else {
                 displayMessage(localStorage.userError1);
                 localStorage.removeItem("userError1");
             }
         }
-
-        // If there as only the second error, display and remove only that.
         if(localStorage.userError2 != null) {
             displayMessage(localStorage.userError2);
             localStorage.removeItem("userError2");
         }
     }
 
-    // Check if user was created during register, and display user feedback.
+    /* Display feedback, if user was created */
     if(localStorage.userCreated != null) {
         displayMessage(localStorage.userCreated);
         localStorage.removeItem("userCreated");
     }
 
-    // Check if login failed, and adjust pop-in where required.
+    /* Display login failed message, and show the lorem ipsum resetlink */
     if(localStorage.loginFailed != null) {
         resetLink.style.display = "block";
-        // If we are still on the login-pop-in, display the feedback and remove it from storage.
         if(window.location.hash === "#login-pop-in") {
             displayMessage(localStorage.loginFailed);
             localStorage.removeItem("loginFailed");
@@ -57,40 +47,24 @@ function initLanding() {
     }
 }
 
-// Function associated with the password input field.
+/*  pwCheck(e): This function checks the users password input, and changes the button states and input style. */
 function pwCheck(e) {
-    // check if the input matches
     if(pwField1.value === pwField2.value) {
-        // set the checked state and create visual user feedback
-        pwChecked = true;
-        e.target.style.outline = "3px solid green";
-        // enable the submit button if checkbox was also checked
-        if(inputChecked) {
-            return submButton.disabled = false;
-        }
+        pwChecked = true, e.target.style.outline = "3px solid green";
+        if(inputChecked) { return submButton.disabled = false; }
     } else {
-        // set the checked state and create visual user feedback
-        pwChecked = false;
-        e.target.style.outline = "3px solid red";
-        // disable the submit button
+        pwChecked = false, e.target.style.outline = "3px solid red";
         return submButton.disabled = true;
     }
 }
 
-// Function associated with the user agreement checkbox.
+/*  checkBox(e): This function checks the users input on the user agreement checkboc, similar to the pwCheck function. */
 function checkBox(e) {
-    // Check the checkbox state
     if(e.target.checked) {
-        // pass on the state
         inputChecked = e.target.checked;
-        // enable submit button is pw was checked
-        if (pwChecked) {
-            return submButton.disabled = false;
-        }
+        if (pwChecked) { return submButton.disabled = false; }
     } else {
-        // pass on the state
         inputChecked = e.target.checked;
-        // disable the submit button
         return submButton.disabled = true;
     }
 }

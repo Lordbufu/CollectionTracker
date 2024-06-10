@@ -24,12 +24,12 @@ function selectEvent(e) {
 }
 
 /*  selectSubm(): Simply submits the serie-select form. */
-function selectSubm() { return document.getElementById('serie-sel-form').submit(); }
+function selectSubm() { return document.getElementById("serie-sel-form").submit(); }
 
 // The search function.
 /*  albumZoek(event): Searches the albums on page, matching them on a letter by letter basis. */
 function albumZoek(event) {
-    const input = document.getElementById('album-zoek-inp'), filter = input.value.toUpperCase(), tafelRows = document.querySelectorAll('#album-tafel-inhoud');
+    const input = document.getElementById("album-zoek-inp"), filter = input.value.toUpperCase(), tafelRows = document.querySelectorAll("#album-tafel-inhoud");
     tafelRows.forEach((item, index, arr) => {
         const albumNaam = item.children[1].innerHTML;
         if(albumNaam.toUpperCase().indexOf(filter) > -1) {

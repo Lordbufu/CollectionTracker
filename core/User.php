@@ -11,140 +11,98 @@ namespace App\Core;
  */
 class User {
     protected $user;
+    protected $userNameErr = [ "userError1" => "Deze gebruiker bestaat al." ];
+    protected $userEmailErr = [ "userError2" => "E-mail adres reeds ingebruik." ];
+    protected $noUserErr = [ "userError1" => "No users found, plz contact the Administrator!" ];
+    protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
+    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om de website te bezoeken !!" ];
 
     /*  setUser($data):
             Attempt to add user to database, and check for duplicate e-mails & names.
-
-            $data (Assoc Array) - The user input, sanitized in the controller.
+                $data (Assoc Array) - The user input, sanitized in the controller.
 
             Return Value:
                 On sucess: Boolean
-                On failed: Assoc Array -> example: ['type-of-message' => ['browser-storage-tag' => 'error-string']]
+                On failed: Assoc Array -> example: [ 'type-of-message' => [' browser-storage-tag' => 'error-string' ] ]
      */
     public function setUser($data) {
-        $userNameErr = "Deze gebruiker bestaat al.";
-        $userEmailErr = "E-mail adres reeds ingebruik.";
-        $noUserErr = "No users found, plz contact the Administrator!";
+        $tempUsers = App::get("database")->selectAll("gebruikers");
 
-        $tempUsers = App::get('database')->selectAll('gebruikers');
+        if( !empty( $tempUsers ) ) {
+            foreach( $tempUsers as $key => $user ) {
+                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
 
-        if(!empty($tempUsers)) {
-            foreach($tempUsers as $key => $user) {
-                if($user['Gebr_Naam'] === $data['Gebr_Naam']) {
-                    $errorMsg['error']['userError1'] = $userNameErr;
-                }
-
-                if($user['Gebr_Email'] === $data['Gebr_Email']) {
-                    $errorMsg['error']['userError2'] = $userEmailErr;
-                }
+                if($user["Gebr_Email"] === $data["Gebr_Email"]) { $errorMsg["error"] = $this->userEmailErr; }
             }
-        } else {
-            $errorMsg = [ 'error' => [ 'userError1' => $noUserErr ] ];
-        }
+        } else { $errorMsg["error"] = $this->noUserErr; }
 
-        if(!empty($errorMsg)) {
-            return $errorMsg;
-        } else {
-            App::get('database')->insert( 'gebruikers', $data );
+        if( !isset( $errorMsg ) ) {
+            $store = App::get("database")->insert( "gebruikers", $data );
+        } else { return $this->errorMsg; }
 
-            return TRUE;
-        }
+        return is_string($errorMsg) ? $store : TRUE;
     }
 
-    // W.I.P.
+    /* getUserName(): Simple get user name function, that sets the user based on the stored id in the session. */
     public function getUserName() {
-        return $this->user['Gebr_Naam'];
+        if( !isset( $this->user ) ) { $this->user = App::get("database")->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] ); }
+
+        return $this->user["Gebr_Naam"];
     }
 
-    // W.I.P.
     /*  validateUser($id, $pw):
             Validate if the user id is in the database, and validate if the stored PW matches the user input.
-
-            $id (string)    - The user its credentials, either a valid e-mail or user name.
-            $pw (string)    - The password input from the user.
+                $id (string)    - The user its credentials, either a valid e-mail or user name.
+                $pw (string)    - The password input from the user.
 
             Return Value:
                 On Validate - (int)
                 Failed - (Assoc Array)
      */
     public function validateUser($id, $pw) {
-        // Set error message for failing validation.
-        $credError = [
-            'loginFailed' => 'Uw inlog gegevens zijn niet correct, probeer het nogmaals!!'
-        ];
-
-        // If the id is a valid e-mail adress,
-        if(filter_var($id, FILTER_VALIDATE_EMAIL)) {
-            // Check if the database has a valid entry for the users e-mail,
-            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0])) {
-                // return the error if there wasn't.
-                return $credError;
-            // If the DB has a valid entry for the user,
-            } else {
-                // set the matched user to the user object.
-                $this->user = App::get('database')->selectAllWhere('gebruikers', ['Gebr_Email' => $id])[0];
-            }
-        // If the id was not a valid e-mail,
+        if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
+            if( !isset( App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
+                return $this->credError;
+            } else { $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0]; }
         } else {
-            // Check if the database has a valid entry for the users name,
-            if(!isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Naam' => $id])[0])) {
-                // return the error if there wasn't.
-                return $credError;
-            // If the DB has a valid entry for the user,
-            } else {
-                // set the matched user to the user object.
-                $this->user = App::get('database')->selectAllWhere('gebruikers', [
-                    'Gebr_Naam' => $id
-                ])[0];
-            }
+            if( !isset (App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
+                return $this->credError;
+            } else { $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0]; }
         }
 
-        // If the stored password matches the input,
-        if(password_verify($pw, $this->user['Gebr_WachtW'])) {
-            // return 1 to the caller.
+        if( password_verify( $pw, $this->user["Gebr_WachtW"] ) ) {
             return 1;
-        // If they dint match,
         } else {
-            // return the error.
-            return $credError;
+            unset($this->user);
+            return $this->credError;
         }
     }
 
-    // W.I.P.
-    public function checkUser($id, $rights = null) {
-        // If there was no user object set, then check if the DB returns a user, and set the user if it does.
-        if(empty($this->user)) {
-            if(isset(App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0])) {
-                $this->user = App::get('database')->selectAllWhere('gebruikers', ['Gebr_Index' => $id])[0];
-            // if database return nothing we return FALSE and end the check.
-            } else {
-                return FALSE;
-            }
+    /*  checkUser($id, $rights=null):
+            This function checks if the uiser is valid, and if the user rights are set to Admin or not.
+                $id     - The index of the user we want to check, most likely take from the session.
+                $rights - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
+            
+            Return value = Boolean.
+     */
+    public function checkUser($id, $rights=null ) {
+        if( empty( $this->user ) ) {
+            if( isset(App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0] ) ) {
+                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
+            } else { return FALSE; }
         }
 
-        // Now we are sure the user object is set, we check the user id
-        if($id === $this->user['Gebr_Index']) {
-            // if we also wanted to check the user rights (only for the admins),
-            if(isset($rights)) {
-                // if the rights are a match we return TRUE,
-                if($this->user['Gebr_Rechten'] === 'Admin') {
+        if( $id === $this->user["Gebr_Index"] ) {
+            if( isset( $rights ) ) {
+                if( $this->user["Gebr_Rechten"] === "Admin" ) {
                     return TRUE;
-                // and FALSE if not regardless of the id check outcome.
-                } else {
-                    return FALSE;
-                }
-            }
-
-            return TRUE;
-        // If the id check failed, we don't need to check the rights either, and can just return FALSE.
-        } else {
-            return FALSE;
-        }
+                } else { return FALSE; }
+            } else { return TRUE; }
+        } else { return FALSE; }
     }
 
-    //  TODO: Need to figure out if and when this can fails, so i know what to return when that happens.
-            // Only encountered it once so far, and that was because i forced an error, via unexpected results messing with session data etc.
-    /*  getUserId(): W.I.P.
+    //  TODO: figure out a better way to deal with the error loop.
+    /*  getUserId():
             To bind users and sessions, i only need there Database index key.
 
             Return Value:
@@ -153,34 +111,33 @@ class User {
 
      */
     public function getUserId() {
-        // If there is user data, i return there index value.
-        if(isset($this->user)) {
-            return $this->user['Gebr_Index'];
-        // If there is non, i return a simple error string for now.
-        } else {
-            return 'No user defined';
-        }
+        if( isset( $this->user ) ) {
+            return $this->user["Gebr_Index"];
+        } else { return "No user defined"; }
     }
 
-    // W.I.P.
+    //  TODO: add somekind of meaningfull comment to this funcion.
+    /*  evalUser():
+     */
     public function evalUser() {
-        $rightsError = [ 'loginFailed' => 'U heeft geen rechten om de website te bezoeken !!' ];
-
-        if($this->user['Gebr_Rechten'] === 'gebruiker') {
-            return 1;
-        } elseif($this->user['Gebr_Rechten'] === 'Admin') {
-            return 0;
-        } else {
-            return $rightsError;
-        }
+        if($this->user["Gebr_Rechten"] === "gebruiker") {
+            return TRUE;
+        } elseif($this->user["Gebr_Rechten"] === "Admin") {
+            return FALSE;
+        } else { return $this->rightsError; }
     }
 
-    // W.I.P.
+    /*  updateUser($table, $data, $id):
+            This function deals with updating the user, and return a boolean.
+                $table  - The DB table that needs updating (always 'gebruikers').
+                $data   - The data that needs to be updated.
+                $id     - The id of the user that needs to be updated.
+            
+            Return Value: Boolean.
+     */
     public function updateUser($table, $data, $id) {
-        $store = App::get('database')->update($table, $data, $id);
+        $store = App::get("database")->update( $table, $data, $id );
 
-        if(!is_string($store)) {
-            return TRUE;
-        } else { return FALSE; }
+        return is_string($store) ? FALSE : TRUE;
     }
 }

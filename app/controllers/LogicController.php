@@ -1,10 +1,6 @@
 <?php
-//  TODO: Move all remaining error message to a global scope, rather then function specific scopes, since there is a lot of overlap there atm.
 //  TODO: Finish\clean-up comments.
 //  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
-//  TODO: Go over all code, and adjust for database error returned from the collection class, since querry execution now returns the DB error as a string.
-//          (should be noted as comment above the functions).
-
 namespace App\Controllers;
 
 use App\Core\App;
@@ -21,9 +17,10 @@ use App\Core\App;
  */
 class LogicController {
     /* Global returning error messages for user feedback */
-    protected $authFailed = [ 'fetchResponse' => 'Access denied, Account authentication failed !' ];
-    protected $dupError = [ 'fetchResponse' => 'Deze naam bestaat al, gebruik een andere naam gebruiken !' ];
-    protected $dbError = [ 'fetchResponse' => 'Er was een database error, neem contact op met de administrator als dit blijft gebeuren!' ];
+    protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
+    protected $dupError = [ "fetchResponse" => "Deze naam bestaat al, gebruik een andere naam gebruiken !" ];
+    protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
+    protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
 
     /* Landingpage functions */
     /*  dbCreation():
@@ -33,14 +30,14 @@ class LogicController {
             Return Value    - Redirect -route-> '/'
      */
     public function dbCreation() {
-        App::get('database')->createTable('gebruikers');
-        App::get('database')->createAdmin();
-        App::get('database')->createTable('series');
-        App::get('database')->createTable('serie_meta');
-        App::get('database')->createTable('albums');
-        App::get('database')->createTable('collecties');
+        App::get("database")->createTable("gebruikers");
+        App::get("database")->createAdmin();
+        App::get("database")->createTable("series");
+        App::get("database")->createTable("serie_meta");
+        App::get("database")->createTable("albums");
+        App::get("database")->createTable("collecties");
 
-        App::redirect('');
+        return App::redirect("");
     }
     
     /*  register():
@@ -54,22 +51,22 @@ class LogicController {
      */
 	public function register() {
         $temp = [
-            'Gebr_Naam' => htmlspecialchars($_POST['gebr-naam']),
-            'Gebr_Email' => htmlspecialchars($_POST['email']),
-            'Gebr_WachtW' => password_hash($_POST['wachtwoord'], PASSWORD_BCRYPT),
-            'Gebr_Rechten' => 'gebruiker'
+            "Gebr_Naam" => htmlspecialchars( $_POST["gebr-naam"] ),
+            "Gebr_Email" => htmlspecialchars( $_POST["email"] ),
+            "Gebr_WachtW" => password_hash( $_POST["wachtwoord"], PASSWORD_BCRYPT ),
+            "Gebr_Rechten" => "gebruiker"
         ];
 
-        $store = App::get('user')->setUser($temp);
+        $store = App::get("user")->setUser($temp);
 
         if($store === TRUE) {
-            App::get('session')->setVariable('header', [ 'feedB' => [ 'userCreated' => 'Gebruiker aangemaakt, u kunt nu inloggen!' ] ] );
+            App::get("session")->setVariable("header", [ "feedB" => $this->userAdd ] );
 
-            return App::redirect('#login-pop-in');
+            return App::redirect( "#login-pop-in" );
         } else {
-            App::get('session')->setVariable('header', $store);
+            App::get("session")->setVariable( "header", $store );
 
-            return App::redirect('#account-maken-pop-in');
+            return App::redirect( "#account-maken-pop-in" );
         }
     }
 
@@ -85,33 +82,33 @@ class LogicController {
                 If validation failed    - Redirect -route-> '/#login-pop-in'
      */
     public function login() {
-        $pw = $_POST['wachtwoord'];
-        $cred = htmlspecialchars($_POST['accountCred']);
+        $pw = $_POST["wachtwoord"];
+        $cred = htmlspecialchars( $_POST["accountCred"] );
 
-        if(App::get('user')->validateUser($cred, $pw) == 1) {
-            App::get('session')->setVariable('user', [ 'id' => App::get('user')->getUserId()]);
+        if(App::get("user")->validateUser( $cred, $pw ) == 1) {
+            App::get("session")->setVariable( "user", [ "id" => App::get("user")->getUserId() ] );
 
-            if(App::get('user')->evalUser() === 1) {
-                App::get('session')->setVariable('user', [ 'admin' => FALSE ]);
-                App::get('session')->setVariable('header', ['feedB' => ['welcome' => "Welcome " . App::get('user')->getUserName()]]);
+            if(App::get("user")->evalUser() === 1) {
+                App::get("session")->setVariable( "user", [ "admin" => FALSE ] );
+                App::get("session")->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get("user")->getUserName() ] ] );
 
-                return App::redirect('gebruik');
+                return App::redirect("gebruik");
 
-            } elseif(App::get('user')->evalUser() === 0) {
-                App::get('session')->setVariable('user', [ 'admin' => TRUE ]);
-                App::get('session')->setVariable('header', ['feedB' => ['welcome' => "Welcome " . App::get('user')->getUserName()]]);
+            } elseif(App::get("user")->evalUser() === 0) {
+                App::get("session")->setVariable( "user", [ "admin" => TRUE ] );
+                App::get("session")->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get("user")->getUserName() ] ] );
 
-                return App::redirect('beheer');
+                return App::redirect("beheer");
 
             } else {
-                App::get('session')->setVariable('header', [ 'error' => App::get('user')->evalUser()]);
+                App::get("session")->setVariable( "header", [ "error" => App::get("user")->evalUser() ] );
 
-                return App::redirect('#login-pop-in');
+                return App::redirect("#login-pop-in");
             }
         } else {
-            App::get('session')->setVariable('header', [ 'error' => App::get('user')->validateUser($cred, $pw)]);
+            App::get("session")->setVariable("header", [ "error" => App::get("user")->validateUser($cred, $pw) ] );
 
-            return App::redirect('#login-pop-in');
+            return App::redirect("#login-pop-in");
         }
     }
 
@@ -121,8 +118,8 @@ class LogicController {
             Return Value    - Redirect -route-> '/'
      */
     public function logout() {
-        App::get('session')->endSession();
-        App::redirect('');
+        App::get("session")->endSession();
+        App::redirect("");
     }
 
     /* Adminpage functions */
@@ -144,66 +141,66 @@ class LogicController {
      */
     public function beheer() {
         /* Validate user in the session, and execute the correct logic */
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights') ) {
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights") ) {
             /* Skip all other logic if a pop-in is closed */
-            if( isset( $_POST['close-pop-in'] ) && isset( $_SESSION['page-data']['huidige-serie'] ) ) { return App::view('beheer'); }
+            if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) { return App::view("beheer"); }
 
             /* Check for duplicate serie names, when opening the serie-maken pop-in */
-            if( isset($_POST['newSerName'] ) ) {
-                if( App::get('collection')->cheSerName( $_POST['newSerName'] ) ) {
-                    App::get('session')->setVariable( 'header', [ 'error' => $this->dupError ] );
+            if( isset( $_POST["newSerName"] ) ) {
+                if( App::get("collection")->cheSerName( $_POST["newSerName"] ) ) {
+                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
 
-                    return App::redirect('beheer');
+                    return App::redirect("beheer");
                 } else {
-                    App::get('session')->setVariable( 'page-data', [ 'new-serie' => $_POST['newSerName'] ] );
-                    return App::redirect('beheer#seriem-pop-in');
+                    App::get("session")->setVariable( "page-data", [ "new-serie" => $_POST["newSerName"] ] );
+                    return App::redirect("beheer#seriem-pop-in");
                 }
             }
 
             /* Add session tag, for the album-toevoegen pop-in */
-            if( isset($_POST['album-toev'] ) ) {
-                App::get('session')->setVariable( 'page-data', [ 'add-album' => App::get('collection')->getSerInd( $_POST['album-toev'] ) ] );
+            if( isset($_POST["album-toev"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "add-album" => App::get("collection")->getSerInd( $_POST["album-toev"] ) ] );
 
-                return App::redirect('beheer#albumt-pop-in');
+                return App::redirect("beheer#albumt-pop-in");
             }
 
             /* Make sure important session tags stay set untill specifically unset */
-            if( !App::get('session')->checkVariable( 'page-data', [ 'add-album', 'new-serie', 'edit-serie', 'huidige-serie', 'album-dupl', 'album-cover' ] ) ) {
-                unset($_SESSION['page-data']);
+            if( !App::get("session")->checkVariable( "page-data", [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover" ] ) ) {
+                unset($_SESSION["page-data"]);
             }
 
             /* Clear series session data when returning to the admin serie-view */
-            if( isset( $_POST['return'] ) ) {
-                unset($_SESSION['page-data']['huidige-serie']);
-                unset($_SESSION['page-data']['series']);
+            if( isset( $_POST["return"] ) ) {
+                unset( $_SESSION["page-data"]["huidige-serie"] );
+                unset( $_SESSION["page-data"]["series"] );
 
-                return App::redirect('beheer');
+                return App::redirect("beheer");
             }
 
             /* Populate the session series data is there is non */
-            if( empty($_SESSION['page-data']['series'] ) ) { App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() ); }
+            if( empty($_SESSION["page-data"]["series"] ) ) { App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() ); }
 
             /* Store the albums and name for a serie, if the admin is viewing a serie */
-            if( !empty( $_POST['serie-index'] ) ) {
-                App::get('session')->setVariable( 'page-data', App::get('collection')->getAlbums( $_POST['serie-index'] ) );
-                App::get('session')->setVariable( 'page-data', [ 'huidige-serie' => App::get('collection')->getSerName( $_POST['serie-index'] ) ] );
+            if( !empty( $_POST["serie-index"] ) ) {
+                App::get("session")->setVariable( "page-data", App::get("collection")->getAlbums( $_POST["serie-index"] ) );
+                App::get("session")->setVariable( "page-data", [ "huidige-serie" => App::get("collection")->getItemName( "serie", $_POST["serie-index"] ) ] );
 
-                return App::redirect('beheer');
+                return App::redirect("beheer");
             }
 
             /* Store serie index, if the admin is editing a serie */
-            if( isset( $_POST['serie-edit-index'] ) ) {
-                App::get('session')->setVariable( 'page-data', [ 'edit-serie' => $_POST['serie-edit-index'] ] );
+            if( isset( $_POST["serie-edit-index"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["serie-edit-index"] ] );
 
-                return App::redirect('beheer#serieb-pop-in');
+                return App::redirect("beheer#serieb-pop-in");
             }
 
             /* Fail-save for unexpected behavior */
-            return App::view('beheer');
+            return App::view("beheer");
         } else {
-            App::get('session')->setVariable( 'header', [ 'error' => $this->authFailed ] );
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
 
-            return App::redirect('');
+            return App::redirect("");
         }
     }
 
@@ -223,39 +220,34 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function serieM() {
-        if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
-            if( isset( $_POST['serie-naam'] ) ) {
-                if(App::get('collection')->cheSerName($_POST['serie-naam'])) {
-                    die(var_dump(print_r($_POST)));
-                    // Store the POST data for JS to fill out the form again.
-                    App::get('session')->setVariable('header', [ 'broSto' => $_POST ] );
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            if( isset( $_POST["serie-naam"] ) ) {
+                if( App::get("collection")->cheSerName( $_POST["serie-naam"] ) ) {
+                    //die(var_dump(print_r($_POST)));       //debugline
+                    App::get("session")->setVariable( "header", [ "broSto" => $_POST ] );           // Needs to be stored in session, instead of the browser storage.
+                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
                     
-                    // Store the error for user feedback.
-                    App::get('session')->setVariable('header', ['error' => $this->dupError]);
-                    
-                    // redirect to the pop-in.
-                    return App::redirect('beheer#seriem-pop-in');
+                    return App::redirect("beheer#seriem-pop-in");
 
-                // Store and filter input for special chars.
-                } else { $sqlData = ['Serie_Naam' => htmlspecialchars($_POST['serie-naam'])]; }
+                } else { $sqlData = [ "Serie_Naam" => htmlspecialchars( $_POST["serie-naam"] ) ]; }
             }
 
-            $sqlData['Serie_Maker'] = isset($_POST['makers']) ? htmlspecialchars($_POST['makers']) : '';
-            $sqlData['Serie_Opmerk'] = isset($_POST['opmerking']) ? htmlspecialchars($_POST['opmerking']) : '';
+            $sqlData["Serie_Maker"] = isset( $_POST["makers"] ) ? htmlspecialchars( $_POST["makers"] ) : "";
+            $sqlData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? htmlspecialchars( $_POST["opmerking"] ) : "";
 
-            $store = App::get('collection')->setSerie($sqlData);
+            $store = App::get("collection")->setSerie( $sqlData );
 
             if( !is_string($store) ) {
-                App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het toevoegen van: ' . $_POST['serie-naam'] . ' is gelukt !' ] ] );
-                unset($_SESSION['page-data']['series']);
-                return App::redirect('beheer');
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["serie-naam"] . " is gelukt !" ] ] );
+                unset( $_SESSION["page-data"]["series"] );
+                return App::redirect("beheer");
             } else {
-                App::get('session')->setVariable('header', [ 'error' => [ 'fetchResponse' => $this->dbError ] ] );
-                return App::redirect('beheer');
+                App::get("session")->setVariable( "header", [ "error" => [ "fetchResponse" => $this->dbError ] ] );
+                return App::redirect("beheer");
             }
         } else {
-            App::get('session')->setVariable('header', ['error' => $this->authFailed]);
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
         }
     }
 
@@ -265,31 +257,31 @@ class LogicController {
             $serieData (Assoc Array) :
      */
     public function serieBew() {
-        if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
-            if(isset($_POST['naam'])) {
-                if(App::get('collection')->cheSerName($_POST['naam'], $_POST['index'])) {
-                    App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['index'] ]);
-                    App::get('session')->setVariable('header', [ 'error' => $this->dupError ]);
-                    return App::redirect('beheer#serieb-pop-in');
-                } else { $serieData['Serie_Naam'] = $_POST['naam']; }
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            if( isset( $_POST["naam"] ) ) {
+                if( App::get("collection")->cheSerName( $_POST["naam"], $_POST["index"] ) ) {
+                    App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                    return App::redirect("beheer#serieb-pop-in");
+                } else { $serieData["Serie_Naam"] = $_POST["naam"]; }
             }
 
-            $serieData['Serie_Maker'] = isset($_POST['makers']) ? $_POST['makers'] : '';
-            $serieData['Serie_Opmerk'] = isset($_POST['opmerking']) ? $_POST['opmerking'] : '';
+            $serieData["Serie_Maker"] = isset( $_POST["makers"] ) ? $_POST["makers"] : "";
+            $serieData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? $_POST["opmerking"] : "";
 
-            $store = App::get('collection')->setSerie($serieData, $_POST['index']);
+            $store = App::get("collection")->setSerie( $serieData, $_POST["index"] );
 
-            if(is_string($store)) {
-                App::get('session')->setVariable('header', [ 'error' => $this->dbError ]);
-                App::get('session')->setVariable('page-data', [ 'edit-serie' => $_POST['index'] ]);
-                return App::redirect('beheer#serieb-pop-in');
+            if( is_string( $store ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+                return App::redirect("beheer#serieb-pop-in");
             } else {
-                App::get('session')->setVariable('header', ['feedB' => [ 'fetchResponse' => 'Het aanpassen van: ' . $_POST['naam'] . ' is gelukt !'] ] );
-                return App::redirect('beheer');
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"] ] );
+                return App::redirect("beheer");
             }
         } else {
-            App::get('session')->setVariable('header', ['error' => $this->authFailed]);
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");  
         }
     }
 
@@ -305,21 +297,21 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function serieVerw() {
-        if( isset($_SESSION['user']['id']) && App::get('user')->checkUSer($_SESSION['user']['id'], 'rights') ) {
-            $remove_1 = App::get('collection')->remItem( 'albums', [ 'Album_Serie' => $_POST['serie-index'] ] );
-            $remove_2 = App::get('collection')->remItem( 'series', [ 'Serie_Index' => $_POST['serie-index'], 'Serie_Naam' => $_POST['serie-naam'] ] );
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            $remove_1 = App::get("collection")->remItem( "albums", [ "Album_Serie" => $_POST["serie-index"] ] );
+            $remove_2 = App::get("collection")->remItem( "series", [ "Serie_Index" => $_POST["serie-index"], "Serie_Naam" => $_POST["serie-naam"] ] );
 
-            if(is_string($remove_1) || is_string($remove_2)) {
-                App::get('session')->setVariable( 'header', [ 'error' => $this->dbError ] );
-                return App::redirect('beheer');
+            if( is_string( $remove_1 ) || is_string( $remove_2 ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                return App::redirect("beheer");
             } else {
-                App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het verwijderen van: ' . $_POST['serie-naam'] . ' en alle albums is geslaagd!' ] ] );
-                unset($_SESSION['page-data']['series']);
-                return App::redirect('beheer');
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ] ] );
+                unset( $_SESSION["page-data"]["series"] );
+                return App::redirect("beheer");
             }
         } else {
-            App::get('session')->setVariable('header', [ 'error' => $this->authFailed ] );
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
         }
     }
 
@@ -336,60 +328,60 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function albumT() {
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
-            if(App::get('collection')->cheAlbName( $_POST['serie-index'], $_POST['album-naam'] ) ) {
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            if(App::get("collection")->cheAlbName( $_POST["serie-index"], $_POST["album-naam"] ) ) {
                 $returnData = $_POST;
 
                 /* Album cover loop, for base64 conversion */
-                if( $_FILES['album-cover']['error'] === 0 ) {
-                    $fileName = basename( $_FILES['album-cover']['name'] );
+                if( $_FILES["album-cover"]["error"] === 0 ) {
+                    $fileName = basename( $_FILES["album-cover"]["name"] );
                     $fileType = pathinfo( $fileName, PATHINFO_EXTENSION );
-                    $image = $_FILES['album-cover']['tmp_name'];
+                    $image = $_FILES["album-cover"]["tmp_name"];
                     $imgContent = file_get_contents($image);
-                    $dbImage = 'data:image/' . $fileType . ';charset=utf8;base64,' . base64_encode($imgContent);
-                    $returnData['album-cover'] = $dbImage;
+                    $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
+                    $returnData["album-cover"] = $dbImage;
                 }
                 
-                App::get('session')->setVariable( 'header', [ 'error' => $this->dupError ] );
-                App::get('session')->setVariable( 'header', ['broSto' => [ 'event' => 'album-maken' ] ] );
-                App::get('session')->setVariable( 'page-data', [ 'album-dupl' => $returnData ] );
-                return App::redirect('beheer#albumt-pop-in');
-            } else { $albumData['Album_Naam'] = htmlspecialchars( $_POST['album-naam'] ); }
+                App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                App::get("session")->setVariable( "header", [ "broSto" => [ "event" => "album-maken" ] ] );
+                App::get("session")->setVariable( "page-data", [ "album-dupl" => $returnData ] );
+                return App::redirect("beheer#albumt-pop-in");
+            } else { $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] ); }
 
-            $albumData['Album_Opm'] = 'W.I.P.';
-            $albumData['Album_Serie'] = $_POST['serie-index'];
-            $albumData['Album_ISBN'] = ( !empty( $_POST['album-isbn'] ) || $_POST['album-isbn'] !== '' ) ? $_POST['album-isbn'] : 0;
-            $albumData['Album_Nummer'] = ( !empty($_POST['album-nummer']) ) ? $_POST['album-nummer'] : 0;
-            if( !empty( $_POST['album-datum'] ) ) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
+            $albumData["Album_Opm"] = "W.I.P.";
+            $albumData["Album_Serie"] = $_POST["serie-index"];
+            $albumData["Album_ISBN"] = ( !empty( $_POST["album-isbn"] ) || $_POST["album-isbn"] !== "" ) ? $_POST["album-isbn"] : 0;
+            $albumData["Album_Nummer"] = ( !empty( $_POST["album-nummer"] ) ) ? $_POST["album-nummer"] : 0;
+            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
 
             /* Album cover loop, for base64 conversion, or re-adding of the one store in the session */
-            if( $_FILES['album-cover']['error'] === 0 ) {
-                $fileName = basename( $_FILES['album-cover']['name'] );
+            if( $_FILES["album-cover"]["error"] === 0 ) {
+                $fileName = basename( $_FILES["album-cover"]["name"] );
                 $fileType = pathinfo( $fileName, PATHINFO_EXTENSION );
-                $image = $_FILES['album-cover']['tmp_name'];
+                $image = $_FILES["album-cover"]["tmp_name"];
                 $imgContent = file_get_contents($image);
-                $dbImage = 'data:image/' . $fileType . ';charset=utf8;base64,' . base64_encode($imgContent);
-                $albumData['Album_Cover'] = $dbImage;
-            } elseif( isset( $_SESSION['page-data']['album-dupl']['album-cover'] ) ) { $albumData['Album_Cover'] = $_SESSION['page-data']['album-dupl']['album-cover']; }
+                $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
+                $albumData["Album_Cover"] = $dbImage;
+            } elseif( isset( $_SESSION["page-data"]["album-dupl"]["album-cover"] ) ) { $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["album-cover"]; }
 
-            $store = App::get('collection')->setAlbum($albumData);
+            $store = App::get("collection")->setAlbum( $albumData );
 
-            if(is_string($store)) {
-                App::get('session')->setVariable( 'header', [ 'error' => $this->dbError ] );
-                return App::redirect('beheer');
+            if( is_string( $store ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                return App::redirect("beheer");
             } else {
-                App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het toevoegen van: ' . $_POST['album-naam'] . ' is gelukt !' ] ] );
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
 
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
-                if(isset($_SESSION['page-data']['huidige-serie'])) { unset( $_SESSION['page-data']['albums'] ); }
-                if(isset($_SESSION['page-data']['album-dupl'])) { unset($_SESSION['page-data']['album-dupl']); }
-                if(isset($_SESSION['page-data']['add-album'])) { unset($_SESSION['page-data']['add-album']); }
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
+                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); }
+                if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); }
 
-                return App::redirect('beheer');
+                return App::redirect("beheer");
             }
         } else {
-            App::get('session')->setVariable('header', [ 'error' => $this->authFailed ] );
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");  
         }
     }
 
@@ -406,27 +398,26 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function albumV() {
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
-            if( isset( $_POST['album-index'] ) ) {
-                $albName = App::get('collection')->getAlbumName( $_POST['album-index'], $_POST['serie-index'] );
-                $store = App::get('collection')->remItem( 'albums', [ 'Album_Index' => $_POST['album-index'] ] );
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            if( isset( $_POST["album-index"] ) ) {
+                $albName = App::get("collection")->getItemName( "album", $_POST["serie-index"], $_POST["album-index"] );
+                $store = App::get("collection")->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
 
                 if(is_string($store)) {
-                    App::get('session')->setVariable( 'header', [ 'error' => $this->dbError ]);
-                    return App::redirect('beheer');
+                    App::get("session")->setVariable( "header", [ "error" => $this->dbError ]);
+                    return App::redirect("beheer");
                 } else {
-                    App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het verwijderen van: ' . $albName . ' is geslaagd!' ] ] );
-                    unset( $_SESSION['page-data']['albums'] );
-                    return App::redirect('beheer');
+                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $albName . " is geslaagd!" ] ] );
+                    unset( $_SESSION["page-data"]["albums"] );
+                    return App::redirect("beheer");
                 }
-            } else { return App::redirect('beheer'); }
+            } else { return App::redirect("beheer"); }
         } else {
-            App::get('session')->setVariable('header', [ 'error' => $this->authFailed ] );
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");  
         }
     }
 
-    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     /*  albumBew():
             This function deal with all album-bewerken actions, but does currently cause unwanted page refreshes.
                 $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
@@ -442,69 +433,50 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function albumBew() {
-        // Check session user data, and validate the user that is stored.
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
-            // If a albumEdit is requested, i need to set that data in the session, so the correct data can be displayed.
-            if( isset( $_POST['albumEdit'] ) ) {
-                App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['albumEdit'] ] );
-
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            if( isset( $_POST["albumEdit"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["albumEdit"] ] );
                 return App::redirect("beheer#albumb-pop-in");
             }
 
-            // If the album-naam is duplicate, i set a new album-edit and a feedback message in the session, and return to the pop-in.
-            if(App::get('collection')->cheAlbName( $_POST['serie-index'], $_POST['album-naam'], TRUE ) ) {
-                App::get('session')->setVariable( 'page-data', [ 'album-edit' => $_POST['album-index'] ] );
-                App::get('session')->setVariable( 'header', [ 'error' => $this->dupError ] );
+            if(App::get("collection")->cheAlbName( $_POST["serie-index"], $_POST["album-naam"], TRUE ) ) {
+                App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["album-index"] ] );
+                App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                return App::redirect("beheer#albumb-pop-in");
+            } else { $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] ); }
 
-                return App::redirect('beheer#albumb-pop-in');
-            // Else i filter and store the name for processing.
-            } else { $albumData['Album_Naam'] = htmlspecialchars( $_POST['album-naam'] ); }
+            $albumData["Album_Index"] = $_POST["album-index"];
+            if( isset( $_POST["album-nummer"] ) ) { $albumData["Album_Nummer"] = $_POST["album-nummer"]; }
+            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
+            $albumData["Album_Isbn"] = isset( $_POST["album-isbn"] ) ? $_POST["album-isbn"] : 0;
+            $albumData["Album_Opm"] = isset( $_POST["album-opm"] ) ? $_POST["album-opm"] : 'W.I.P';
 
-            // Set the remaining POST data in the albumData.
-            $albumData['Album_Index'] = $_POST['album-index'];
-            if( isset($_POST['album-nummer']) ) { $albumData['Album_Nummer'] = $_POST['album-nummer']; }
-            if( !empty( $_POST['album-datum'] ) ) { $albumData['Album_UitgDatum'] = $_POST['album-datum']; }
-            $albumData['Album_Isbn'] = isset($_POST['album-isbn']) ? $_POST['album-isbn'] : 0;
-            $albumData['Album_Opm'] = isset($_POST['album-opm']) ? $_POST['album-opm'] : 'W.I.P';
-
-            // Check if there was a cover, and convert it to a base64 string for the database.
-            if( $_FILES['album-cover']['error'] === 0 ) {
-                $fileName = basename( $_FILES['album-cover']['name'] );
+            if( $_FILES["album-cover"]["error"] === 0 ) {
+                $fileName = basename( $_FILES["album-cover"]["name"] );
                 $fileType = pathinfo( $fileName, PATHINFO_EXTENSION );
-                $image = $_FILES['album-cover']['tmp_name'];
+                $image = $_FILES["album-cover"]["tmp_name"];
                 $imgContent = file_get_contents($image);
-                $dbImage = 'data:image/' . $fileType . ';charset=utf8;base64,' . base64_encode($imgContent);
-                $albumData['Album_Cover'] = $dbImage;
+                $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
+                $albumData["Album_Cover"] = $dbImage;
             }
 
-            $store = App::get('collection')->setAlbum($albumData, [
-                'Album_Index' => $_POST['album-index'],
-                'Album_Serie' => $_POST['serie-index']
-            ]);
+            $store = App::get("collection")->setAlbum( $albumData, [ "Album_Index" => $_POST["album-index"], "Album_Serie" => $_POST["serie-index"] ] );
 
-            // If there is an error, store a generic error message and redirect to the main admin page.
-            if(is_string($store)) {
-                App::get('session')->setVariable('header', [ 'error' => $this->dbError ] );
-
-                return App::redirect('beheer');
+            if( is_string( $store ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                return App::redirect("beheer");
             } else {
-                App::get('session')->setVariable('header', [ 'feedB' => [ 'fetchResponse' => 'Het aanpassen van: ' . $_POST['album-naam'] . ' is gelukt !' ] ] );
-
-                // If the album-view is active, clear albums session data, so it can be repopulated after the redirect.
-                if( isset( $_SESSION['page-data']['huidige-serie'] ) ) { unset( $_SESSION['page-data']['albums'] ); }
-                if( isset( $_SESSION['page-data']['album-edit'] ) ) { unset( $_SESSION['page-data']['album-edit'] ); }
-
-                return App::redirect('beheer');
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
+                if( isset( $_SESSION["page-data"]["album-edit"] ) ) { unset( $_SESSION["page-data"]["album-edit"] ); }
+                return App::redirect("beheer");
             }
-        // Notify user that authentication failed, and redirect to the landing page.
         } else {
-            App::get('session')->setVariable( 'header', [ 'error' => $this->authFailed ] );
-
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
         }
     }
 
-    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     /*  adminReset():
             This function can reset user passwords, since that is missing from the main page login-pop-in.
                 $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
@@ -517,29 +489,19 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function adminReset() {
-        // Check session user data, and validate the user that is stored.
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'], 'rights' ) ) {
-            // Attempt to update the user in the database.
-            $store = App::get('user')->updateUser('gebruikers',
-                [ 'Gebr_WachtW' => password_hash($_POST['wachtwoord1'], PASSWORD_BCRYPT) ],
-                [ 'Gebr_Email' => $_POST['email'] ] );
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+            $store = App::get("user")->updateUser( "gebruikers", [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ], [ "Gebr_Email" => $_POST["email"] ] );
 
-            // If updated, store user feedback in session, and redirect to the admin page.
             if($store) {
-                App::get('session')->setVariable('header', [ 'feedB' => ['fetchResponse' => 'Het wachtwoord van: ' . $_POST['email'] . ' is aangepast !' ] ] );
-
-                return App::redirect('beheer');
-            // If the update failed, store user feedback in session, and redirect to the pop-in
+                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ] ] );
+                return App::redirect("beheer");
             } else {
-                App::get('session')->setVariable('header', [ 'error' => $this->dbError ] );
-
-                return App::redirect('beheer#ww-reset-pop-in');
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                return App::redirect("beheer#ww-reset-pop-in");
             }
-        // Notify user that authentication failed, and redirect to the landing page.
         } else {
-            App::get('session')->setVariable( 'header', [ 'error' => $this->authFailed ] );
-
-            return App::redirect('');  
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
         }
     }
 
@@ -554,27 +516,22 @@ class LogicController {
                 On fail     - Redirect  -route-> '../'
      */
     public function gebruik() {
-        if(isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'] ) ) {
-            unset( $_SESSION['page-data']['collections'] );
-
-            App::get('session')->setVariable( 'page-data', App::get('collection')->getSeries() );
-            App::get('session')->setVariable( 'page-data', App::get('collection')->getColl( 'collecties', [ 'Gebr_Index' => $_SESSION['user']['id'] ] ) );
-
-            if(!empty($_POST['serie_naam'])) {
-                App::get('session')->setVariable( 'page-data', App::get('collection')->getAlbums( App::get('collection')->getSerInd( $_POST['serie_naam'] ) ) );
-                App::get('session')->setVariable( 'page-data', App::get('collection')->getColl( 'collecties', [ 'Gebr_Index' => $_SESSION['user']['id'] ] ) );
-                App::get('session')->setVariable( 'page-data', [ 'huidige-serie' => $_POST['serie_naam'] ] )  ;
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"] ) ) {
+            unset( $_SESSION["page-data"]["collections"] );
+            App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() );
+            App::get("session")->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+            if( !empty( $_POST["serie_naam"] ) ) {
+                App::get("session")->setVariable( "page-data", App::get("collection")->getAlbums( App::get("collection")->getSerInd( $_POST["serie_naam"] ) ) );
+                App::get("session")->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+                App::get("session")->setVariable( "page-data", [ "huidige-serie" => $_POST["serie_naam"] ] )  ;
             }
-
-            return App::view('gebruik');
+            return App::view("gebruik");
         } else {
-            App::get('session')->setVariable( 'header', [ 'error' => $this->authFailed ] );
-
-            return App::redirect('');
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
 		}
     }
 
-    //  TODO: Figure out what todo with the SQL error that is returned on failed DB actions.
     /*  albSta():
             The POST route for '/albSta', where we create collection data, based on what album(s) got toggled on/off.
                 $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
@@ -594,42 +551,35 @@ class LogicController {
                     false && !is_string = album was already added to the collection (odd page refreshes and tampered post data).
      */
     public function albSta() {
-        if( isset( $_SESSION['user']['id'] ) && App::get('user')->checkUSer( $_SESSION['user']['id'] ) ) {
-            if( isset( $_POST['albumIndex'] ) ) { $ids = [ 'Gebr_Index' =>  $_SESSION['user']['id'], 'Alb_Index' => $_POST['albumIndex'] ]; }
-
-            if( isset( $_POST['checkState'] ) && $_POST['checkState'] === 'false' ) {
-                $store = App::get('collection')->setColl( 'collecties', $ids );
-            } else if ( isset( $_POST['checkState'] ) && $_POST['checkState'] === 'true' ) {
-                $store = App::get('collection')->remItem( 'collecties', $ids );
-            } else { $store = 'No valid POST data found!'; }
+        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"] ) ) {
+            if( isset( $_POST["albumIndex"] ) ) { $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ]; }
+            
+            if( isset( $_POST["checkState"] ) && $_POST["checkState"] === "false" ) {
+                $store = App::get("collection")->setColl( "collecties", $ids );
+            } else if ( isset( $_POST["checkState"] ) && $_POST["checkState"] === "true" ) {
+                $store = App::get("collection")->remItem( "collecties", $ids );
+            } else { $store = "No valid POST data found!"; }
 
             if( !is_string( $store ) ) {                
-                if( $_POST['checkState'] === 'false' && $store ) {
-                    App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het album: ' . $_POST['albumNaam'] . ' is toegvoegd aan uw collectie!' ] ] );
-
-                    unset( $_SESSION['page-data']['colllections'] );
-    
-                    return App::redirect('gebruik');
+                if( $_POST["checkState"] === "false" && $store ) {
+                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is toegvoegd aan uw collectie!" ] ] );
+                    unset( $_SESSION["page-data"]["colllections"] );
+                    return App::redirect("gebruik");
                 } else if ( $_POST['checkState'] === 'true' && $store ) {
-                    App::get('session')->setVariable( 'header', [ 'feedB' => [ 'fetchResponse' => 'Het album: ' . $_POST['albumNaam'] . ' is verwijdert van uw collectie!' ] ] );
-
-                    unset( $_SESSION['page-data']['colllections'] );
-    
-                    return App::redirect('gebruik');
+                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is verwijdert van uw collectie!" ] ] );
+                    unset( $_SESSION["page-data"]["colllections"] );
+                    return App::redirect("gebruik");
                 } else if ( !$store ) {
-                    App::get('session')->setVariable( 'header', [ 'error' => $this->dbError ] );
-
-                    return App::redirect('gebruik');
+                    App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                    return App::redirect("gebruik");
                 }
             } else {
-                App::get('session')->setVariable( 'header', [ 'error' => $this->dbError ] );
-
-                return App::redirect('gebruik');
+                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                return App::redirect("gebruik");
             }
         } else {
-            App::get('session')->setVariable( 'header', [ 'error' => $this->authFailed ] );
-
-            return App::redirect('');
+            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            return App::redirect("");
         }
     }
 }
