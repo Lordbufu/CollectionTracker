@@ -15,13 +15,13 @@
 
 	// Admin related routes
 	$router->post('beheer',			'LogicController@beheer');
-	$router->post('albumT',			'LogicController@albumT');
-	$router->post('albumBew',		'LogicController@albumBew');
-	$router->post('albumV',			'LogicController@albumV');
 	$router->post('serieM',			'LogicController@serieM');
 	$router->post('serieBek',		'LogicController@serieBek');
 	$router->post('serieBew',		'LogicController@serieBew');
 	$router->post('serieVerw',		'LogicController@serieVerw');
+	$router->post('albumT',			'LogicController@albumT');
+	$router->post('albumBew',		'LogicController@albumBew');
+	$router->post('albumV',			'LogicController@albumV');
 	$router->post('aReset',			'LogicController@adminReset');
 
 	// User related routes

@@ -20,9 +20,10 @@ namespace App\Core;
                 - collections (Assoc Array) : All collection data that needs to be displayed.
                 - huidige-serie (string)    : The current selected serie, for both the user and admin.
                 - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
+                - serie-dupl (Assoc Array)  : The POST data from the duplicate serie.
                 - edit-serie (int)          : The series index of the serie that is requested for editing.
-                - add-album (int)           : The Series index key, that the user wants to add a album to.
-                - alb-dupl (string)         : To indicate that a album is duplicate.
+                - add-album (int)           : The serie index key, that the user wants to add a album to.
+                - alb-dupl (Assoc Array)    : The POST data from the duplicate album.
                 - album-cover (blob)        : Temp store for any uploaded album covers, when a duplicate name was detected.
  */
 class SessionMan {
@@ -91,11 +92,7 @@ class SessionMan {
                     return $_SESSION[$name]["albums"] = $data;
                 } elseif( isset( $value["Col_Index"] ) ) {
                     return $_SESSION[$name]["collections"] = $data;
-                } elseif($key == "feedB") {
-                    return $_SESSION[$name][$key] = $value;
-                } elseif($key == "error") {
-                    return $_SESSION[$name][$key] = $value;
-                } elseif($key == "broSto") {
+                } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl") {
                     return $_SESSION[$name][$key] = $value;
                 } else {
                     // Debugline, need to remove this before going live !
