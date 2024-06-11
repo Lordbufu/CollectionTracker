@@ -18,6 +18,7 @@ function initBeheer() {
     const serieBewButtArr = Array.from(serieBewButt);
     editSerieSubm = document.getElementById("serieb-form-button");
     serieEditNameInput.addEventListener("input", naamCheck);
+    editSerieSubm.addEventListener("click", saveScroll);
     editSerieSubm.disabled = true;
 
     for(key in serieBewButtArr) { serieBewButtArr[key].addEventListener("click", saveScroll); }
@@ -43,12 +44,13 @@ function initBeheer() {
     editAlbumSubm = document.getElementById("albumb-form-button");
     const naamInpBew = document.getElementById("albumb-form-alb-naam");
     const isbnInpBew = document.getElementById("albumb-form-alb-isbn");
-    const covInpBew = document.getElementById('albumb-form-alb-cov');
+    const covInpBew = document.getElementById("albumb-form-alb-cov");
     const albBewButt = document.getElementsByClassName("album-bewerken-butt");
     const albBewButtArr = Array.from(albBewButt);
     isbnInpBew.addEventListener("input", isbnCheck);
     naamInpBew.addEventListener("input", naamCheck);
     covInpBew.addEventListener("change", coverInpCheck);
+    editAlbumSubm.addEventListener("click", saveScroll);
     editAlbumSubm.disabled = true;
 
     for(key in albBewButtArr) { albBewButtArr[key].addEventListener("click", saveScroll); }

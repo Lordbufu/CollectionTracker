@@ -5,95 +5,93 @@ namespace App\Core;
 use Detection\MobileDetect;
 
 class App {
-    // Create a static registry, to store/load/link(bind) important features.
+    /* Create a static registry, to store/load/link(bind) important features. */
     protected static $registry = [];
     protected static $version;
     protected static $device;
 
-    //  bind($key, $value):
-    //      This function binds what i want to link, to the App so i can only use the App to acess other classes.
-    //
-    //      $key (string)       - The key name i want to use for said feature.
-    //      $value (object)     - The feature i want to bind to said key.
-    //
+    /*  bind($key, $value):
+            This function binds what i want to link, to the App so i can only use the App to acess other classes.
+                $key (string)       - The key name i want to use for said feature.
+                $value (object)     - The feature i want to bind to said key.
+
+            Return value: None
+     */
     public static function bind($key, $value) {
-        static::$registry[$key] = $value;
+        return static::$registry[$key] = $value;
     }
 
-    // This function tries to access the $register, and return the linked features if there is a match.
-    //  $key (string)   - The registry key i want to access.
+    /*  get($key):
+            This function tries to access the $register, and return the linked features if there is a match.
+                $key (string)   - The registry key i want to access.
+            
+            Return value: None
+     */
     public static function get($key) {
-        // Check if key is stored in registry, throw Exception if not
-        if(! array_key_exists($key, static::$registry)) {
-            throw new Exception("No {$key} is bound in the container.");
-        }
-        // return said feature
+        if(! array_key_exists($key, static::$registry)) { throw new Exception("No {$key} is bound in the container."); }
         return static::$registry[$key];
     }
 
-    // Test functions
+    /*  checkDevice():
+            This function uses the browser user agent, to detect what device is being used.
+            The API MobileDetect, helps me seperate mobile/tablet and desktop clients, to ensure the right CSS is applied.
+                $detect (Object)    - The class object for MobileDetect.
+            
+            Return value: None
+     */
     public static function checkDevice() {
-        // Init detect framework
         $detect = new MobileDetect();
-        // Give it the user agent string
-		$detect->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+		$detect->setUserAgent($_SERVER["HTTP_USER_AGENT"]);
 
-        // Detect if mobile
-        if($detect->isMobile()) { static::$device = "mobile"; }
-
-        // Detect if tablet
-        if($detect->isTablet()) { static::$device = "tablet"; }
-
-        // Default to desktop in other cases
-        if(!$detect->isMobile() && !$detect->isTablet()) { static::$device = "desktop"; }
-
-        return;
+        if($detect->isMobile()) { return static::$device = "mobile"; }
+        if($detect->isTablet()) { return static::$device = "tablet"; }
+        if(!$detect->isMobile() && !$detect->isTablet()) { return static::$device = "desktop"; }
     }
 
+    /*  setVersion():
+            This function simply opens a the 'version.txt' file, and stores the version number for later use.
+                $versionFile (file) - Temp store for the file i want to read.
+            
+            Return value: None
+     */
     public static function setVersion() {
-        // Open, read and close the version.txt, so the content is stored in the version variable.
         $versionFile = fopen("../version.txt", "r");
         static::$version = fread($versionFile, filesize("../version.txt"));
-        fclose($versionFile);
-
-        return;
+        return fclose($versionFile);
     }
 
-    // A fairly simple view function, to return the correct view and data to the browser.
-    // Now also include a device check, so i can properly add css files based on that.
-    //  $name (string)       - The first part of the view file its name.
-    //  $data (Multid Array) - The data i want to send to the page.
-    public static function view($name, $data = []) {
+    /*  view($name, $data=[])
+            A fairly simple view function, to return the correct view and data to the browser.
+            Now also include a device check, so i can properly add css files based on that.
+                $name (string)       - The first part of the view file its name.
+                $data (Multid Array) - The data i want to send to the page, defaulting to a empty array.
+
+            Return value: None
+     */
+    public static function view($name, $data=[]) {
         static::checkDevice();
         static::setVersion();
-
-        // Add device tag to data array
-        $data['device'] = static::$device;
-        $data['version'] = static::$version;
-
-        // Extract $data, so we can use the key's as variables on the page.
+        $data["device"] = static::$device;
+        $data["version"] = static::$version;
         extract($data);
-
-        // Return the requested view.
         return require "../app/views/{$name}.view.php";
     }
 
-    // A redirect function to redirect PhP to the right route.
-    public static function redirect($path, $data = []) {
+    /*  redirect($path, $data=[]):
+            A simple redirect based on the server_naam variable, so the uri is in FQDN style at all time.
+            This function now also includes the data for the MobileDetect API and setVersion, while also allowing the normal way of passing data to the page.
+                $path (string)          - The path for the redirect, not designed for recursive redirects, when you are already on a sub-path.
+                $data (Multid Array)    - The data array that needs to be passed on to the page, incl the MobileDetect and version data.
+
+            Return value: None
+     */
+    public static function redirect($path, $data=[]) {
         static::checkDevice();
         static::setVersion();
-
-        // Add device tag to data array
-        $data['device'] = static::$device;
-        $data['version'] = static::$version;
-
-        // Extract $data, so we can use the key's as variables on the page.
+        $data["device"] = static::$device;
+        $data["version"] = static::$version;
         extract($data);
-
-        // Always use the $_SERVER['SERVER_NAME'] variable, to make it function on other host names.
-        header("location:https://{$_SERVER['SERVER_NAME']}/{$path}");
-        
-        return;
+        return header("location:https://{$_SERVER['SERVER_NAME']}/{$path}");
     }
 }
 ?>

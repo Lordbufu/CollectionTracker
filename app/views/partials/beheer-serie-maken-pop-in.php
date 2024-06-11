@@ -12,23 +12,29 @@
         <div class="modal-body">
             <form class="modal-form" id="seriem-form" method="post" action="/serieM">
                 <label class="modal-form-label">
-                <?php if(isset($_SESSION['page-data']['new-serie'])): ?>
-                    <input type='text' class='modal-form-input' id='seriem-form-serieNaam' name='serie-naam' placeholder='' value='<?=$_SESSION['page-data']['new-serie']?>' autocomplete='on' required >
+                <?php if( isset( $_SESSION["page-data"]["new-serie"] ) ): ?>
+                    <input type='text' class='modal-form-input' id='seriem-form-serieNaam' name='serie-naam' placeholder='' value='<?=$_SESSION["page-data"]["new-serie"]?>' autocomplete='on' required >
+                <?php elseif( isset( $_SESSION["page-data"]["serie-dupl"] ) ): ?>
+                <input type='text' class='modal-form-input' id='seriem-form-serieNaam' name='serie-naam' placeholder='' value='<?=$_SESSION["page-data"]["serie-dupl"]["serie-naam"]?>' autocomplete='on' required >
                 <?php else: ?>
                     <input type='text' class='modal-form-input' id='seriem-form-serieNaam' name='serie-naam' placeholder='' value='' autocomplete='on' required >
-                <?php
-                    endif;
-                    // Unset to prevent unexpected behavior.
-                    unset($_SESSION['page-data']['new-serie']);
-                ?>
+                <?php endif; unset($_SESSION['page-data']['new-serie']); ?>
                     <span class="modal-form-span"> Serie Naam </span>
                 </label>
                 <label class="modal-form-label">
-                    <input type="text" class="modal-form-input" id="seriem-form-makers" name="makers" placeholder="" autocomplete="on" />
+                    <?php if( isset( $_SESSION["page-data"]["serie-dupl"] ) ) : ?>
+                        <input type="text" class="modal-form-input" id="seriem-form-makers" name="makers" value="<?=$_SESSION["page-data"]["serie-dupl"]["makers"]?>" placeholder="" autocomplete="on" />
+                    <?php else : ?>
+                        <input type="text" class="modal-form-input" id="seriem-form-makers" name="makers" placeholder="" autocomplete="on" />
+                    <?php endif; ?>
                     <span class="modal-form-span"> Makers/Artiesten </span>
                 </label>
                 <label class="modal-form-label">
+                    <?php if( isset( $_SESSION["page-data"]["serie-dupl"] ) ) : ?>
+                        <input type="text" class="modal-form-input" id="seriem-form-opmerking" name="opmerking" value="<?=$_SESSION["page-data"]["serie-dupl"]["opmerking"]?>" placeholder="" autocomplete="on" />
+                    <?php else : ?>
                     <input type="text" class="modal-form-input" id="seriem-form-opmerking" name="opmerking" placeholder="" autocomplete="on" />
+                    <?php endif; unset( $_SESSION["page-data"]["serie-dupl"] ); ?>
                     <span class="modal-form-span"> Opmerking/Notitie </span>
                 </label>
                 <input class="modal-form-button" id="seriem-form-button" type="submit" value="Bevestigen">

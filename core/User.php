@@ -56,8 +56,8 @@ class User {
                 $pw (string)    - The password input from the user.
 
             Return Value:
-                On Validate - (int)
-                Failed - (Assoc Array)
+                On Validate - Boolean
+                Failed      - Assoc Array
      */
     public function validateUser($id, $pw) {
         if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
@@ -71,7 +71,7 @@ class User {
         }
 
         if( password_verify( $pw, $this->user["Gebr_WachtW"] ) ) {
-            return 1;
+            return TRUE;
         } else {
             unset($this->user);
             return $this->credError;
@@ -116,7 +116,7 @@ class User {
         } else { return "No user defined"; }
     }
 
-    //  TODO: add somekind of meaningfull comment to this funcion.
+    //  TODO: add some kind of meaningfull comment to this funcion.
     /*  evalUser():
      */
     public function evalUser() {

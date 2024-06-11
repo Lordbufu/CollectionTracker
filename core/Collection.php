@@ -4,10 +4,12 @@ namespace App\Core;
 use App\Core\App;
 
 class Collection {
+    /* Global data storage */
     protected $albums;
     protected $series;
     protected $collections;
 
+    /* Protected internal functions */
     /*  getSetId($name):
             Get serie index based on serie name.
 
@@ -31,11 +33,12 @@ class Collection {
         return;
     }
 
-    /*  checkDupl($type, $data = []):
+    // Should be DEPRICATED now, remove after making sure its not used anywhere.
+    /*  checkDupl($type, $data, $sIndex=null):
             This function is desgined to check all items for duplicate entries in the database.
-                $type (String)          : The type of store i want to check, albums/series/collections.
-                $data (Assoc Array)     : The data required for the check, this could vary depending on the store, but is usually the name.
-                $sIndex (String)        : The serie index, where the item is located in, for the few cases where that actually matters.
+                $type (String)  : The type of store i want to check, albums/series/collections.
+                $data (String)  : The data required for the check, this could vary depending on the store, but is usually the name.
+                $sIndex (String): The serie index, where the item is located in, for the few cases where that actually matters (optional).
 
             Return value: Boolean.
      */
@@ -51,7 +54,7 @@ class Collection {
             return FALSE;
         } elseif($type == "series") {
             foreach($this->series as $index => $serie) {
-                if($data["name"] == $serie["Serie_Naam"]) {
+                if($data == $serie["Serie_Naam"]) {
                     if($sIndex !== null && $sIndex !== $serie["Serie_Index"]) {
                         return TRUE;
                     } else if ($sIndex === null) { return TRUE; }
@@ -61,7 +64,8 @@ class Collection {
         }
     }
 
-    /*  getItemName($type, $id1, $id2):
+    /* Generic functions to reduce item specific functions */
+    /*  getItemName($type, $id1, $id2=null):
             This function gets all name requests, depending on the type that was passed.
                 $type   - The type name of the item we want to get the name of (album/serie).
                 $id1    - The serie id of either the serie where the albums is in, or the serie we want the name of.
@@ -102,6 +106,54 @@ class Collection {
         return is_string($store) ? $store : TRUE;
     }
 
+    /*  checkItemName($type, $name, $index=null):
+            This function basically uses the checkDupl function, to test the item its name against all DB entries.
+                $type (String)  - 
+                $name (String)  - 
+                $index (String) - 
+
+            Return Value: Boolean.
+
+        cheSerName($name, $index) -> checkItemName("serie", $name, $index)
+        cheAlbName($serInd, $name, $update) -> checkItemName("album", $name, $serInd)
+     */
+    public function checkItemName($type, $name, $sIndex=null, $aIndex=null) {
+        $filName = str_replace(" ", "", $name);
+
+        switch($type) {
+            case "serie":
+                if( !isset( $this->series ) ) { $this->getSeries(); }
+                
+                foreach( $this->series as $index => $serie ) {
+                    if( str_replace( " ", "", $name ) === str_replace( " ", "", $serie["Serie_Naam"] ) ) {
+                        if( $sIndex !== null && $sIndex != $serie["Serie_Index"] ) {
+                            return TRUE;
+                        } else if ( $sIndex === null ) { return TRUE; }
+                    }
+                }
+                return FALSE;
+            case "album":
+                if( !isset( $this->albums ) ) { $this->getAlbums( $sIndex ); }
+                
+                foreach( $this->albums as $index => $album ) {
+                    if( str_replace( " ", "", $album["Album_Naam"] ) === str_replace( " ", "", $name ) ) {
+                        if( $aIndex !== null && $aIndex != $album["Album_Index"] ) {
+                            return TRUE;
+                        } else if ( $aIndex === null ) { return TRUE; }
+                    }
+                }
+                return FALSE;
+        }
+    }
+
+    // Get item ID function ?
+
+    // Get item function ?
+
+    // Set item function ?
+
+
+
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
@@ -131,25 +183,11 @@ class Collection {
         }
     }
 
-    /*  cheSerName($name):
-            This function checks if the name/entry, is duplicate or not.
-
-            $name (String)  : The name of the serie.
-
-            Return Value    : Boolean
-     */
-    public function cheSerName($name, $index=null) {
-        if(!isset($this->series)) { $this->getSeries(); }
-
-        $check = $this->checkDupl("series", [ "name" => $name ], $index);
-
-        return $check;
-    }
-
-    /*  setSerie($data):
+    /*  setSerie($data, update=null):
             This functions set the a serie in the database, all filtering etc is done in the controller.
-
-            $data (Assoc Array) : The data that needs to be stored.
+            And now also deals with updating series, simply indicated by the optional parameter.
+                $data (Assoc Array) : The data that needs to be stored.
+                $update (string)    : The tag for is the request was an update request, this is a optional parameter.
 
             Return Type:
                 On sucess   -> Boolean
@@ -165,10 +203,9 @@ class Collection {
         return is_string($store) ? $store : TRUE;
     }
 
-    /*  getAlbums($seriesId):
+    /*  getAlbums($partId):
             This function gets all albums from a series, based on a serie name or index.
-
-            $partId (String or Int)  - Can both take a serie name or index value, to get the associciated albums.
+                $partId (String or Int)  - Can both take a serie name or index value, to get the associciated albums.
 
             Return Value: Multi-Dimensional Array.
      */
@@ -184,8 +221,7 @@ class Collection {
 
     /*  getAlbId($name):
             Get serie index based on album name.
-
-            $name (String)  : The name of the album we want the index for.
+                $name (String)  : The name of the album we want the index for.
 
             Return Value: INT
      */
@@ -194,31 +230,10 @@ class Collection {
         return $tempAlbum["Album_Index"];
     }
 
-    /*  cheAlbName($serInd, $name):
-            Checks if the requested album name is duplicate, using the global function.
-                $serInd (String)        - The index of the serie that contains the album.
-                $name (String)          - The album name that needs to be checked.
-                $edit (Boolean)         - As trigger variable, used to see if it was the edit function that triggered the check.
-                $newInd (Int)           - $serInd converted to Int, because i like comparing similar types.
-                $check (Boolean)        - The result of the checkDupl() function.
-
-            Return Type : Boolean.
-     */
-    public function cheAlbName($serInd, $name, $edit=null) {
-        if(!isset($this->albums)) { $this->getAlbums($serInd); }
-
-        if($edit !== null) {
-            $newInd = (int)$serInd;
-            $check = $this->checkDupl( "albums", $name, $newInd );
-        } else { $check = $this->checkDupl( "albums", $name ); }
-
-        return $check;
-    }
-
-    /*  setAlbum($data):
+    /*  setAlbum($data, update=null):
             This function either adds or updates the album database, based on the $update parameter.
                 $data (Assoc Array) : The Album data that needs to be stored.
-                $update ()          : A trigger parameter, to see if its a update or add request.
+                $update ()          : A trigger parameter, to see if its a update or add request (optional).
                 $store (Bool/String): The result of the database querry.
 
             Return types:
@@ -233,7 +248,7 @@ class Collection {
         return is_string($store) ? $store : TRUE;
     }
 
-    /*  getColl($userId):
+    /*  getColl($table, $userId):
             Get collection for a specific user from the database.
                 $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
                 $userId (int)   - User id from the session data.
@@ -250,10 +265,10 @@ class Collection {
         return $this->collections;
     }
 
-    /*  setColl($data):
+    /*  setColl($table, $data):
             Function to set collection data, so the user can add items to a collection.
-
-            $data (Associative Array)   : The data required to make a collection database entry.
+                $table (String)             : The table name that i want to update, witch is always collections in this case.
+                $data (Associative Array)   : The data required to make a collection database entry.
 
             Return Value: boolean.
      */

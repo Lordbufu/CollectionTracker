@@ -33,14 +33,14 @@ async function fetchRequest(url, method, data) {
 function dispatchInputEvent(caller) {
     let inputEvent = new Event( "input", { "bubbles": true, "cancelable": false } );
     switch(caller) {
+        case "album-toev":
+            return document.getElementById("albumt-form-alb-naam").dispatchEvent(inputEvent), document.getElementById("albumt-form-alb-isbn").dispatchEvent(inputEvent)
         case "album-bew":
             return document.getElementById("albumb-form-alb-naam").dispatchEvent(inputEvent), document.getElementById("albumb-form-alb-isbn").dispatchEvent(inputEvent);
         case "serie-maken":
             return document.getElementById("seriem-form-serieNaam").dispatchEvent(inputEvent);
         case "serie-bew":
             return document.getElementById("serieb-form-serieNaam").dispatchEvent(inputEvent);
-        case "album-maken":
-            return document.getElementById("albumt-form-alb-naam").dispatchEvent(inputEvent), document.getElementById("albumt-form-alb-isbn").dispatchEvent(inputEvent);
     }
 }
 
@@ -51,11 +51,18 @@ function dispatchInputEvent(caller) {
  */
 function saveScroll(e) {
     sessionStorage.setItem("scrollPos", window.scrollY);
-    if(e.target.className === "album-bewerken-butt") {
+
+    // Forward event if album-bewerken button is pressed, but also if the form-submit button was pressed.
+    if(e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button") {
         return localStorage.setItem("event", "album-bew");
-    } else if(e.target.className === "serie-bewerken-butt") {
+    // Forward event if album-toevoegen button is pressed, but also if the form-submit button was pressed.
+    } else if(e.target.id === "album-toev-subm" || e.target.id === "albumt-form-button") {
+        return localStorage.setItem("event", "album-toev");
+    } else if(e.target.className === "serie-bewerken-butt" || e.target.id === "serieb-form-button") {
         return localStorage.setItem("event", "serie-bew");
-    } else if(e.target.className === "serie-maken-subm") { return localStorage.setItem("event", "serie-maken"); }
+    } else if(e.target.className === "serie-maken-subm" || e.target.id === "seriem-form-button") {
+        return localStorage.setItem("event", "serie-maken");
+    }
 }
 
 /*  onScroll():

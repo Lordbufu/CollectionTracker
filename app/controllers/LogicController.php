@@ -1,20 +1,10 @@
 <?php
-//  TODO: Finish\clean-up comments.
 //  TODO: Add a JS event to the password input (register user), it only checks the confirm input atm.
 namespace App\Controllers;
 
 use App\Core\App;
 
-/* LogicController Class:
-        In this class i need to deal with a mix of request, all main request are done via HTML form submits.
-        But in certain cases i also opted to use JS fetch, to remove a page reload from the user experience.
-
-        $data (Multi-Dimensional Array)      - Intended for data required for displaying a webpage/data.
-            'header' (Associative Array)     - Data to be injected into the page header, like JS data for the browser storage, redirects etc.
-            'series'  (Associative Array)    - Data used by PhP to display series related information in HTML tables.
-            'albums'  (Associative Array)    - Data used by PhP to display albums related information in HTML tables.
-            'collecties' (Associative Array) - Data used by PhP to display if the user has a ablum in its collection.
- */
+/* LogicController Class: For all complex logic required to add/update/remove items to/from the database. */
 class LogicController {
     /* Global returning error messages for user feedback */
     protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
@@ -84,30 +74,22 @@ class LogicController {
     public function login() {
         $pw = $_POST["wachtwoord"];
         $cred = htmlspecialchars( $_POST["accountCred"] );
-
-        if(App::get("user")->validateUser( $cred, $pw ) == 1) {
+        if(App::get("user")->validateUser( $cred, $pw ) === TRUE) {
             App::get("session")->setVariable( "user", [ "id" => App::get("user")->getUserId() ] );
-
-            if(App::get("user")->evalUser() === 1) {
+            if(App::get("user")->evalUser() === TRUE) {
                 App::get("session")->setVariable( "user", [ "admin" => FALSE ] );
                 App::get("session")->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get("user")->getUserName() ] ] );
-
                 return App::redirect("gebruik");
-
-            } elseif(App::get("user")->evalUser() === 0) {
+            } elseif(App::get("user")->evalUser() === FALSE) {
                 App::get("session")->setVariable( "user", [ "admin" => TRUE ] );
                 App::get("session")->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get("user")->getUserName() ] ] );
-
                 return App::redirect("beheer");
-
             } else {
                 App::get("session")->setVariable( "header", [ "error" => App::get("user")->evalUser() ] );
-
                 return App::redirect("#login-pop-in");
             }
         } else {
             App::get("session")->setVariable("header", [ "error" => App::get("user")->validateUser($cred, $pw) ] );
-
             return App::redirect("#login-pop-in");
         }
     }
@@ -146,21 +128,17 @@ class LogicController {
             if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) { return App::view("beheer"); }
 
             /* Check for duplicate serie names, when opening the serie-maken pop-in */
-            if( isset( $_POST["newSerName"] ) ) {
-                if( App::get("collection")->cheSerName( $_POST["newSerName"] ) ) {
-                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
-
-                    return App::redirect("beheer");
-                } else {
-                    App::get("session")->setVariable( "page-data", [ "new-serie" => $_POST["newSerName"] ] );
-                    return App::redirect("beheer#seriem-pop-in");
-                }
+            if( isset( $_POST["newSerName"] ) && App::get("collection")->checkItemName( "serie", $_POST["newSerName"] ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                return App::redirect("beheer");
+            } elseif( isset( $_POST["newSerName"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "new-serie" => $_POST["newSerName"] ] );
+                return App::redirect("beheer#seriem-pop-in");
             }
 
             /* Add session tag, for the album-toevoegen pop-in */
             if( isset($_POST["album-toev"] ) ) {
                 App::get("session")->setVariable( "page-data", [ "add-album" => App::get("collection")->getSerInd( $_POST["album-toev"] ) ] );
-
                 return App::redirect("beheer#albumt-pop-in");
             }
 
@@ -169,11 +147,10 @@ class LogicController {
                 unset($_SESSION["page-data"]);
             }
 
-            /* Clear series session data when returning to the admin serie-view */
+            /* Clear series session data when returning to the admin serie-view from album-view */
             if( isset( $_POST["return"] ) ) {
                 unset( $_SESSION["page-data"]["huidige-serie"] );
                 unset( $_SESSION["page-data"]["series"] );
-
                 return App::redirect("beheer");
             }
 
@@ -184,14 +161,12 @@ class LogicController {
             if( !empty( $_POST["serie-index"] ) ) {
                 App::get("session")->setVariable( "page-data", App::get("collection")->getAlbums( $_POST["serie-index"] ) );
                 App::get("session")->setVariable( "page-data", [ "huidige-serie" => App::get("collection")->getItemName( "serie", $_POST["serie-index"] ) ] );
-
                 return App::redirect("beheer");
             }
 
             /* Store serie index, if the admin is editing a serie */
             if( isset( $_POST["serie-edit-index"] ) ) {
                 App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["serie-edit-index"] ] );
-
                 return App::redirect("beheer#serieb-pop-in");
             }
 
@@ -199,13 +174,10 @@ class LogicController {
             return App::view("beheer");
         } else {
             App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
-
             return App::redirect("");
         }
     }
 
-    //  TODO: Review the JS depended codeing, the serie-naam loop.
-    // Refactor: Paused
     /*  serieM():
             The POST route for '/serieM', for checking series names and creating series.
             Where the latter is related to the pop-in form, and the former to the name input from the controller.
@@ -221,20 +193,13 @@ class LogicController {
      */
     public function serieM() {
         if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
-            if( isset( $_POST["serie-naam"] ) ) {
-                if( App::get("collection")->cheSerName( $_POST["serie-naam"] ) ) {
-                    //die(var_dump(print_r($_POST)));       //debugline
-                    App::get("session")->setVariable( "header", [ "broSto" => $_POST ] );           // Needs to be stored in session, instead of the browser storage.
-                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
-                    
-                    return App::redirect("beheer#seriem-pop-in");
-
-                } else { $sqlData = [ "Serie_Naam" => htmlspecialchars( $_POST["serie-naam"] ) ]; }
-            }
-
+            if( isset( $_POST["serie-naam"] ) && App::get("collection")->checkItemName( "serie", $_POST["serie-naam"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "serie-dupl" => $_POST ] );
+                App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                return App::redirect("beheer#seriem-pop-in");
+            } elseif( isset( $_POST["serie-naam"] ) ) { $sqlData = [ "Serie_Naam" => htmlspecialchars( $_POST["serie-naam"] ) ]; }
             $sqlData["Serie_Maker"] = isset( $_POST["makers"] ) ? htmlspecialchars( $_POST["makers"] ) : "";
             $sqlData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? htmlspecialchars( $_POST["opmerking"] ) : "";
-
             $store = App::get("collection")->setSerie( $sqlData );
 
             if( !is_string($store) ) {
@@ -258,25 +223,21 @@ class LogicController {
      */
     public function serieBew() {
         if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
-            if( isset( $_POST["naam"] ) ) {
-                if( App::get("collection")->cheSerName( $_POST["naam"], $_POST["index"] ) ) {
-                    App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
-                    App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
-                    return App::redirect("beheer#serieb-pop-in");
-                } else { $serieData["Serie_Naam"] = $_POST["naam"]; }
-            }
-
+            if( isset( $_POST["naam"] ) && App::get("collection")->checkItemName( "serie", $_POST["naam"], $_POST["index"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+                App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
+                return App::redirect("beheer#serieb-pop-in");
+            } elseif ( isset( $_POST["naam"] ) ) { $serieData["Serie_Naam"] = $_POST["naam"]; }         
             $serieData["Serie_Maker"] = isset( $_POST["makers"] ) ? $_POST["makers"] : "";
             $serieData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? $_POST["opmerking"] : "";
-
             $store = App::get("collection")->setSerie( $serieData, $_POST["index"] );
-
             if( is_string( $store ) ) {
                 App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
                 App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
                 return App::redirect("beheer#serieb-pop-in");
             } else {
                 App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"] ] );
+                unset( $_SESSION["page-data"]["series"] );
                 return App::redirect("beheer");
             }
         } else {
@@ -329,9 +290,8 @@ class LogicController {
      */
     public function albumT() {
         if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
-            if(App::get("collection")->cheAlbName( $_POST["serie-index"], $_POST["album-naam"] ) ) {
+            if( App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] ) ) {
                 $returnData = $_POST;
-
                 /* Album cover loop, for base64 conversion */
                 if( $_FILES["album-cover"]["error"] === 0 ) {
                     $fileName = basename( $_FILES["album-cover"]["name"] );
@@ -341,9 +301,7 @@ class LogicController {
                     $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                     $returnData["album-cover"] = $dbImage;
                 }
-                
                 App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
-                App::get("session")->setVariable( "header", [ "broSto" => [ "event" => "album-maken" ] ] );
                 App::get("session")->setVariable( "page-data", [ "album-dupl" => $returnData ] );
                 return App::redirect("beheer#albumt-pop-in");
             } else { $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] ); }
@@ -371,12 +329,10 @@ class LogicController {
                 return App::redirect("beheer");
             } else {
                 App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
-
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
                 if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
                 if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); }
                 if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); }
-
                 return App::redirect("beheer");
             }
         } else {
@@ -439,7 +395,7 @@ class LogicController {
                 return App::redirect("beheer#albumb-pop-in");
             }
 
-            if(App::get("collection")->cheAlbName( $_POST["serie-index"], $_POST["album-naam"], TRUE ) ) {
+            if( App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"], $_POST["album-index"] ) ) {
                 App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["album-index"] ] );
                 App::get("session")->setVariable( "header", [ "error" => $this->dupError ] );
                 return App::redirect("beheer#albumb-pop-in");
