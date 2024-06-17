@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use Exception;
+
 /*  User Class:
         To clean up the LogicController and processing class, i off-loaded the user related things to this class.
         Everything is based on return values, so i only need to evaluate most of the time, and sometimes pass on a error.
@@ -14,11 +16,13 @@ class User {
     protected $userNameErr = [ "userError1" => "Deze gebruiker bestaat al." ];
     protected $userEmailErr = [ "userError2" => "E-mail adres reeds ingebruik." ];
     protected $noUserErr = [ "userError1" => "No users found, plz contact the Administrator!" ];
+    protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
     protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
     protected $rightsError = [ "loginFailed" => "U heeft geen rechten om de website te bezoeken !!" ];
+    protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
 
     /*  setUser($data):
-            Attempt to add user to database, and check for duplicate e-mails & names.
+            Attempts to add user to database, and check for duplicate e-mails & names.
                 $data (Assoc Array) - The user input, sanitized in the controller.
 
             Return Value:
@@ -30,23 +34,47 @@ class User {
 
         if( !empty( $tempUsers ) ) {
             foreach( $tempUsers as $key => $user ) {
-                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
 
-                if($user["Gebr_Email"] === $data["Gebr_Email"]) { $errorMsg["error"] = $this->userEmailErr; }
+                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) {
+                    $errorMsg["error"] = $this->userNameErr;
+                }
+
+                if($user["Gebr_Email"] === $data["Gebr_Email"]) {
+                    $errorMsg["error"] = $this->userEmailErr;
+                }
             }
-        } else { $errorMsg["error"] = $this->noUserErr; }
+        } else {
+            $errorMsg["error"] = $this->noUserErr;
+        }
 
         if( !isset( $errorMsg ) ) {
             $store = App::get("database")->insert( "gebruikers", $data );
-        } else { return $this->errorMsg; }
+        } else {
+            return $this->errorMsg;
+        }
 
-        return is_string($errorMsg) ? $store : TRUE;
+        return is_string($errorMsg) ? $this->userAdd : TRUE;
     }
 
-    /* getUserName(): Simple get user name function, that sets the user based on the stored id in the session. */
-    public function getUserName() {
-        if( !isset( $this->user ) ) { $this->user = App::get("database")->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] ); }
+    /*  getUserName():
+            Simple get user name function, that sets the user based on the stored id in the session.
+            Returns either the user name, or an error that there was no user found (from the register functions).
 
+            Return Value:
+                On Success  -> String (user name).
+                On Fail     -> Assoc Array (error).
+     */
+    public function getUserName() {
+        /* If no user is set, attempt to set one, and return an error if failed. */
+        if( !isset( $this->user ) ) {
+            try {
+                $this->user = App::get("database")->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
+            } catch(Exception $e) {
+                return $this->noUserErr;
+            }
+        }
+
+        /* Return the user object it's name. */
         return $this->user["Gebr_Naam"];
     }
 
@@ -69,7 +97,6 @@ class User {
                 return $this->credError;
             } else { $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0]; }
         }
-
         if( password_verify( $pw, $this->user["Gebr_WachtW"] ) ) {
             return TRUE;
         } else {
@@ -78,27 +105,36 @@ class User {
         }
     }
 
-    /*  checkUser($id, $rights=null):
+    /*  checkUser($id=null, $rights=null):
             This function checks if the uiser is valid, and if the user rights are set to Admin or not.
                 $id     - The index of the user we want to check, most likely take from the session.
                 $rights - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
             
-            Return value = Boolean.
+            Return value:
+                On Validate - Boolean
+                Failed      - Assoc Array
      */
-    public function checkUser($id, $rights=null ) {
-        if( empty( $this->user ) ) {
-            if( isset(App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0] ) ) {
-                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
-            } else { return FALSE; }
+    public function checkUser($id=null, $rights=null ) {
+        /* If the user is not set, and the id was passed, we set the user based on the id. */
+        if( !isset( $this->user ) && isset( $id ) ) {
+            $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
         }
 
-        if( $id === $this->user["Gebr_Index"] ) {
-            if( isset( $rights ) ) {
-                if( $this->user["Gebr_Rechten"] === "Admin" ) {
-                    return TRUE;
-                } else { return FALSE; }
-            } else { return TRUE; }
-        } else { return FALSE; }
+        /* If the id was passed, and it matches with the current user, */
+        if( isset( $id ) && $id === $this->user["Gebr_Index"] ) {
+            /* If the rights where set and equal to "Admin", i return TRUE */
+            if( isset( $rights ) && $this->user["Gebr_Rechten"] === "Admin" ) {
+                return TRUE;
+            /* If failed i return the authFailed error */
+            } elseif( isset( $rights ) ) {
+                return TRUE;
+            } else {
+                return $this->authFailed;
+            }
+        /* If failed i return the authFailed error */            
+        } else {
+            return $this->authFailed;
+        }
     }
 
     //  TODO: figure out a better way to deal with the error loop.
@@ -117,6 +153,7 @@ class User {
     }
 
     //  TODO: add some kind of meaningfull comment to this funcion.
+    //  TODO: figure out a better way to deal with the error loop.
     /*  evalUser():
      */
     public function evalUser() {
@@ -127,6 +164,7 @@ class User {
         } else { return $this->rightsError; }
     }
 
+    //  TODO: figure out a better way to deal with the error loop.
     /*  updateUser($table, $data, $id):
             This function deals with updating the user, and return a boolean.
                 $table  - The DB table that needs updating (always 'gebruikers').
