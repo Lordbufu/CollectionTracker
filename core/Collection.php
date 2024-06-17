@@ -1,13 +1,18 @@
 <?php
 namespace App\Core;
 
-use App\Core\App;
+use App\Core\App, Exception;
 
+//  TODO: Go over all function and inline comments, check if there still up to date/accurate.
 class Collection {
     /* Global data storage */
     protected $albums;
     protected $series;
     protected $collections;
+
+    /* Global generic errors */
+    protected $dupError = [ "fetchResponse" => "Deze naam bestaat al, gebruik een andere naam gebruiken !" ];
+    protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /* Protected internal functions */
     /*  getSetId($name):
@@ -76,17 +81,29 @@ class Collection {
     public function getItemName($type, $id1, $id2=null) {
         switch($type) {
             case "serie":
-                if(!isset($this->series)) { $this->getSeries(); }
+                if(!isset($this->series)) {
+                    $this->getSeries();
+                }
 
                 foreach($this->series as $index => $serie) {
-                    if($id1 == $serie["Serie_Index"]) { return $serie["Serie_Naam"]; }
+                    if($id1 == $serie["Serie_Index"]) {
+                        return $serie["Serie_Naam"];
+                    }
                 }
+
+                return $this->$dbError;
             case "album":
-                if(!isset($this->albums)) { $this->getAlbums($id1); }
+                if(!isset($this->albums)) {
+                    $this->getAlbums($id1);
+                }
 
                 foreach($this->albums as $index => $album) {
-                    if($id2 == $album["Album_Index"]) { return $album["Album_Naam"]; }
+                    if($id2 == $album["Album_Index"]) {
+                        return $album["Album_Naam"];
+                    }
                 }
+
+                return $this->$dbError;
         }
     }
 
@@ -103,45 +120,54 @@ class Collection {
     public function remItem($table, $id) {
         $store = App::get("database")->remove($table, $id);
 
-        return is_string($store) ? $store : TRUE;
+        return is_string($store) ? $this->dbError : TRUE;
     }
 
     /*  checkItemName($type, $name, $index=null):
             This function basically uses the checkDupl function, to test the item its name against all DB entries.
-                $type (String)  - 
-                $name (String)  - 
-                $index (String) - 
+            The check is done after removing all whitespace from the strings, to detect more identical entry cases.
+                $type (String)      - The type of the request, almost identical to the DB table name.
+                $name (String)      - The name of item that needs to be checked.
+                $sIndex (String)    - The series index number (optional).
+                $aIndex (String)    - The albums index number (optional).
 
-            Return Value: Boolean.
-
-        cheSerName($name, $index) -> checkItemName("serie", $name, $index)
-        cheAlbName($serInd, $name, $update) -> checkItemName("album", $name, $serInd)
+            Return Value:
+               If not duplicate -> Boolean.
+               If is duplicate  -> Assoc Array.
      */
     public function checkItemName($type, $name, $sIndex=null, $aIndex=null) {
-        $filName = str_replace(" ", "", $name);
-
         switch($type) {
             case "serie":
-                if( !isset( $this->series ) ) { $this->getSeries(); }
+                if( !isset( $this->series ) ) {
+                    $this->getSeries();
+                }
                 
                 foreach( $this->series as $index => $serie ) {
                     if( str_replace( " ", "", $name ) === str_replace( " ", "", $serie["Serie_Naam"] ) ) {
                         if( $sIndex !== null && $sIndex != $serie["Serie_Index"] ) {
-                            return TRUE;
-                        } else if ( $sIndex === null ) { return TRUE; }
+                            return $this->dupError;
+                        } else if ( $sIndex === null ) {
+                            return $this->dupError;
+                        }
                     }
                 }
+
                 return FALSE;
             case "album":
-                if( !isset( $this->albums ) ) { $this->getAlbums( $sIndex ); }
+                if( !isset( $this->albums ) ) {
+                    $this->getAlbums( $sIndex );
+                }
                 
                 foreach( $this->albums as $index => $album ) {
                     if( str_replace( " ", "", $album["Album_Naam"] ) === str_replace( " ", "", $name ) ) {
                         if( $aIndex !== null && $aIndex != $album["Album_Index"] ) {
-                            return TRUE;
-                        } else if ( $aIndex === null ) { return TRUE; }
+                            return $this->dupError;
+                        } else if ( $aIndex === null ) {
+                            return $this->dupError;
+                        }
                     }
                 }
+
                 return FALSE;
         }
     }
@@ -187,7 +213,7 @@ class Collection {
             This functions set the a serie in the database, all filtering etc is done in the controller.
             And now also deals with updating series, simply indicated by the optional parameter.
                 $data (Assoc Array) : The data that needs to be stored.
-                $update (string)    : The tag for is the request was an update request, this is a optional parameter.
+                $update (string)    : The tag for is the request was an update request (Optional).
 
             Return Type:
                 On sucess   -> Boolean
@@ -200,7 +226,7 @@ class Collection {
             $store = App::get("database")->update("series", $data, [ "Serie_Index" => $update ] );
         }
 
-        return is_string($store) ? $store : TRUE;
+        return is_string($store) ? $this->dbError : TRUE;
     }
 
     /*  getAlbums($partId):
@@ -243,9 +269,11 @@ class Collection {
     public function setAlbum($data, $update=null) {
         if($update === null) {
             $store = App::get("database")->insert("albums", $data);
-        } else { $store = App::get("database")->update("albums", $data, $update); }
+        } else {
+            $store = App::get("database")->update("albums", $data, $update);
+        }
 
-        return is_string($store) ? $store : TRUE;
+        return is_string($store) ? $this->dbError : TRUE;
     }
 
     /*  getColl($table, $userId):

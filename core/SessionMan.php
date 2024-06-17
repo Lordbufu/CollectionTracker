@@ -37,7 +37,6 @@ class SessionMan {
      */
     function __construct() {
         $adress = "https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
-        
         ini_set("session.gc_probability", "1");
         ini_set("session.gc_divisor", "10");
         ini_set("session.gc_maxlifetime", "1800");
@@ -51,12 +50,10 @@ class SessionMan {
         ini_set("session.sid_length", "128");
         ini_set("session.side_bits_per_character", "6");
         ini_set("session.hash_function", "sha512");
-
         if(!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777, true);
             session_save_path($this->savePath);
         } else { session_save_path($this->savePath); }
-
         return session_start();
     }
 
@@ -67,12 +64,9 @@ class SessionMan {
      */
     public function endSession() {
         session_unset();
-        session_destroy();
-        
-        return;
+        return session_destroy();
     }
 
-    // Still contains a debug line that needs to be removed.
     /*  setVariable($data):
             Desgined to append data to session data keys, since i have to do this a lot, i made a function for it.
 
@@ -94,9 +88,6 @@ class SessionMan {
                     return $_SESSION[$name]["collections"] = $data;
                 } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl") {
                     return $_SESSION[$name][$key] = $value;
-                } else {
-                    // Debugline, need to remove this before going live !
-                    die("setVariable did not account for this condition.");
                 }
             }
         }
@@ -118,9 +109,7 @@ class SessionMan {
                     return TRUE;
                 } else {
                     foreach($keys as $key) {
-                        if($key === $entry) {
-                            return TRUE;
-                        }
+                        if($key === $entry) { return TRUE; }
                     }
                 }
             }
