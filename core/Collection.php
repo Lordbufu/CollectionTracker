@@ -12,6 +12,7 @@ class Collection {
 
     /* Global generic errors */
     protected $dupError = [ "fetchResponse" => "Deze naam bestaat al, gebruik een andere naam gebruiken !" ];
+    protected $dupColl = [ "fetchResponse" => "Dit album is al deel van uw collectie !" ];
     protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /* Protected internal functions */
@@ -33,40 +34,11 @@ class Collection {
             So it can be displayed, each time getSeries is called, the number is updated.
      */
     protected function countAlbums() {
-        foreach($this->series as $key => $value) { $this->series[$key]["Album_Aantal"] = App::get("database")->countAlbums( $value["Serie_Index"] ); }
+        foreach($this->series as $key => $value) {
+            $this->series[$key]["Album_Aantal"] = App::get("database")->countAlbums( $value["Serie_Index"] );
+        }
 
         return;
-    }
-
-    // Should be DEPRICATED now, remove after making sure its not used anywhere.
-    /*  checkDupl($type, $data, $sIndex=null):
-            This function is desgined to check all items for duplicate entries in the database.
-                $type (String)  : The type of store i want to check, albums/series/collections.
-                $data (String)  : The data required for the check, this could vary depending on the store, but is usually the name.
-                $sIndex (String): The serie index, where the item is located in, for the few cases where that actually matters (optional).
-
-            Return value: Boolean.
-     */
-    protected function checkDupl($type, $data, $sIndex=null) {
-        if($type == "albums") {
-            foreach($this->albums as $index => $album) {
-                if($album["Album_Naam"] === $data) {
-                    if($sIndex !== null && $sIndex !== $album["Album_Serie"]) {
-                        return TRUE;
-                    } else if ($sIndex === null) { return TRUE; }
-                }
-            }
-            return FALSE;
-        } elseif($type == "series") {
-            foreach($this->series as $index => $serie) {
-                if($data == $serie["Serie_Naam"]) {
-                    if($sIndex !== null && $sIndex !== $serie["Serie_Index"]) {
-                        return TRUE;
-                    } else if ($sIndex === null) { return TRUE; }
-                }
-            }
-            return FALSE;
-        }
     }
 
     /* Generic functions to reduce item specific functions */
@@ -115,16 +87,15 @@ class Collection {
             
             Return Value:
                 On sucess   -> Boolean
-                On fail     -> String (the database error)
+                On fail     -> Assoc Array.
      */
     public function remItem($table, $id) {
         $store = App::get("database")->remove($table, $id);
-
         return is_string($store) ? $this->dbError : TRUE;
     }
 
     /*  checkItemName($type, $name, $index=null):
-            This function basically uses the checkDupl function, to test the item its name against all DB entries.
+            Function to check item names on request, to prevent duplicate DB entries during various actions.
             The check is done after removing all whitespace from the strings, to detect more identical entry cases.
                 $type (String)      - The type of the request, almost identical to the DB table name.
                 $name (String)      - The name of item that needs to be checked.
@@ -157,7 +128,7 @@ class Collection {
                 if( !isset( $this->albums ) ) {
                     $this->getAlbums( $sIndex );
                 }
-                
+
                 foreach( $this->albums as $index => $album ) {
                     if( str_replace( " ", "", $album["Album_Naam"] ) === str_replace( " ", "", $name ) ) {
                         if( $aIndex !== null && $aIndex != $album["Album_Index"] ) {
@@ -172,14 +143,7 @@ class Collection {
         }
     }
 
-    // Get item ID function ?
-
-    // Get item function ?
-
-    // Set item function ?
-
-
-
+    /* Series Functions */
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
@@ -188,7 +152,6 @@ class Collection {
     public function getSeries() {
         $this->series = App::get("database")->selectAll("series");
         $this->countAlbums();
-
         return $this->series;
     }
 
@@ -205,7 +168,9 @@ class Collection {
         }
 
         foreach($this->series as $index => $serie) {
-            if($name == $serie["Serie_Naam"]) { return $serie["Serie_Index"]; }
+            if($name == $serie["Serie_Naam"]) {
+                return $serie["Serie_Index"];
+            }
         }
     }
 
@@ -229,6 +194,7 @@ class Collection {
         return is_string($store) ? $this->dbError : TRUE;
     }
 
+    /* Album Functions */
     /*  getAlbums($partId):
             This function gets all albums from a series, based on a serie name or index.
                 $partId (String or Int)  - Can both take a serie name or index value, to get the associciated albums.
@@ -276,6 +242,7 @@ class Collection {
         return is_string($store) ? $this->dbError : TRUE;
     }
 
+    /* Collectie Functions */
     /*  getColl($table, $userId):
             Get collection for a specific user from the database.
                 $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
@@ -284,12 +251,15 @@ class Collection {
             Return Type: Multi-Dimensional Array.
      */
     public function getColl($table, $userId) {
+        /* Set the correct id format, depending on the provided input. */
         if( !is_string($userId) ) {
             $id = $userId;
-        } else { $id = [ "Gebr_Index" => $userId ]; }
+        } else {
+            $id = [ "Gebr_Index" => $userId ];
+        }
 
+        /* Set the requested collection data, and return to caller. */
         $this->collections = App::get("database")->selectAllWhere($table, $id);
-
         return $this->collections;
     }
 
@@ -301,17 +271,25 @@ class Collection {
             Return Value: boolean.
      */
     public function setColl($table, $data) {
+        /* Ensure the most recent user collection data is set. */
         $this->collections = $this->getColl( $table, [ "Gebr_Index" => $data["Gebr_Index"] ] );
-        foreach($this->collections as $key => $value) { if($value["Alb_Index"] == $data["Alb_Index"]) { return FALSE; } }
 
+        /* Loop over the collections, to ensure its not a duplicate entry. */
+        foreach($this->collections as $key => $value) {
+            if($value["Alb_Index"] == $data["Alb_Index"]) {
+                return $this->dupColl;
+            }
+        }
+
+        /* Prepare the required data, that isnt included in the App and POST data */
         $data["Alb_Staat"] = "";
         $data["Alb_Aantal"] = 1;
         $data["Alb_Opmerk"] = "";
         $data["Alb_DatumVerkr"] = date("Y-m-d");
 
+        /* Attempt to store the collection in, and return the results to the caller  */
         $store = App::get("database")->insert($table, $data);
-
-        return is_string($store) ? $store : TRUE;
+        return is_string($store) ? $this->dbError : TRUE;
     }
 }
 

@@ -3,14 +3,8 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-//  TODO: Relocate the global errors, to there respective classes.
 /* LogicController Class: For all complex logic required to add/update/remove items to/from the database. */
 class LogicController {
-    /* Global returning error messages for user feedback */
-    protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
-    protected $dupError = [ "fetchResponse" => "Deze naam bestaat al, gebruik een andere naam gebruiken !" ];
-    protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
-
     /* Landingpage functions */
     /*  dbCreation():
             The function linked to the landingpage route, if no database tables where set this triggers.
@@ -58,8 +52,10 @@ class LogicController {
     /*  login():
             The POST route for the login process, where the user class is used to validate the user.
             And where the SESSION data is set, linking a user to a session, so we can verify the user later on.
-                $pw (string)    - The password input from the user.
-                $cred (string)  - The user credentials (e-mail or user name).
+                $pw (string)                    - The password input from the user.
+                $cred (string)                  - The user credentials (e-mail or user name).
+                $userCheck (Bool/Assoc Array)   - The user check validation result.
+                $userIdFetch (Bool/Assoc Array) - The user Index fetch result
             
             Return Value (redirect):
                 If validated as Admin   - Redirect -route-> '/beheer'
@@ -67,27 +63,46 @@ class LogicController {
                 If validation failed    - Redirect -route-> '/#login-pop-in'
      */
     public function login() {
+        /* Process the POST information, and validate the user that is trying to login. */
         $pw = $_POST["wachtwoord"];
         $cred = htmlspecialchars( $_POST["accountCred"] );
+        $userCheck = App::get("user")->validateUser( $cred, $pw );
 
-        if(App::get("user")->validateUser( $cred, $pw ) === TRUE) {
-            App::get("session")->setVariable( "user", [ "id" => App::get("user")->getUserId() ] );
+        /* Check the user evaluation, and execute the correct logic. */
+        if( !is_array( $userCheck ) ) {
+            /* Get the user id from the user that is trying to login */
+            $userIdFetch = App::get("user")->getUserId();
 
-            if(App::get("user")->evalUser() === TRUE) {
+            /* If the user ID fetch worked, i store said id in the session. */
+            if( !is_array( $userIdFetch ) ) {
+                App::get("session")->setVariable( "user", [ "id" => $userIdFetch ] );
+            /* If the user ID fetch failed, i store the error in the session, and redirect to the pop-in. */
+            } else {
+                App::get("session")->setVariable( "header", [ "error" => $userIdFetch ] );
+                return App::redirect("#login-pop-in");
+            }
+
+            /* Evaluate the user rights. */
+            $userRightsCheck = App::get("user")->evalUser();
+
+            /* Redirect the user according to the user rights evaluation. */
+            if( $userRightsCheck === TRUE) {
                 App::get("session")->setVariable( "user", [ "admin" => FALSE ] );
                 App::get("session")->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get("user")->getUserName() ] ] );
                 return App::redirect("gebruik");
-            } elseif(App::get("user")->evalUser() === FALSE) {
+            } elseif( $userRightsCheck === FALSE) {
                 App::get("session")->setVariable( "user", [ "admin" => TRUE ] );
                 App::get("session")->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get("user")->getUserName() ] ] );
-                return App::redirect("beheer");
+                return App::redirect("beheer");            
+            /* If the user rights evaluation failed, i store the error and redirect to the pop-in. */
             } else {
-                App::get("session")->setVariable( "header", [ "error" => App::get("user")->evalUser() ] );
+                App::get("session")->setVariable( "header", [ "error" => $userRightsCheck ] );
                 return App::redirect("#login-pop-in");
             }
+        /* If the user was not validated, i store the error, and redirect back to the pop-in. */
         } else {
-            App::get("session")->setVariable("header", [ "error" => App::get("user")->validateUser( $cred, $pw ) ] );
-            return App::redirect("#login-pop-in");
+            App::get("session")->setVariable("header", [ "error" => $userCheck ] );
+            return App::redirect("#login-pop-in");            
         }
     }
 
@@ -102,13 +117,11 @@ class LogicController {
     }
 
     /* Adminpage functions */
-    /*  TODO: Edit function comments to reflect the changes over time. */
     /*  beheer():
             The POST route for '/beheer', this is similar to the GET route in the 'PageController'.
             But here is also deal with loading the Series view, and thus loading all related albums.
-
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dupError (String)          - Error message for when a serie name is already stored in the database.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $checkSerie (Bool/Assoc Array)  - The item duplicate check, based on the item naam and potentially index.
             
             Return Type:
                 On Validation fail          - Redirect  -route-> '/'
@@ -196,10 +209,10 @@ class LogicController {
     /*  serieM():
             The POST route for '/serieM', for checking series names and creating series.
             Where the latter is related to the pop-in form, and the former to the name input from the controller.
-                $userCheck  - The user check based on the stored session data.
-                $itemCheck  - The item duplicate check, based on the item its name alone.
-                $sqlData    - The POST data prepared for the SQL database.
-                $store      - The result of if the data was stored or not.
+                $userCheck  (Bool/Assoc Array)  - The user check based on the stored session data.
+                $itemCheck  (Bool/Assoc Array)  - The item duplicate check, based on the item naam and potentially index.
+                $sqlData    (Assoc Array)       - The POST data prepared for the SQL database.
+                $store      (Bool/Assoc Array)  - The result of the database operation.
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -219,7 +232,7 @@ class LogicController {
         if( !is_array( $userCheck ) ) {
             /* Check if serie-naam was set in the post, and check the name */
             if(isset( $_POST["serie-naam"] )) {
-                $itemCheck = App::get()->checkItemName( "serie", $_POST["serie-naam"] );
+                $itemCheck = App::get("collection")->checkItemName( "serie", $_POST["serie-naam"] );
             }
 
             /* If an array was returned, i need to set the duplicate data tag, and return the error. */
@@ -253,11 +266,18 @@ class LogicController {
         }
     }
 
-    /*  TODO: Edit function comments to reflect the changes over time. */
     /*  serieBew():
             This function deals with editing serie data on the admin page, and stores the changes made.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
+                $serieData (Assoc Array)        - The POST data prepared for the SQL Database.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
 
-            $serieData (Assoc Array) :
+            Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Failed name check        - Redirect -route-> '/beheer#serieb-pop-in'
+                On Failed Database action   - Redirect -route-> '/beheer#serieb-pop-in'
+                On Success                  - Redirect -route-> '/beheer'
      */
     public function serieBew() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -271,13 +291,13 @@ class LogicController {
         if( !is_array( $userCheck ) ) {
             /* Check if serie-naam was set in the post, and check the name */
             if( isset( $_POST["naam"] ) ) {
-                $itemCheck = App::get()->checkItemName( "serie",  $_POST["naam"], $_POST["index"] );
+                $itemCheck = App::get("collection")->checkItemName( "serie",  $_POST["naam"], $_POST["index"] );
             }
 
             /* If an array was returned, i need to set the duplicate data tag, and return the error. */
-            if( is_array( $userCheck ) ) {
+            if( is_array( $itemCheck ) ) {
                 App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
-                App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
+                App::get("session")->setVariable( "header", [ "error" => $itemCheck ] );
                 return App::redirect("beheer#serieb-pop-in");
             /* Otherwhise i can store the name for processing it. */
             } else {
@@ -307,12 +327,11 @@ class LogicController {
         }
     }
 
-    /*  TODO: Edit function comments to reflect the changes over time. */
     /*  serieVerw():
             This removes a serie and all its albums from the database, and gives back user feedback based on that.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dbError (Assoc Array)      - Error message for when there are database errors.
-                $remove_# (String or Bool)  - Temp store for the results of the requested remove action.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $serieData (Assoc Array)        - The POST data prepared for the SQL Database.
+                $remove_# (Bool/Assoc Array)    - The result of the database operations.
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -344,7 +363,6 @@ class LogicController {
                 } else if( is_array($remove_2) ) {
                     App::get("session")->setVariable( "header", [ "error" => $remove_2 ] );
                 }
-
                 return App::redirect("beheer");
             }
         /* Return the error to JS, and redirect to the landingpage. */
@@ -354,16 +372,16 @@ class LogicController {
         }
     }
 
-    /*  TODO: Edit function comments to reflect the changes over time. */
     /*  albumT():
             This function checks the album name, and either stores that user input, or returns it for the user to correct it.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dupError (Assoc Array)     - Error message for when the album name is duplicate within that series.
-                $dbError (Assoc Array)      - Error message for when there are database errors.
-                $albumData (Assoc Array)    - The data that needs to be stored in the database.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
+                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
             
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
+                On Failed name check        - Redirect -route-> '/beheer#albumt-pop-in'
                 On Failed Database action   - Redirect -route-> '/beheer'
                 On Success                  - Redirect -route-> '/beheer'
      */
@@ -449,16 +467,16 @@ class LogicController {
         }
     }
 
-    /*  TODO: Edit function comments to reflect the changes over time. */
     /*  albumV():
             The remove album function, with a trigger to repopulate the session data after removal.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dbError (Assoc Array)      - Error message for when there are database errors.
-                $albName (String)           - Temp storage for the album name that is being removed, for user feedback reasons.
-                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
+                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
+                On Failed name check        - Redirect -route-> '/beheer'
                 On Failed Database action   - Redirect -route-> '/beheer'
                 On Success                  - Redirect -route-> '/beheer'
      */
@@ -480,10 +498,9 @@ class LogicController {
             }
 
             /* Evaluate the itemCheck and DB action. */
-            if( !is_array( $itemCheck ) || !is_array( $store ) ) {
+            if( !is_array( $itemCheck ) && !is_array( $store ) ) {
                 App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $albName . " is geslaagd!" ] ] );
                 unset( $_SESSION["page-data"]["albums"] );
-
                 return App::redirect("beheer");
             /* Store the correct error, and redirect accordingly */
             } else {
@@ -492,25 +509,21 @@ class LogicController {
                 } elseif( is_array( $store ) ) {
                     App::get("session")->setVariable( "header", [ "error" => $store ]);
                 }
-
                 return App::redirect("beheer");
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
             App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-
             return App::redirect("");
         }
     }
 
-    /*  TODO: Edit function comments to reflect the changes over time. */
-    /*  TODO: Check if the cover is good enough here, considering the previous ways i did it. */
     /*  albumBew():
             This function deal with all album-bewerken actions, but does currently cause unwanted page refreshes.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dbError (Assoc Array)      - Error message for when there are database errors.
-                $dupError (Assoc Array)     - Error message for when the album name is duplicate within that series.
-                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
+                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
             
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -528,7 +541,7 @@ class LogicController {
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
-        if( is_array( $useCheck ) ) {
+        if( !is_array( $useCheck ) ) {
             /* If the edit album button was pressed, just store the tag in the session and redirect to the pop-in. */
             if( isset( $_POST["albumEdit"] ) ) {
                 App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["albumEdit"] ] );
@@ -581,35 +594,44 @@ class LogicController {
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
             App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-
             return App::redirect("");
         }
     }
 
     /*  adminReset():
             This function can reset user passwords, since that is missing from the main page login-pop-in.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $dbError (Assoc Array)      - Error message for when there are database errors.
-                $store (Boolean/String)     - Temp storage for validation if the remove action had an error or not.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
+                On Failed name check        - Redirect -route-> '/beheer'
                 On Failed Database action   - Redirect -route-> '/beheer#ww-reset-pop-in'
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function adminReset() {
-        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"], "rights" ) ) {
+        /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
+        if( isset( $_SESSION["user"]["id"] ) ) {
+            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights" );
+        } else {
+            $userCheck = App::get("user")->checkUser( -1, "rights" );
+        }
+
+        /* Validate the userCheck result, and execute the correct logic. */
+        if( !is_array( $useCheck ) ) {
             $store = App::get("user")->updateUser( "gebruikers", [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ], [ "Gebr_Email" => $_POST["email"] ] );
 
-            if($store) {
+            /* Evaluate the DB action, and store the correct response, and redirect back to the correct page. */
+            if( is_array( $store ) ) {
+                App::get("session")->setVariable( "header", [ "error" => $store ] );
+                return App::redirect("beheer#ww-reset-pop-in");
+            } else {
                 App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ] ] );
                 return App::redirect("beheer");
-            } else {
-                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
-                return App::redirect("beheer#ww-reset-pop-in");
             }
+        /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
             return App::redirect("");
         }
     }
@@ -617,77 +639,95 @@ class LogicController {
     /* User-Page functions */
     /*  gebruik():
             The POST route for '/gebruik', this is similar to the GET route in the 'PageController'.
-            In this case though, we also need to load albums and collections, to display when a serie is selected.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
 
             Return Value:
                 On sucess   - View      -route-> '../gebruik.view.php'
                 On fail     - Redirect  -route-> '../'
      */
     public function gebruik() {
-        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"] ) ) {
+        /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
+        if( isset( $_SESSION["user"]["id"] ) ) {
+            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"] );
+        } else {
+            $userCheck = App::get("user")->checkUser( -1 );
+        }
+
+        /* Validate the userCheck result, and execute the correct logic. */
+        if( !is_array( $useCheck ) ) {
+            /* Always unset teh collection data in the session, and repopulate the series and collections. */
             unset( $_SESSION["page-data"]["collections"] );
             App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() );
             App::get("session")->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+
+            /* If a collection is being viewed, get all albums for that serie, and the user there collection data, before setting the correct flag in the session */
             if( !empty( $_POST["serie_naam"] ) ) {
                 App::get("session")->setVariable( "page-data", App::get("collection")->getAlbums( App::get("collection")->getSerInd( $_POST["serie_naam"] ) ) );
                 App::get("session")->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
                 App::get("session")->setVariable( "page-data", [ "huidige-serie" => $_POST["serie_naam"] ] )  ;
             }
+
             return App::view("gebruik");
+        /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
             return App::redirect("");
-		}
+        }
     }
 
     /*  albSta():
             The POST route for '/albSta', where we create collection data, based on what album(s) got toggled on/off.
-                $authFailed (Assoc Array)   - Error message for when the user din't validate, using the session data.
-                $collErr (Assoc Array)      - Error for when a album was already added, can be triggered by page-refreshes or browser navigation.
-                $collComp (Assoc Array)     - Album added feedback message.
-                $colRemo (Assoc Array)      - Album removed feedback message.
+                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $ids        (Assoc Array)       - Id's required for setting and removing collection data.
+                $store     (Bool/Assoc Array)   - The result of the database operation.
             
-            Return Value: JSON encoded data, for the JS fetch request.
-
-            Temp Reminder for the expected values/states:
-                checkState:
-                    false - album is currently no present.
-                    true - album is currently present.
-                store:
-                    is_string = error
-                    true && !is_string = album added/remove to/from collection.
-                    false && !is_string = album was already added to the collection (odd page refreshes and tampered post data).
+            Return Value:
+                On Added    - View      -route-> '../gebruik.view.php'
+                On Removed  - View      -route-> '../gebruik.view.php'
+                On fail     - Redirect  -route-> '../'
      */
     public function albSta() {
-        if( isset( $_SESSION["user"]["id"] ) && App::get("user")->checkUSer( $_SESSION["user"]["id"] ) ) {
-            if( isset( $_POST["albumIndex"] ) ) { $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ]; }
-            
+        /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
+        if( isset( $_SESSION["user"]["id"] ) ) {
+            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"] );
+        } else {
+            $userCheck = App::get("user")->checkUser( -1 );
+        }
+
+        /* Validate the userCheck result, and execute the correct logic. */
+        if( !is_array( $useCheck ) ) {
+            /* If a albumIndex is in the POST, set ids for SQL first. */
+            if( isset( $_POST["albumIndex"] ) ) {
+                $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ];
+            }
+
+            /* Then evaluate the checkState, and execute the correct DB action */
             if( isset( $_POST["checkState"] ) && $_POST["checkState"] === "false" ) {
                 $store = App::get("collection")->setColl( "collecties", $ids );
             } else if ( isset( $_POST["checkState"] ) && $_POST["checkState"] === "true" ) {
                 $store = App::get("collection")->remItem( "collecties", $ids );
-            } else { $store = "No valid POST data found!"; }
+            }
 
-            if( !is_string( $store ) ) {                
-                if( $_POST["checkState"] === "false" && $store ) {
+            /* Evaluate the DB action, and give the coorect feedback, clear the correct page-data, and redirect to the user page. */
+            if( !is_array( $store ) ) {
+                /* If no errors, evaluated the checkState and execute the correct logic. */
+                if( $_POST["checkState"] === "false" ) {
                     App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is toegvoegd aan uw collectie!" ] ] );
                     unset( $_SESSION["page-data"]["colllections"] );
                     return App::redirect("gebruik");
-                } else if ( $_POST["checkState"] === "true" && $store ) {
+                } elseif( $_POST["checkState"] === "true" ) {
                     App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is verwijdert van uw collectie!" ] ] );
                     unset( $_SESSION["page-data"]["colllections"] );
                     return App::redirect("gebruik");
-                } else if ( !$store ) {
-                    App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
-                    return App::redirect("gebruik");
                 }
+            /* If there was an error stored, we store that in the session, and redirect to the user page. */
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $this->dbError ] );
+                App::get("session")->setVariable( "header", [ "error" => $store ] );
                 return App::redirect("gebruik");
             }
+        /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $this->authFailed ] );
+            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
             return App::redirect("");
         }
     }

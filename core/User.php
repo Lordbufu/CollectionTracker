@@ -8,52 +8,56 @@ use Exception;
         To clean up the LogicController and processing class, i off-loaded the user related things to this class.
         Everything is based on return values, so i only need to evaluate most of the time, and sometimes pass on a error.
         Binding the user to the session, is for now only done in the Controller.
-
-            $user   - Protected user variable, to store the requested user.
  */
 class User {
+    /* Protected user variable, to store the requested user. */
     protected $user;
+
+    /* All potential errors that can occure during user related actions. */
     protected $userNameErr = [ "userError1" => "Deze gebruiker bestaat al." ];
     protected $userEmailErr = [ "userError2" => "E-mail adres reeds ingebruik." ];
-    protected $noUserErr = [ "userError1" => "No users found, plz contact the Administrator!" ];
+    protected $noUserErr = [ "userError1" => "Geen gebruiker gevonden, neem contact op met uw Administrator!" ];
     protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
     protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
     protected $rightsError = [ "loginFailed" => "U heeft geen rechten om de website te bezoeken !!" ];
     protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
+    protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /*  setUser($data):
             Attempts to add user to database, and check for duplicate e-mails & names.
-                $data (Assoc Array) - The user input, sanitized in the controller.
+                $data           (Assoc Array)           - The user input, sanitized in the controller.
+                $tempUsers      (Assoc Array)           - Temp local storage for all current users.
+                $store          (String or Bool)        - The result of trying to store the requested user.
+                $errorMsg (Assoc Array or Undefined)    - The potentially store errors during the user/user name and e-mail checks.
 
             Return Value:
                 On sucess: Boolean
                 On failed: Assoc Array -> example: [ 'type-of-message' => [' browser-storage-tag' => 'error-string' ] ]
      */
     public function setUser($data) {
+        /* Attempt to request all current users. */
         $tempUsers = App::get("database")->selectAll("gebruikers");
 
-        if( !empty( $tempUsers ) ) {
+        /* Check if there where any users set, or if there wa a DB error. */
+        if( !is_string( $tempUsers ) ) {
+            /* Loop over all users. */
             foreach( $tempUsers as $key => $user ) {
 
-                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) {
-                    $errorMsg["error"] = $this->userNameErr;
-                }
-
-                if($user["Gebr_Email"] === $data["Gebr_Email"]) {
-                    $errorMsg["error"] = $this->userEmailErr;
-                }
+                /* If a duplicate name or e-mail is detected, store the correct error. */
+                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
+                if($user["Gebr_Email"] === $data["Gebr_Email"]) { $errorMsg["error"] = $this->userEmailErr; }
             }
-        } else {
-            $errorMsg["error"] = $this->noUserErr;
-        }
+        /* If there was a DB error, store the correct error. */
+        } else { $errorMsg["error"] = $this->noUserErr; }
 
+        /* Evaluate if there are any errors stored, and attempt to insert the user if not. */
         if( !isset( $errorMsg ) ) {
             $store = App::get("database")->insert( "gebruikers", $data );
-        } else {
-            return $this->errorMsg;
-        }
+        /* If there where, simply return the errors  to the caller. */
+        } else { return $this->errorMsg; }
 
-        return is_string($errorMsg) ? $this->userAdd : TRUE;
+        /* Return an error if the DB action had a error string, and return TRUE if not. */
+        return is_string($store) ? $this->userAdd : TRUE;
     }
 
     /*  getUserName():
@@ -88,15 +92,23 @@ class User {
                 Failed      - Assoc Array
      */
     public function validateUser($id, $pw) {
+        /* If the $id input was a e-mail, i check if a user is stored with said e-mail, and return a error if not. */
         if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
             if( !isset( App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
                 return $this->credError;
-            } else { $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0]; }
+            } else {
+                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0];
+            }
+        /* If the $id input was not a e-mail, i also check if a user was stored with said e-mail, and return a error if not. */
         } else {
             if( !isset (App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
                 return $this->credError;
-            } else { $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0]; }
+            } else {
+                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0];
+            }
         }
+
+        /* If the user is still valid at this point, i verify there password, and return either a error or a bool */
         if( password_verify( $pw, $this->user["Gebr_WachtW"] ) ) {
             return TRUE;
         } else {
@@ -107,8 +119,8 @@ class User {
 
     /*  checkUser($id=null, $rights=null):
             This function checks if the uiser is valid, and if the user rights are set to Admin or not.
-                $id     - The index of the user we want to check, most likely take from the session.
-                $rights - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
+                $id     (string) - The index of the user we want to check, most likely take from the session.
+                $rights (string) - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
             
             Return value:
                 On Validate - Boolean
@@ -137,45 +149,53 @@ class User {
         }
     }
 
-    //  TODO: figure out a better way to deal with the error loop.
     /*  getUserId():
             To bind users and sessions, i only need there Database index key.
 
             Return Value:
-                With Errors     - String
+                With Errors     - Assoc Array
                 Without Errors  - INT
-
      */
     public function getUserId() {
         if( isset( $this->user ) ) {
             return $this->user["Gebr_Index"];
-        } else { return "No user defined"; }
+        } else {
+            return $this->noUserErr;
+        }
     }
 
-    //  TODO: add some kind of meaningfull comment to this funcion.
-    //  TODO: figure out a better way to deal with the error loop.
     /*  evalUser():
+            To evaluate the users rights, i return true is a user and false if admin, and a error otherwhise.
+
+            Return Value:
+                On user     - Bool
+                On admin    - Bool
+                On Failed   - Assoc Array
      */
     public function evalUser() {
         if($this->user["Gebr_Rechten"] === "gebruiker") {
             return TRUE;
         } elseif($this->user["Gebr_Rechten"] === "Admin") {
             return FALSE;
-        } else { return $this->rightsError; }
+        } else {
+            return $this->rightsError;
+        }
     }
 
-    //  TODO: figure out a better way to deal with the error loop.
     /*  updateUser($table, $data, $id):
             This function deals with updating the user, and return a boolean.
-                $table  - The DB table that needs updating (always 'gebruikers').
-                $data   - The data that needs to be updated.
-                $id     - The id of the user that needs to be updated.
+                $table  (string)        - The DB table that needs updating (always 'gebruikers').
+                $data   (assoc array)   - The data that needs to be updated.
+                $id     (string)        - The id of the user that needs to be updated.
+                $store  (string/int)    - The result of trying to update the user in the database.
             
-            Return Value: Boolean.
+            Return Value:
+                On Update - Boolean.
+                On Failed - Assoc Array.
      */
     public function updateUser($table, $data, $id) {
         $store = App::get("database")->update( $table, $data, $id );
 
-        return is_string($store) ? FALSE : TRUE;
+        return is_string($store) ? $this->dbError : TRUE;
     }
 }
