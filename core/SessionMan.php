@@ -34,6 +34,8 @@ class SessionMan {
             All ini settings are either security related, or garbage collection related.
             We also set a costum save path for sessions, so the files are stored outside the projects webroot.
             And it starts the session, since this is triggered via the user entry point.
+
+            Return Type: None.
      */
     function __construct() {
         $adress = "https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
@@ -50,10 +52,14 @@ class SessionMan {
         ini_set("session.sid_length", "128");
         ini_set("session.side_bits_per_character", "6");
         ini_set("session.hash_function", "sha512");
+
         if(!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777, true);
             session_save_path($this->savePath);
-        } else { session_save_path($this->savePath); }
+        } else {
+            session_save_path($this->savePath);
+        }
+
         return session_start();
     }
 
@@ -69,9 +75,8 @@ class SessionMan {
 
     /*  setVariable($data):
             Desgined to append data to session data keys, since i have to do this a lot, i made a function for it.
-
-            $name (string)              - The name of the first session data key.
-            $data (assoc/multiD array)  - Data that needs to be added to the session.
+                $name (string)              - The name of the first session data key.
+                $data (assoc/multiD array)  - Data that needs to be added to the session.
 
             Return Type: None.
      */
@@ -96,7 +101,6 @@ class SessionMan {
     /*  checkVariable($store, $key):
             For certain processes, i need to be able to check if certain variables are set, or a combination of variables.
             Mostly designed to see if i can unset a variable, and not mess up the workflow of the App.
-
                 $store  - String        -> The name of the store, for example 'page-data'.
                 $keys   - Assoc Array   -> The keys in the store, that i need to know are set or not, can be a single key.
 
@@ -109,12 +113,17 @@ class SessionMan {
                     return TRUE;
                 } else {
                     foreach($keys as $key) {
-                        if($key === $entry) { return TRUE; }
+                        if($key === $entry) {
+                            return TRUE;
+                        }
                     }
                 }
             }
+
             return FALSE;
-        } else { return FALSE; }
+        } else {
+            return FALSE;
+        }
     }
 }
 ?>
