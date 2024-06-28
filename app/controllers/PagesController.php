@@ -11,8 +11,8 @@ class PagesController {
 			If not present (error 42S02), i redirect to a route that creates all tables and the admin account.
 
 			Return Value:
-				On Validation: (view)			-> index.view.php
-				Failed Validation: (redirect)	-> ../createDB
+				On Validation		(view)		-> index.view.php
+				Failed Validation	(redirect)	-> ../createDB
 	 */
 	public function landing() {
 		if(App::get("database")->testTable("gebruikers") === "42S02") {
@@ -27,8 +27,8 @@ class PagesController {
 				$authFailed (Assoc Array)	- Error for when account validation failed.
 
 			Return Value:
-				On Validation: (view) 			-> beheer.view.php
-				Failed Validation: (redirect) 	-> index.view.php
+				On Validation		(view)		-> beheer.view.php
+				Failed Validation	(redirect) 	-> index.view.php
 	 */
 	public function beheer() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -68,8 +68,8 @@ class PagesController {
 				$authFailed (Assoc Array)	- Error for when account validation failed
 
 			Return Value:
-				On Validation: (view) 			-> gebruik.view.php
-				Failed Validation: (redirect) 	-> index.view.php
+				On Validation		(view)		-> gebruik.view.php
+				Failed Validation	(redirect) 	-> index.view.php
 	 */
 	public function gebruik() {
 		/* If the user session data is present, if not we pass a invalid id to get a error back. */
