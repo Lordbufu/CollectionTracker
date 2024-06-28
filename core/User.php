@@ -148,7 +148,7 @@ class User {
             if( isset( $rights ) && $this->user["Gebr_Rechten"] === "Admin" ) {
                 return TRUE;
             /* If failed i return the authFailed error */
-            } elseif( isset( $rights ) ) {
+            } elseif( !isset( $rights ) ) {
                 return TRUE;
             } else {
                 return $this->authFailed;
