@@ -28,13 +28,17 @@ class User {
                 $data           (Assoc Array)           - The user input, sanitized in the controller.
                 $tempUsers      (Assoc Array)           - Temp local storage for all current users.
                 $store          (String or Bool)        - The result of trying to store the requested user.
-                $errorMsg (Assoc Array or Undefined)    - The potentially store errors during the user/user name and e-mail checks.
+                $errorMsg (Assoc Array or Undefined)    - The potentially store errors during the user name and e-mail checks.
 
             Return Value:
-                On sucess: Boolean
-                On failed: Assoc Array -> example: [ 'type-of-message' => [' browser-storage-tag' => 'error-string' ] ]
+                On Sucess   : Assoc Array
+                On Duplicate: Assoc Array
+                On Failed   : Assoc Array
      */
     public function setUser($data) {
+        /* Undefined error variable, it was generating errors before. */
+        $errorMsg;
+
         /* Attempt to request all current users. */
         $tempUsers = App::get("database")->selectAll("gebruikers");
 
@@ -42,22 +46,28 @@ class User {
         if( !is_string( $tempUsers ) ) {
             /* Loop over all users. */
             foreach( $tempUsers as $key => $user ) {
-
-                /* If a duplicate name or e-mail is detected, store the correct error. */
+                /* If a duplicate name detected, store the correct error. */
                 if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
-                if($user["Gebr_Email"] === $data["Gebr_Email"]) { $errorMsg["error"] = $this->userEmailErr; }
+
+                /* If a duplicate e-mail is detected, check if a error was set for the name and merge both errors. */
+                if( $user["Gebr_Email"] === $data["Gebr_Email"] ) {
+                    if( is_array( $errorMsg ) ) {
+                        $errorMsg["error"] = array_merge( $this->userNameErr, $this->userEmailErr );
+                    /* Otherwhise just add the e-mail error. */
+                    } else { $errorMsg["error"] = $this->userEmailErr; }
+                }
             }
-        /* If there was a DB error, store the correct error. */
+        /* If there was a DB error getting all users, store the correct error. */
         } else { $errorMsg["error"] = $this->noUserErr; }
 
         /* Evaluate if there are any errors stored, and attempt to insert the user if not. */
         if( !isset( $errorMsg ) ) {
             $store = App::get("database")->insert( "gebruikers", $data );
-        /* If there where, simply return the errors  to the caller. */
-        } else { return $this->errorMsg; }
+        /* If there where, simply return the errors to the caller. */
+        } else { return $errorMsg; }
 
-        /* Return an error if the DB action had a error string, and return TRUE if not. */
-        return is_string($store) ? $this->userAdd : TRUE;
+        /* If there was no error string from the DB, return a feedback message, else return a DB error message. */
+        return !is_string($store) ? $this->userAdd : [ "error" => $this->dbError ];
     }
 
     /*  getUserName():

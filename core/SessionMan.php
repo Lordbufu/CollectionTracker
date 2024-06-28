@@ -81,6 +81,7 @@ class SessionMan {
             Return Type: None.
      */
     public function setVariable($name, $data) {
+        //die(var_dump($data));
         foreach($data as $key => $value) {
             if( !is_array( $value ) ) {
                 return $_SESSION[$name][$key] = $value;
@@ -92,7 +93,9 @@ class SessionMan {
                 } elseif( isset( $value["Col_Index"] ) ) {
                     return $_SESSION[$name]["collections"] = $data;
                 } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl") {
-                    return $_SESSION[$name][$key] = $value;
+                    $_SESSION[$name][$key] = $value;
+                    //die(var_dump(print_r($_SESSION)));
+                    return;
                 }
             }
         }

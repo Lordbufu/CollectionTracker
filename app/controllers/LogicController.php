@@ -32,19 +32,19 @@ class LogicController {
                 On failed:  - Redirect -route-> '/#account-maken-pop-in'
      */
 	public function register() {
-        $temp = [
-            "Gebr_Naam" => htmlspecialchars( $_POST["gebr-naam"] ),
-            "Gebr_Email" => htmlspecialchars( $_POST["email"] ),
-            "Gebr_WachtW" => password_hash( $_POST["wachtwoord"], PASSWORD_BCRYPT ),
-            "Gebr_Rechten" => "gebruiker" ];
+        $temp = [ "Gebr_Naam" => htmlspecialchars( $_POST["gebr-naam"] ),
+                  "Gebr_Email" => htmlspecialchars( $_POST["email"] ),
+                  "Gebr_WachtW" => password_hash( $_POST["wachtwoord"], PASSWORD_BCRYPT ),
+                  "Gebr_Rechten" => "gebruiker"
+                ];
 
-        $store = App::get("user")->setUser($temp);
+        $store = App::get("user")->setUser( $temp );
 
-        if ( is_string($store) ) {
-            App::get("session")->setVariable("header", [ "feedB" => $store ] );
+        if( !isset( $store["error"] ) ) {
+            App::get("session")->setVariable( "header", [ "feedB" => $store ] );
             return App::redirect( "#login-pop-in" );
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $store ] );
+            App::get("session")->setVariable( "header", $store );
             return App::redirect( "#account-maken-pop-in" );
         }
     }
