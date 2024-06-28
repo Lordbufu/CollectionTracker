@@ -93,7 +93,7 @@ class LogicController {
             } elseif( $userRightsCheck === FALSE) {
                 App::get("session")->setVariable( "user", [ "admin" => TRUE ] );
                 App::get("session")->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get("user")->getUserName() ] ] );
-                return App::redirect("beheer");            
+                return App::redirect("beheer");
             /* If the user rights evaluation failed, i store the error and redirect to the pop-in. */
             } else {
                 App::get("session")->setVariable( "header", [ "error" => $userRightsCheck ] );
@@ -647,14 +647,10 @@ class LogicController {
      */
     public function gebruik() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
-        if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"] );
-        } else {
-            $userCheck = App::get("user")->checkUser( -1 );
-        }
+        $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
         /* Validate the userCheck result, and execute the correct logic. */
-        if( !is_array( $useCheck ) ) {
+        if( !is_array( $userCheck ) ) {
             /* Always unset teh collection data in the session, and repopulate the series and collections. */
             unset( $_SESSION["page-data"]["collections"] );
             App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() );
@@ -688,14 +684,10 @@ class LogicController {
      */
     public function albSta() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
-        if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"] );
-        } else {
-            $userCheck = App::get("user")->checkUser( -1 );
-        }
+        $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
         /* Validate the userCheck result, and execute the correct logic. */
-        if( !is_array( $useCheck ) ) {
+        if( !is_array( $userCheck ) ) {
             /* If a albumIndex is in the POST, set ids for SQL first. */
             if( isset( $_POST["albumIndex"] ) ) {
                 $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ];
