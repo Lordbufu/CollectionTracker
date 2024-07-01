@@ -649,6 +649,8 @@ class LogicController {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
+        //die( var_dump( print_r( $_SESSION["page-data"]["collections"] ) ) );
+
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             /* Always unset teh collection data in the session, and repopulate the series and collections. */

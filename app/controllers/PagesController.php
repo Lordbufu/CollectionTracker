@@ -78,6 +78,8 @@ class PagesController {
             $userCheck = App::get("user")->checkUser( -1 );
         }
 
+		//die( var_dump( print_r( $_SESSION["page-data"]["collections"] ) ) );
+
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
 			/* If the series page-data is not set set it, otherwhise unset and reset it. */
