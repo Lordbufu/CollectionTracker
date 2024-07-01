@@ -6,12 +6,16 @@ function initGebruik() {
     /* Assing a listenEvent to all checkboxes on the page */
     const chBox = document.getElementsByClassName("album-aanwezig-checkbox"), chBoxArr = Array.from(chBox);
     chBoxArr.forEach( (item, index, arr) => { arr[index].addEventListener( "change", checkBox ); } );
+
     /* Required elements and event for the serie-select controller */
     formButt = document.getElementById("serie-sel-subm"),  formInput = document.getElementById("serie-sel"), formInput.addEventListener("change", selectEvent), formButt.disabled = true;
+
     /* Listen Event for the album search option */
     document.getElementById('album-zoek-inp').addEventListener("input", albumZoek);
+
     /* Loop for detecting, displaying and removing welcome messages for the user */
     if(localStorage.welcome) { displayMessage(localStorage.welcome), localStorage.removeItem("welcome"); }
+    
     /* Loop for detecting, displaying and removing fetchResponse (populated via the session now) */
     if(localStorage.fetchResponse) { displayMessage(localStorage.fetchResponse), localStorage.removeItem("fetchResponse"); }
 }
