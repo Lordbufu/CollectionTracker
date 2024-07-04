@@ -1,6 +1,6 @@
 /* Globals for the input listen events */
 let naamChecked = false, isbnChecked = false;
-let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm;
+let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm, pwSubButt;
 
 /* On-pageload init function, triggered from main.js */
 function initBeheer() {
@@ -71,6 +71,12 @@ function initBeheer() {
     const clButtArr = Array.from(popInClButt);
 
     for(key in clButtArr) { clButtArr[key].addEventListener("click", saveScroll); }
+
+    /* Elements and listen events for the user password reset */
+    const resetVeld2 = document.getElementById("resetVeld2");
+    resetVeld2.addEventListener("input", pwChecker);
+    pwSubButt = document.getElementById("reset-submit");
+    pwSubButt.disabled = true;
 
     /* Triggers based on browser storage variables */
     if(localStorage.welcome) {
@@ -180,10 +186,10 @@ function coverInpCheck(e) {
         imgEl.src = URL.createObjectURL(imageFile), imgEl.id = "albumb-cover-img",  imgEl.className = "modal-album-cover-img";
         if(e.target.id === "albumb-form-alb-cov") {
             const divCov = document.getElementById("albumB-cover");
-            labEl = document.getElementById("modal-form-albumB-cov-lab"),  divCov.appendChild(imgEl);
+            divCov.innerHTML = "", labEl = document.getElementById("modal-form-albumB-cov-lab"),  divCov.appendChild(imgEl);
         } else if(e.target.id === "albumt-form-alb-cov") {
             const divCov = document.getElementById("albumT-cover");
-            labEl = document.getElementById("modal-form-albumt-cov-lab"),  divCov.appendChild(imgEl);
+            divCov.innerHTML = "", labEl = document.getElementById("modal-form-alb-cov-lab"),  divCov.appendChild(imgEl);
         }
         labEl.innerHTML = "Nieuwe Cover Selecteren",  labEl.appendChild(e.target);
         return;
@@ -215,6 +221,26 @@ function serieVerwijderen(e) {
  */
 function wwResetClick() {
     return window.location.assign('#ww-reset-pop-in');
+}
+
+/*  pwChecker(e):
+        For visual confirmation, that both password entered are equal, and allowing submit only if they are.
+            resetVeld1  - The first password input field.
+        
+        Return Value: None.
+ */
+function pwChecker(e) {
+    const resetVeld1 = document.getElementById("resetVeld1");
+
+    if( e.target.value === resetVeld1.value ) {
+        e.target.style.outline = "3px solid green";
+        pwSubButt.disabled = false;
+        return;
+    } else {
+        e.target.style.outline = "3px solid red"
+        pwSubButt.disabled = true;
+        return;
+    }
 }
 
 /*  aResetBev(e):

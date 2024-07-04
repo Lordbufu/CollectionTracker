@@ -541,7 +541,7 @@ class LogicController {
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
-        if( !is_array( $useCheck ) ) {
+        if( !is_array( $userCheck ) ) {
             /* If the edit album button was pressed, just store the tag in the session and redirect to the pop-in. */
             if( isset( $_POST["albumEdit"] ) ) {
                 App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["albumEdit"] ] );
@@ -649,11 +649,9 @@ class LogicController {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
-        //die( var_dump( print_r( $_SESSION["page-data"]["collections"] ) ) );
-
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
-            /* Always unset teh collection data in the session, and repopulate the series and collections. */
+            /* Always unset the collection data in the session, and repopulate the series and collections. */
             unset( $_SESSION["page-data"]["collections"] );
             App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() );
             App::get("session")->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );

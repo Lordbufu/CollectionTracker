@@ -16,7 +16,12 @@
             <th> Opmerking </th>
         </tr>
 
-<?php if( isset( $_SESSION['page-data']['albums'] ) ) { $albums = $_SESSION['page-data']['albums']; }
+<?php
+    if( isset( $_SESSION['page-data']['albums'] ) ) {
+        $albums = $_SESSION['page-data']['albums'];
+    }
+
+    if( isset($albums) ) :
         foreach( $albums as $key => $value) :
             $aanw = FALSE;
 ?>
@@ -27,7 +32,6 @@
                     <!-- Add Album hidden form data, to change the collection state -->
                     <input class="album-aanw-form-index" id="album-aanw-form-index" name="albumIndex" value="<?=$value['Album_Index']?>" hidden />
                     <input class="album-aanw-form-naam" id="album-aanw-form-naam" name="albumNaam" value="<?=$value['Album_Naam']?>" hidden />
-
                     <!-- Display the correct collection state -->
                 <?php
                     if( isset( $_SESSION['page-data']['collections'] ) ) {
@@ -39,7 +43,6 @@
                             }
                         }
                     }
-
                 if( $aanw ) : ?>
                         <input class='album-aanwezig-ch-state' id='album-aanwezig-ch-state' name='checkState' value='true' hidden />
                         <input class='album-aanwezig-checkbox' id='<?=$value['Album_Index']?>' type='checkbox' checked style='display: none;' />
@@ -75,7 +78,7 @@
             <th class="album-opm" id="album-opm">
                 <?=$value['Album_Opm'];?>
             </th>
-<?php endforeach; ?>
+<?php endforeach; endif; ?>
         </tr>
     </table>
 </div>
