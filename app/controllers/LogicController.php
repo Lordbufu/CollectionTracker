@@ -723,5 +723,18 @@ class LogicController {
             return App::redirect("");
         }
     }
+
+    // Test function for isbn data
+    public function isbn() {
+        if(isset($_POST['isbn'])) {
+            // set request url for the google api
+            App::get('isbn')->set_url( $_POST['isbn'] );
+
+            // request book data
+            $result = App::get('isbn')->get_data();
+
+            die( var_dump( print_r( $result ) ) );
+        }
+    }
 }
 ?>

@@ -12,7 +12,7 @@ return array(
     'App\\Core\\Collection' => $baseDir . '/core/Collection.php',
     'App\\Core\\Database\\Connection' => $baseDir . '/core/database/Connection.php',
     'App\\Core\\Database\\QueryBuilder' => $baseDir . '/core/database/QueryBuilder.php',
-    'App\\Core\\Processing' => $baseDir . '/core/Processing.php',
+    'App\\Core\\Isbn' => $baseDir . '/core/Isbn.php',
     'App\\Core\\Request' => $baseDir . '/core/Request.php',
     'App\\Core\\Router' => $baseDir . '/core/Router.php',
     'App\\Core\\SessionMan' => $baseDir . '/core/SessionMan.php',
