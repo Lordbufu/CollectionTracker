@@ -30,4 +30,9 @@
 
 	// Shared routes
 	$router->post('valUsr',			'LogicController@valUsr');
+
+	// test route
+	$router->get('test', 'PagesController@test');
+	$router->post('isbn', 'LogicController@isbn');
+	$router->get('test2', 'PagesController@test2');
 ?>

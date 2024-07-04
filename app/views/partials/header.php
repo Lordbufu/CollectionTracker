@@ -9,6 +9,7 @@
 		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel='stylesheet' type='text/css' href='css/pop-in-templ.css'>
+		<script src="js/html5-qrcode.min.js"></script>
 		<script src="js/main.js"></script>
 
 		<?php switch ( $_SERVER["REQUEST_URI"] ) :

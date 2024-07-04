@@ -1,6 +1,6 @@
 <?php
 // Some stuff dint really fit into the classes, so i bootstrap them to ensure there included\loaded.
-use App\Core\{App, Processing, SessionMan, User, Collection};
+use App\Core\{App, Processing, SessionMan, User, Collection, Isbn};
 use App\Core\Database\{QueryBuilder, Connection};
 
 // Create a registry binding for the database config file, creating the following syntax: "App::get('config')[configOption]".
@@ -13,5 +13,9 @@ App::bind("database", new QueryBuilder( Connection::make( App::get("config")["da
 App::bind("user", new User);
 App::bind("collection", new Collection);
 App::bind("session", new SessionMan);
+
+// Test code
+// Test binding for the isbn class
+App::bind('isbn', new Isbn);
 
 ?>

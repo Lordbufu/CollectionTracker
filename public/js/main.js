@@ -1,13 +1,19 @@
 /* Globals for the sticky header/banner */
 let header, sticky;
+let html5QrcodeScanner;
 
 /* Code that triggers when a page is loaded */
 document.onreadystatechange = () => {
     if(document.readyState === 'complete') {
         /* On scroll code for the title banner */
-        window.onscroll = function() { onScroll() };
-        header = document.getElementById("title-banner");
-        sticky = header.offsetTop;
+        //window.onscroll = function() { onScroll() };
+        ///header = document.getElementById("title-banner");
+        //sticky = header.offsetTop;
+
+        // Test code for the qr scanner
+        html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10, qrbox: 250 } );
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
+
         /* Page specific init and feedback code */
         if(window.location.pathname === '/') {
             if(localStorage.fetchResponse) { displayMessage(localStorage.fetchResponse), localStorage.removeItem("fetchResponse"); }
@@ -105,4 +111,18 @@ function displayMessage(text1="", text2="") {
             header2.innerHTML = "";
         }, 3000);
     }
+}
+
+// Test code for the qr scanner
+function onScanSuccess(decodedText, decodedResult) {
+    // Handle on success condition with the decoded text or result.
+    console.log(`Scan result: ${decodedText}`, decodedResult);
+    // ...
+    html5QrcodeScanner.clear();
+    // ^ this will stop the scanner (video feed) and clear the scan area.
+}
+
+function onScanError(errorMessage) {
+    // handle on error condition, with error message
+    console.log(errorMessage);
 }
