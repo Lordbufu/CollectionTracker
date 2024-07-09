@@ -80,7 +80,8 @@
 
 /* controller album search input */
 #album-zoek-inp {
-    background-image: url('/images/searchicon.png');
+    /* image disabled for now, not enough space to make it look decent atm.
+    background-image: url('/images/searchicon.png'); */
     background-repeat: no-repeat;
     text-align: center;
 }

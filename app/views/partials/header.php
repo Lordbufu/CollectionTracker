@@ -9,7 +9,6 @@
 		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel='stylesheet' type='text/css' href='css/pop-in-templ.css'>
-		<script src="js/html5-qrcode.min.js"></script>
 		<script src="js/main.js"></script>
 
 		<?php switch ( $_SERVER["REQUEST_URI"] ) :
@@ -44,7 +43,12 @@
 				<link rel='stylesheet' type='text/css' href='css/mob-beheer-templ.css'>
 			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel='stylesheet' type='text/css' href='css/ipad-beheer-templ.css'>
-			<?php endif; break; endswitch; ?>
+			<?php endif; break; ?>
+
+			<?php case "/test2":
+				if( !isset( $_SESSION["user"]["id"] ) ) { header( "location:https://{$_SERVER['SERVER_NAME']}/" ); } ?>
+				<script src="js/html5-qrcode.min.js"></script>
+			<?php endswitch; ?>
 
 		<?php if( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
 				foreach( $_SESSION["header"]["error"] as $key => $value ) : ?>
