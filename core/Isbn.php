@@ -2,7 +2,7 @@
 // test class for getting book info using the ISBN,
 // this uses the Google API to querry the ISBN,
 // it has some potentially usefull information,
-// but the majority is not info that is stored.
+// but the majority is not info that i store.
 
 // register class to App namespace
 namespace App\Core;
@@ -26,44 +26,46 @@ class Isbn {
     // get url function for testing.
     public function get_data() {
         // Parsing the google api using the stored url.
-        $page = file_get_contents($this->url);
-        $data = json_decode($page, true);
+        $page = file_get_contents( $this->url );
+        $data = json_decode( $page, true );
 
+        die( var_dump( print_r( $data ) ) );
+        
         // Storage for processing the google api information.
         $info = [];
         $temp = [];
 
         // Store usefull data from the parsed url.
-        foreach($data as $key => $value) {
+        foreach( $data as $key => $value ) {
             // Single item
-            if($key === 'totalItems' && $value === 1) {
-                $temp = $data['items'][0]['volumeInfo'];
+            if( $key === "totalItems" && $value === 1 ) {
+                $temp = $data["items"][0]["volumeInfo"];
             // Several items ?
-            } else if ($key === 'totalItems' && $value < 1) {
-                $info = $data['items'];
+            } else if( $key === "totalItems" && $value < 1 ) {
+                $info = $data["items"];
             }
         }
 
         // If something was stored, and thus there was a single item
-        if(!empty($temp)) {
+        if( !empty( $temp ) ) {
             // Store all relevant items of the the 
-            foreach($temp as $key => $value) {
-                if($key === "title") {
-                    $this->new['title'] = $value;
-                } elseif($key === "authors") {
-                    $this->new['authors'] = $value[0];
-                } elseif($key === "publishedDate") {
-                    $this->new['publishedDate'] = $value;
-                } elseif($key === "description") {
-                    $this->new['description'] = $value;
-                } elseif($key === "printType") {
-                    $this->new['type'] = $value;
-                } elseif($key === "categories") {
-                    $this->new['categories'] = $value;
-                } elseif($key === "imageLinks") {
-                    $this->new['cover'] = $value['thumbnail'];
-                } elseif($key === "previewLink") {
-                    $this->new['preview'] = $value;
+            foreach( $temp as $key => $value ) {
+                if( $key === "title" ) {
+                    $this->new["title"] = $value;
+                } elseif( $key === "authors" ) {
+                    $this->new["authors"] = $value[0];
+                } elseif( $key === "publishedDate" ) {
+                    $this->new["publishedDate"] = $value;
+                } elseif( $key === "description" ) {
+                    $this->new["description"] = $value;
+                } elseif( $key === "printType" ) {
+                    $this->new["type"] = $value;
+                } elseif( $key === "categories" ) {
+                    $this->new["categories"] = $value;
+                } elseif( $key === "imageLinks" ) {
+                    $this->new["cover"] = $value["thumbnail"];
+                } elseif( $key === "previewLink" ) {
+                    $this->new["preview"] = $value;
                 }
             }
         }
@@ -72,5 +74,4 @@ class Isbn {
         return $this->new;
     }
 }
-
 ?>

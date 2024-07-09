@@ -726,7 +726,7 @@ class LogicController {
 
     // Test function for isbn data
     public function isbn() {
-        if(isset($_POST['isbn'])) {
+        if( isset( $_POST['isbn'] ) ) {
             // set request url for the google api
             App::get('isbn')->set_url( $_POST['isbn'] );
 

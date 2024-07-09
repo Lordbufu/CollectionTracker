@@ -100,11 +100,11 @@ class PagesController {
 
 	// Test functions to test new features
 	public function test() {
-		return App::view('test');
+		return App::view("test");
 	}
 
 	public function test2() {
-		return App::view('scanner-page');
+		return App::view("scanner-page");
 	}
 }
 ?>
