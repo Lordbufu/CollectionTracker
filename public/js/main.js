@@ -64,8 +64,8 @@ function dispatchInputEvent( caller ) {
 function saveScroll( e ) {
     sessionStorage.setItem( "scrollPos", window.scrollY );
 
-    // Forward event if album-bewerken button is pressed, but also if the form-submit button was pressed.
-    if( e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button" ) {
+    // Forward event if album-bewerken button is pressed, but also if the form-submit button was pressed, or a isbn search was triggered.
+    if( e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button" || e.target.id === "modal-form-isbnSearch") {
         return localStorage.setItem( "event", "album-bew" );
     // Forward event if album-toevoegen button is pressed, but also if the form-submit button was pressed.
     } else if( e.target.id === "album-toev-subm" || e.target.id === "albumt-form-button" ) {

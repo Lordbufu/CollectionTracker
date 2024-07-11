@@ -562,7 +562,7 @@ class LogicController {
             }
 
             /* Store the remaining data for SQL */
-            $albumData["Album_Index"] = $_POST["album-index"];
+            //$albumData["Album_Index"] = $_POST["album-index"];
             if( isset( $_POST["album-nummer"] ) ) { $albumData["Album_Nummer"] = $_POST["album-nummer"]; }
             if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
             $albumData["Album_Isbn"] = isset( $_POST["album-isbn"] ) ? $_POST["album-isbn"] : 0;
@@ -576,6 +576,8 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
+            } else if( isset( $_SESSION["page-data"]["album-cover"] ) ) {
+                $albumData["Album_Cover"] = $_SESSION["page-data"]["album-cover"];
             }
 
             /* Attempt to store the album data in the SQL DB. */
@@ -726,14 +728,27 @@ class LogicController {
 
     // Test function for isbn data
     public function isbn() {
-        if( isset( $_POST['isbn'] ) ) {
-            // set request url for the google api
-            App::get('isbn')->set_url( $_POST['isbn'] );
+        if( isset( $_POST['album-isbn'] ) ) {
+            // Use the Google API to search this isbn for information.
+            $result = App::get('isbn')->get_data( $_POST['album-isbn'] );
+            // Add missing info if it was included, usually only with already excisting items.
+            if( isset( $_POST["serie-index"] ) ) { $result["serie-index"] = $_POST["serie-index"]; }
+            if( isset( $_POST["album-index"] ) ) { $result["album-index"] = $_POST["album-index"]; }
+            if( isset( $_POST["album-nummer"] ) ) { $result["album-nummer"] = $_POST["album-nummer"]; }
+        }
 
-            // request book data
-            $result = App::get('isbn')->get_data();
+        if( isset( $result ) ) {
+            // return the data to the album edit route, so it can be filled in.
+            App::get("session")->setVariable( "page-data", [ "isbn-search" => $result ] );
+            // Store the cover in the session, incase its correct and needs to used.
+            App::get("session")->setVariable( "page-data", [ "album-cover" => $result["album-cover"] ] );
+            // Add a feedback message, that user might want check if the info is correct.
+            App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ] ] );
 
-            die( var_dump( print_r( $result ) ) );
+            // Remove the page-data trigger for editing a excisting album, so the search info is filled in instead.
+            unset( $_SESSION["page-data"]["album-edit"] );
+
+            return App::redirect( "beheer#albumb-pop-in" );
         }
     }
 }

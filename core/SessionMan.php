@@ -91,10 +91,11 @@ class SessionMan {
                     return $_SESSION[$name]["albums"] = $data;
                 } elseif( isset( $value["Col_Index"] ) ) {
                     return $_SESSION[$name]["collections"] = $data;
-                } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl") {
+                } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl" || "isbn-search") {
                     $_SESSION[$name][$key] = $value;
                     return;
-                }
+                // Temp debug line
+                } else { die("Unexpected data is being passed to the session setVariable function!"); }
             }
         }
     }
