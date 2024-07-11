@@ -78,6 +78,10 @@ function initBeheer() {
     pwSubButt = document.getElementById("reset-submit");
     pwSubButt.disabled = true;
 
+    /* Elements and listen events for the isbn search function */
+    const isbnButt = document.getElementById("modal-form-isbnSearch");
+    isbnButt.addEventListener("click", saveScroll);
+
     /* Triggers based on browser storage variables */
     if(localStorage.welcome) {
         displayMessage(localStorage.welcome);

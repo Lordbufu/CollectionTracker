@@ -74,6 +74,7 @@ function selectSubm() {
 
 
 //  TODO: Refactoring in progress, concept code finished !!
+//          Need to test if this works properly atm, for the most part its copy and pasting of the old code, and while that seems to work it might have unexpected behavior.
 // The search function.
 /*  albumZoek(event): Searches the albums on page, matching them on a letter by letter basis. */
 function albumZoek(event) {
@@ -81,23 +82,19 @@ function albumZoek(event) {
 
     // We are searching on a name basis
     if( chb1.checked === true ) {
-
         tafelRows.forEach( ( item, index ) => {
             const albumNaam = item.children[1].innerHTML;
-    
             if( albumNaam.toUpperCase().indexOf( filter ) > -1 ) {
                 return tafelRows[index].style.display = "";
             } else {
                 return tafelRows[index].style.display = "none";
             }
         } );
-
     // We are searching on a album nr basis
     } else if( chb2.checked === true ) {
         tafelRows.forEach( ( item, index ) => {
-            const albumNaam = item.children[2].innerHTML;
-    
-            if( albumNaam.toUpperCase().indexOf( filter ) > -1 ) {
+            const albumNr = item.children[2].innerHTML;
+            if( albumNr.toUpperCase().indexOf( filter ) > -1 ) {
                 return tafelRows[index].style.display = "";
             } else {
                 return tafelRows[index].style.display = "none";
@@ -105,17 +102,14 @@ function albumZoek(event) {
         } );
     // We are searching on a album isbn basis
     } else if( chb3.checked === true ) {
-
         tafelRows.forEach( ( item, index ) => {
-            const albumNaam = item.children[5].innerHTML;
-    
-            if( albumNaam.toUpperCase().indexOf( filter ) > -1 ) {
+            const albumIsbn = item.children[5].innerHTML;
+            if( albumIsbn.toUpperCase().indexOf( filter ) > -1 ) {
                 return tafelRows[index].style.display = "";
             } else {
                 return tafelRows[index].style.display = "none";
             }
         } );
-
     }
 }
 
@@ -139,9 +133,9 @@ function checkBoxSearch(event) {
 
     if( event.target.checked === true ) {
         let inputEvent = new Event( "input", { "bubbles": true, "cancelable": false } );
-
         if( zoekInp.disabled ) { zoekInp.disabled = false; }
         
+        // Detect what option was selected.
         if( event.target.id === "album-zoek-naam-inp" ) {
             chb2.checked = false, chb3.checked = false, document.getElementById( "album-zoek-span" ).innerHTML = "Zoek op album naam";
             // I need to dispatch here, otherwhise i get unexpected results (delay in the event actually triggering).

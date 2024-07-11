@@ -66,51 +66,73 @@
                     <span class="modal-form-span"> Album ISBN </span>
                 </label>
 
-                <!--<label class="modal-form-label">
-                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" hidden />
-                    <span class="modal-form-span" hidden> Album Opmerking </span>
-                </label>-->
-
-                <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" />
-
-            <!-- For script reasons i need a empty pop-in, might remove this later -->
-            <?php else : ?>
-                <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="" hidden />
-                <input type="text" class="modal-form-indexA" id="albumb-form-indexA" name="album-index" value="" hidden />
+                <button class="modal-form-isbnSearch" id="modal-form-isbnSearch" type="submit" formmethod="post" formaction="/isbn"> Zoek Isbn </button>
 
                 <label class="modal-form-label">
-                    <input type="text" class="modal-form-input" id="albumb-form-alb-naam" name="album-naam" placeholder="" value="" autocomplete="on" required />
+                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="<?=$store['Album_Opm']?>" autocomplete="on" />
+                    <span class="modal-form-span" hidden> Album Opmerking </span>
+                </label>
+                
+                <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" />
+
+            <!-- The same pop-in, but now populated via de isbn search option -->
+            <?php elseif( isset( $_SESSION['page-data']['isbn-search'] ) ) :
+                    $result = $_SESSION['page-data']['isbn-search']; ?>
+
+                <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="<?= $result["serie-index"] ?>" hidden />
+                <input type="text" class="modal-form-indexA" id="albumb-form-indexA" name="album-index" value="<?= $result["album-index"] ?>" hidden />
+
+                <label class="modal-form-label">
+                    <input type="text" class="modal-form-input" id="albumb-form-alb-naam" name="album-naam" placeholder="" value="<?= $result["album-naam"] ?>" autocomplete="on" required />
                     <span class="modal-form-span"> Album Naam </span>
                 </label>
 
                 <label class="modal-form-label">
-                    <input type="number" min="0" class="modal-form-input" id="albumb-form-alb-nr" name="album-nummer" placeholder="" value="" autocomplete="on" />
+                    <input type="number" min="0" class="modal-form-input" id="albumb-form-alb-nr" name="album-nummer" placeholder="" value="<?= $result["album-nummer"] ?>" autocomplete="on" />
                     <span class="modal-form-span"> Album Uitgave Nummer </span>
                 </label>
 
                 <label class="modal-form-label">
-                    <input type="date" class="modal-form-input" id="albumb-form-alb-date" name="album-datum" placeholder=""  value="" autocomplete="on" />
+                    <input type="date" class="modal-form-input" id="albumb-form-alb-date" name="album-datum" placeholder=""  value="<?= $result["album-uitgDatum"] ?>" autocomplete="on" />
                     <span class="modal-form-span"> Album Uitgave Datum </span>
                 </label>
 
-                <div class="modal-album-cover" id="albumB-cover"> test </div>
+                <?php if( !empty( $result["album-cover"] ) ) : ?>
+
+                <div class="modal-album-cover" id="albumB-cover">
+                    <img class="modal-album-cover-img" id="albumb-cover-img" src="<?= $result["album-cover"] ?>" alt='album-cover'/>
+                </div>
+
+                <label class="modal-form-alb-cov-lab" id="modal-form-albumB-cov-lab" for="albumb-form-alb-cov" >
+                    Nieuwe Cover Selecteren
+                    <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumb-form-alb-cov" name="album-cover" />
+                </label>
+
+                <?php else : ?>
+                <div class="modal-album-cover" id="albumB-cover"> </div>
+
                 <label class="modal-form-alb-cov-lab" id="modal-form-albumB-cov-lab" for="albumb-form-alb-cov" >
                     Album Cover Selecteren
                     <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumb-form-alb-cov" name="album-cover" />
                 </label>
 
+                <?php endif; ?>
+
                 <label class="modal-form-label">
-                    <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="" autocomplete="on" required />
+                    <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="<?= $result["album-isbn"] ?>" autocomplete="on" required />
                     <span class="modal-form-span"> Album ISBN </span>
                 </label>
 
-                <!-- <label class="modal-form-label">
-                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" hidden />
+                <button class="modal-form-isbnSearch" id="modal-form-isbnSearch" type="submit" formmethod="post" formaction="/isbn" hidden> Zoek Isbn </button>
+
+                <label class="modal-form-label">
+                    <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="<?= $result["album-opm"] ?>" autocomplete="on" />
                     <span class="modal-form-span" hidden> Album Opmerking </span>
-                </label> -->
+                </label>
 
                 <input class="modal-form-button" id="albumb-form-button" type="submit" value="Bevestigen" />
             <?php endif; ?>
+
             </form>
         </div>
     </div>
