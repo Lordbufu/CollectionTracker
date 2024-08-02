@@ -26,15 +26,16 @@
 
     <?php
         require('partials/beheer-contr-templ.php');
-        if(!isset($_SESSION['page-data']['huidige-serie'])) {
+        /* Check session tag to see what view template has to be loaded. */
+        if( !isset( $_SESSION['page-data']['huidige-serie'] ) ) {
             require('partials/beheer-weerg-templ.php');
-        } else {
-            require('partials/beheer-albView-templ.php');
-        }
+        } else { require('partials/beheer-albView-templ.php'); }
+
         require('partials/beheer-serie-maken-pop-in.php');
         require('partials/beheer-serie-bewerken-pop-in.php');
         require('partials/beheer-album-toevoegen-pop-in.php');
         require('partials/beheer-album-bewerken-pop-in.php');
+        require('partials/beheer-albumB-scanner.php');
         require('partials/beheer-wachtwoord-reset2-pop-in.html');
         require('partials/footer.php');
     ?>

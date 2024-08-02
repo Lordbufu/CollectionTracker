@@ -18,13 +18,16 @@ namespace App\Core;
                 - albums (Assoc Array)      : All album data that needs to be displayed.
                 - series (Assoc Array)      : All serie data that needs to be displayed.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
-                - huidige-serie (string)    : The current selected serie, for both the user and admin.
-                - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
                 - serie-dupl (Assoc Array)  : The POST data from the duplicate serie.
-                - edit-serie (int)          : The series index of the serie that is requested for editing.
-                - add-album (int)           : The serie index key, that the user wants to add a album to.
                 - alb-dupl (Assoc Array)    : The POST data from the duplicate album.
                 - album-cover (blob)        : Temp store for any uploaded album covers, when a duplicate name was detected.
+                - isbn-search (Assoc Array) : The results of searching the Google API for a ISBN number.
+            - page-data : Special flags used to trigger specific logic.
+                - huidige-serie (string)    : The current selected serie, for both the user and admin.
+                - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
+                - edit-serie (int)          : The series index of the serie that is requested for editing.
+                - add-album (int)           : The serie index key, that the user wants to add a album to.
+                - isbn-scan (string)        : A state that indicated the users wants to scan and photo/image for its isbn/ean code.
  */
 class SessionMan {
     protected $savePath = "../tmp/sessions/";
@@ -56,9 +59,7 @@ class SessionMan {
         if(!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777, true);
             session_save_path($this->savePath);
-        } else {
-            session_save_path($this->savePath);
-        }
+        } else { session_save_path($this->savePath); }
 
         return session_start();
     }
@@ -113,19 +114,10 @@ class SessionMan {
             foreach( $_SESSION[$store] as $entry => $value ) {
                 if( is_string($keys) && $keys == $entry ) {
                     return TRUE;
-                } else {
-                    foreach($keys as $key) {
-                        if($key === $entry) {
-                            return TRUE;
-                        }
-                    }
-                }
+                } else { foreach($keys as $key) { if($key === $entry) { return TRUE; } } }
             }
-
             return FALSE;
-        } else {
-            return FALSE;
-        }
+        } else { return FALSE; }
     }
 }
 ?>

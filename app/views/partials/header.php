@@ -10,6 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel='stylesheet' type='text/css' href='css/pop-in-templ.css'>
 		<script src="js/main.js"></script>
+		<script src="js/html5-qrcode.min.js"></script>
 
 		<?php switch ( $_SERVER["REQUEST_URI"] ) :
 			case "/": ?>
@@ -45,21 +46,34 @@
 				<link rel='stylesheet' type='text/css' href='css/ipad-beheer-templ.css'>
 			<?php endif; break; ?>
 
-			<?php case "/test2":
-				if( !isset( $_SESSION["user"]["id"] ) ) { header( "location:https://{$_SERVER['SERVER_NAME']}/" ); } ?>
-				<script src="js/html5-qrcode.min.js"></script>
 			<?php endswitch; ?>
 
-		<?php if( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
-				foreach( $_SESSION["header"]["error"] as $key => $value ) : ?>
+		<?php
+			if( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
+				foreach( $_SESSION["header"]["error"] as $key => $value ) :
+		?>
 				<script> localStorage.setItem( "<?=$key?>", "<?=$value?>" ); </script>
-		<?php endforeach; unset( $_SESSION["header"]["error"] ); elseif ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["feedB"] ) ) :
-				foreach( $_SESSION["header"]["feedB"] as $key => $value ) : ?>
+		<?php
+				endforeach;
+				unset( $_SESSION["header"]["error"] );
+			endif;
+			if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["feedB"] ) ) :
+				foreach( $_SESSION["header"]["feedB"] as $key => $value ) :
+		?>
 				<script> localStorage.setItem( "<?=$key?>", "<?=$value?>" ); </script>
-		<?php endforeach; unset( $_SESSION["header"]["feedB"] ); elseif ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["broSto"] ) ) :
-				foreach ( $_SESSION["header"]["broSto"] as $key => $value ) : ?>
+		<?php
+				endforeach;
+				unset( $_SESSION["header"]["feedB"] );
+			endif;
+			if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["broSto"] ) ) :
+				foreach ( $_SESSION["header"]["broSto"] as $key => $value ) :
+		?>
 				<script> localStorage.setItem("<?=$key?>", "<?=$value?>"); </script>
-		<?php endforeach; unset( $_SESSION["header"]["broSto"] ); endif; ?>
+		<?php
+				endforeach;
+				unset( $_SESSION["header"]["broSto"] );
+			endif;
+		?>
 
 	</head>
 	<body>

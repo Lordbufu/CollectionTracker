@@ -41,7 +41,7 @@ class PagesController {
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
 			/* If certain page states are not set, remove the data for repopulation. */
-			if( !App::get("session")->checkVariable( "page-data", [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover" ] ) ) {
+			if( !App::get("session")->checkVariable( "page-data", [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover", "isbn-scan" ] ) ) {
 				unset($_SESSION["page-data"]);
 			}
 
@@ -96,15 +96,6 @@ class PagesController {
 			App::get("session")->setVariable( "header", $userCheck );
 			return App::redirect("");
 		}
-	}
-
-	// Test functions to test new features
-	public function test() {
-		return App::view("test");
-	}
-
-	public function test2() {
-		return App::view("scanner-page");
 	}
 }
 ?>

@@ -54,36 +54,49 @@
                     <input class="modal-form-input" id="albumt-form-alb-isbn" name="album-isbn" value="<?=$store['album-isbn']?>" placeholder="" autocomplete="on" required />
                     <span class="modal-form-span"> Album ISBN </span>
                 </label>
-                <!--<label class="modal-form-label">
-                    <input class="modal-form-input" id="albumt-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" hidden />
+
+                <label class="modal-form-label">
+                    <input class="modal-form-input" id="albumt-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" />
                     <span class="modal-form-span" hidden> Album Opmerking </span>
-                </label>-->
+                </label>
 
                 <input class="modal-form-button" id="albumt-form-button" type="submit" value="Bevestigen" />
 
-        <?php
-                // unset stored data to avoid unexpected behavior
-                unset($store);
-            else :
-        ?>
-                <?php if(isset($_SESSION['page-data']['add-album'])) : ?>
-                <input class="modal-form-hidden" id="modal-form-hidden" name="serie-index" value="<?=$_SESSION['page-data']['add-album']?>" hidden />
+        <?php unset($store); else :
+                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) {
+                    $temp = $_SESSION["page-data"]["isbn-scan"];
+                } ?>
+                <?php if( isset( $temp["serie-index"] ) ) : ?>
+                <input class="modal-form-hidden" id="modal-form-hidden" name="serie-index" value="<?=$temp["serie-index"]?>" hidden />
                 <?php else : ?>
                 <input class="modal-form-hidden" id="modal-form-hidden" name="serie-index" value="" hidden />
                 <?php endif; ?>
 
                 <label class="modal-form-label">
+                    <?php if( isset( $temp["album-naam"] ) ) : ?>
+                    <input type="text" class="modal-form-input" id="albumt-form-alb-naam" name="album-naam" value="<?=$temp["album-naam"]?>" placeholder="" autocomplete="on" required />
+                    <?php else : ?>
                     <input type="text" class="modal-form-input" id="albumt-form-alb-naam" name="album-naam" placeholder="" autocomplete="on" required />
+                    <?php endif; ?>
                     <span class="modal-form-span"> Album Naam </span>
                 </label>
 
                 <label class="modal-form-label">
+                    <?php if( isset( $temp["album-nummer"] ) ) : ?>
+                    <input type="number" min="0" class="modal-form-input" id="albumt-form-alb-nr" name="album-nummer" value="<?=$temp["album-nummer"]?>" placeholder="" autocomplete="on" />
+                    <?php else : ?>
                     <input type="number" min="0" class="modal-form-input" id="albumt-form-alb-nr" name="album-nummer" placeholder="" autocomplete="on" />
+                    <?php endif; ?>
+
                     <span class="modal-form-span"> Album Uitgave Nummer </span>
                 </label>
 
                 <label class="modal-form-label">
+                    <?php if( isset( $temp["album-uitgDatum"] ) ) : ?>
+                        <input type="date" class="modal-form-input" id="albumt-form-alb-date" name="album-datum" value="<?=$temp["album-uitgDatum"]?>" placeholder="" autocomplete="on" />
+                    <?php else : ?>
                     <input type="date" class="modal-form-input" id="albumt-form-alb-date" name="album-datum" placeholder="" autocomplete="on" />
+                    <?php endif; ?>
                     <span class="modal-form-span"> Album Uitgave Datum </span>
                 </label>
 
@@ -96,21 +109,26 @@
                 </label>
 
                 <label class="modal-form-label">
+                    <?php if( isset( $temp["album-isbn"] ) ) : ?>
+                    <input class="modal-form-input" id="albumt-form-alb-isbn" name="album-isbn" placeholder="" value="<?=$temp["album-isbn"]?>" autocomplete="on" required />
+                    <?php else : ?>
                     <input class="modal-form-input" id="albumt-form-alb-isbn" name="album-isbn" placeholder="" autocomplete="on" required />
+                    <?php endif; ?>                    
                     <span class="modal-form-span"> Album ISBN </span>
                 </label>
-
-                <!--<label class="modal-form-label">
-                    <input class="modal-form-input" id="albumt-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" hidden />
+                
+                <label class="modal-form-label" >
+                    <?php if( isset( $temp["album-opm"] ) ) : ?>
+                    <input class="modal-form-input" id="albumt-form-alb-opm" name="album-opm" placeholder="" value="<?=$temp["album-opm"]?>" autocomplete="on" />
+                    <?php else : ?>
+                    <input class="modal-form-input" id="albumt-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" />
+                    <?php endif; ?>
                     <span class="modal-form-span" hidden> Album Opmerking </span>
-                </label>-->
+                </label>
 
                 <input class="modal-form-button" id="albumt-form-button" type="submit" value="Bevestigen" />
 
-            <?php
-                endif;
-            ?>
-
+                <?php unset($temp); endif; ?>
             </form>
         </div>
     </div>
