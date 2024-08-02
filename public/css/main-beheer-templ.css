@@ -92,14 +92,14 @@
 }
 
 /* controller submit buttons (overwrites input styles) */
-.serie-maken-subm, .album-toev-subm {
+.serie-maken-subm, .album-toev-subm, .album-isbn-search {
     background: var(--main-butt-color);
     border: 0.15em;
     border-radius: 0.4em;
     cursor: pointer;
     height: 2em;
 }
-.serie-maken-subm:hover, .album-toev-subm:hover { background: var(--main-butt-hover); }
+.serie-maken-subm:hover, .album-toev-subm:hover, .album-isbn-search:hover { background: var(--main-butt-hover); }
 
 /* weergave container content */
 .beheer-weerg-cont {
@@ -119,16 +119,35 @@
 /* remove border for all buttons */
 .beheer-serie-tafel th.button, .beheer-albums-tafel th.button { border: 0; }
 
-.serie-maker, .serie-opmerk, .serie-naam, .serie-albums, .serie-gebruikers {
+/* Give the series colums a bit of make up */
+.serie-naam, .serie-albums, .serie-gebruikers {
+    text-wrap: pretty;
     font-weight: normal;
     font-size: 0.8em;
 }
 
-.album-naam, .album-nummer, .album-uitgave, .album-cover, .album-isbn, .album-opm {
+/* Give the album colums a bit of make up */
+.album-naam, .album-nummer, .album-uitgave, .album-cover, .album-isbn {
+    text-wrap: pretty;
     font-weight: normal;
     font-size: 0.8em;
 }
 
+/* Word-wrap on the author kolums, and a different size */
+.serie-maker, .album-schr {
+    text-wrap: pretty;
+    font-weight: normal;
+    font-size: 0.8em;
+    width: 10em;
+}
+
+/* Word-wrap on the opmerking kolums, and a different size. */
+.serie-opmerk, .album-opm {
+    text-wrap: pretty;
+    font-weight: normal;
+    font-size: 0.8em;
+    width: 13em;
+}
 
 /* table icon button images */
 .album-bewerken-butt { background-image: url('/images/edit.png'); }
@@ -165,3 +184,7 @@
     margin: var(--main-page-margin);
     padding: 0.1em;    
 }
+
+/* Background color for elements that where made static later on. */
+.serie-maken-cont { background: white; }
+.album-toev-cont { background: white; }

@@ -79,35 +79,35 @@ function initBeheer() {
     pwSubButt.disabled = true;
 
     /* Elements and listen events for the isbn search function */
-    const isbnButt = document.getElementById("modal-form-isbnSearch");
+    const isbnButt = document.getElementById("album-isbn-search");
     isbnButt.addEventListener("click", saveScroll);
 
+    html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10 } );
+    html5QrcodeScanner.render( onScanSuccess, onScanError );
+
+    control = document.getElementById( "contr-cont" );
+    if( control.offsetTop)  { sticky = control.offsetTop; }
+
     /* Triggers based on browser storage variables */
-    if(localStorage.welcome) {
-        displayMessage(localStorage.welcome);
-        localStorage.removeItem("welcome");
-    }
+    if( localStorage.welcome ) { displayMessage( localStorage.welcome ), localStorage.removeItem( "welcome" ); }
+    if( localStorage.fetchResponse !== null ) { displayMessage( localStorage.fetchResponse ),  localStorage.removeItem( "fetchResponse" ); }
+    if( localStorage.isbnSearch ) { dispatchInputEvent( "album-bew" ),  localStorage.removeItem( "isbnSearch" ); }
+    if( localStorage.isbnScan ) { dispatchInputEvent( "album-toev" ), localStorage.removeItem( "isbnScan" ); }
 
-    if(localStorage.fetchResponse !== null) {
-        displayMessage(localStorage.fetchResponse);
-        localStorage.removeItem("fetchResponse");
-    }
+    if( sessionStorage.scrollPos ) {
+        window.scrollTo( 0, sessionStorage.scrollPos );
 
-    if(sessionStorage.scrollPos) {
-        window.scrollTo(0, sessionStorage.scrollPos);
-
-        if(window.location.hash === "#albumb-pop-in") {
-            dispatchInputEvent(localStorage.event);
-        } else if(window.location.hash === "#serieb-pop-in") {
-            dispatchInputEvent(localStorage.event);
-        } else if(window.location.hash === "#albumt-pop-in") {
-            dispatchInputEvent(localStorage.event);
-        } else if(window.location.hash === "#seriem-pop-in") {
-            dispatchInputEvent(localStorage.event);
+        if( window.location.hash === "#albumb-pop-in" ) {
+            dispatchInputEvent( localStorage.event );
+        } else if( window.location.hash === "#serieb-pop-in" ) {
+            dispatchInputEvent( localStorage.event );
+        } else if( window.location.hash === "#albumt-pop-in" ) {
+            dispatchInputEvent( localStorage.event );
+        } else if( window.location.hash === "#seriem-pop-in" ) {
+            dispatchInputEvent( localStorage.event );
         }
 
-        localStorage.removeItem("event");
-        sessionStorage.removeItem("scrollPos");
+        localStorage.removeItem( "event" ),  sessionStorage.removeItem( "scrollPos" );
     }
 }
 
@@ -259,4 +259,25 @@ function aResetBev(e) {
     if(conf) {
         return true;
     } else { return false; }
+}
+
+// Test code for the qr scanner
+//  TODO: Figure out how to properly use the scan information, and see how i can combine that with my PhP Isbn class.
+//          And also figure out what todo when a code is not useable.
+function onScanSuccess( decodedText, decodedResult ) {
+    formatName = decodedResult["result"]["format"]["formatName"];
+
+    // Store code in hidden form input field.
+    document.getElementById("albumS-form-isbn").value = decodedText;
+
+    // This function tells the API that the scan can be used, and clears the image.
+    html5QrcodeScanner.clear();
+
+    // Submit the form to PhP 
+    document.getElementById("modal-form-scan").submit();
+}
+
+//  TODO: Figure out what todo with the errorMesage, for now i just console log it.
+function onScanError( errorMessage ) {
+    console.log( errorMessage );    // Log the error for now, so i can debug issues a bit better.
 }

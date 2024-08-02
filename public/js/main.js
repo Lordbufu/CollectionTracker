@@ -1,8 +1,7 @@
 /* Globals for the sticky header/banner */
-let header, sticky;
+let header, control, sticky;
 let html5QrcodeScanner; // Temp code
 
-//  TODO: Relocate the QR scanner code, to a seperate file linked to the page its used on, else we get a missing element error.
 /* Code that triggers when a page is loaded */
 document.onreadystatechange = () => {
     if( document.readyState === 'complete' ) {
@@ -12,7 +11,7 @@ document.onreadystatechange = () => {
         };
 
         header = document.getElementById( "title-banner" );
-        sticky = header.offsetTop;
+        if(header.offsetTop) { sticky = header.offsetTop; }
 
         /* Page specific init and feedback code */
         if(window.location.pathname === '/') {
@@ -24,10 +23,6 @@ document.onreadystatechange = () => {
             return initGebruik();
         } else if( window.location.pathname === "/beheer" ) {
             return initBeheer();
-        } else if( window.location.pathname === "/test2" ) {
-            // Test code for the qr scanner
-            html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10, qrbox: 250 } );
-            html5QrcodeScanner.render( onScanSuccess, onScanError );
         }
     }
 }
@@ -82,8 +77,18 @@ function saveScroll( e ) {
  */
 function onScroll() {
     if( window.scrollY > sticky ) {
+        // Ensure the controle container also moves when scrolling on the admin page.
+        if(window.location.pathname === '/beheer') {
+            control.classList.add( "sticky" );
+            control.style.top = "5.5REM";
+        }
         return header.classList.add( "sticky" );
     } else {
+        // Ensure the controle container is reset when we are back at the top of the page.
+        if(window.location.pathname === '/beheer') {
+            control.classList.remove( "sticky" );
+            control.removeAttribute( "style" );
+        }
         return header.classList.remove( "sticky" );
     }
 }
@@ -119,19 +124,4 @@ function displayMessage( text1="", text2="" ) {
             header2.innerHTML = "";
         }, 3000 );
     }
-}
-
-//  TODO: Figure out how to properly use the scan information, and see how i can combine that with my PhP Isbn class.
-// Test code for the qr scanner
-function onScanSuccess( decodedText, decodedResult ) {
-    // Handle on success condition with the decoded text or result.
-    console.log( `Scan result: ${decodedText}`, decodedResult );
-    // ...
-    html5QrcodeScanner.clear();
-    // ^ this will stop the scanner (video feed) and clear the scan area.
-}
-
-function onScanError( errorMessage ) {
-    // handle on error condition, with error message
-    console.log( errorMessage );
 }

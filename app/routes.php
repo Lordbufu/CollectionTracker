@@ -31,7 +31,11 @@
 	// Shared routes
 	$router->post('valUsr',			'LogicController@valUsr');
 
-	// test route
-	// Route for searching album data with a ISBN number.
+	// test routes
+	
+	// Route for searching album data with a ISBN\EAN number.
 	$router->post('isbn', 			'LogicController@isbn');
+
+	// Route for requesting the ISBN\EAN scanning
+	$router->post('scan', 			'LogicController@scan');
 ?>

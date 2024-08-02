@@ -235,11 +235,41 @@
     text-decoration: none;
     cursor: pointer;
 }
-.modal-gebr-ov-button:hover {
-    background: var(--main-butt-hover);
-}
+.modal-gebr-ov-button:hover { background: var(--main-butt-hover); }
 
 .butt-box {
     margin: var(--main-page-margin);
     padding: 0.2em;
+}
+
+/* Later entries, added during the 2.0 version */
+/* Form content container to align the main content */
+.modal-form-content-cont {
+    display: inline-flex;
+}
+
+/* ISBN lookup button image */
+.modal-form-isbn-triger {
+    background-image: url("/images/refresh-button.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 2.4rem;
+    width: 2.4rem;
+    border: unset;
+}
+
+/* fake triggers to align items */
+.modal-form-fake-triger {
+    background: white;
+    height: 2.5rem;
+    width: 2.5rem;
+    border: unset;
+}
+
+/* fake extra trigger to align items with a image preview */
+.modal-form-fake-extraTriger {
+    height: 7.4rem;
+    width: 2.5rem;
+    border: unset;
 }
