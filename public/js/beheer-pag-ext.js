@@ -82,11 +82,13 @@ function initBeheer() {
     const isbnButt = document.getElementById("album-isbn-search");
     isbnButt.addEventListener("click", saveScroll);
 
-    html5QrcodeScanner = new Html5QrcodeScanner( "reader", { fps: 10 } );
-    html5QrcodeScanner.render( onScanSuccess, onScanError );
+    let config = {
+        fps: 10,
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+    };
 
-    control = document.getElementById( "contr-cont" );
-    if( control.offsetTop)  { sticky = control.offsetTop; }
+    html5QrcodeScanner = new Html5QrcodeScanner( "reader", config );
+    html5QrcodeScanner.render( onScanSuccess, onScanError );
 
     /* Triggers based on browser storage variables */
     if( localStorage.welcome ) { displayMessage( localStorage.welcome ), localStorage.removeItem( "welcome" ); }
@@ -266,14 +268,9 @@ function aResetBev(e) {
 //          And also figure out what todo when a code is not useable.
 function onScanSuccess( decodedText, decodedResult ) {
     formatName = decodedResult["result"]["format"]["formatName"];
-
-    // Store code in hidden form input field.
     document.getElementById("albumS-form-isbn").value = decodedText;
-
-    // This function tells the API that the scan can be used, and clears the image.
+    //console.log( formatName );
     html5QrcodeScanner.clear();
-
-    // Submit the form to PhP 
     document.getElementById("modal-form-scan").submit();
 }
 

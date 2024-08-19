@@ -23,6 +23,18 @@ function initGebruik() {
     /* Listen Event for the album search option */
     document.getElementById( "album-zoek-inp" ).addEventListener( "input", albumZoek );
 
+    /* Elements and listen events for the isbn search function */
+    const zoekButt = document.getElementById("album-scan-subm");
+    zoekButt.addEventListener("click", saveScroll);
+
+    let config = {
+        fps: 10,
+        /*supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]*/
+    };
+
+    html5QrcodeScanner = new Html5QrcodeScanner( "reader", config );
+    html5QrcodeScanner.render( onScanSuccess, onScanError );
+
     /* Loop for detecting, displaying and removing welcome messages for the user */
     if( localStorage.welcome ) {
         displayMessage( localStorage.welcome ), localStorage.removeItem( "welcome" );
@@ -53,7 +65,13 @@ function initGebruik() {
         }
 
         // Clear the stored item.
-        //localStorage.removeItem( "checkState" );
+        localStorage.removeItem( "checkState" );
+    }
+
+    /* Trigger for the window scroll position, to restore the window postion after a user action. */
+    if( sessionStorage.scrollPos ) {
+        window.scrollTo( 0, sessionStorage.scrollPos );
+        sessionStorage.removeItem( "scrollPos" );
     }
 }
 
@@ -115,6 +133,7 @@ function albumZoek(event) {
 
 /*  checkBoc(e): Checkbox listenEvent that simply submits the form. */
 function checkBox(e) {
+    saveScroll(e);
     return e.target.closest( "form" ).submit();
 }
 
@@ -158,4 +177,20 @@ function checkBoxSearch(event) {
     }
 
 
+}
+
+// Test code for the qr scanner
+//  TODO: Figure out how to properly use the scan information, and see how i can combine that with my PhP Isbn class.
+//          And also figure out what todo when a code is not useable.
+function onScanSuccess( decodedText, decodedResult ) {
+    formatName = decodedResult["result"]["format"]["formatName"];
+    document.getElementById("albumSc-form-isbn").value = decodedText;
+    //console.log( formatName );
+    html5QrcodeScanner.clear();
+    document.getElementById("modal-form-gebr-scan").submit();
+}
+
+//  TODO: Figure out what todo with the errorMesage, for now i just console log it.
+function onScanError( errorMessage ) {
+    console.log( errorMessage );    // Log the error for now, so i can debug issues a bit better.
 }

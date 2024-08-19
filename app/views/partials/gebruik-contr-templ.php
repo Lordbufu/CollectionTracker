@@ -1,4 +1,4 @@
-<div class="contr-cont">
+<div class="contr-cont" id="contr-cont">
 
     <div class="serie-sel-cont">
         <form class="serie-sel-form" id="serie-sel-form" action="/gebruik" method="post" >
@@ -59,6 +59,13 @@
                 <input class="modal-form-input" id="album-zoek-inp" type="text" placeholder=""/>
                 <span class="modal-form-span" id="album-zoek-span"> Zoek naar albums.. </span>
             </label>
+        </form>
+    </div>
+
+    <div class="album-scan-cont">
+        <form class="album-scan-form" id="album-scan-form" action="/userScan" method="post">
+            <label for="album-scan-subm" class="album-scan-lab" > Scan barcode met telefoon: </label>
+            <input class="album-scan-subm" id="album-scan-subm" type="submit" value="Scan Barcode"/>
         </form>
     </div>
 

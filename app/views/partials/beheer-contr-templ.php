@@ -22,7 +22,7 @@
                 <?php endforeach; endif; ?>
             </select>
             <input class="album-toev-subm" id="album-toev-subm" type="submit" value="Invoeren" />
-            <button class="album-isbn-search" id="album-isbn-search" type="submit" formmethod="post" formaction="/scan"> Scan Barcode </button>
+            <button class="album-isbn-search" id="album-isbn-search" type="submit" formmethod="post" formaction="/scan"> Scan Barcode (niet voor desktop) </button>
         </form>
     </div>
     

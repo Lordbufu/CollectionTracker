@@ -817,5 +817,36 @@ class LogicController {
 			return App::redirect( "" );
 		}
     }
+
+    public function userScan() {
+        /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
+        $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
+
+		if( !is_array( $userCheck ) ) {
+            if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                App::get("session")->setVariable( "page-data", [ "serie-index" => App::get("collection")->getSerInd( $_SESSION["page-data"]["huidige-serie"] ) ] );
+                App::get("session")->setVariable( "page-data", [ "isbn-scan" => True ] );
+                return App::redirect( "gebruik#albumS-pop-in" );
+            }
+		} else {
+			App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
+			return App::redirect("");
+		}
+    }
+
+    //  TODO: Add a function body, that will try and add/remove as album, based on the scanned isbn number.
+    public function userIsbn() {
+        /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
+        $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
+
+        die( "Serie index = {$_POST["serie-index"]}  |  ISBN Number = {$_POST["album-isbn"]}" );
+
+		if( !is_array( $userCheck ) ) {
+            // add something logical here
+		} else {
+			App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
+			return App::redirect("");
+		}
+    }
 }
 ?>
