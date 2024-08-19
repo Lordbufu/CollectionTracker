@@ -21,5 +21,6 @@
     <?php
         require('partials/gebruik-contr-templ.php');
         require('partials/gebruik-weerg-templ.php');
+        require('partials/gebruik-albumS-pop-in.php');
         require('partials/footer.php');
     ?>

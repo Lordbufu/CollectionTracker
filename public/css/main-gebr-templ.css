@@ -1,6 +1,7 @@
 /* User page banner elements */
 .banner-container {
     display: grid;
+    width: 98.5vw;
     grid-template-areas: 'menu title-text';                         /* Define the grid */
     background-color: var(--main-banner-color);
     border-radius: var(--main-border-radius);
@@ -38,19 +39,22 @@
 /* Controller Containers */
 .contr-cont {
     display: inline-grid;
-    grid-template-areas: 'serie album';
+    width: 98.5vw;
+    grid-template-areas: 'serie album scan';
     justify-content: center;
     justify-items: center;
     text-align: center;
     padding: 0.5em;
+    z-index: 1;
 }
 
 /* Assign grid area */
 .serie-sel-cont { grid-area: serie; }
 .album-zoek-cont { grid-area: album; }
+.album-scan-cont { grid-area: scan; }
 
 /* controller content containers */
-.serie-sel-cont, .album-zoek-cont {
+.serie-sel-cont, .album-zoek-cont, .album-scan-cont {
     display: flex;
     border: solid 0.15em black;
     border-radius: 0.2em;
@@ -61,7 +65,7 @@
 }
 
 /* controller form content */
-.serie-sel-form, .album-zoek-form {
+.serie-sel-form, .album-zoek-form , .album-scan-form {
     display: inline-grid;
     justify-content: center;
     margin: 0.1em;
@@ -69,7 +73,7 @@
 }
 
 /* controlller label content */
-.serie-sel-lab, .album-zoek-lab { font-weight: bold; }
+.serie-sel-lab, .album-zoek-lab, .album-scan-lab { font-weight: bold; }
 
 /* controller serie select input */
 .serie-sel {
@@ -80,20 +84,19 @@
 
 /* controller album search input */
 #album-zoek-inp {
-    /* image disabled for now, not enough space to make it look decent atm.
-    background-image: url('/images/searchicon.png'); */
+    background-image: url('/images/searchicon.png');
     background-repeat: no-repeat;
     text-align: center;
 }
 
 /* controller submit buttons */
-.serie-sel-subm, .album-zoek-subm {
+.serie-sel-subm, .album-zoek-subm, .album-scan-subm {
     background: var(--main-butt-color);
     border: 0.15em;
     border-radius: 0.4em;
     cursor: pointer;
 }
-.serie-sel-subm:hover, .album-zoek-subm:hover { background: var(--main-butt-hover); }
+.serie-sel-subm:hover, .album-zoek-subm:hover, .album-scan-subm:hover { background: var(--main-butt-hover); }
 
 /* weergave table content */
 .gebr-weerg-cont {
@@ -117,6 +120,7 @@
 
 /* Toggle switches for Albums */
 .album-aanwezig-toggle {
+    /*z-index: -1;    /* For some reason i nee to move this back, so my static container goes over the top ? */
     position : relative ;
     display : inline-block;
     width : 4em;
@@ -157,3 +161,20 @@
 }
 
 .footer p { font-weight: bold; }
+
+/* Temp code for the barcode scanning option (will place this properly when mobile css templates are remade) */
+.album-scan-form {
+    justify-items: center;
+    align-content: center;
+}
+
+.album-scan-subm {
+    height: 2em;
+    width: 12em;
+    margin: 1em;
+}
+
+/* Background color for elements that where made static later on. */
+.serie-sel-cont { background: white; }
+.album-zoek-cont { background: white; }
+.album-scan-cont { background: white; }

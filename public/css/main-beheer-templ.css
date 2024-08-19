@@ -1,6 +1,7 @@
 /* Adminpage banner elements */
 .banner-container {
     display: grid;                                                  /* Set to grid to place content easier */
+    width: 98.5vw;
     grid-template-areas: 'menu title-text';                         /* Define the grid area's for the content */
     background-color: var(--main-banner-color);
     border-radius: var(--main-border-radius);
@@ -48,6 +49,7 @@
     justify-content: center;                                        /* Place childeren in the horizontal center */
     justify-items: center;                                          /* Center childeren inside there grid area */
     text-align: center;                                             /* Align text of childeren to the center */
+    width: 98.5vw;
     padding: 0.5em;
 }
 

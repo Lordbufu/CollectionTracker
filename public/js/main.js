@@ -11,7 +11,14 @@ document.onreadystatechange = () => {
         };
 
         header = document.getElementById( "title-banner" );
+        control = document.getElementById( "contr-cont" );
         if(header.offsetTop) { sticky = header.offsetTop; }
+
+        if(window.location.pathname === "/beheer" || window.location.pathname === "/beheer") {
+            if(control.offsetTop) {
+                sticky = control.offsetTop;
+            }
+        }
 
         /* Page specific init and feedback code */
         if(window.location.pathname === '/') {
@@ -69,6 +76,8 @@ function saveScroll( e ) {
         return localStorage.setItem( "event", "serie-bew" );
     } else if( e.target.className === "serie-maken-subm" || e.target.id === "seriem-form-button" ) {
         return localStorage.setItem( "event", "serie-maken" );
+    } else {
+        return;
     }
 }
 
@@ -77,18 +86,20 @@ function saveScroll( e ) {
  */
 function onScroll() {
     if( window.scrollY > sticky ) {
-        // Ensure the controle container also moves when scrolling on the admin page.
-        if(window.location.pathname === '/beheer') {
+        // Ensure the admin controle container also moves when scrolling on the admin page.
+        if(window.location.pathname === '/beheer' || window.location.pathname === '/gebruik') {
             control.classList.add( "sticky" );
             control.style.top = "5.5REM";
         }
+
         return header.classList.add( "sticky" );
     } else {
-        // Ensure the controle container is reset when we are back at the top of the page.
-        if(window.location.pathname === '/beheer') {
+        // Ensure the admin controle container is reset when we are back at the top of the page.
+        if(window.location.pathname === '/beheer' || window.location.pathname === '/gebruik') {
             control.classList.remove( "sticky" );
             control.removeAttribute( "style" );
         }
+
         return header.classList.remove( "sticky" );
     }
 }
