@@ -59,9 +59,6 @@
                 <input class="modal-form-button" id="serieb-form-button" type="submit" value="Bevestigen" />
             </form>
         </div>
-        <?php
-            endif;
-        ?>
-
+        <?php endif; ?>
     </div>
 </div>

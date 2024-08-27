@@ -1,6 +1,5 @@
-/* Globals for the sticky header/banner */
-let header, control, sticky;
-let html5QrcodeScanner; // Temp code
+/* Globals for the sticky header/banner and QR/barcode scanner */
+let header, control, sticky, html5QrcodeScanner;
 
 /* Code that triggers when a page is loaded */
 document.onreadystatechange = () => {
@@ -23,7 +22,8 @@ document.onreadystatechange = () => {
         /* Page specific init and feedback code */
         if(window.location.pathname === '/') {
             if( localStorage.fetchResponse ) {
-                displayMessage( localStorage.fetchResponse ), localStorage.removeItem( "fetchResponse" );
+                displayMessage( localStorage.fetchResponse );
+                localStorage.removeItem( "fetchResponse" );
             }
             return initLanding();
         } else if( window.location.pathname === "/gebruik" ) {
@@ -34,10 +34,12 @@ document.onreadystatechange = () => {
     }
 }
 
+/* Potentially Obsolete, all function calls to this should have been replaced ¿ */
 /* Fetch function, used in certain cases to avoid a page reload */
 async function fetchRequest( url, method, data ) {
     const response = await fetch( url, { method: method, body: data } );
-    return response.json();
+
+    response.json();
 }
 
 /*  dispatchInputEvent(caller):
@@ -66,10 +68,8 @@ function dispatchInputEvent( caller ) {
 function saveScroll( e ) {
     sessionStorage.setItem( "scrollPos", window.scrollY );
 
-    // Forward event if album-bewerken button is pressed, but also if the form-submit button was pressed, or a isbn search was triggered.
     if( e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button" || e.target.id === "modal-form-isbnSearch") {
         return localStorage.setItem( "event", "album-bew" );
-    // Forward event if album-toevoegen button is pressed, but also if the form-submit button was pressed.
     } else if( e.target.id === "album-toev-subm" || e.target.id === "albumt-form-button" ) {
         return localStorage.setItem( "event", "album-toev" );
     } else if( e.target.className === "serie-bewerken-butt" || e.target.id === "serieb-form-button" ) {

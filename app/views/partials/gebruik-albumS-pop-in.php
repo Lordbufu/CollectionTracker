@@ -10,7 +10,6 @@
         </div>
 
         <div class="modal-body">
-
             <div class="modal-scanner-pop-in" id="modal-scanner-pop-in">
                 <div id="reader-container">
                     <div id="reader"> </div>

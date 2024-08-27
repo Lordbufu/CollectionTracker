@@ -243,6 +243,8 @@ class Collection {
     }
 
     /* Collectie Functions */
+    //  TODO: !is_string seems to not be correct for calls im sending here, might want to replace it with !is_array ?¿
+        // This needs more testing.
     /*  getColl($table, $userId):
             Get collection for a specific user from the database.
                 $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
@@ -252,14 +254,19 @@ class Collection {
      */
     public function getColl($table, $userId) {
         /* Set the correct id format, depending on the provided input. */
-        if( !is_string($userId) ) {
-            $id = $userId;
+        if( !is_string( $userId ) ) {
+            if( !is_array( $userId ) ) {
+                $id = [ "Gebr_Index" => $userId ];
+            } else {
+                $id = $userId;
+            }
         } else {
             $id = [ "Gebr_Index" => $userId ];
         }
 
         /* Set the requested collection data, and return to caller. */
         $this->collections = App::get("database")->selectAllWhere($table, $id);
+
         return $this->collections;
     }
 
@@ -274,12 +281,14 @@ class Collection {
         /* Ensure the most recent user collection data is set. */
         $this->collections = $this->getColl( $table, [ "Gebr_Index" => $data["Gebr_Index"] ] );
 
-        /* Loop over the collections, to ensure its not a duplicate entry. */
-        foreach($this->collections as $key => $value) {
-            if($value["Alb_Index"] == $data["Alb_Index"]) {
-                return $this->dupColl;
-            }
-        }
+        /* Removed for now, as having a duplicate detection isnt very usefull anymore.
+            // Loop over the collections, to ensure its not a duplicate entry.
+            // foreach($this->collections as $key => $value) {
+            //     if($value["Alb_Index"] == $data["Alb_Index"]) {
+            //         return $this->dupColl;
+            //     }
+            // }
+         */
 
         /* Prepare the required data, that isnt included in the App and POST data */
         $data["Alb_Staat"] = "";
@@ -289,7 +298,60 @@ class Collection {
 
         /* Attempt to store the collection in, and return the results to the caller  */
         $store = App::get("database")->insert($table, $data);
+
         return is_string($store) ? $this->dbError : TRUE;
+    }
+
+    //  TODO: Finish the comments, and update it to the changes made after the initial draft.
+    /*  evalColl($fData, $sIndex, $uIndex):
+            This function, evaluates if data fetched from the Google API, is set part of a collection or not.
+                $fData  (Assoc Array)   - The data that was fetched from the Google API, via the Isbn class.
+                $sIndex (Int)           - The index of the serie, where the barcode was scanned for.
+                $uIndex (Int)           - The index of the user that scanned the barcode.
+            
+            Return Value: Boolean.
+     */
+    public function evalColl($fData, $sIndex, $uIndex) {
+        $tAlbums = $this->getAlbums( $sIndex );
+        $tColl = $this->getColl( "collecties", $uIndex );
+        $match;
+
+        /* Loop over all stored albums */
+        foreach( $tAlbums as $oKey => $oValue ) {
+            /* Loop over every item in a album */
+            foreach( $oValue as $iKey => $iValue ) {
+                /* If the key is Album_ISBN, and it matches the scanned ISBN */
+                if( $iKey === "Album_ISBN" && $iValue === $fData["album-isbn"] ) {
+                    /* Store said album data in a temp variable, and set a flag that it is. */
+                    $tempFetch = $oValue;
+                    $match = [ "inSerie" => TRUE ];
+                /* Ensure $match wasnt set already, and set a flag that the album isnt in the current serie. */
+                } else if (!isset( $match ) ) {
+                    $match = [ "inSerie" => FALSE ];
+                }
+            }
+        }
+
+        /* Check if album was in the selected serie, but no collection data was found. */
+        if( $match["inSerie"] && empty( $tColl ) ) {
+            // This means album has to be added to the user collection.
+            $match = [ "addToColl" => TRUE ];
+        /* If it is in the Serie, we check if its part of the collection already. */
+        } else if( $match["inSerie"] ) {
+            /* Loop over the current collection data */
+            foreach( $tColl as $oKey => $oValue ) {
+                /* Loop over every entry in said collection data */
+                foreach( $oValue as $iKey => $iValue ) {
+                    /* Check if the album index values match */
+                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) {
+                        // Only logical action, would be to remove the album from the collection.
+                        $match = [ "remFromColl" => TRUE ];
+                    }
+                }
+            }
+        }
+
+        return $match;
     }
 }
 

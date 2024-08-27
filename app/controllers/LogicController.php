@@ -136,21 +136,15 @@ class LogicController {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
             $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
-        } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
-        }
+        } else { $userCheck = App::get("user")->checkUser( -1, "rights" ); }
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
             /* Skip all other logic if a pop-in is closed */
-            if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-                return App::view("beheer");
-            }
+            if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) { return App::view("beheer"); }
 
             /* Check for duplicate serie names, when opening the serie-maken pop-in */
-            if( isset( $_POST["newSerName"] ) ) {
-                $checkSerie = App::get("collection")->checkItemName( "serie", $_POST["newSerName"] );
-            }
+            if( isset( $_POST["newSerName"] ) ) { $checkSerie = App::get("collection")->checkItemName( "serie", $_POST["newSerName"] ); }
 
             /* Evaluate checkSerie with the expected POST data, to display the correct message and redirect to the proper route. */
             if( isset( $_POST["newSerName"] ) && is_array( $checkSerie ) ) {
@@ -168,7 +162,8 @@ class LogicController {
             }
 
             /* Make sure important session tags stay set untill specifically unset */
-            if( !App::get("session")->checkVariable( "page-data", [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover" ] ) ) {
+            $impTags = [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover", "isbn-scan", "isbn-search" ];
+            if( !App::get("session")->checkVariable( "page-data", $impTags ) ) {
                 unset($_SESSION["page-data"]);
             }
 
@@ -180,9 +175,7 @@ class LogicController {
             }
 
             /* Populate the session series data is there is non */
-            if( empty($_SESSION["page-data"]["series"] ) ) {
-                App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() );
-            }
+            if( empty($_SESSION["page-data"]["series"] ) ) { App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() ); }
 
             /* Store the albums and name for a serie, if the admin is viewing a serie */
             if( !empty( $_POST["serie-index"] ) ) {
@@ -199,6 +192,7 @@ class LogicController {
 
             /* Fail-save for unexpected behavior */
             return App::view("beheer");
+            
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
             App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
@@ -396,7 +390,9 @@ class LogicController {
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             /* Check if the POST data was set for the item name check. */
-            if( isset( $_POST["album-naam"] ) ) { $itemCheck = App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] ); }
+            if( isset( $_POST["album-naam"] ) ) {
+                $itemCheck = App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] );
+            }
 
             /* If an array was returned, the correct session data has to be prepared and stored, and i redirect to the pop-in. */
             if( is_array( $itemCheck ) ) {
@@ -416,14 +412,18 @@ class LogicController {
                 App::get("session")->setVariable( "page-data", [ "album-dupl" => $returnData ] );
                 return App::redirect("beheer#albumt-pop-in");
             /* Otherwhise i can store the name for processing it. */
-            } else { $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] ); }
+            } else {
+                $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] );
+            }
 
             /* Prep the rest of the album data for SQL */
             $albumData["Album_Opm"] = "W.I.P.";
             $albumData["Album_Serie"] = $_POST["serie-index"];
             $albumData["Album_ISBN"] = ( !empty( $_POST["album-isbn"] ) || $_POST["album-isbn"] !== "" ) ? $_POST["album-isbn"] : 0;
             $albumData["Album_Nummer"] = ( !empty( $_POST["album-nummer"] ) ) ? $_POST["album-nummer"] : 0;
-            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
+            if( !empty( $_POST["album-datum"] ) ) {
+                $albumData["Album_UitgDatum"] = $_POST["album-datum"];
+            }
 
             /* Album cover loop, for base64 conversion, or re-adding of the one stored in the session */
             if( $_FILES["album-cover"]["error"] === 0 ) {
@@ -433,14 +433,18 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
-            } elseif( isset( $_SESSION["page-data"]["album-dupl"]["album-cover"] ) ) { $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["album-cover"]; }
+            } elseif( isset( $_SESSION["page-data"]["album-dupl"]["album-cover"] ) ) {
+                $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["album-cover"];
+            }
 
             /* Attempt to store the album in the SQL DB */
             $store = App::get("collection")->setAlbum( $albumData );
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_array( $store ) ) {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
+                App::get("session")->setVariable( "header",
+                    [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ]
+                );
 
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
                 if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
@@ -684,22 +688,26 @@ class LogicController {
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             /* If a albumIndex is in the POST, set ids for SQL first. */
-            if( isset( $_POST["albumIndex"] ) ) { $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ]; }
+            if( isset( $_POST["albumIndex"] ) ) {
+                $ids = [ "Gebr_Index" =>  $_SESSION["user"]["id"], "Alb_Index" => $_POST["albumIndex"] ];
+            }
 
             /* Then evaluate the checkState, and execute the correct DB action */
             if( isset( $_POST["checkState"] ) && $_POST["checkState"] === "false" ) {
                 $store = App::get("collection")->setColl( "collecties", $ids );
-            } else if ( isset( $_POST["checkState"] ) && $_POST["checkState"] === "true" ) { $store = App::get("collection")->remItem( "collecties", $ids ); }
+            } else if ( isset( $_POST["checkState"] ) && $_POST["checkState"] === "true" ) {
+                $store = App::get("collection")->remItem( "collecties", $ids );
+            }
 
             /* Evaluate the DB action, and give the coorect feedback, clear the correct page-data, and redirect to the user page. */
             if( !is_array( $store ) ) {
                 /* If no errors, evaluated the checkState and execute the correct logic. */
                 if( $_POST["checkState"] === "false" ) {
-                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is toegvoegd aan uw collectie!" ] ] );
+                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . ", is toegvoegd aan uw collectie!" ] ] );
                     unset( $_SESSION["page-data"]["colllections"] );
                     return App::redirect("gebruik");
                 } elseif( $_POST["checkState"] === "true" ) {
-                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . " is verwijdert van uw collectie!" ] ] );
+                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . ", is verwijdert van uw collectie!" ] ] );
                     unset( $_SESSION["page-data"]["colllections"] );
                     return App::redirect("gebruik");
                 }
@@ -715,14 +723,13 @@ class LogicController {
         }
     }
 
+    //  TODO: Wait for user feedback, to see if anything need changing.
     /*	scan(): This function simply set the correct session tag, and redirects to the pop-in to load the correct template. */
 	public function scan() {
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
 		if( isset( $_SESSION["user"]["id"] ) ) {
 			$userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
 		} else { $userCheck = App::get("user")->checkUser( -1, "rights" ); }
-
-        //die( var_dump( print_r( $_POST ) ) );
 
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
@@ -737,22 +744,12 @@ class LogicController {
 		}
     }
 
-    //  TODO: Review if i can offload adding he existing data via the isbn class, instead of cluttering the controller with logic.
-    //  TODO: Rework "beheer-album-toevoegen-pop-in.php", to be able to fill in the scanned data.
-    //  TODO: Figure out how to get the current cover and store that in the $result to display on page again.
-    //  TODO: Add the search feature to adding a album aswell, atm its only added to editing.
-    // Debug info, for testing the isbn manual search functions.
-        // 9780340626580
-        // Suske & Wiske
-        // Lambiorix
-        // alb nr 14
+    //  TODO: Wait for user feedback, to see if anything need changing.
     /*  isbn():
             This function attempt to get as much item data as possible, from the Google API, so forms can be pre-filled.
             This works for both the ISBN search function, as the bar-code scanner, though only give ISBN/EAN book information in return.
      */
     public function isbn() {
-        $result;
-
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
 		if( isset( $_SESSION["user"]["id"] ) ) {
 			$userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
@@ -760,55 +757,49 @@ class LogicController {
 
         /* Evaluate the user authentication. */
         if( !is_array( $userCheck ) ) {
+            $result;
+
             /* Check if the isbn was set, and start the parsing/processing logic. */
             if( isset( $_POST["album-isbn"] ) ) {
                 /* Attempt to get data from the Google API. */
                 $result = App::get('isbn')->get_data( $_POST["album-isbn"] );
-                /* Data that is potentially included, when searching a ISBN manually for a excisting entry */
-                if( isset( $_POST["album-index"] ) ) { $result["album-index"] = $_POST["album-index"]; }
-                if( isset( $_POST["album-nummer"] ) ) { $result["album-nummer"] = $_POST["album-nummer"]; }
-                /* Data specfic to both adding and editing a entry */
-                if( isset( $_POST["serie-index"] ) ) { $result["serie-index"] = $_POST["serie-index"]; }
-                if( isset( $_POST["album-naam"] ) ) { $result["album-naam"] = $_POST["album-naam"]; }
-                if( !empty( $_POST["album-datum"] ) && !isset( $result["serie-datum"] ) ) { $result["album-datum"] = $_POST["album-datum"]; }
-                if( !empty( $_POST["album-opm"] ) && !isset( $result["album-opm"] ) ) { $result["album-opm"] = $_POST["album-opm"]; }
-                /* Check if the fetched isbn is the same, if not use the POST data */
-                if( !empty( $result["album-isbn"] ) ) { if( $result["album-isbn"] !== $_POST["album-isbn"]) { $result["album-isbn"] = $_POST["album-isbn"]; } }
-                /* Edge case for adding a album to a serie */
-                if( isset( $_SESSION["page-data"]["album-toev"] ) && !isset( $result["serie-index"] ) ) { $result["serie-index"] = App::get("collection")->getSerInd( $_SESSION["page-data"]["album-toev"] ); }
-            } else { die("This is a edge case i still need to cover in the logic controller."); }
 
-            // Check if there was a result
+                /* Items that arent provided via the Google API, and should be there by default in the POST. */
+                if( isset( $_POST["album-index"] ) ) { $result["album-index"] = $_POST["album-index"]; }
+                if( isset( $_POST["serie-index"] ) ) { $result["serie-index"] = $_POST["serie-index"]; }
+
+                /* Items that can only be user input, only applies for editing albums. */
+                if( isset( $_POST["album-nummer"] ) ) { $result["album-nummer"] = $_POST["album-nummer"]; }
+
+                /* Items that need to be taken from the Google API search if avaible, otherwhise take the user input, only applies for editing albums. */
+                if( !isset( $result["album-naam"] ) && !empty( $_POST["album-naam"] ) ) { $result["album-naam"] = $_POST["album-naam"]; }
+                if( !isset( $result["serie-datum"] ) && !empty( $_POST["album-datum"] ) ) { $result["album-datum"] = $_POST["album-datum"]; }
+                if( !isset( $result["album-opm"] ) && !empty( $_POST["album-opm"] ) ) { $result["album-opm"] = $_POST["album-opm"]; }
+            }
+
+            /* Evaluate the result, and prepare the correct feedback and page-data, before redirecting to the correct page. */
             if( isset( $result ) ) {
-                /* If there is a result, i prepare the user feedback in the session. */
                 if( !isset( $result["error"] ) ) {
-                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ] ] );
-                /* If there was no result, i prepare the user feedback in the session, and unset tags before redirecting back to the default page. */
-                } else {
+                    App::get("session")->setVariable( "header",
+                        [ "feedB" => [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ] ]
+                    );
+                } else {    // Prepare error feedback and clear all session states.
                     App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => $result["error"] ] ] );
-                    unset( $_SESSION["page-data"]["add-album"] );
-                    unset( $_SESSION["page-data"]["isbn-scan"] );
-                    unset( $_SESSION["page-data"]["serie-index"] );
                     return App::redirect( "beheer" );
                 }
 
-                /* Clear any obsolete tags */
-                unset( $_SESSION["page-data"]["album-toev"] );
-
                 /* If the scan tag is set, we prep the data for the album-toevoegen pop-in, and clear any related tags. */
                 if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) {
-                    unset( $_SESSION["page-data"]["isbn-scan"] );   // unset special flag first
-                    //App::get("session")->setVariable( "page-data", [ "add-album" => $_SESSION["page-data"]["serie-index"] ] );
-                    unset( $_SESSION["page-data"]["serie-index"] ); // unset tag to prevent unexpected behavior.
                     App::get("session")->setVariable( "page-data", [ "isbn-scan" => $result ] );
+                    App::get("session")->setVariable( "page-data", [ "barcode" => TRUE ] );
                     App::get("session")->setVariable( "header", [ "broSto" => [ "isbnScan" => True ] ] );
                     return App::redirect( "beheer#albumt-pop-in" );
-                /* If that tag wasnt set, its going the be manual isbn search, and need to go to the album-bewerken pop-in.  */
+                /* If that tag wasnt set, its going the be manual isbn search, and we need to evaluate where that was done.  */
                 } else {
-                    // return the data to the album edit route, so it can be filled in.
                     App::get("session")->setVariable( "page-data", [ "isbn-search" => $result ] );
                     App::get("session")->setVariable( "header", [ "broSto" => [ "isbnSearch" => True ] ] );
-                    return App::redirect( "beheer#albumb-pop-in" );
+                    App::get("session")->setVariable( "page-data", [ "searched" => TRUE ] );
+                    return App::redirect( "beheer#albumt-pop-in" );
                 }
             }
         /* When authentication fails, store the error, and return to the landingpage. */
@@ -818,6 +809,8 @@ class LogicController {
 		}
     }
 
+    //  TODO: Wait for user feedback, to see if anything need changing.
+    /* userScan(): */
     public function userScan() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
@@ -834,19 +827,79 @@ class LogicController {
 		}
     }
 
-    //  TODO: Add a function body, that will try and add/remove as album, based on the scanned isbn number.
+    //  TODO: Wait for user feedback, to see if anything need changing.
+    //  TODO: See if i can make this a bit faster, the amount of loops etc make this a bit slow on the processing end of things.
+    /* userIsbn(): */
     public function userIsbn() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
-        die( "Serie index = {$_POST["serie-index"]}  |  ISBN Number = {$_POST["album-isbn"]}" );
-
+        /* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
-            // add something logical here
+            /* Attempt to get data from the Google API, if isbn was set. */
+            if( isset( $_POST["album-isbn"] ) ) {
+                $result = App::get('isbn')->get_data( $_POST["album-isbn"] );
+            }
+
+            /* Confirmation\processing loop goes here */
+            if( isset( $_POST["serie-index"] ) ) {
+                $eColl = App::get("collection")->evalColl ($result, $_POST["serie-index"], $_SESSION["user"]["id"] );
+                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => App::get("collection")->getAlbId( $result["album-naam"] ) ];
+
+                /* */
+                if( isset( $eColl["addToColl"] ) ) {
+                    $store = App::get("collection")->setColl( "collecties", $ids );
+                    if( !is_array( $store ) ) {
+                        App::get("session")->setVariable( "header",
+                            [ "feedB" => [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is toegvoegd aan uw collectie!" ] ]
+                        );
+                    } else {
+                        App::get("session")->setVariable( "header", [ "error" => $store ] );
+                    }
+                }
+
+                /* */
+                if( isset( $eColl["remFromColl"] ) ) {
+                    $store = App::get("collection")->remItem( "collecties", $ids );
+                    if( !is_array( $store ) ) {
+                        App::get("session")->setVariable( "header",
+                            [ "feedB" => [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is verwijdert van uw collectie!" ] ]
+                        );
+                    } else {
+                        App::get("session")->setVariable( "header", [ "error" => $store ] );
+                    }
+                }
+
+                /* */
+                if( isset( $eColl["inSerie"] ) && !$eColl["inSerie" ] ) {
+                    App::get("session")->setVariable( "header",
+                        [ "feedB" => [ "fetchResponse" => "Het ablum: " . $result["album-naam"] . ", zit niet in deze serie!" ] ]
+                    );
+                }
+
+                /* Unset all session states, to prevent broken page logic. */
+                unset( $_SESSION["page-data"]["colllections"] );
+                unset( $_SESSION["page-data"]["serie-index"] );
+                unset( $_SESSION["page-data"]["isbn-scan"] );
+
+                /* Redirect to the user page, to reflect the changes. */
+                return App::redirect("gebruik");
+            }
 		} else {
 			App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
 			return App::redirect("");
 		}
     }
+
+    /* Debug copy and paste line
+        //die( var_dump( print_r(  ) ) );
+     */
+
+    /* Debug info, for testing the isbn manual search functions.
+        9780340626580
+        Suske & Wiske
+        Lambiorix
+        alb nr 14
+     */
 }
 ?>

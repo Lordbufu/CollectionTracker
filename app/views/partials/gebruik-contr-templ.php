@@ -62,11 +62,13 @@
         </form>
     </div>
 
+    <?php if( isset( $_SESSION['page-data']['huidige-serie'] ) ) : ?>
     <div class="album-scan-cont">
         <form class="album-scan-form" id="album-scan-form" action="/userScan" method="post">
-            <label for="album-scan-subm" class="album-scan-lab" > Scan barcode met telefoon: </label>
+            <label for="album-scan-subm" class="album-scan-lab" > Zet Album in serie op aan-/afwezig: </label>
             <input class="album-scan-subm" id="album-scan-subm" type="submit" value="Scan Barcode"/>
         </form>
     </div>
+    <?php endif; ?>
 
 </div>

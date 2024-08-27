@@ -29,13 +29,18 @@
         /* Check session tag to see what view template has to be loaded. */
         if( !isset( $_SESSION['page-data']['huidige-serie'] ) ) {
             require('partials/beheer-weerg-templ.php');
-        } else { require('partials/beheer-albView-templ.php'); }
+        } else {
+            require('partials/beheer-albView-templ.php');
+        }
 
+        /* All hidden pop-ins that are loaded not visable on screen */
         require('partials/beheer-serie-maken-pop-in.php');
         require('partials/beheer-serie-bewerken-pop-in.php');
         require('partials/beheer-album-toevoegen-pop-in.php');
         require('partials/beheer-album-bewerken-pop-in.php');
-        require('partials/beheer-albumB-scanner.php');
+        require('partials/beheer-barcode-scanner.php');
         require('partials/beheer-wachtwoord-reset2-pop-in.html');
+
+        // The footer
         require('partials/footer.php');
     ?>

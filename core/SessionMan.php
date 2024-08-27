@@ -27,7 +27,7 @@ namespace App\Core;
                 - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
                 - edit-serie (int)          : The series index of the serie that is requested for editing.
                 - add-album (int)           : The serie index key, that the user wants to add a album to.
-                - isbn-scan (string)        : A state that indicated the users wants to scan and photo/image for its isbn/ean code.
+                - isbn-scan (string)        : A state that indicated the users wants to scan a barcode for its isbn/ean code.
  */
 class SessionMan {
     protected $savePath = "../tmp/sessions/";
