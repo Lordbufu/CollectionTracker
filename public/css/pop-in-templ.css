@@ -56,6 +56,8 @@
     font-weight: bold;
     text-decoration: none;
     color: var(--main-text-color);
+    background-color: rgba(0, 0, 0, 0); /* add a transparent background */
+    border: none; /* remove the border */
     padding-left: 0.3em;
     padding-top: 0.6em;
 }
@@ -137,7 +139,9 @@
 }
 
 /* Date input fixed size to make things look nicer */
-#albumt-form-alb-date, #albumb-form-alb-date { height: 1em; }
+#albumt-form-alb-date, #albumb-form-alb-date {
+    height: 1em;
+}
 
 /* Style a label for the cover image, to look like a submit button */ 
 .modal-form-alb-cov-lab {
@@ -156,8 +160,13 @@
 }
 
 /* Remove the file name behind the file input field for adding and editing album covers */
-#albumt-form-alb-cov { display: none; }
-#albumb-form-alb-cov { display: none; }
+#albumt-form-alb-cov {
+    display: none;
+}
+
+#albumb-form-alb-cov {
+    display: none;
+}
 
 /* A preview container for the actual cover image if present */
 .modal-album-cover-img {
@@ -167,7 +176,9 @@
 }
 
 /* Set size for the Album view, so it doesnt go out of bounds */
-#beheer-albView-content-container { max-width: 100%; }
+#beheer-albView-content-container {
+    max-width: 100%;
+}
 
 .modal-agree-container {
     display: inline-grid;
@@ -180,9 +191,13 @@
     position: inherit;
     top: 0.15em;
 }
-.modal-form-checkbox:hover { cursor: pointer; }
+.modal-form-checkbox:hover {
+    cursor: pointer;
+}
   
-.modal-form-agree-text { font-size: 0.8em; }
+.modal-form-agree-text {
+    font-size: 0.8em;
+}
 
 .modal-form-link {
     margin: 0.3em;
@@ -207,7 +222,9 @@
     cursor: pointer;
 }
 
-.modal-para-1 { font-size: 1em; }
+.modal-para-1 {
+    font-size: 1em;
+}
   
 .modal-ord-list {
     font-size: 0.8em;
@@ -235,7 +252,9 @@
     text-decoration: none;
     cursor: pointer;
 }
-.modal-gebr-ov-button:hover { background: var(--main-butt-hover); }
+.modal-gebr-ov-button:hover {
+    background: var(--main-butt-hover);
+}
 
 .butt-box {
     margin: var(--main-page-margin);
@@ -257,6 +276,12 @@
     height: 2.4rem;
     width: 2.4rem;
     border: unset;
+}
+
+#modal-form-albAdd-cov-trigger {
+    height: 7.4em;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 /* fake triggers to align items */

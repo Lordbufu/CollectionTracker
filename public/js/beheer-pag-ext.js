@@ -82,7 +82,7 @@ function initBeheer() {
     const isbnButt = document.getElementById("album-isbn-search");
     isbnButt.addEventListener("click", saveScroll);
 
-    let config = {
+    const config = {
         fps: 10,
         supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
     };
@@ -91,10 +91,33 @@ function initBeheer() {
     html5QrcodeScanner.render( onScanSuccess, onScanError );
 
     /* Triggers based on browser storage variables */
-    if( localStorage.welcome ) { displayMessage( localStorage.welcome ), localStorage.removeItem( "welcome" ); }
-    if( localStorage.fetchResponse !== null ) { displayMessage( localStorage.fetchResponse ),  localStorage.removeItem( "fetchResponse" ); }
-    if( localStorage.isbnSearch ) { dispatchInputEvent( "album-bew" ),  localStorage.removeItem( "isbnSearch" ); }
-    if( localStorage.isbnScan ) { dispatchInputEvent( "album-toev" ), localStorage.removeItem( "isbnScan" ); }
+    if( localStorage.welcome ) {
+        displayMessage( localStorage.welcome );
+        localStorage.removeItem( "welcome" );
+    }
+
+    if( localStorage.fetchResponse !== null ) {
+        displayMessage( localStorage.fetchResponse );
+        localStorage.removeItem( "fetchResponse" );
+    }
+
+    if( localStorage.isbnSearch ) {
+        if( window.location.hash === "#albumt-pop-in" ) { dispatchInputEvent( "album-toev" ), localStorage.removeItem( "isbnSearch" ); }
+        if( window.location.hash === "#albumb-pop-in" ) { dispatchInputEvent( "album-bew" ), localStorage.removeItem( "isbnSearch" ); }
+    }
+
+    // Requires a review, i dont think i can edit and scan atm ?
+    if( localStorage.isbnScan ) {
+        if( window.location.hash === "#albumt-pop-in" ) {
+            dispatchInputEvent( "album-toev" );
+            localStorage.removeItem( "isbnScan" );
+        }
+
+        if( window.location.hash === "#albumb-pop-in" ) {
+            dispatchInputEvent( "album-bew" );
+            localStorage.removeItem( "isbnScan" );
+        }
+    }
 
     if( sessionStorage.scrollPos ) {
         window.scrollTo( 0, sessionStorage.scrollPos );
@@ -111,6 +134,10 @@ function initBeheer() {
 
         localStorage.removeItem( "event" ),  sessionStorage.removeItem( "scrollPos" );
     }
+
+    /* Test code for the isbn search button */ 
+    const searchSubm = document.getElementById( "modal-form-albAdd-isbn-triger" );
+    searchSubm.addEventListener( "click", submitIsbnSearch );
 }
 
 /*  naamCheck(e):
@@ -197,8 +224,7 @@ function coverInpCheck(e) {
             const divCov = document.getElementById("albumT-cover");
             divCov.innerHTML = "", labEl = document.getElementById("modal-form-alb-cov-lab"),  divCov.appendChild(imgEl);
         }
-        labEl.innerHTML = "Nieuwe Cover Selecteren",  labEl.appendChild(e.target);
-        return;
+        return labEl.innerHTML = "Nieuwe Cover Selecteren", labEl.appendChild(e.target);
     }
 }
 
@@ -240,12 +266,10 @@ function pwChecker(e) {
 
     if( e.target.value === resetVeld1.value ) {
         e.target.style.outline = "3px solid green";
-        pwSubButt.disabled = false;
-        return;
+        return pwSubButt.disabled = false;
     } else {
         e.target.style.outline = "3px solid red"
-        pwSubButt.disabled = true;
-        return;
+        return pwSubButt.disabled = true;
     }
 }
 
@@ -271,10 +295,35 @@ function onScanSuccess( decodedText, decodedResult ) {
     document.getElementById("albumS-form-isbn").value = decodedText;
     //console.log( formatName );
     html5QrcodeScanner.clear();
-    document.getElementById("modal-form-scan").submit();
+    return document.getElementById("modal-form-scan").submit();
 }
 
 //  TODO: Figure out what todo with the errorMesage, for now i just console log it.
+//          Log the error for now, so i can debug issues a bit better.
 function onScanError( errorMessage ) {
-    console.log( errorMessage );    // Log the error for now, so i can debug issues a bit better.
+    return console.log( errorMessage );
+}
+
+// Create HTML form fields, and submit data, to search for user input ISBN numbers.
+/*  submitIsbnSearch(e):
+        This function adds to inputs to a extra form, fills in the data from the hidden form.
+        And then submits the extra form, so the hidden data can be submitted to search for isbn data.
+ */
+function submitIsbnSearch(e) {
+    const formEl = document.getElementById( "isbn-trigger-form" );
+    const inputInEl = document.createElement("input");
+    const inputIsbnEl = document.createElement("input");
+
+    inputInEl.setAttribute( "hidden", true );
+    inputInEl.setAttribute( "name", "serie-index" );
+    inputInEl.setAttribute( "value", document.getElementById( "modal-form-hidden" ).value );
+
+    inputIsbnEl.setAttribute( "hidden", true );
+    inputIsbnEl.setAttribute( "name", "album-isbn" );
+    inputIsbnEl.setAttribute( "value", document.getElementById( "albumt-form-alb-isbn" ).value );
+
+    formEl.appendChild(inputInEl);
+    formEl.appendChild(inputIsbnEl);
+
+    return formEl.submit();
 }

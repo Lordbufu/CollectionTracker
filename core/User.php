@@ -185,7 +185,7 @@ class User {
     public function evalUser() {
         if($this->user["Gebr_Rechten"] === "gebruiker") {
             return TRUE;
-        } elseif($this->user["Gebr_Rechten"] === "Admin") {
+        } else if($this->user["Gebr_Rechten"] === "Admin") {
             return FALSE;
         } else {
             return $this->rightsError;

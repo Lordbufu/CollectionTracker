@@ -41,7 +41,8 @@ class PagesController {
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
 			/* If certain page states are not set, remove the data for repopulation. */
-			if( !App::get("session")->checkVariable( "page-data", [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover", "isbn-scan" ] ) ) {
+			$impTags = [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover", "isbn-scan", "isbn-search" ];
+			if( !App::get("session")->checkVariable( "page-data", $impTags ) ) {
 				unset($_SESSION["page-data"]);
 			}
 

@@ -11,26 +11,22 @@
 
         <div class="modal-body">
             <?php
-                // If the album-edit is set, get the album data and load the edit template.
                 if( isset( $_SESSION["page-data"]["album-edit"] ) ) {
                     foreach( $_SESSION["page-data"]["albums"] as $index => $album ) {
                         if( $album["Album_Index"] == $_SESSION["page-data"]["album-edit"] ) {
                             $store = $_SESSION["page-data"]["albums"][$index];
                         }
                     } 
-                    unset( $_SESSION["page-data"]["album-edit"] );  // unset tag to prevent unexpected behavior
+                    unset( $_SESSION["page-data"]["album-edit"] );
                     require("beheer-albumB-edit.php");
-                // If the isbn-search is set, get the album data and load the isbn-search template.
                 } elseif( isset( $_SESSION["page-data"]["isbn-search"] ) ) {
                     $result = $_SESSION["page-data"]["isbn-search"]; 
-                    unset( $_SESSION["page-data"]["isbn-search"] ); // unset tag to prevent unexpected behavior
+                    unset( $_SESSION["page-data"]["isbn-search"] );
                     require("beheer-albumB-search.php");
-                // If no special tags are set, load the default clean pop-in.                    
                 } else {
                     require("beheer-albumB-clean.php");
                 }
             ?>
-            </form>
         </div>
     </div>
 </div>
