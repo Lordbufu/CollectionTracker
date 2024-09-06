@@ -11,7 +11,7 @@
         </form>
     </div>
 
-    <div class="album-toev-cont" id=album-toev-cont"">
+    <div class="album-toev-cont" id="album-toev-cont">
         <form class="album-toev-form" id="album-toev-form" method="post" action="/beheer">
             <label for="album-toev" class="album-toev-lab"> Album Toevoegen: </label>
             <select class="album-toev" name="album-toev" id="album-toev" required>
