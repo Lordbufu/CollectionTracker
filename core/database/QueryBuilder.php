@@ -55,15 +55,15 @@ class QueryBuilder {
     protected $pdo;
 
     /* __construct(PDO $pdo): set this PDO to PDO class object. */
-    public function __construct(PDO $pdo) { $this->pdo = $pdo; }
+    public function __construct( PDO $pdo ) { $this->pdo = $pdo; }
 
     /*  testTable($name): Check if a table is present in the DB.
             $name (string)  - The name of a table i want to check.
      */
-    public function testTable($name) {
-        $sql = sprintf("select 1 from %s LIMIT 1", $name);
-        $statement = $this->pdo->prepare($sql);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+    public function testTable( $name ) {
+        $sql = sprintf( "select 1 from %s LIMIT 1", $name );
+        $statement = $this->pdo->prepare( $sql) ;
+        $this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT );
         $statement->execute();
         return $statement->errorCode();
     }
@@ -71,8 +71,8 @@ class QueryBuilder {
     /*  createTable($naam): To create the inital database tabels.
             $naam (string)  - The name of the Table i want to create.
      */
-    public function createTable($naam) {
-        switch($naam) {
+    public function createTable( $naam ) {
+        switch( $naam ) {
             case "gebruikers":
                 $sql = sprintf(
                     "create table `%s` (
@@ -86,7 +86,7 @@ class QueryBuilder {
                     ) CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT = 'Tafel voor de App Gebruikers.'",
                     $naam
                 );
-                return $this->executeQuerry($sql);
+                return $this->executeQuerry( $sql );
             case "series":
                 $sql = sprintf(
                     "create table `%s` (
@@ -98,7 +98,7 @@ class QueryBuilder {
                     ) CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT = 'Tafel voor de series.'",
                     $naam
                 );
-                return $this->executeQuerry($sql);
+                return $this->executeQuerry( $sql );
             case "serie_meta":
                 $sql = sprintf(
                     "create table `%s` (
@@ -114,7 +114,7 @@ class QueryBuilder {
                     ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor collectie meta-data.'",
                     $naam
                 );
-                return $this->executeQuerry($sql);
+                return $this->executeQuerry( $sql );
             case "albums":
                 $sql = sprintf(
                     "create table `%s` (
@@ -132,7 +132,7 @@ class QueryBuilder {
                     ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor alle albums uit alle series.'",
                     $naam
                 );
-                return $this->executeQuerry($sql);
+                return $this->executeQuerry( $sql );
             case "collecties":
                 $sql = sprintf(
                     "create table `%s` (
@@ -151,15 +151,15 @@ class QueryBuilder {
                     ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Alle link data voor series en albums voor Accounts.'",
                     $naam
                 );
-                return $this->executeQuerry($sql);
+                return $this->executeQuerry( $sql );
         }
     }
 
     /* createAdmin(): To create the default administrator account. */
     public function createAdmin() {
-        $wwHashed = password_hash('wachtwoord123', PASSWORD_BCRYPT);
+        $wwHashed = password_hash( "wachtwoord123", PASSWORD_BCRYPT );
         $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin')";
-        return $this->executeQuerry($sql);
+        return $this->executeQuerry( $sql );
     }
 
     /*  countAblums($id): Count albums from a specific serie.
@@ -167,11 +167,11 @@ class QueryBuilder {
 
             Return Value (int)
      */
-    public function countAlbums($id) {
-        $sql = sprintf("select count(*) from `albums` where `Album_Serie`=%s", $id);
-        $statement = $this->pdo->prepare($sql);
+    public function countAlbums( $id ) {
+        $sql = sprintf( "select count(*) from `albums` where `Album_Serie`=%s", $id );
+        $statement = $this->pdo->prepare( $sql );
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC)[0]['count(*)'];
+        return $statement->fetchAll( PDO::FETCH_ASSOC )[0]['count(*)'];
     }
 
     /*  executeQuerry($sql, $id = []):
@@ -183,28 +183,28 @@ class QueryBuilder {
                 On success  (Assoc Array)   - The data that was requested.
                 On fail     (String)        - The database error in full detail.
      */
-    public function executeQuerry($sql, $id = []) {
-        if(empty($id)) {
+    public function executeQuerry( $sql, $id = [] ) {
+        if( empty( $id ) ) {
             try {
-                $statement = $this->pdo->prepare($sql);
+                $statement = $this->pdo->prepare( $sql );
                 $statement->execute();
                 return $statement->fetchAll(PDO::FETCH_ASSOC);
-            } catch(PDOException $e) { return "Error: ". $e->getMessage(); }
+            } catch( PDOException $e ) { return "Error: ". $e->getMessage(); }
         } else {
             try {
-                $statement = $this->pdo->prepare($sql);
-                $statement->execute($id);
-                return $statement->fetchAll(PDO::FETCH_ASSOC);
-            } catch(PDOException $e) { return "Error: " . $e->getMessage(); }
+                $statement = $this->pdo->prepare( $sql );
+                $statement->execute( $id );
+                return $statement->fetchAll( PDO::FETCH_ASSOC );
+            } catch( PDOException $e ) { return "Error: " . $e->getMessage(); }
         }
     }
 
     /*  selectAll($tafel): Select all doesnt need anything to complex.
             $tafel (string) - The table name i want to get all data from.
      */
-    public function selectAll($tafel) {
-        $sql = sprintf('select * from `%s`', $tafel);
-        $temp = $this->executeQuerry($sql);
+    public function selectAll( $tafel ) {
+        $sql = sprintf( 'select * from `%s`', $tafel );
+        $temp = $this->executeQuerry( $sql );
         return $temp;
     }
 
@@ -212,8 +212,8 @@ class QueryBuilder {
             $tafel (string)     - The table name i want to get specific data from.
             $id (Assoc Array)   - The identifiers required to select specific data.
      */
-    public function selectAllWhere($tafel, $id) {
-        if(count($id) > 1) {
+    public function selectAllWhere( $tafel, $id ) {
+        if( count( $id ) > 1 ) {
             $sql = sprintf(
                 'select * from `%s` where %s = %s and %s = %s',
                 $tafel,
@@ -226,33 +226,33 @@ class QueryBuilder {
             $sql = sprintf(
                 'select * from `%s` where %s = %s',
                 $tafel,
-                implode( array_keys($id)),
-                ':' . implode( array_keys($id))
+                implode( array_keys( $id ) ),
+                ':' . implode( array_keys( $id ) )
             );
         }
-        return $this->executeQuerry($sql, $id);
+        return $this->executeQuerry( $sql, $id );
     }
 
     /*  insert($tafel, $data): Simple insert querry.
             $tafel (string)     - The table name i want to add specific data to.
             $data (Assoc Array) - The data i want to add, where $key is the colum name that i want to set data in.
      */
-    public function insert($tafel, $data) {
+    public function insert( $tafel, $data ) {
         $sql = sprintf(
             'insert into `%s` (%s) values (%s)',
             $tafel,
-            implode(', ', array_keys($data)),
-            ':' . implode(', :', array_keys($data))
+            implode(', ', array_keys( $data ) ),
+            ':' . implode(', :', array_keys( $data ) )
         );
-        return $this->executeQuerry($sql, $data);
+        return $this->executeQuerry( $sql, $data );
     }
 
     /*  remove($tafel, $cond): Simple remove querry.
             $tafel (string)     - The table name i want to remove specific data from.
             $cond (Assoc Array) - The conditions (identifier) of the data i want to remove.
      */
-    public function remove($tafel, $cond) {
-        if(count($cond) > 1) {
+    public function remove( $tafel, $cond ) {
+        if( count( $cond ) > 1 ) {
             $sql = sprintf(
                 'delete from %s where %s = %s and %s = %s',
                 $tafel,
@@ -265,11 +265,11 @@ class QueryBuilder {
             $sql = sprintf(
                 'delete from %s where %s = %s',
                 $tafel,
-                implode( array_keys($cond)),
-                ':' . implode( array_keys($cond))
+                implode( array_keys( $cond ) ),
+                ':' . implode( array_keys( $cond ) )
             );
         }
-        return $this->executeQuerry($sql, $cond);
+        return $this->executeQuerry( $sql, $cond );
     }
 
     /*  update($tafel, $data, $id): Simple update querry, using a loop to process $data instead of sprintf().
@@ -277,35 +277,40 @@ class QueryBuilder {
             $data (Assoc Array) - The data i want to update, paired by column name (key) and the value it should have.
             $id (Assoc Array)   - The identifier(s) to find the data i want to update.
      */
-    public function update($tafel, $data, $id) { 
+    public function update( $tafel, $data, $id ) { 
         $update;
 
-        foreach($data as $key => $value) {
-            if(!isset($update)) {
+        foreach( $data as $key => $value ) {
+            if( !isset( $update ) ) {
                 $update = $key . '=' . "'" . $value . "'";
-            } elseif(isset($update)) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
+            } elseif( isset( $update ) ) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
         }
 
-        if(count($id) > 1) {
+        if( count( $id ) > 1 ) {
             $sql = sprintf(
                 'update %s set %s where %s = %s and %s = %s',
                 $tafel,
                 $update,
-                implode( array_keys( array_slice($id, 0, 1 ) ) ),
-                ':' . implode( array_keys( array_slice($id, 0, 1 ) ) ),
-                implode( array_keys( array_slice($id, 1, 2 ) ) ),
-                ':' . implode( array_keys( array_slice($id, 1, 2 ) ) )
+                implode( array_keys( array_slice( $id, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice( $id, 0, 1 ) ) ),
+                implode( array_keys( array_slice( $id, 1, 2 ) ) ),
+                ':' . implode( array_keys( array_slice( $id, 1, 2 ) ) )
             );
         } else {
             $sql = sprintf(
                 'update %s set %s where %s = %s',
                 $tafel,
                 $update,
-                implode( array_keys( array_slice($id, 0, 1 ) ) ),
-                ':' . implode( array_keys( array_slice($id, 0, 1 ) ) )
+                implode( array_keys( array_slice( $id, 0, 1 ) ) ),
+                ':' . implode( array_keys( array_slice( $id, 0, 1 ) ) )
             );
         }
-        return $this->executeQuerry($sql, $id);
+        return $this->executeQuerry( $sql, $id );
     }
+
+    // Placeholder Function
+    // To make this function properly, i would need a Serie_Index field in the collection table.
+    // Because atm im only tracking Album_Index and User_Index, since that is technically enough to track collections.
+    /*public function countUsers( $userId, $serieId ) { }*/
 }
 ?>

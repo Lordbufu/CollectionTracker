@@ -1,154 +1,179 @@
-/* Re-useable variables, for main page design */
+/* Root variables for global page styling */
 :root {
-  --main-background-color: rgba(255, 255, 255, 1);
-  --main-fade-background-color: rgba(0, 0, 0, 0.4);
-  --main-fade-fallback-color: rgba(0, 0, 0, 1);
-  --main-banner-color: rgba(94, 158, 255, 1);
-  --main-text-color: rgba(0, 0, 0, 1);
-  --main-butt-color: rgba(94, 125, 255, 1);
-  --main-butt-hover: rgba(59, 185, 42, 1);
-  --main-butt-img-hover: rgba(59, 185, 42, 0.2);
-  --main-link-hover: rgba(199, 37, 37, 0.801);
-  --main-border-radius: 0.2em;
-  --main-page-margin: 0.1em 0.2em;
+	/* Main page styles */
+	--main-backgr-col: rgba(94, 158, 255, 1);
+	--main-margin: 0.1em;
+	--main-padding: 0.1em 0.2em;
+	/* Text variables */
+	--main-text-margin: 0.2em 0.3em;
+	--main-text-color: rgb(0, 0, 0);
+	/* Border styles */
+	--main-border-body: solid 0.1em rgba(0, 0, 0, 1);
+	--main-border-rad: 0.4em;
+	/* Banner color */
+	--main-banner-col: rgba(94, 158, 255, 1);
+	/* Button related styles */
+	--main-butt-col: rgba(94, 125, 255, 1); 
+	--main-butt-hov: rgba(59, 185, 42, 1);
+	/* Label (placeholder) related styles */
+	--main-lab-col-1: rgba(255, 255, 255, 1);
+	--main-lab-col-2: rgba(73, 43, 243, 1);
+	/* Slider related styles */
+	--main-knob-col: rgba(163, 163, 163, 1);
+	--main-slid-backgr: rgba(199, 37, 37, 1);
+	--main-slid-backgr-2: rgba(59, 185, 42, 1);
+	/* Pop-in Variables */
+	--main-pop-in-col: rgba(255, 255, 255, 1);
+	--main-backgr-fade: rgba(0, 0, 0, 0.4);
+	--main-backgr-fallb: rgb(0, 0, 0);
 }
 
-/* Default body layout */
-body {
-  font-family: Arial, sans-serif;
-  display: block;
-  margin: 0em;
-  padding: 0em;
+/* Wildcard selector, to reset some user agent styles */
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: unset;
 }
 
-/* Grid Container Style */
-.content-container {
-    display: grid;
-    grid-template-areas: 'banner' 'text' 'image' 'footer';
-    margin: var(--main-page-margin);
+/* Main container styles, starting with a flex layout */
+.main-flex {
+	display: flex;
+	flex-direction: column;
+	margin: var(--main-margin);
+	padding: 0;
+	font-family: Arial, sans-serif;
+	text-align: center;
 }
 
-/* Assign elements to gird area's */
-.banner-container {grid-area: banner; }
-.text-content-container { grid-area: text; }
-.contr-cont { grid-area: text; }
-.example-container { grid-area: image; }
-.beheer-weerg-cont { grid-area: image; }
-.gebr-weerg-cont { grid-area: image; }
-.footer { grid-area: footer; }
+/* First sub-grid, for all header\banner content */
+.sub-grid-1 {
+	display: grid;
+	grid-template-areas: "buttons header";
+	grid-template-columns: 10% 90%;
+	border: var(--main-border-body);
+	border-radius: var(--main-border-rad);
+	background-color: var(--main-backgr-col);
+	align-items: center;
+	justify-content: center;
+	padding: 0.2em;
+	height: 4em;
+}
 
-/* Styles shared between devices */
+/* The header\banner button area, flex for better positioning */
+.banner-butt {
+	grid-area: buttons;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/* The header\title container */
+.banner-head {
+	grid-area: header;
+}
+
+/* The header text, adjust to the right to center it on screen */
+.header-text {
+	margin-right: 10%;
+}
+
+/* The controller sub-grid */
+.sub-grid-2 {
+	display: grid;
+	grid-template-areas: "cont1 cont2 cont3";
+	grid-template-columns: auto 50% auto;
+	padding: var(--main-padding);
+	margin-top: 0.2em;
+}
+
+/* Assign container to sub-grid */
+.contr-cont-1 {
+	grid-area: cont1;
+	background-color: var(--main-pop-in-col);
+}
+
+/* Assign container to sub-grid */
+.contr-cont-2 {
+	grid-area: cont2;
+	background-color: var(--main-pop-in-col);
+}
+
+/* Assign container to sub-grid */
+.contr-cont-3 {
+	grid-area: cont3;
+	background-color: var(--main-pop-in-col);
+}
+
+/* The table content sub-grid  */
+.sub-grid-3 {
+	display: grid;
+	grid-template-areas: "header" "table-templ";
+	grid-template-columns: 50%;
+	grid-template-rows: auto auto;
+	justify-content: center;
+	justify-items: center;
+	margin: 0.2em 0;
+}
+
+/* Assign containers to sub-grid */
+.table-header {
+	grid-area: header;
+}
+
+.table-templ {
+	grid-area: table-templ;
+}
+
+/* The footer sub-grid container */
+.sub-grid-4 {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--main-backgr-col);
+	border: var(--main-border-body);
+	border-radius: var(--main-border-rad);
+	margin-top: 0.2em;
+}
+
+/* The footer text line containers */
+.footer-info-1, .footer-info-2, .footer-info-3 {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	margin: var(--main-margin);
+}
+
+/* The footer text container */
+.footer-version, .footer-autheur, .footer-creation, .footer-release, .footer-madefor {
+	margin: var(--main-text-margin);
+}
+
+/* Repeating button styles */
+.button {
+    margin: var(--main-margin);
+    background-color: var(--main-butt-col);
+    border: var(--main-border-body);
+    border-radius: var(--main-border-rad);
+    text-decoration: none;
+    color: var(--main-text-color);
+	cursor: pointer;
+}
+
+/* Repeating button hover styles */
+.button:hover {
+	background-color: var(--main-butt-hov);
+}
+
+/* Add disabled color, so we can style the text */
+.button:disabled {
+	color: darkgrey;
+}
+
 /* Banner related things for a static banner/menu */
 .sticky {
+	z-index: 3;
     position: fixed;
-    top: 0;
-    width: 100%;
+    top: 0.1em;
+    width: 99.4%;
     padding-top: 0;
-}
-
-/* User feedback container */
-.message-container {
-    z-index: 2;
-    display: none;
-    position: fixed;
-    text-align: center;
-    background-color: var(--main-butt-hover);
-    width: fit-content;
-    top: -10%;
-    left: 40%;
-    right: 40%;
-    margin: 0.2em;
-    padding: 0.2em;
-}
-
-.response-message { font-size: smaller; }
-
-/* Album cover styles for pop-in and table content */
-.album-cover {
-    height: 4em;
-    width: 4em;
-}
-
-.album-cover-img {
-    height: 3.9em;
-    width: 3.9em;
-    margin: 0;
-}
-
-/* Temp code for extra features */
-/* Main search option container */
-.search-opt-cont {
-    display: flex;
-    align-items: center;
-}
-
-/* Search option container for each option*/
-.search-opt-naam-cont, .search-opt-albNr-cont, .search-opt-isbn-cont {
-    font-size: 0.7em;
-    border: 0.1em solid black;
-    border-radius: 0.3em;
-    margin: 0.1em;
-    width: 6em;
-    height: 2.7em;
-}
-
-/* Label for the switch */
-.album-zoek-naam, .album-zoek-nr, .album-zoek-isbn {
-    position: relative;
-    display: inline-block;
-    width: 3em;
-    height: 1.5em;
-    font-size: 0.7em;
-}
-
-/* The checkbox input that we visually hide */
-.album-zoek-naam-inp, .album-zoek-nr-inp, .album-zoek-isbn-inp {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-/* The span that will become the slider */
-.album-zoek-naam-slider, .album-zoek-nr-slider, .album-zoek-isbn-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--main-link-hover);
-    border-radius: 1.5em;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-/* The slider before switched styling */
-.album-zoek-naam-slider:before, .album-zoek-nr-slider:before, .album-zoek-isbn-slider:before {
-    position: absolute;
-    content: "";
-    height: 1.5em;
-    width: 1.5em;
-    left: 0.01em;
-    bottom: 0.01em;
-    background-color: grey;
-    border-radius: 50%;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-/* The background for when the slider is checked */
-.album-zoek-naam-inp:checked + .album-zoek-naam-slider, .album-zoek-nr-inp:checked + .album-zoek-nr-slider, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider {
-    background-color: green;
-}
-
-/* The background for when the slider is in focus */
-.album-zoek-naam-inp:focus + .album-zoek-naam-slider, .album-zoek-nr-inp:focus + .album-zoek-nr-slider, .album-zoek-isbn-inp:focus + .album-zoek-isbn-slider {
-    box-shadow: 0 0 1px green;
-}
-
-/* The animation for when the checkbox is checked */
-.album-zoek-naam-inp:checked + .album-zoek-naam-slider:before, .album-zoek-nr-inp:checked + .album-zoek-nr-slider:before, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider:before {
-    -webkit-transform: translateX(1.5em);
-    -ms-transform: translateX(1.5em);
-    transform: translateX(1.5em);
 }

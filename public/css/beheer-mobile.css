@@ -1,0 +1,143 @@
+/* Adjust the banner header font size */
+.header-text {
+	font-size: 1.5em;
+}
+
+/* Better fitting font-size for mobile */
+.content-header {
+	font-size: 1.1em;
+}
+
+/* Adjust footer text font size */
+.sub-grid-4 {
+	font-size: 0.7em;
+}
+
+/* Pop-in specific stuff */
+
+/* Changes specific to normal orientation */
+@media only screen and not (orientation: landscape) {
+	/* Adjust grid area size to make sense */
+    .sub-grid-1 {
+		grid-template-columns: 30% 70%;
+	}
+
+	/* There is not need for a margin adjust on this screen size */
+    .header-text {
+		margin-right: 0;
+	}
+
+	/* Adjust the controller grid to be aligned as a row (below eachother) */
+	.sub-grid-2 {
+		grid-template-areas: "cont1" "cont2" "cont3";
+		grid-template-columns: 100%;
+		grid-template-rows: 33% 33% 33%;
+		grid-row-gap: 0.2em;
+	}
+
+	/* Give the grid almost the entire screen width */
+    .sub-grid-3 {
+		grid-template-columns: 95%;
+	}
+
+	/* Remove less relevant serie\album table columns & titles */
+	.serieOpmTitle, .serieAuthTitle, .serieUsersTitle {
+		display: none;
+	}
+
+	.serie-opmerk, .serie-maker, .serie-gebruikers {
+		display: none;
+	}
+
+	.album-opmTitle, .album-covTitle, .album-uitgTitle, .album-schrTitle {
+		display: none;
+	}
+
+	.album-opm, .album-cover, .album-uitgave, .album-schr {
+		display: none;
+	}
+
+	/* Adjust flex direction for the footer content */
+    .footer-info-1, .footer-info-2, .footer-info-3 {
+		flex-direction: inherit;
+	}
+
+	/* Pop-in specific stuff */
+	/* Make the pop-in fit better on screen */
+	.modal-content-cont {
+		top: 5em;
+	}
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) {
+    /* Adjust grid area size to make sense */
+    .sub-grid-1 {
+		grid-template-columns: 15% 85%;
+	}
+
+    /* Change the controllor grid so everything fits */
+    .sub-grid-2 {
+		grid-template-areas: "cont1 cont2" "cont3 cont4";
+		grid-template-columns: 50% 50%;
+		grid-template-rows: 50% 50%;
+		grid-row-gap: 0.2em;
+    }
+
+	/* Center the 3rd container */
+	.contr-cont-3 {
+		margin-left: 20em;
+	}
+
+	/* The table needs to cover almost the enitre page */
+    .sub-grid-3 {
+		grid-template-columns: 95%;
+	}
+
+	/* Remove less relevant serie table titles & columns */
+	.serieOpmTitle, .serieUsersTitle {
+		display: none;
+	}
+
+	/* Remove less relevant serie table columns */
+	.serie-opmerk, .serie-gebruikers {
+		display: none;
+	}
+
+	/* Album view table changes */
+	.table-templ {
+		display: flex;
+		justify-content: center;
+	}
+
+	/* Remove less relevant album table titles & columns */
+	.album-opmTitle, .album-uitgTitle {
+		display: none;
+	}
+	
+	.album-opm, .album-uitgave {
+		display: none;
+	}
+
+	/* Change the flex direction of the footer text */
+    .footer-info-1, .footer-info-2, .footer-info-3 {
+		flex-direction: row;
+	}
+
+	/* Pop-in specific stuff */
+	/* Make the pop-in fit better on screen */
+	.modal-content-cont {
+		top: 0.5em;
+	}
+
+	/* The pop-in body */
+	.modal-body {
+		max-height: 21em;
+		overflow: auto;
+	}
+
+	/* Make the list items overflow and scrollable 
+	.modal-ord-list { 
+		overflow: scroll;
+	} */
+}

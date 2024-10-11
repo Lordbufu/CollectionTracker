@@ -18,11 +18,11 @@ namespace App\Core;
                 - albums (Assoc Array)      : All album data that needs to be displayed.
                 - series (Assoc Array)      : All serie data that needs to be displayed.
                 - collections (Assoc Array) : All collection data that needs to be displayed.
+            - page-data : Special flags used to trigger specific logic.
                 - serie-dupl (Assoc Array)  : The POST data from the duplicate serie.
                 - alb-dupl (Assoc Array)    : The POST data from the duplicate album.
-                - album-cover (blob)        : Temp store for any uploaded album covers, when a duplicate name was detected.
+                - Album_Cover (blob)        : Temp store for any uploaded album covers, when a duplicate name was detected.
                 - isbn-search (Assoc Array) : The results of searching the Google API for a ISBN number.
-            - page-data : Special flags used to trigger specific logic.
                 - huidige-serie (string)    : The current selected serie, for both the user and admin.
                 - new-serie (string)        : The serie name that was added using the admin controller for creating a serie.
                 - edit-serie (int)          : The series index of the serie that is requested for editing.
@@ -42,24 +42,26 @@ class SessionMan {
      */
     function __construct() {
         $adress = "https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
-        ini_set("session.gc_probability", "1");
-        ini_set("session.gc_divisor", "10");
-        ini_set("session.gc_maxlifetime", "1800");
-        ini_set("session.user_strict_mode", "1");
-        ini_set("session.cookie_httponly", "1");
-        ini_set("session.cookie_secure", "1");
-        ini_set("session.cookie_samesite", "Strict");
-        ini_set("session.use_trans_sid", "1");
-        ini_set("session.referer_check", $adress);
-        ini_set("session.cache_limiter", "private");
-        ini_set("session.sid_length", "128");
-        ini_set("session.side_bits_per_character", "6");
-        ini_set("session.hash_function", "sha512");
+        ini_set( "session.gc_probability", "1" );
+        ini_set( "session.gc_divisor", "10" );
+        ini_set( "session.gc_maxlifetime", "1800" );
+        ini_set( "session.user_strict_mode", "1" );
+        ini_set( "session.cookie_httponly", "1" );
+        ini_set( "session.cookie_secure", "1" );
+        ini_set( "session.cookie_samesite", "Strict" );
+        ini_set( "session.use_trans_sid", "1" );
+        ini_set( "session.referer_check", $adress );
+        ini_set( "session.cache_limiter", "private" );
+        ini_set( "session.sid_length", "128" );
+        ini_set( "session.side_bits_per_character", "6" );
+        ini_set( "session.hash_function", "sha512" );
 
         if(!is_dir($this->savePath)) {
-            mkdir($this->savePath, 0777, true);
-            session_save_path($this->savePath);
-        } else { session_save_path($this->savePath); }
+            mkdir( $this->savePath, 0777, true );
+            session_save_path( $this->savePath );
+        } else {
+            session_save_path( $this->savePath );
+        }
 
         return session_start();
     }
@@ -81,22 +83,42 @@ class SessionMan {
 
             Return Type: None.
      */
-    public function setVariable($name, $data) {
-        foreach($data as $key => $value) {
+    public function setVariable( $name, $data ) {
+        foreach( $data as $key => $value ) {
+
+            /* Loop specifically for isbn-searches */
+            if( $key == "isbn-search" ) {
+                $_SESSION[$name][$key] = $value;
+                return;
+            }
+
             if( !is_array( $value ) ) {
-                return $_SESSION[$name][$key] = $value;
+                $_SESSION[$name][$key] = $value;
+                return;
+
             } else {
-                if( isset($value["Serie_Index"] ) ) {
-                    return $_SESSION[$name]["series"] = $data;
+
+                if( isset( $value["Serie_Index"] ) ) {
+                    $_SESSION[$name]["series"] = $data;
+                    return;
+
                 } elseif( isset( $value["Album_Index"] ) ) {
-                    return $_SESSION[$name]["albums"] = $data;
+                    $_SESSION[$name]["albums"] = $data;
+                    return;
+
                 } elseif( isset( $value["Col_Index"] ) ) {
-                    return $_SESSION[$name]["collections"] = $data;
+                    $_SESSION[$name]["collections"] = $data;
+                    return;
+
                 } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl" || "isbn-search") {
+
                     $_SESSION[$name][$key] = $value;
                     return;
-                // Temp debug line
-                } else { die("Unexpected data is being passed to the session setVariable function!"); }
+
+                // Temp debug error, should never be reached during production.
+                } else {
+                    die("Unexpected data is being passed to the session setVariable function!");
+                }
             }
         }
     }
@@ -109,15 +131,35 @@ class SessionMan {
 
             Return Value: Boolean.
      */
-    public function checkVariable($store, $keys = []) {
+    public function checkVariable( $store, $keys = [] ) {
+
         if( isset( $_SESSION[$store] ) ) {
+
             foreach( $_SESSION[$store] as $entry => $value ) {
+
                 if( is_string($keys) && $keys == $entry ) {
+
                     return TRUE;
-                } else { foreach($keys as $key) { if($key === $entry) { return TRUE; } } }
+
+                } else {
+
+                    foreach($keys as $key) {
+
+                        if($key === $entry) {
+
+                            return TRUE;
+                        }
+                    }
+                }
             }
+
             return FALSE;
-        } else { return FALSE; }
+
+        } else {
+
+            return FALSE;
+
+        }
     }
 }
 ?>

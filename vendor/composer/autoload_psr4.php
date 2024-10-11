@@ -7,5 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
+    'PhpConsole\\' => array($vendorDir . '/php-console/php-console/src/PhpConsole'),
     'Detection\\' => array($vendorDir . '/mobiledetect/mobiledetectlib/src'),
 );

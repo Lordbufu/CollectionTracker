@@ -13,13 +13,13 @@ class LogicController {
             Return Value    - Redirect -route-> '/'
      */
     public function dbCreation() {
-        App::get("database")->createTable("gebruikers");
-        App::get("database")->createAdmin();
-        App::get("database")->createTable("series");
-        App::get("database")->createTable("serie_meta");
-        App::get("database")->createTable("albums");
-        App::get("database")->createTable("collecties");
-        return App::redirect("");
+        App::get( "database" )->createTable( "gebruikers" );
+        App::get( "database" )->createAdmin();
+        App::get( "database" )->createTable( "series" );
+        App::get( "database" )->createTable( "serie_meta" );
+        App::get( "database" )->createTable( "albums" );
+        App::get( "database" )->createTable( "collecties" );
+        return App::redirect( "" );
     }
     
     /*  register():
@@ -32,19 +32,20 @@ class LogicController {
                 On failed:  - Redirect -route-> '/#account-maken-pop-in'
      */
 	public function register() {
-        $temp = [ "Gebr_Naam" => htmlspecialchars( $_POST["gebr-naam"] ),
-                  "Gebr_Email" => htmlspecialchars( $_POST["email"] ),
-                  "Gebr_WachtW" => password_hash( $_POST["wachtwoord"], PASSWORD_BCRYPT ),
-                  "Gebr_Rechten" => "gebruiker"
-                ];
+        $temp = [
+            "Gebr_Naam" => htmlspecialchars( $_POST["gebr-naam"] ),
+            "Gebr_Email" => htmlspecialchars( $_POST["email"] ),
+            "Gebr_WachtW" => password_hash( $_POST["wachtwoord"], PASSWORD_BCRYPT ),
+            "Gebr_Rechten" => "gebruiker"
+        ];
 
-        $store = App::get("user")->setUser( $temp );
+        $store = App::get( "user" )->setUser( $temp );
 
         if( !isset( $store["error"] ) ) {
-            App::get("session")->setVariable( "header", [ "feedB" => $store ] );
+            App::get( "session" )->setVariable( "header", [ "feedB" => $store ] );
             return App::redirect( "#login-pop-in" );
         } else {
-            App::get("session")->setVariable( "header", $store );
+            App::get( "session" )->setVariable( "header", $store );
             return App::redirect( "#account-maken-pop-in" );
         }
     }
@@ -66,43 +67,43 @@ class LogicController {
         /* Process the POST information, and validate the user that is trying to login. */
         $pw = $_POST["wachtwoord"];
         $cred = htmlspecialchars( $_POST["accountCred"] );
-        $userCheck = App::get("user")->validateUser( $cred, $pw );
+        $userCheck = App::get( "user" )->validateUser( $cred, $pw );
 
         /* Check the user evaluation, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             /* Get the user id from the user that is trying to login */
-            $userIdFetch = App::get("user")->getUserId();
+            $userIdFetch = App::get( "user" )->getUserId();
 
             /* If the user ID fetch worked, i store said id in the session. */
             if( !is_array( $userIdFetch ) ) {
-                App::get("session")->setVariable( "user", [ "id" => $userIdFetch ] );
+                App::get( "session" )->setVariable( "user", [ "id" => $userIdFetch ] );
             /* If the user ID fetch failed, i store the error in the session, and redirect to the pop-in. */
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $userIdFetch ] );
-                return App::redirect("#login-pop-in");
+                App::get( "session" )->setVariable( "header", [ "error" => $userIdFetch ] );
+                return App::redirect( "#login-pop-in" );
             }
 
             /* Evaluate the user rights. */
-            $userRightsCheck = App::get("user")->evalUser();
+            $userRightsCheck = App::get( "user" )->evalUser();
 
             /* Redirect the user according to the user rights evaluation. */
-            if( $userRightsCheck === TRUE) {
-                App::get("session")->setVariable( "user", [ "admin" => FALSE ] );
-                App::get("session")->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get("user")->getUserName() ] ] );
-                return App::redirect("gebruik");
-            } elseif( $userRightsCheck === FALSE) {
-                App::get("session")->setVariable( "user", [ "admin" => TRUE ] );
-                App::get("session")->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get("user")->getUserName() ] ] );
-                return App::redirect("beheer");
+            if( $userRightsCheck === TRUE ) {
+                App::get( "session" )->setVariable( "user", [ "admin" => FALSE ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get( "user" )->getUserName() ] ] );
+                return App::redirect( "gebruik" );
+            } elseif( $userRightsCheck === FALSE ) {
+                App::get( "session" )->setVariable( "user", [ "admin" => TRUE ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get( "user" )->getUserName() ] ] );
+                return App::redirect( "beheer" );
             /* If the user rights evaluation failed, i store the error and redirect to the pop-in. */
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $userRightsCheck ] );
-                return App::redirect("#login-pop-in");
+                App::get( "session" )->setVariable( "header", [ "error" => $userRightsCheck ] );
+                return App::redirect( "#login-pop-in" );
             }
         /* If the user was not validated, i store the error, and redirect back to the pop-in. */
         } else {
-            App::get("session")->setVariable("header", [ "error" => $userCheck ] );
-            return App::redirect("#login-pop-in");            
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "#login-pop-in" );            
         }
     }
 
@@ -112,8 +113,8 @@ class LogicController {
             Return Value    - Redirect -route-> '/'
      */
     public function logout() {
-        App::get("session")->endSession();
-        return App::redirect("");
+        App::get( "session" )->endSession();
+        return App::redirect( "" );
     }
 
     /* Adminpage functions */
@@ -135,35 +136,43 @@ class LogicController {
     public function beheer() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
-        } else { $userCheck = App::get("user")->checkUser( -1, "rights" ); }
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights");
+        } else {
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
+        }
 
+        //die( var_dump( print_r( $_POST ) ) ); //temp debugline
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
             /* Skip all other logic if a pop-in is closed */
-            if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) { return App::view("beheer"); }
+            if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                return App::view( "beheer" );
+            }
 
             /* Check for duplicate serie names, when opening the serie-maken pop-in */
-            if( isset( $_POST["newSerName"] ) ) { $checkSerie = App::get("collection")->checkItemName( "serie", $_POST["newSerName"] ); }
+            if( isset( $_POST["newSerName"] ) ) {
+                $checkSerie = App::get( "collection" )->checkItemName( "serie", $_POST["newSerName"] );
+            }
 
             /* Evaluate checkSerie with the expected POST data, to display the correct message and redirect to the proper route. */
             if( isset( $_POST["newSerName"] ) && is_array( $checkSerie ) ) {
-                App::get("session")->setVariable( "header", [ "error" => $checkSerie ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "error" => $checkSerie ] );
+                return App::redirect( "beheer" );
             } elseif( isset( $_POST["newSerName"] ) && !is_array( $checkSerie ) ) {
-                App::get("session")->setVariable( "page-data", [ "new-serie" => $_POST["newSerName"] ] );
-                return App::redirect("beheer#seriem-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "new-serie" => $_POST["newSerName"] ] );
+                return App::redirect( "beheer#seriem-pop-in" );
             }
 
             /* Add session tag, for the album-toevoegen pop-in */
             if( isset($_POST["album-toev"] ) ) {
-                App::get("session")->setVariable( "page-data", [ "add-album" => App::get("collection")->getSerInd( $_POST["album-toev"] ) ] );
-                return App::redirect("beheer#albumt-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "add-album" => App::get( "collection" )->getSerInd( $_POST["album-toev"] ) ] );
+                //die( var_dump( print_r( $_SESSION["page-data"] ) ) ); //temp debugline
+                return App::redirect( "beheer#albumt-pop-in" );
             }
 
             /* Make sure important session tags stay set untill specifically unset */
             $impTags = [ "add-album", "new-serie", "edit-serie", "huidige-serie", "album-dupl", "album-cover", "isbn-scan", "isbn-search" ];
-            if( !App::get("session")->checkVariable( "page-data", $impTags ) ) {
+            if( !App::get( "session" )->checkVariable( "page-data", $impTags ) ) {
                 unset($_SESSION["page-data"]);
             }
 
@@ -171,32 +180,32 @@ class LogicController {
             if( isset( $_POST["return"] ) ) {
                 unset( $_SESSION["page-data"]["huidige-serie"] );
                 unset( $_SESSION["page-data"]["series"] );
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             }
 
             /* Populate the session series data is there is non */
-            if( empty($_SESSION["page-data"]["series"] ) ) { App::get("session")->setVariable( "page-data", App::get("collection")->getSeries() ); }
+            if( empty($_SESSION["page-data"]["series"] ) ) { App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getSeries() ); }
 
             /* Store the albums and name for a serie, if the admin is viewing a serie */
             if( !empty( $_POST["serie-index"] ) ) {
-                App::get("session")->setVariable( "page-data", App::get("collection")->getAlbums( $_POST["serie-index"] ) );
-                App::get("session")->setVariable( "page-data", [ "huidige-serie" => App::get("collection")->getItemName( "serie", $_POST["serie-index"] ) ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_POST["serie-index"] ) );
+                App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => App::get( "collection" )->getItemName( "serie", $_POST["serie-index"] ) ] );
+                return App::redirect( "beheer" );
             }
 
             /* Store serie index, if the admin is editing a serie */
             if( isset( $_POST["serie-edit-index"] ) ) {
-                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["serie-edit-index"] ] );
-                return App::redirect("beheer#serieb-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "edit-serie" => $_POST["serie-edit-index"] ] );
+                return App::redirect( "beheer#serieb-pop-in" );
             }
 
             /* Fail-save for unexpected behavior */
-            return App::view("beheer");
+            return App::view( "beheer" );
             
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");  
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );  
         }
     }
 
@@ -217,23 +226,23 @@ class LogicController {
     public function serieM() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights");
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
             /* Check if serie-naam was set in the post, and check the name */
             if(isset( $_POST["serie-naam"] )) {
-                $itemCheck = App::get("collection")->checkItemName( "serie", $_POST["serie-naam"] );
+                $itemCheck = App::get( "collection" )->checkItemName( "serie", $_POST["serie-naam"] );
             }
 
             /* If an array was returned, i need to set the duplicate data tag, and return the error. */
             if( is_array( $itemCheck ) ) {
-                App::get("session")->setVariable( "page-data", [ "serie-dupl" => $_POST ] );
-                App::get("session")->setVariable( "header", [ "error" => $itemCheck ] );
-                return App::redirect("beheer#seriem-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "serie-dupl" => $_POST ] );
+                App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ] );
+                return App::redirect( "beheer#seriem-pop-in" );
             /* Otherwhise i can store the name for processing it. */
             } else {
                 $sqlData = [ "Serie_Naam" => htmlspecialchars( $_POST["serie-naam"] ) ];
@@ -242,21 +251,21 @@ class LogicController {
             /* Check and store the other POST data, and then attempt to store it in the DB */
             $sqlData["Serie_Maker"] = isset( $_POST["makers"] ) ? htmlspecialchars( $_POST["makers"] ) : "";
             $sqlData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? htmlspecialchars( $_POST["opmerking"] ) : "";
-            $store = App::get("collection")->setSerie( $sqlData );
+            $store = App::get( "collection" )->setSerie( $sqlData );
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
-            if( !is_string($store) ) {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["serie-naam"] . " is gelukt !" ] ] );
+            if( !is_string( $store ) ) {
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["serie-naam"] . " is gelukt !" ] ] );
                 unset( $_SESSION["page-data"]["series"] );
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $store ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");  
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );  
         }
     }
 
@@ -276,23 +285,23 @@ class LogicController {
     public function serieBew() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights");
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
             /* Check if serie-naam was set in the post, and check the name */
             if( isset( $_POST["naam"] ) ) {
-                $itemCheck = App::get("collection")->checkItemName( "serie",  $_POST["naam"], $_POST["index"] );
+                $itemCheck = App::get( "collection" )->checkItemName( "serie",  $_POST["naam"], $_POST["index"] );
             }
 
             /* If an array was returned, i need to set the duplicate data tag, and return the error. */
             if( is_array( $itemCheck ) ) {
-                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
-                App::get("session")->setVariable( "header", [ "error" => $itemCheck ] );
-                return App::redirect("beheer#serieb-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+                App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ] );
+                return App::redirect( "beheer#serieb-pop-in" );
             /* Otherwhise i can store the name for processing it. */
             } else {
                 $serieData["Serie_Naam"] = htmlspecialchars( $_POST["naam"] );
@@ -301,23 +310,23 @@ class LogicController {
             /* Check and store the other POST data, and then attempt to store it in the DB */
             $serieData["Serie_Maker"] = isset( $_POST["makers"] ) ? htmlspecialchars( $_POST["makers"] ) : "";
             $serieData["Serie_Opmerk"] = isset( $_POST["opmerking"] ) ? htmlspecialchars( $_POST["opmerking"] ) : "";
-            $store = App::get("collection")->setSerie( $serieData, $_POST["index"] );
+            $store = App::get( "collection" )->setSerie( $serieData, $_POST["index"] );
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_array( $store ) ) {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"] ] );
                 unset( $_SESSION["page-data"]["series"] );
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $store ] );
-                App::get("session")->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
-                return App::redirect("beheer#serieb-pop-in");
+                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                App::get( "session" )->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+                return App::redirect( "beheer#serieb-pop-in" );
             }
 
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -335,34 +344,34 @@ class LogicController {
     public function serieVerw() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
-            $remove_1 = App::get("collection")->remItem( "albums", [ "Album_Serie" => $_POST["serie-index"] ] );
-            $remove_2 = App::get("collection")->remItem( "series", [ "Serie_Index" => $_POST["serie-index"], "Serie_Naam" => $_POST["serie-naam"] ] );
+            $remove_1 = App::get( "collection" )->remItem( "albums", [ "Album_Serie" => $_POST["serie-index"] ] );
+            $remove_2 = App::get( "collection" )->remItem( "series", [ "Serie_Index" => $_POST["serie-index"], "Serie_Naam" => $_POST["serie-naam"] ] );
 
             /* Evaluate the DB operation, and return the correct feedback, reset the correct session data and redirect back to the page. */
             if( !is_array( $remove_1 ) || !is_array($remove_2) ) {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ] ] );
                 unset( $_SESSION["page-data"]["series"] );
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             /* Store either of returned errors if set, since there identical if both are set anyway. */
             } else {
                 if( is_array( $remove_1 ) ) {
-                    App::get("session")->setVariable( "header", [ "error" => $remove_1 ] );
+                    App::get( "session" )->setVariable( "header", [ "error" => $remove_1 ] );
                 } else if( is_array($remove_2) ) {
-                    App::get("session")->setVariable( "header", [ "error" => $remove_2 ] );
+                    App::get( "session" )->setVariable( "header", [ "error" => $remove_2 ] );
                 }
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -380,18 +389,19 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function albumT() {
+        //die( var_dump( print_r( $_POST ) ) );  //temp debugline
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             /* Check if the POST data was set for the item name check. */
             if( isset( $_POST["album-naam"] ) ) {
-                $itemCheck = App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] );
+                $itemCheck = App::get( "collection" )->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] );
             }
 
             /* If an array was returned, the correct session data has to be prepared and stored, and i redirect to the pop-in. */
@@ -408,9 +418,9 @@ class LogicController {
                     $returnData["album-cover"] = $dbImage;
                 }
 
-                App::get("session")->setVariable( "header", [ "error" => $itemCheck ] );
-                App::get("session")->setVariable( "page-data", [ "album-dupl" => $returnData ] );
-                return App::redirect("beheer#albumt-pop-in");
+                App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ] );
+                App::get( "session" )->setVariable( "page-data", [ "album-dupl" => $returnData ] );
+                return App::redirect( "beheer#albumt-pop-in" );
             /* Otherwhise i can store the name for processing it. */
             } else {
                 $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] );
@@ -433,34 +443,35 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
-            } elseif( isset( $_SESSION["page-data"]["album-dupl"]["album-cover"] ) ) {
-                $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["album-cover"];
+            } elseif( isset( $_SESSION["page-data"]["album-dupl"]["Album_Cover"] ) ) {
+                $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["Album_Cover"];
             }
 
             /* Attempt to store the album in the SQL DB */
-            $store = App::get("collection")->setAlbum( $albumData );
+            $store = App::get( "collection" )->setAlbum( $albumData );
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_array( $store ) ) {
-                App::get("session")->setVariable( "header",
-                    [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ]
-                );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
 
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
-                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
-                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); }
-                if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); }
-                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); } // 
+                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); } //
 
-                return App::redirect("beheer");
+                if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); } // Remove the lingering add-album tag from the controller
+                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); } // Remove the lingering barcode scan tag
+                if( isset( $_SESSION["page-data"]["isbn-search"] ) ) { unset( $_SESSION["page-data"]["isbn-search"] ); } // Remove the lingering isbn search album data
+                if( isset( $_SESSION["page-data"]["searched"] ) ) { unset( $_SESSION["page-data"]["searched"] ); } // Remove the lingering isbn search tag
+
+                return App::redirect( "beheer" );
             } else {
-                App::get("session")->setVariable( "header", [ "error" => $store ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -480,38 +491,41 @@ class LogicController {
     public function albumV() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights");
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             if( isset( $_POST["album-index"] ) ) {
-                $itemCheck = App::get("collection")->getItemName( "album", $_POST["serie-index"], $_POST["album-index"] );
-                $store = App::get("collection")->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
+                $itemCheck = App::get( "collection" )->getItemName( "album", $_POST["serie-index"], $_POST["album-index"] );
+                $store = App::get( "collection" )->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
             } else {
-                return App::redirect("beheer");
+                return App::redirect( "beheer" );
             }
 
+            //  TODO: Figure out where $ablName should come from, seems odd that its is currently nothing.
             /* Evaluate the itemCheck and DB action. */
             if( !is_array( $itemCheck ) && !is_array( $store ) ) {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $albName . " is geslaagd!" ] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $albName . " is geslaagd!" ] ] );
                 unset( $_SESSION["page-data"]["albums"] );
-                return App::redirect("beheer");
+
+                return App::redirect( "beheer" );
             /* Store the correct error, and redirect accordingly */
             } else {
                 if( is_array( $itemCheck ) ) {
-                    App::get("session")->setVariable( "header", [ "error" => $itemCheck ]);
+                    App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ]);
                 } elseif( is_array( $store ) ) {
-                    App::get("session")->setVariable( "header", [ "error" => $store ]);
+                    App::get( "session" )->setVariable( "header", [ "error" => $store ]);
                 }
-                return App::redirect("beheer");
+
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -530,37 +544,47 @@ class LogicController {
                 On Success                  - Redirect -route-> '/beheer'
      */
     public function albumBew() {
+        //die( var_dump( print_r( $_SESSION ) ) );  //temp debugline
+        //die( var_dump( print_r( $_POST ) ) );  //temp debugline
+
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
-            /* If the edit album button was pressed, just store the tag in the session and redirect to the pop-in. */
+
+            /* If the edit album button edit was pressed, just store the tag in the session and redirect to the pop-in. */
             if( isset( $_POST["albumEdit"] ) ) {
-                App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["albumEdit"] ] );
-                return App::redirect("beheer#albumb-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "album-edit" => $_POST["albumEdit"] ] );
+                return App::redirect( "beheer#albumb-pop-in" );
             }
 
             /* Check item name for duplicate entries. */
-            $itemCheck = App::get("collection")->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"], $_POST["album-index"] );
+            $itemCheck = App::get( "collection" )->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"], $_POST["album-index"] );
 
             /* Evaluate itemCheck, and store the error including the album index tag in the session, and redirect to the pop-in. */
             if( is_array( $itemCheck ) ) {
-                App::get("session")->setVariable( "page-data", [ "album-edit" => $_POST["album-index"] ] );
-                App::get("session")->setVariable( "header", [ "error" => $itemCheck ] );
-                return App::redirect("beheer#albumb-pop-in");
+                App::get( "session" )->setVariable( "page-data", [ "album-edit" => $_POST["album-index"] ] );
+                App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ] );
+                return App::redirect( "beheer#albumb-pop-in" );
             /* Otherwhise just store the name for the SQL DB. */
             } else {
                 $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] );
             }
 
             /* Store the remaining data for SQL */
-            if( isset( $_POST["album-nummer"] ) ) { $albumData["Album_Nummer"] = $_POST["album-nummer"]; }
-            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
+            if( isset( $_POST["album-nummer"] ) ) {
+                $albumData["Album_Nummer"] = $_POST["album-nummer"];
+            }
+
+            if( !empty( $_POST["album-datum"] ) ) {
+                $albumData["Album_UitgDatum"] = $_POST["album-datum"];
+            }
+
             $albumData["Album_Isbn"] = isset( $_POST["album-isbn"] ) ? $_POST["album-isbn"] : 0;
             $albumData["Album_Opm"] = isset( $_POST["album-opm"] ) ? $_POST["album-opm"] : 'W.I.P';
 
@@ -572,28 +596,36 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
-            } else if( isset( $_SESSION["page-data"]["album-cover"] ) ) {
-                $albumData["Album_Cover"] = $_SESSION["page-data"]["album-cover"];
-                unset( $_SESSION["page-data"]["album-cover"] ); // unset after using it.
+            } else if( isset( $_SESSION["page-data"]["Album_Cover"] ) ) {
+                $albumData["Album_Cover"] = $_SESSION["page-data"]["Album_Cover"];
+                unset( $_SESSION["page-data"]["Album_Cover"] ); // unset after using it.
             }
 
             /* Attempt to store the album data in the SQL DB. */
-            $store = App::get("collection")->setAlbum( $albumData, [ "Album_Index" => $_POST["album-index"], "Album_Serie" => $_POST["serie-index"] ] );
+            $store = App::get( "collection" )->setAlbum( $albumData, [ "Album_Index" => $_POST["album-index"], "Album_Serie" => $_POST["serie-index"] ] );
 
             /* Evaluate the DB action, and store the correct response (unset data if required), and redirect back to the admin page. */
             if( is_array( $store ) ) {
-                App::get("session")->setVariable( "header", [ "error" => $store ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+
+                return App::redirect( "beheer" );
             } else {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
-                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
-                //if( isset( $_SESSION["page-data"]["album-edit"] ) ) { unset( $_SESSION["page-data"]["album-edit"] ); }
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["album-naam"] . " is gelukt !" ] ] );
+
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                    unset( $_SESSION["page-data"]["albums"] );
+                }
+
+                if( isset( $_SESSION["page-data"]["album-edit"] ) ) {
+                    unset( $_SESSION["page-data"]["album-edit"] );
+                }
+
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -611,27 +643,27 @@ class LogicController {
     public function adminReset() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights" );
+            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
         } else {
-            $userCheck = App::get("user")->checkUser( -1, "rights" );
+            $userCheck = App::get( "user" )->checkUser( -1, "rights" );
         }
 
         /* Validate the userCheck result, and execute the correct logic. */
-        if( !is_array( $useCheck ) ) {
-            $store = App::get("user")->updateUser( "gebruikers", [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ], [ "Gebr_Email" => $_POST["email"] ] );
+        if( !is_array( $userCheck ) ) {
+            $store = App::get( "user" )->updateUser( "gebruikers", [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ], [ "Gebr_Email" => $_POST["email"] ] );
 
             /* Evaluate the DB action, and store the correct response, and redirect back to the correct page. */
             if( is_array( $store ) ) {
-                App::get("session")->setVariable( "header", [ "error" => $store ] );
-                return App::redirect("beheer#ww-reset-pop-in");
+                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                return App::redirect( "beheer#ww-reset-pop-in" );
             } else {
-                App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ] ] );
-                return App::redirect("beheer");
+                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ] ] );
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
-            App::get("session")->setVariable( "header", [ "error" => $userCheck ] );
-            return App::redirect("");
+            App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+            return App::redirect( "" );
         }
     }
 
@@ -724,8 +756,11 @@ class LogicController {
     }
 
     //  TODO: Wait for user feedback, to see if anything need changing.
+    //  TODO: Add isbn-search submit, regardless of any required form fields.
+
     /*	scan(): This function simply set the correct session tag, and redirects to the pop-in to load the correct template. */
 	public function scan() {
+        //die( var_dump( print_r( $_SESSION ) ) );
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
 		if( isset( $_SESSION["user"]["id"] ) ) {
 			$userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
@@ -744,61 +779,87 @@ class LogicController {
 		}
     }
 
-    //  TODO: Wait for user feedback, to see if anything need changing.
     /*  isbn():
             This function attempt to get as much item data as possible, from the Google API, so forms can be pre-filled.
             This works for both the ISBN search function, as the bar-code scanner, though only give ISBN/EAN book information in return.
      */
     public function isbn() {
+        //die( var_dump( print_r( $_SESSION ) ) );  //temp debugline
+        //die( var_dump( print_r ( $_POST ) ) );
+        
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
 		if( isset( $_SESSION["user"]["id"] ) ) {
 			$userCheck = App::get("user")->checkUser( $_SESSION["user"]["id"], "rights");
-		} else { $userCheck = App::get("user")->checkUser( -1, "rights" ); }
+		} else {
+            $userCheck = App::get("user")->checkUser( -1, "rights" );
+        }
 
         /* Evaluate the user authentication. */
         if( !is_array( $userCheck ) ) {
-            $result;
+            $result = "";
 
             /* Check if the isbn was set, and start the parsing/processing logic. */
             if( isset( $_POST["album-isbn"] ) ) {
                 /* Attempt to get data from the Google API. */
-                $result = App::get('isbn')->get_data( $_POST["album-isbn"] );
+                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"] );
 
                 /* Items that arent provided via the Google API, and should be there by default in the POST. */
-                if( isset( $_POST["album-index"] ) ) { $result["album-index"] = $_POST["album-index"]; }
-                if( isset( $_POST["serie-index"] ) ) { $result["serie-index"] = $_POST["serie-index"]; }
+                if( isset( $_POST["album-index"] ) ) {
+                    $result["Album_Index"] = $_POST["album-index"];
+                }
+
+                if( isset( $_POST["serie-index"] ) ) {
+                    $result["Album_Serie"] = $_POST["serie-index"];
+                }
 
                 /* Items that can only be user input, only applies for editing albums. */
-                if( isset( $_POST["album-nummer"] ) ) { $result["album-nummer"] = $_POST["album-nummer"]; }
+                if( isset( $_POST["album-nummer"] ) ) { $result["Album_Nummer"] = $_POST["album-nummer"]; }
 
                 /* Items that need to be taken from the Google API search if avaible, otherwhise take the user input, only applies for editing albums. */
-                if( !isset( $result["album-naam"] ) && !empty( $_POST["album-naam"] ) ) { $result["album-naam"] = $_POST["album-naam"]; }
-                if( !isset( $result["serie-datum"] ) && !empty( $_POST["album-datum"] ) ) { $result["album-datum"] = $_POST["album-datum"]; }
-                if( !isset( $result["album-opm"] ) && !empty( $_POST["album-opm"] ) ) { $result["album-opm"] = $_POST["album-opm"]; }
+                if( !isset( $result["Album_Naam"] ) && !empty( $_POST["album-naam"] ) ) {
+                    $result["Album_Naam"] = $_POST["album-naam"];
+                }
+
+                if( !isset( $result["Album_UitgDatum"] ) && !empty( $_POST["album-datum"] ) ) {
+                    $result["Album_UitgDatum"] = $_POST["album-datum"];
+                }
+
+                if( !isset( $result["Album_Opm"] ) && !empty( $_POST["album-opm"] ) ) {
+                    $result["Album_Opm"] = $_POST["album-opm"];
+                }
             }
 
-            /* Evaluate the result, and prepare the correct feedback and page-data, before redirecting to the correct page. */
+            //die( var_dump( print_r( $result ) ) );  //temp debugline
+
+            /* Evaluate the result, and prepare the correct feedback and page-data, on error we redirect back to the admin page. */
             if( isset( $result ) ) {
                 if( !isset( $result["error"] ) ) {
-                    App::get("session")->setVariable( "header",
-                        [ "feedB" => [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ] ]
-                    );
-                } else {    // Prepare error feedback and clear all session states.
-                    App::get("session")->setVariable( "header", [ "feedB" => [ "fetchResponse" => $result["error"] ] ] );
+                    App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ] ] );
+                } else {
+                    App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => $result["error"] ] ] );
                     return App::redirect( "beheer" );
                 }
 
-                /* If the scan tag is set, we prep the data for the album-toevoegen pop-in, and clear any related tags. */
+                /* If the scan tag is set, we prep the data for the related pop-ins */
                 if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) {
-                    App::get("session")->setVariable( "page-data", [ "isbn-scan" => $result ] );
-                    App::get("session")->setVariable( "page-data", [ "barcode" => TRUE ] );
-                    App::get("session")->setVariable( "header", [ "broSto" => [ "isbnScan" => True ] ] );
-                    return App::redirect( "beheer#albumt-pop-in" );
-                /* If that tag wasnt set, its going the be manual isbn search, and we need to evaluate where that was done.  */
+                    App::get( "session" )->setVariable( "page-data", [ "isbn-scan" => $result ] );
+                    App::get( "session" )->setVariable( "page-data", [ "barcode" => TRUE ] );
+                    App::get( "session" )->setVariable( "header", [ "broSto" => [ "isbnScan" => TRUE ] ] );
+                /* If that tag wasnt set, its going the be manual isbn search.  */
                 } else {
-                    App::get("session")->setVariable( "page-data", [ "isbn-search" => $result ] );
-                    App::get("session")->setVariable( "header", [ "broSto" => [ "isbnSearch" => True ] ] );
-                    App::get("session")->setVariable( "page-data", [ "searched" => TRUE ] );
+                    App::get( "session" )->setVariable( "page-data", [ "isbn-search" => $result ] );
+                    App::get( "session" )->setVariable( "header", [ "broSto" => [ "isbnSearch" => TRUE ] ] );
+                    App::get( "session" )->setVariable( "page-data", [ "searched" => TRUE ] );
+                }
+
+                //die( var_dump( print_r( $_SESSION["page-data"] ) ) );  //temp debugline
+
+                // This is a bit dodgy, but the only goodway atm to detect where the input came from.
+                // Came from the album-bewerken pop-in.
+                if( $_POST["serie-index"] && $_POST["album-index"] ) {
+                    return App::redirect( "beheer#albumb-pop-in" );
+                // Came from the album-toevoegen pop-in.
+                } elseif( $_POST["serie-index"] ) {
                     return App::redirect( "beheer#albumt-pop-in" );
                 }
             }
@@ -840,6 +901,8 @@ class LogicController {
             if( isset( $_POST["album-isbn"] ) ) {
                 $result = App::get('isbn')->get_data( $_POST["album-isbn"] );
             }
+
+            //die( var_dump( print_r( $result ) ) );
 
             /* Confirmation\processing loop goes here */
             if( isset( $_POST["serie-index"] ) ) {
@@ -892,7 +955,7 @@ class LogicController {
     }
 
     /* Debug copy and paste line
-        //die( var_dump( print_r(  ) ) );
+        //die( var_dump( print( "<pre>" ) . print_r(  ) . print( "</pre>" ) ) );
      */
 
     /* Debug info, for testing the isbn manual search functions.

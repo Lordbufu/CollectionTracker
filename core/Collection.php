@@ -23,9 +23,8 @@ class Collection {
 
             Return Value    : INT
      */
-    protected function getSerId($name) {
-        $tempSerie = App::get("database")->selectAllWhere("series", [ "Serie_Naam" => $name ] )[0];
-
+    protected function getSerId( $name ) {
+        $tempSerie = App::get( "database" )->selectAllWhere( "series", [ "Serie_Naam" => $name ] )[0];
         return $tempSerie["Serie_Index"];
     }
 
@@ -34,10 +33,7 @@ class Collection {
             So it can be displayed, each time getSeries is called, the number is updated.
      */
     protected function countAlbums() {
-        foreach($this->series as $key => $value) {
-            $this->series[$key]["Album_Aantal"] = App::get("database")->countAlbums( $value["Serie_Index"] );
-        }
-
+        foreach( $this->series as $key => $value ) { $this->series[$key]["Album_Aantal"] = App::get( "database" )->countAlbums( $value["Serie_Index"] ); }
         return;
     }
 
@@ -50,31 +46,15 @@ class Collection {
             
             Return Value = String.
      */
-    public function getItemName($type, $id1, $id2=null) {
-        switch($type) {
+    public function getItemName( $type, $id1, $id2 = null ) {
+        switch( $type ) {
             case "serie":
-                if(!isset($this->series)) {
-                    $this->getSeries();
-                }
-
-                foreach($this->series as $index => $serie) {
-                    if($id1 == $serie["Serie_Index"]) {
-                        return $serie["Serie_Naam"];
-                    }
-                }
-
+                if( !isset( $this->series ) ) { $this->getSeries(); }
+                foreach( $this->series as $index => $serie ) { if( $id1 == $serie["Serie_Index"] ) { return $serie["Serie_Naam"]; } }
                 return $this->$dbError;
             case "album":
-                if(!isset($this->albums)) {
-                    $this->getAlbums($id1);
-                }
-
-                foreach($this->albums as $index => $album) {
-                    if($id2 == $album["Album_Index"]) {
-                        return $album["Album_Naam"];
-                    }
-                }
-
+                if(! isset( $this->albums ) ) { $this->getAlbums( $id1 ); }
+                foreach( $this->albums as $index => $album ) { if( $id2 == $album["Album_Index"] ) { return $album["Album_Naam"]; } }
                 return $this->$dbError;
         }
     }
@@ -89,9 +69,9 @@ class Collection {
                 On sucess   -> Boolean
                 On fail     -> Assoc Array.
      */
-    public function remItem($table, $id) {
-        $store = App::get("database")->remove($table, $id);
-        return is_string($store) ? $this->dbError : TRUE;
+    public function remItem( $table, $id ) {
+        $store = App::get( "database" )->remove( $table, $id );
+        return is_string( $store ) ? $this->dbError : TRUE;
     }
 
     /*  checkItemName($type, $name, $index=null):
@@ -106,39 +86,27 @@ class Collection {
                If not duplicate -> Boolean.
                If is duplicate  -> Assoc Array.
      */
-    public function checkItemName($type, $name, $sIndex=null, $aIndex=null) {
-        switch($type) {
+    public function checkItemName( $type, $name, $sIndex = null, $aIndex = null ) {
+        switch( $type ) {
             case "serie":
-                if( !isset( $this->series ) ) {
-                    $this->getSeries();
-                }
-                
+                if( !isset( $this->series ) ) { $this->getSeries(); }
                 foreach( $this->series as $index => $serie ) {
                     if( str_replace( " ", "", $name ) === str_replace( " ", "", $serie["Serie_Naam"] ) ) {
                         if( $sIndex !== null && $sIndex != $serie["Serie_Index"] ) {
                             return $this->dupError;
-                        } else if ( $sIndex === null ) {
-                            return $this->dupError;
-                        }
+                        } else if ( $sIndex === null ) { return $this->dupError; }
                     }
                 }
-
                 return FALSE;
             case "album":
-                if( !isset( $this->albums ) ) {
-                    $this->getAlbums( $sIndex );
-                }
-
+                if( !isset( $this->albums ) ) { $this->getAlbums( $sIndex ); }
                 foreach( $this->albums as $index => $album ) {
                     if( str_replace( " ", "", $album["Album_Naam"] ) === str_replace( " ", "", $name ) ) {
                         if( $aIndex !== null && $aIndex != $album["Album_Index"] ) {
                             return $this->dupError;
-                        } else if ( $aIndex === null ) {
-                            return $this->dupError;
-                        }
+                        } else if ( $aIndex === null ) { return $this->dupError; }
                     }
                 }
-
                 return FALSE;
         }
     }
@@ -150,7 +118,7 @@ class Collection {
             Return Value: Multi-Dimensional Array.
      */
     public function getSeries() {
-        $this->series = App::get("database")->selectAll("series");
+        $this->series = App::get( "database" )->selectAll( "series" );
         $this->countAlbums();
         return $this->series;
     }
@@ -162,16 +130,9 @@ class Collection {
 
             Return Value    : INT
      */
-    public function getSerInd($name) {
-        if(!isset($this->series)) {
-            $this->getSeries();
-        }
-
-        foreach($this->series as $index => $serie) {
-            if($name == $serie["Serie_Naam"]) {
-                return $serie["Serie_Index"];
-            }
-        }
+    public function getSerInd( $name ) {
+        if(!isset($this->series)) { $this->getSeries(); }
+        foreach( $this->series as $index => $serie ) { if( $name == $serie["Serie_Naam"] ) { return $serie["Serie_Index"]; } }
     }
 
     /*  setSerie($data, update=null):
@@ -184,14 +145,11 @@ class Collection {
                 On sucess   -> Boolean
                 On fail     -> String (the database error)
      */
-    public function setSerie($data, $update=null) {
-        if($update === null) {
-            $store = App::get("database")->insert("series", $data);
-        } else {
-            $store = App::get("database")->update("series", $data, [ "Serie_Index" => $update ] );
-        }
-
-        return is_string($store) ? $this->dbError : TRUE;
+    public function setSerie( $data, $update = null ) {
+        if( $update === null ) {
+            $store = App::get( "database" )->insert( "series", $data );
+        } else { $store = App::get( "database" )->update( "series", $data, [ "Serie_Index" => $update ] ); }
+        return is_string( $store ) ? $this->dbError : TRUE;
     }
 
     /* Album Functions */
@@ -201,12 +159,12 @@ class Collection {
 
             Return Value: Multi-Dimensional Array.
      */
-    public function getAlbums($partId) {
-        if(!is_numeric($partId)) {
-            $this->albums = App::get("database")->selectAllWhere("albums", [ "Album_Serie" => $this->getSerId($partId) ] );
+    public function getAlbums( $partId ) {
+        if( !is_numeric( $partId ) ) {
+            $this->albums = App::get( "database" )->selectAllWhere( "albums", [ "Album_Serie" => $this->getSerId($partId) ] );
             return $this->albums;
         } else {
-            $this->albums = App::get("database")->selectAllWhere("albums", [ "Album_Serie" => $partId ] );
+            $this->albums = App::get( "database" )->selectAllWhere( "albums", [ "Album_Serie" => $partId ] );
             return $this->albums;
         }
     }
@@ -217,8 +175,8 @@ class Collection {
 
             Return Value: INT
      */
-    public function getAlbId($name) {
-        $tempAlbum = App::get("database")->selectAllWhere("albums", [ "Album_Naam" => $name ] )[0];
+    public function getAlbId( $name ) {
+        $tempAlbum = App::get( "database" )->selectAllWhere( "albums", [ "Album_Naam" => $name ] )[0];
         return $tempAlbum["Album_Index"];
     }
 
@@ -232,13 +190,10 @@ class Collection {
                 On-success  : Boolean
                 On-failure  : String
      */
-    public function setAlbum($data, $update=null) {
+    public function setAlbum( $data, $update = null ) {
         if($update === null) {
-            $store = App::get("database")->insert("albums", $data);
-        } else {
-            $store = App::get("database")->update("albums", $data, $update);
-        }
-
+            $store = App::get("database")->insert( "albums", $data );
+        } else { $store = App::get("database")->update( "albums", $data, $update ); }
         return is_string($store) ? $this->dbError : TRUE;
     }
 
@@ -252,21 +207,15 @@ class Collection {
             
             Return Type: Multi-Dimensional Array.
      */
-    public function getColl($table, $userId) {
+    public function getColl( $table, $userId ) {
         /* Set the correct id format, depending on the provided input. */
         if( !is_string( $userId ) ) {
             if( !is_array( $userId ) ) {
                 $id = [ "Gebr_Index" => $userId ];
-            } else {
-                $id = $userId;
-            }
-        } else {
-            $id = [ "Gebr_Index" => $userId ];
-        }
-
+            } else { $id = $userId; }
+        } else { $id = [ "Gebr_Index" => $userId ]; }
         /* Set the requested collection data, and return to caller. */
-        $this->collections = App::get("database")->selectAllWhere($table, $id);
-
+        $this->collections = App::get( "database" )->selectAllWhere( $table, $id );
         return $this->collections;
     }
 
@@ -277,7 +226,7 @@ class Collection {
 
             Return Value: boolean.
      */
-    public function setColl($table, $data) {
+    public function setColl( $table, $data ) {
         /* Ensure the most recent user collection data is set. */
         $this->collections = $this->getColl( $table, [ "Gebr_Index" => $data["Gebr_Index"] ] );
 
@@ -294,12 +243,12 @@ class Collection {
         $data["Alb_Staat"] = "";
         $data["Alb_Aantal"] = 1;
         $data["Alb_Opmerk"] = "";
-        $data["Alb_DatumVerkr"] = date("Y-m-d");
+        $data["Alb_DatumVerkr"] = date( "Y-m-d" );
 
         /* Attempt to store the collection in, and return the results to the caller  */
-        $store = App::get("database")->insert($table, $data);
+        $store = App::get( "database" )->insert( $table, $data );
 
-        return is_string($store) ? $this->dbError : TRUE;
+        return is_string( $store ) ? $this->dbError : TRUE;
     }
 
     //  TODO: Finish the comments, and update it to the changes made after the initial draft.
@@ -311,11 +260,10 @@ class Collection {
             
             Return Value: Boolean.
      */
-    public function evalColl($fData, $sIndex, $uIndex) {
+    public function evalColl( $fData, $sIndex, $uIndex ) {
         $tAlbums = $this->getAlbums( $sIndex );
         $tColl = $this->getColl( "collecties", $uIndex );
         $match;
-
         /* Loop over all stored albums */
         foreach( $tAlbums as $oKey => $oValue ) {
             /* Loop over every item in a album */
@@ -326,12 +274,9 @@ class Collection {
                     $tempFetch = $oValue;
                     $match = [ "inSerie" => TRUE ];
                 /* Ensure $match wasnt set already, and set a flag that the album isnt in the current serie. */
-                } else if (!isset( $match ) ) {
-                    $match = [ "inSerie" => FALSE ];
-                }
+                } else if ( !isset( $match ) ) { $match = [ "inSerie" => FALSE ]; }
             }
         }
-
         /* Check if album was in the selected serie, but no collection data was found. */
         if( $match["inSerie"] && empty( $tColl ) ) {
             // This means album has to be added to the user collection.
@@ -342,15 +287,11 @@ class Collection {
             foreach( $tColl as $oKey => $oValue ) {
                 /* Loop over every entry in said collection data */
                 foreach( $oValue as $iKey => $iValue ) {
-                    /* Check if the album index values match */
-                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) {
-                        // Only logical action, would be to remove the album from the collection.
-                        $match = [ "remFromColl" => TRUE ];
-                    }
+                    /* Check if the album index values match, only logical action, would be to remove the album from the collection. */
+                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) { $match = [ "remFromColl" => TRUE ]; }
                 }
             }
         }
-
         return $match;
     }
 }

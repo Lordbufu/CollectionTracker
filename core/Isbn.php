@@ -6,6 +6,10 @@
     but the majority is not info that i store.
  */
 
+//  TODO/Notes:
+    // - Test what happens is a request returns more then 1 item, so far i have not been able to find one that returns more then 1.
+    // - Review how i handle the search/request, atm im just pre-filling data that i have, but maybe the 'client' wants something else ?¿
+
 namespace App\Core;
 
 use App\Core\App;
@@ -20,8 +24,6 @@ class Isbn {
         $this->url = $this->url . $isbn;
     }
 
-    //  TODO: Figure out how to deal with multiple items, if that can even happen at all.
-    //  TODO: Figure out what to do with the left over data, maybe the clients wants a preview first, or can use the extra info.
     /*  get_data($isbn):
             This function uses a isbn from either a user or scanned input, and parses the google API to find related data.
             If there is related data, that data is then checked and parsed for usefull things, and stored in the global new data array.
@@ -56,49 +58,61 @@ class Isbn {
 
         /* Check if something was stored, loop over the data to parse it into the new data array. */
         if( !empty( $temp ) ) {
+
             foreach( $temp as $key => $value ) {
+
                 if( $key === "volumeInfo" ) {
+
                     foreach( $value as $iKey => $iValue ) {
                         /* The album-naam, is the parsed title. */
                         if( $iKey === "title" ) {
-                            $this->new["album-naam"] = $iValue;
+                            $this->new["Album_Naam"] = $iValue;
                         }
 
                         /* The publishedDate need to be parsed/converted again, to match the HTML format. */
                         if( $iKey === "publishedDate" ) {
                             $temp = strtotime( explode("T", $iValue)[0] );
-                            $this->new["album-uitgDatum"] = date("Y-m-d", $temp );
+                            $this->new["Album_UitgDatum"] = date("Y-m-d", $temp );
                         }
 
                         /* The cover can be parsed via the imageLinks, and is stored as a base64 blob */
                         if( $iKey === "imageLinks" ) {
                             $imageType = get_headers( $iValue["smallThumbnail"], 1 )["Content-Type"];
                             $base64Image = "data:" . $imageType . ";charset=utf8;base64," . base64_encode( file_get_contents( $iValue["smallThumbnail"] ) );
-                            $this->new["album-cover"] = $base64Image;
+                            $this->new["Album_Cover"] = $base64Image;
                         }
 
                         /* For the isbn/ean, i need a bit more logic, as its nested inside the industryIdentifiers */
                         if( $iKey === "industryIdentifiers" ) {
+
                             /* If there is only 1 parsed result, check the type of code first */
                             if( count( $iValue ) == 1) {
+
                                 if( $iValue[0]["type"] !== "ISBN_10" || $iValue[0]["type"] !== "ISBN_13" ) {
                                     /* If the codes match, store the parsed one. */
                                     if( $iValue[0]["identifier"] == $isbn ) {
-                                        $this->new["album-isbn"] = $iValue[0]["identifier"];
+                                        $this->new["Album_ISBN"] = $iValue[0]["identifier"];
                                     }
                                 }
+
                             /* If there are more, attempt to find the correct one. */
                             } else {
+
                                 for( $i=0; $i < 2; $i++) {
+
                                     if( $iValue[$i]["type"] == "ISBN_10" || $iValue[$i]["type"] == "ISBN_13" ) {
                                         $x = $i + 1;
+
                                         if( isset( $iValue[$x]["type"] ) ) {
+                                            
                                             if( $iValue[$x]["identifier"] !== $isbn ) {
-                                                $this->new["album-isbn"] = $iValue[$x]["identifier"];
+                                                $this->new["Album_ISBN"] = $iValue[$x]["identifier"];
                                             }
+
                                         } else {
+
                                             if( $iValue[$i]["identifier"] !== $isbn ) {
-                                                $this->new["album-isbn"] = $iValue[$i]["identifier"];
+                                                $this->new["Album_ISBN"] = $iValue[$i]["identifier"];
                                             }
                                         }
                                     }
@@ -106,8 +120,8 @@ class Isbn {
                             }
                         }
 
-                        /*
-                            The book author, currently not used, but might be usefull going to need feedback for this:
+                        /* Retained for potential futhure usecases
+                            // The book author, currently not used, but might be usefull going to need feedback for this:
                             if( $iKey === "authors" ) { $this->new["album-authors"] = $iValue[0]; }
                             // The long format description, sometimes as long as the text on the back cover, so not very useable imo:
                             if( $iKey === "description" ) { $this->new["album-opm"] = $iValue; }
@@ -121,13 +135,15 @@ class Isbn {
 
                     }
                 /* The short description is stored outside of the volumeInfo  */
-                } else if( $key === "searchInfo" ) { $this->new["album-opm"] = $value["textSnippet"]; }
+                } else if( $key === "searchInfo" ) {
+                    $this->new["Album_Opm"] = $value["textSnippet"];
+                }
             }
         }
 
         /* If there was no valid isbn found, we simply use the function global one. */
-        if( !isset( $this->new["album-isbn"] ) ) {
-            $this->new["album-isbn"] = $isbn;
+        if( !isset( $this->new["Album_ISBN"] ) ) {
+            $this->new["Album_ISBN"] = $isbn;
         }
 
         return $this->new;

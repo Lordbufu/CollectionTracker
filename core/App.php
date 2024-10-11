@@ -1,5 +1,9 @@
 <?php
 
+//  TODO: Find a solution to the Mobile-Detect API/Library, its not detecting the i-pad correctly it seems.
+//          Temp solution is a over complicated elseif loop, since both !isMobile and !isTablet are true for tablets.
+//          A bug was reported on there github, but that is still open and not solved yet, has been assigned though.
+
 namespace App\Core;
 
 use Detection\MobileDetect;
@@ -17,9 +21,7 @@ class App {
 
             Return value: None
      */
-    public static function bind($key, $value) {
-        return static::$registry[$key] = $value;
-    }
+    public static function bind( $key, $value ) { return static::$registry[$key] = $value; }
 
     /*  get($key):
             This function tries to access the $register, and return the linked features if there is a match.
@@ -27,8 +29,8 @@ class App {
             
             Return value: None
      */
-    public static function get($key) {
-        if(! array_key_exists($key, static::$registry)) { throw new Exception("No {$key} is bound in the container."); }
+    public static function get( $key ) {
+        if( !array_key_exists( $key, static::$registry ) ) { throw new Exception( "No {$key} is bound in the container." ); }
         return static::$registry[$key];
     }
 
@@ -41,11 +43,15 @@ class App {
      */
     public static function checkDevice() {
         $detect = new MobileDetect();
-		$detect->setUserAgent($_SERVER["HTTP_USER_AGENT"]);
+		$detect->setUserAgent( $_SERVER["HTTP_USER_AGENT"] );
 
-        if($detect->isMobile()) { return static::$device = "mobile"; }
-        if($detect->isTablet()) { return static::$device = "tablet"; }
-        if(!$detect->isMobile() && !$detect->isTablet()) { return static::$device = "desktop"; }
+        if( $detect->isTablet() && $detect->isMobile() ) {
+            return static::$device = "tablet";
+        } else if ( $detect->isMobile() ) {
+            return static::$device = "mobile";
+        } else if(!$detect->isMobile() && !$detect->isTablet()) {
+            return static::$device = "desktop";
+        } else { die("Unknow device detected, plz contact the site administrator!"); }
     }
 
     /*  setVersion():
@@ -55,9 +61,9 @@ class App {
             Return value: None
      */
     public static function setVersion() {
-        $versionFile = fopen("../version.txt", "r");
-        static::$version = fread($versionFile, filesize("../version.txt"));
-        return fclose($versionFile);
+        $versionFile = fopen( "../version.txt", "r" );
+        static::$version = fread($versionFile, filesize( "../version.txt" ) );
+        return fclose( $versionFile );
     }
 
     /*  view($name, $data=[])
@@ -68,13 +74,13 @@ class App {
 
             Return value: None
      */
-    public static function view($name, $data=[]) {
+    public static function view( $name, $data=[] ) {
         static::checkDevice();
         static::setVersion();
         $data["device"] = static::$device;
         $data["version"] = static::$version;
-        extract($data);
-        return require "../app/views/{$name}.view.php";
+        extract( $data );
+        return require( "../app/views/{$name}.view.php" );
     }
 
     /*  redirect($path, $data=[]):
@@ -85,13 +91,13 @@ class App {
 
             Return value: None
      */
-    public static function redirect($path, $data=[]) {
+    public static function redirect( $path, $data=[] ) {
         static::checkDevice();
         static::setVersion();
         $data["device"] = static::$device;
         $data["version"] = static::$version;
-        extract($data);
-        return header("location:https://{$_SERVER['SERVER_NAME']}/{$path}");
+        extract( $data );
+        return header( "location:https://{$_SERVER['SERVER_NAME']}/{$path}" );
     }
 }
 ?>

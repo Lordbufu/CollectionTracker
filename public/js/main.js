@@ -1,45 +1,37 @@
-/* Globals for the sticky header/banner and QR/barcode scanner */
-let header, control, sticky, html5QrcodeScanner;
+/*  The main JavaScript code:
+        Here i have collected all functions/variables, that are shared across pages, or incase of variables are required to be set globally.
+        All code has been minimized manually, to still be somewhat readable, but as short as possible.
+        Most initial issue have been tested for bugs, and corrected if the result was not as expected, so all large changes have been made at this point.
+        There are likely way to many 'return' statements, there are to either attempt to reduce processing time, or prevent unexpected loops/results.
+ */
+let html5QrcodeScanne, zoekInp, chb1, chb2, chb3;                                           /* Globals for shared scripts */
+let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm, pwSubButt;              /* Globals for the Admin page */
+let formButt, formInput;                                                                    /* Globals for the User page */
 
-/* Code that triggers when a page is loaded */
+/* Check the documents ready state, and start loop if ready state is complete. */
 document.onreadystatechange = () => {
-    if( document.readyState === 'complete' ) {
-        /* On scroll code for the title banner */
-        window.onscroll = function() {
-            onScroll()
-        };
-
-        header = document.getElementById( "title-banner" );
-        control = document.getElementById( "contr-cont" );
-        if(header.offsetTop) { sticky = header.offsetTop; }
-
-        if(window.location.pathname === "/beheer" || window.location.pathname === "/beheer") {
-            if(control.offsetTop) {
-                sticky = control.offsetTop;
-            }
-        }
-
-        /* Page specific init and feedback code */
-        if(window.location.pathname === '/') {
+    if( document.readyState === "complete" ) {
+        /* If the location is the landing page, check if there was a fetch response, display the fetch response message, and delete it from the storage, and trigger the init function. */
+        if( window.location.pathname === "/" ) {
             if( localStorage.fetchResponse ) {
                 displayMessage( localStorage.fetchResponse );
                 localStorage.removeItem( "fetchResponse" );
             }
-            return initLanding();
+
+            initLanding();
+            return;
+        /* If the location is the user page, trigger the correct init function, and return to caller (optional). */
         } else if( window.location.pathname === "/gebruik" ) {
-            return initGebruik();
+            initStatic();
+            initGebruik();
+            return;
+        /* If the location is the admin page, trigger the correct init function, and return to caller (optional). */    
         } else if( window.location.pathname === "/beheer" ) {
-            return initBeheer();
+            initStatic();
+            initBeheer();
+            return;
         }
     }
-}
-
-/* Potentially Obsolete, all function calls to this should have been replaced ¿ */
-/* Fetch function, used in certain cases to avoid a page reload */
-async function fetchRequest( url, method, data ) {
-    const response = await fetch( url, { method: method, body: data } );
-
-    response.json();
 }
 
 /*  dispatchInputEvent(caller):
@@ -47,16 +39,30 @@ async function fetchRequest( url, method, data ) {
             caller (string) - A string that allows me to see what called the event.
  */
 function dispatchInputEvent( caller ) {
-    let inputEvent = new Event( "input", { "bubbles": true, "cancelable": false } );
+    /* Create a new basic input event */
+    let inputEvent = new Event (
+        "input", {
+            "bubbles": true,
+            "cancelable": false
+        }
+    );
+
+    /* Switch the caller id from the pop-in, and trigger the required input events, with a return to close the switch. */
     switch( caller ) {
         case "album-toev":
-            return document.getElementById( "albumt-form-alb-naam" ).dispatchEvent( inputEvent ), document.getElementById( "albumt-form-alb-isbn" ).dispatchEvent( inputEvent );
+            document.getElementById( "albumt-form-alb-isbn" ).dispatchEvent( inputEvent );
+            document.getElementById( "albumt-form-alb-naam" ).dispatchEvent( inputEvent );
+            return;
         case "album-bew":
-            return document.getElementById( "albumb-form-alb-naam" ).dispatchEvent( inputEvent ), document.getElementById( "albumb-form-alb-isbn" ).dispatchEvent( inputEvent );
+            document.getElementById( "albumb-form-alb-isbn" ).dispatchEvent( inputEvent );
+            document.getElementById( "albumb-form-alb-naam" ).dispatchEvent( inputEvent );
+            return;
         case "serie-maken":
-            return document.getElementById( "seriem-form-serieNaam" ).dispatchEvent( inputEvent );
+            document.getElementById( "seriem-form-serieNaam" ).dispatchEvent( inputEvent );
+            return;
         case "serie-bew":
-            return document.getElementById( "serieb-form-serieNaam" ).dispatchEvent( inputEvent );
+            document.getElementById( "serieb-form-serieNaam" ).dispatchEvent( inputEvent );
+            return;
     }
 }
 
@@ -66,41 +72,29 @@ function dispatchInputEvent( caller ) {
             e (object)  - The event that was assigned to this listen event, used to see what element triggered it.
  */
 function saveScroll( e ) {
+    /* Store the scroll position of the user in the session storage, for later use */
     sessionStorage.setItem( "scrollPos", window.scrollY );
 
+    console.log("saveScroll triggered");
+    console.log(e.target);
+
+    /*  TODO: Review required changes, since i have condensed down some of the templates in the most recent re-work. */
+    /* If the function was called from either; .... */
     if( e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button" || e.target.id === "modal-form-isbnSearch") {
-        return localStorage.setItem( "event", "album-bew" );
-    } else if( e.target.id === "album-toev-subm" || e.target.id === "albumt-form-button" ) {
-        return localStorage.setItem( "event", "album-toev" );
-    } else if( e.target.className === "serie-bewerken-butt" || e.target.id === "serieb-form-button" ) {
-        return localStorage.setItem( "event", "serie-bew" );
-    } else if( e.target.className === "serie-maken-subm" || e.target.id === "seriem-form-button" ) {
-        return localStorage.setItem( "event", "serie-maken" );
-    } else {
+        localStorage.setItem( "event", "album-bew" );
         return;
-    }
-}
-
-/*  onScroll():
-        Simple function to make the page header/banner sticky or not, depending on the vertical scroll position.
- */
-function onScroll() {
-    if( window.scrollY > sticky ) {
-        // Ensure the admin controle container also moves when scrolling on the admin page.
-        if(window.location.pathname === '/beheer' || window.location.pathname === '/gebruik') {
-            control.classList.add( "sticky" );
-            control.style.top = "5.5REM";
-        }
-
-        return header.classList.add( "sticky" );
-    } else {
-        // Ensure the admin controle container is reset when we are back at the top of the page.
-        if(window.location.pathname === '/beheer' || window.location.pathname === '/gebruik') {
-            control.classList.remove( "sticky" );
-            control.removeAttribute( "style" );
-        }
-
-        return header.classList.remove( "sticky" );
+    /* If the function was called from either; .... */
+    } else if( e.target.id === "album-toev-subm" || e.target.id === "albumt-form-button" ) {
+        localStorage.setItem( "event", "album-toev" );
+        return;
+    /* If the function was called from either; .... */
+    } else if( e.target.className === "serie-bewerken-butt" || e.target.id === "serieb-form-button" ) {
+        localStorage.setItem( "event", "serie-bew" );
+        return;
+    /* If the function was called from either; .... */
+    } else if( e.target.className === "serie-maken-subm" || e.target.id === "seriem-form-button" ) {
+        localStorage.setItem( "event", "serie-maken" );
+        return;
     }
 }
 
@@ -109,7 +103,8 @@ function onScroll() {
             text (string)   - The text that needs to be cleaned/filtered.
  */
 function replaceSpecChar( text ) {
-    return text.replaceAll( "&amp;", "&") .replaceAll( "$lt;", "<" ).replaceAll( "&gt;", ">" ).replaceAll( "$quot;", '"' ).replaceAll( "&#039;", "'" );
+    text.replaceAll( "&amp;", "&") .replaceAll( "$lt;", "<" ).replaceAll( "&gt;", ">" ).replaceAll( "$quot;", '"' ).replaceAll( "&#039;", "'" );
+    return;
 }
 
 /*  displayMessage(text1, text2):
@@ -118,21 +113,38 @@ function replaceSpecChar( text ) {
             text1 (string)  - The first feedback text that needs to be displayed.
             text2 (string)  - The second feedback text that needs to be displayed.
  */
-function displayMessage( text1="", text2="" ) {
-    const container = document.getElementById( "message-pop-in" ), header1 = document.getElementById( "response-message1" ), header2 = document.getElementById( "response-message2" );
+function displayMessage( text1 = "", text2 = "" ) {
+    /* Get the elements we need, to display the user feedback. */
+    const container = document.getElementById( "message-pop-in" );
+    const header1 = document.getElementById( "response-message1" )
+    const header2 = document.getElementById( "response-message2" );
 
+    /* If either input is not empty, change the main container style to be displayed on screen. */
     if( text1 !== "" || text2 !== "" ) {
-        container.style.display = "block", container.style.top = "0%", container.style.zIndex = "3";
+        container.style.display = "block";
+        container.style.top = "0%";
+        container.style.zIndex = "4";
 
-        if( text1 !== "" ) { header1.innerHTML = text1; }
-        if( text2 !== "" ) { header2.innerHTML = text2; }
+        /* Check witch text has content, and display said text. */
+        if( text1 !== "" ) {
+            header1.innerHTML = text1;
+        }
 
-        return setTimeout( function() {
-            container.style.display = "none";
-            container.style.top = "-10%";
-            container.style.zIndex = "1";
-            header1.innerHTML = "";
-            header2.innerHTML = "";
-        }, 3000 );
+        if( text2 !== "" ) { 
+            header2.innerHTML = text2;
+        }
+
+        /* Set a 3 second time-out, and hide the main container after the timeout. */
+        setTimeout(
+            function() {
+                container.style.display = "none";
+                container.style.top = "-10%";
+                container.style.zIndex = "1";
+                header1.innerHTML = "";
+                header2.innerHTML = "";
+            },
+        3000 );
     }
+    
+    return;
 }
