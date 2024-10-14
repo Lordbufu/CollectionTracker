@@ -75,10 +75,6 @@ function saveScroll( e ) {
     /* Store the scroll position of the user in the session storage, for later use */
     sessionStorage.setItem( "scrollPos", window.scrollY );
 
-    console.log("saveScroll triggered");
-    console.log(e.target);
-
-    /*  TODO: Review required changes, since i have condensed down some of the templates in the most recent re-work. */
     /* If the function was called from either; .... */
     if( e.target.className === "album-bewerken-butt" || e.target.id === "albumb-form-button" || e.target.id === "modal-form-isbnSearch") {
         localStorage.setItem( "event", "album-bew" );

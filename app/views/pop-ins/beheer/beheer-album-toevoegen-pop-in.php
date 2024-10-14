@@ -100,7 +100,7 @@
                             <?php endif; ?>
                             </div>
 
-                            <label class="modal-form-alb-cov-lab" id="modal-albumt-cov-lab" for="albumt-form-alb-cov">
+                            <label class="modal-form-alb-cov-lab button" id="modal-albumt-cov-lab" for="albumt-form-alb-cov">
                                 <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumt-form-alb-cov" name="album-cover" />
                             <?php if( !empty( $store["Album_Cover"] ) ) : ?>
                                 Selecteer nogmaals een Album Cover

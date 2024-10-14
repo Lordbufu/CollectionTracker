@@ -496,6 +496,7 @@ class LogicController {
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
+
             if( isset( $_POST["album-index"] ) ) {
                 $itemCheck = App::get( "collection" )->getItemName( "album", $_POST["serie-index"], $_POST["album-index"] );
                 $store = App::get( "collection" )->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
@@ -508,7 +509,7 @@ class LogicController {
             if( !is_array( $itemCheck ) && !is_array( $store ) ) {
                 App::get( "session" )->setVariable( "header",
                     [ "feedB" =>
-                        [ "fetchResponse" => "Het verwijderen van: " . $albName . " is geslaagd!" ]
+                        [ "fetchResponse" => "Het verwijderen van: " . $itemCheck . " is geslaagd!" ]
                     ]
                 );
 
@@ -867,7 +868,7 @@ class LogicController {
 
                 // This is a bit dodgy, but the only goodway atm to detect where the input came from.
                 // Came from the album-bewerken pop-in.
-                if( $_POST["serie-index"] && $_POST["album-index"] ) {
+                if( isset( $_POST["serie-index"] ) && isset( $_POST["album-index"] ) ) {
                     return App::redirect( "beheer#albumb-pop-in" );
                 // Came from the album-toevoegen pop-in.
                 } elseif( $_POST["serie-index"] ) {
@@ -988,6 +989,11 @@ class LogicController {
         Suske & Wiske
         Lambiorix
         alb nr 14
+     */
+
+    /* Debug info, for testing the isbn manual search functions.
+        9789020666526
+        De Kameleon in het goud
      */
 }
 ?>

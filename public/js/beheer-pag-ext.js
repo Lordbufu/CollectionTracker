@@ -198,9 +198,9 @@ function initBeheer() {
         localStorage.removeItem( "checkState" );
     }
 
-    /* Test code for the isbn search button */ 
-    const searchSubm = document.getElementById( "modal-form-albAdd-isbn-triger" );
-    searchSubm.addEventListener( "click", submitIsbnSearch );
+    /* Test code for the isbn search button / Not working as expected atm */ 
+    // const searchSubm = document.getElementById( "modal-form-albAdd-isbn-triger" );
+    // searchSubm.addEventListener( "click", submitIsbnSearch );
 }
 
 /*  naamCheck(e):
@@ -570,25 +570,26 @@ function onScanError( errorMessage ) {
     return;
 }
 
+// Not working as expected, need to think of a better solution.
 /*  submitIsbnSearch(e):
         This function adds to inputs to a extra form, fills in the data from the hidden form.
         And then submits the extra form, so the hidden data can be submitted to search for isbn data.
  */
-function submitIsbnSearch( e ) {
-    const formEl = document.getElementById( "isbn-trigger-form" );
-    const inputInEl = document.createElement("input");
-    const inputIsbnEl = document.createElement("input");
+// function submitIsbnSearch( e ) {
+//     const formEl = document.getElementById( "albumt-form" );
+//     const inputInEl = document.createElement("input");
+//     const inputIsbnEl = document.createElement("input");
 
-    inputInEl.setAttribute( "hidden", true );
-    inputInEl.setAttribute( "name", "serie-index" );
-    inputInEl.setAttribute( "value", document.getElementById( "modal-form-hidden" ).value );
+//     inputInEl.setAttribute( "hidden", true );
+//     inputInEl.setAttribute( "name", "serie-index" );
+//     inputInEl.setAttribute( "value", document.getElementById( "modal-form-hidden" ).value );
 
-    inputIsbnEl.setAttribute( "hidden", true );
-    inputIsbnEl.setAttribute( "name", "album-isbn" );
-    inputIsbnEl.setAttribute( "value", document.getElementById( "albumt-form-alb-isbn" ).value );
+//     inputIsbnEl.setAttribute( "hidden", true );
+//     inputIsbnEl.setAttribute( "name", "album-isbn" );
+//     inputIsbnEl.setAttribute( "value", document.getElementById( "albumt-form-alb-isbn" ).value );
 
-    formEl.appendChild(inputInEl);
-    formEl.appendChild(inputIsbnEl);
-    formEl.submit();
-    return;
-}
+//     formEl.appendChild(inputInEl);  // formEl is null error
+//     formEl.appendChild(inputIsbnEl);
+//     formEl.submit();
+//     return;
+// }
