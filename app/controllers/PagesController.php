@@ -14,7 +14,6 @@ class PagesController {
 				Failed Validation	(redirect)	-> ../createDB
 	 */
 	public function landing() {
-		//die( var_dump( print_r( $_SESSION ) ) );  //temp debugline
 		if( App::get( "database" )->testTable( "gebruikers" ) === "42S02" ) {
 			App::redirect( "createDB" );
 		} else {
@@ -31,7 +30,6 @@ class PagesController {
 				Failed Validation	(redirect) 	-> index.view.php
 	 */
 	public function beheer() {
-		//die( var_dump( print_r( $_SESSION ) ) );  //temp debugline
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         if( isset( $_SESSION["user"]["id"] ) ) {
             $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
@@ -74,7 +72,6 @@ class PagesController {
 				Failed Validation	(redirect) 	-> index.view.php
 	 */
 	public function gebruik() {
-		//die( var_dump( print_r( $_SESSION ) ) );  //temp debugline
 		/* If the user session data is present, if not we pass a invalid id to get a error back. */
 		if( isset( $_SESSION["user"]["id"] ) ) {
             $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"] );

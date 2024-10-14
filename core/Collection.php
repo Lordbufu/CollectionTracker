@@ -125,14 +125,26 @@ class Collection {
 
     /*  getSerInd($name):
             This function takes a serie name, and finds the matching serie index.
+            Before i compare the names, i need to remove any whitespaces, so whitespaces are not compared.
 
             $name (String)  : The name of the serie.
 
             Return Value    : INT
      */
     public function getSerInd( $name ) {
-        if(!isset($this->series)) { $this->getSeries(); }
-        foreach( $this->series as $index => $serie ) { if( $name == $serie["Serie_Naam"] ) { return $serie["Serie_Index"]; } }
+        $temp_name_1 = str_replace( " ", "", $name );
+
+        if(!isset($this->series)) {
+            $this->getSeries();
+        }
+
+        foreach( $this->series as $index => $serie ) {
+            $temp_name_2 = str_replace( " ", "", $serie["Serie_Naam"] );
+
+            if( $name == $serie["Serie_Naam"] ) {
+                return $serie["Serie_Index"];
+            }
+        }
     }
 
     /*  setSerie($data, update=null):

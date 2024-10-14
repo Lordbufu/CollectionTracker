@@ -136,7 +136,6 @@ class User {
                 On Validate - Boolean
                 Failed      - Assoc Array
      */
-            //die("id=".$id . "\n rights=".$rights); // temp debug-line
     public function checkUser( $id = null, $rights = null ) {
         /* If the user is not set, and the id was passed, we set the user based on the id. */
         if( !isset( $this->user ) && isset( $id ) ) {
