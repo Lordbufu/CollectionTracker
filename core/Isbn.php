@@ -7,8 +7,9 @@
  */
 
 //  TODO/Notes:
-    // - Test what happens is a request returns more then 1 item, so far i have not been able to find one that returns more then 1.
+    // - Test what happens if a request returns more then 1 item, so far i have not been able to find one that returns more then 1.
     // - Review how i handle the search/request, atm im just pre-filling data that i have, but maybe the 'client' wants something else ?¿
+    // - Clean up comments and left over code from the testing phase.
 
 namespace App\Core;
 

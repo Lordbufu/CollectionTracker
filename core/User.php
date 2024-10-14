@@ -19,8 +19,8 @@ class User {
     protected $noUserErr = [ "userError1" => "Geen gebruiker gevonden, neem contact op met uw Administrator!" ];
     protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
     protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
-    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om de website te bezoeken !!" ];
-    protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
+    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om deze pagina te bezoeken !!" ];
+    protected $authFailed = [ "fetchResponse" => "Toegang geweigerd, Account authentication mislukt !" ];
     protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /*  setUser($data):
@@ -47,24 +47,32 @@ class User {
             /* Loop over all users. */
             foreach( $tempUsers as $key => $user ) {
                 /* If a duplicate name detected, store the correct error. */
-                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
+                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) {
+                    $errorMsg["error"] = $this->userNameErr;
+                }
 
                 /* If a duplicate e-mail is detected, check if a error was set for the name and merge both errors. */
                 if( $user["Gebr_Email"] === $data["Gebr_Email"] ) {
                     if( is_array( $errorMsg ) ) {
                         $errorMsg["error"] = array_merge( $this->userNameErr, $this->userEmailErr );
                     /* Otherwhise just add the e-mail error. */
-                    } else { $errorMsg["error"] = $this->userEmailErr; }
+                    } else {
+                        $errorMsg["error"] = $this->userEmailErr;
+                    }
                 }
             }
         /* If there was a DB error getting all users, store the correct error. */
-        } else { $errorMsg["error"] = $this->noUserErr; }
+        } else {
+            $errorMsg["error"] = $this->noUserErr;
+        }
 
         /* Evaluate if there are any errors stored, and attempt to insert the user if not. */
         if( !isset( $errorMsg ) ) {
             $store = App::get( "database" )->insert( "gebruikers", $data );
         /* If there where, simply return the errors to the caller. */
-        } else { return $errorMsg; }
+        } else {
+            return $errorMsg;
+        }
 
         /* If there was no error string from the DB, return a feedback message, else return a DB error message. */
         return !is_string($store) ? $this->userAdd : [ "error" => $this->dbError ];
@@ -128,7 +136,7 @@ class User {
     }
 
     /*  checkUser($id=null, $rights=null):
-            This function checks if the uiser is valid, and if the user rights are set to Admin or not.
+            This function checks if the user is valid, and if the user rights are set to Admin or not.
                 $id     (string) - The index of the user we want to check, most likely take from the session.
                 $rights (string) - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
             
@@ -147,9 +155,10 @@ class User {
             /* If the rights where set and equal to "Admin", i return TRUE */
             if( isset( $rights ) && $this->user["Gebr_Rechten"] === "Admin" ) {
                 return TRUE;
-            /* If failed i return the authFailed error */
-            } elseif( !isset( $rights ) ) {
+            /* If rights was not set, the user is still valid for a user login. */
+            } elseif( !isset( $rights ) && $this->user["Gebr_Rechten"] === "gebruiker" ) {
                 return TRUE;
+            /* If failed i return the authFailed error */
             } else {
                 return $this->authFailed;
             }
@@ -175,7 +184,8 @@ class User {
     }
 
     /*  evalUser():
-            To evaluate the users rights, i return true is a user and false if admin, and a error otherwhise.
+            To evaluate the users rights, i return true if account is a user and false if a admin, and a error otherwhise.
+            This is only used during the login process, the rest can be done with 'checkUser($id, $rights)'.
 
             Return Value:
                 On user     - Bool

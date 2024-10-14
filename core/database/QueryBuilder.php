@@ -159,6 +159,7 @@ class QueryBuilder {
     public function createAdmin() {
         $wwHashed = password_hash( "wachtwoord123", PASSWORD_BCRYPT );
         $sql = "insert into `gebruikers` (`Gebr_Naam`, `Gebr_Email`, `Gebr_WachtW`, `Gebr_Rechten`) values ('Administrator','admin@colltrack.nl','{$wwHashed}','Admin')";
+
         return $this->executeQuerry( $sql );
     }
 
@@ -171,6 +172,7 @@ class QueryBuilder {
         $sql = sprintf( "select count(*) from `albums` where `Album_Serie`=%s", $id );
         $statement = $this->pdo->prepare( $sql );
         $statement->execute();
+
         return $statement->fetchAll( PDO::FETCH_ASSOC )[0]['count(*)'];
     }
 
@@ -189,13 +191,17 @@ class QueryBuilder {
                 $statement = $this->pdo->prepare( $sql );
                 $statement->execute();
                 return $statement->fetchAll(PDO::FETCH_ASSOC);
-            } catch( PDOException $e ) { return "Error: ". $e->getMessage(); }
+            } catch( PDOException $e ) {
+                return "Error: ". $e->getMessage();
+            }
         } else {
             try {
                 $statement = $this->pdo->prepare( $sql );
                 $statement->execute( $id );
                 return $statement->fetchAll( PDO::FETCH_ASSOC );
-            } catch( PDOException $e ) { return "Error: " . $e->getMessage(); }
+            } catch( PDOException $e ) {
+                return "Error: " . $e->getMessage();
+            }
         }
     }
 
@@ -205,6 +211,7 @@ class QueryBuilder {
     public function selectAll( $tafel ) {
         $sql = sprintf( 'select * from `%s`', $tafel );
         $temp = $this->executeQuerry( $sql );
+
         return $temp;
     }
 
@@ -230,6 +237,7 @@ class QueryBuilder {
                 ':' . implode( array_keys( $id ) )
             );
         }
+
         return $this->executeQuerry( $sql, $id );
     }
 
@@ -244,6 +252,7 @@ class QueryBuilder {
             implode(', ', array_keys( $data ) ),
             ':' . implode(', :', array_keys( $data ) )
         );
+
         return $this->executeQuerry( $sql, $data );
     }
 
@@ -269,6 +278,7 @@ class QueryBuilder {
                 ':' . implode( array_keys( $cond ) )
             );
         }
+
         return $this->executeQuerry( $sql, $cond );
     }
 
@@ -283,7 +293,9 @@ class QueryBuilder {
         foreach( $data as $key => $value ) {
             if( !isset( $update ) ) {
                 $update = $key . '=' . "'" . $value . "'";
-            } elseif( isset( $update ) ) { $update = $update . ', ' . $key . ' = ' . "'" . $value . "'"; }
+            } elseif( isset( $update ) ) {
+                $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";
+            }
         }
 
         if( count( $id ) > 1 ) {
@@ -308,7 +320,7 @@ class QueryBuilder {
         return $this->executeQuerry( $sql, $id );
     }
 
-    // Placeholder Function
+    // Placeholder Function(s)
     // To make this function properly, i would need a Serie_Index field in the collection table.
     // Because atm im only tracking Album_Index and User_Index, since that is technically enough to track collections.
     /*public function countUsers( $userId, $serieId ) { }*/

@@ -3,6 +3,7 @@
 //  TODO: Find a solution to the Mobile-Detect API/Library, its not detecting the i-pad correctly it seems.
 //          Temp solution is a over complicated elseif loop, since both !isMobile and !isTablet are true for tablets.
 //          A bug was reported on there github, but that is still open and not solved yet, has been assigned though.
+//        So far it seems to not be an issue, but i have also not been able to test all use cases.
 
 namespace App\Core;
 
@@ -21,7 +22,9 @@ class App {
 
             Return value: None
      */
-    public static function bind( $key, $value ) { return static::$registry[$key] = $value; }
+    public static function bind( $key, $value ) {
+        return static::$registry[$key] = $value;
+    }
 
     /*  get($key):
             This function tries to access the $register, and return the linked features if there is a match.
@@ -30,7 +33,11 @@ class App {
             Return value: None
      */
     public static function get( $key ) {
-        if( !array_key_exists( $key, static::$registry ) ) { throw new Exception( "No {$key} is bound in the container." ); }
+
+        if( !array_key_exists( $key, static::$registry ) ) {
+            throw new Exception( "No {$key} is bound in the container." );
+        }
+
         return static::$registry[$key];
     }
 
@@ -51,7 +58,9 @@ class App {
             return static::$device = "mobile";
         } else if(!$detect->isMobile() && !$detect->isTablet()) {
             return static::$device = "desktop";
-        } else { die("Unknow device detected, plz contact the site administrator!"); }
+        } else {
+            die("Unknow device detected, plz contact the site administrator!");
+        }
     }
 
     /*  setVersion():

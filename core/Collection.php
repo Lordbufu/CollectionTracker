@@ -1,9 +1,12 @@
 <?php
+
+//  TODO/Notes:
+//      - Go over all function and inline comments, check if there still up to date/accurate.
+//      - Clean up all left over code snippets that are uncommnented.
 namespace App\Core;
 
 use App\Core\App, Exception;
 
-//  TODO: Go over all function and inline comments, check if there still up to date/accurate.
 class Collection {
     /* Global data storage */
     protected $albums;
@@ -204,9 +207,12 @@ class Collection {
      */
     public function setAlbum( $data, $update = null ) {
         if($update === null) {
-            $store = App::get("database")->insert( "albums", $data );
-        } else { $store = App::get("database")->update( "albums", $data, $update ); }
-        return is_string($store) ? $this->dbError : TRUE;
+            $store = App::get( "database" )->insert( "albums", $data );
+        } else {
+            $store = App::get( "database" )->update( "albums", $data, $update );
+        }
+
+        return is_string( $store ) ? $this->dbError : TRUE;
     }
 
     /* Collectie Functions */
@@ -222,10 +228,17 @@ class Collection {
     public function getColl( $table, $userId ) {
         /* Set the correct id format, depending on the provided input. */
         if( !is_string( $userId ) ) {
+
             if( !is_array( $userId ) ) {
                 $id = [ "Gebr_Index" => $userId ];
-            } else { $id = $userId; }
-        } else { $id = [ "Gebr_Index" => $userId ]; }
+            } else {
+                $id = $userId;
+            }
+
+        } else {
+            $id = [ "Gebr_Index" => $userId ];
+        }
+
         /* Set the requested collection data, and return to caller. */
         $this->collections = App::get( "database" )->selectAllWhere( $table, $id );
         return $this->collections;
@@ -276,17 +289,23 @@ class Collection {
         $tAlbums = $this->getAlbums( $sIndex );
         $tColl = $this->getColl( "collecties", $uIndex );
         $match;
+
         /* Loop over all stored albums */
         foreach( $tAlbums as $oKey => $oValue ) {
+
             /* Loop over every item in a album */
             foreach( $oValue as $iKey => $iValue ) {
+
                 /* If the key is Album_ISBN, and it matches the scanned ISBN */
                 if( $iKey === "Album_ISBN" && $iValue === $fData["album-isbn"] ) {
                     /* Store said album data in a temp variable, and set a flag that it is. */
                     $tempFetch = $oValue;
                     $match = [ "inSerie" => TRUE ];
                 /* Ensure $match wasnt set already, and set a flag that the album isnt in the current serie. */
-                } else if ( !isset( $match ) ) { $match = [ "inSerie" => FALSE ]; }
+                } else if ( !isset( $match ) ) {
+                    $match = [ "inSerie" => FALSE ];
+                }
+
             }
         }
         /* Check if album was in the selected serie, but no collection data was found. */
@@ -295,15 +314,22 @@ class Collection {
             $match = [ "addToColl" => TRUE ];
         /* If it is in the Serie, we check if its part of the collection already. */
         } else if( $match["inSerie"] ) {
+
             /* Loop over the current collection data */
             foreach( $tColl as $oKey => $oValue ) {
+
                 /* Loop over every entry in said collection data */
                 foreach( $oValue as $iKey => $iValue ) {
+
                     /* Check if the album index values match, only logical action, would be to remove the album from the collection. */
-                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) { $match = [ "remFromColl" => TRUE ]; }
+                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) {
+                        $match = [ "remFromColl" => TRUE ];
+                    }
+
                 }
             }
         }
+
         return $match;
     }
 }

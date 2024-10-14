@@ -14,7 +14,7 @@
 
         <div class="sub-grid-1" id="sub-grid-1">
 
-			<div class="banner-butt" id="banner-butt" > <?php require( "templates/beheer/beheer-banner-buttons.php" ); ?> </div>
+			<?php require( "templates/beheer/beheer-banner-buttons.php" ); ?>
 
 			<div class="banner-head" id="banner-head" > <h1 class="header-text" id="header-text" > Collectie Tracker: Beheer </h1> </div>
 
@@ -22,11 +22,17 @@
 
 		<div class="sub-grid-2" id="sub-grid-2" >
 
-			<div class="contr-cont-1" id="contr-cont-1" > <?php require( "templates/beheer/beheer-contr-cont-1.html" ); ?> </div>
+			<div class="contr-cont-1" id="contr-cont-1" >
+                <?php require( "templates/beheer/beheer-contr-cont-1.html" ); ?>
+            </div>
 
-			<div class="contr-cont-2" id="contr-cont-2" > <?php require( "templates/beheer/beheer-contr-cont-2.php" ); ?> </div>
+			<div class="contr-cont-2" id="contr-cont-2" >
+                <?php require( "templates/beheer/beheer-contr-cont-2.php" ); ?>
+            </div>
 
-			<div class="contr-cont-3" id="contr-cont-3" > <?php require( "templates/beheer/beheer-contr-cont-3.html" ); ?> </div>
+			<div class="contr-cont-3" id="contr-cont-3" >
+                <?php require( "templates/beheer/beheer-contr-cont-3.html" ); ?>
+            </div>
 
 		</div>
 

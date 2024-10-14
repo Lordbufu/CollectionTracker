@@ -31,11 +31,7 @@ class PagesController {
 	 */
 	public function beheer() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
-        if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" );
-        } else {
-			$userCheck = App::get( "user" )->checkUser( -1, "rights" );
-		}
+		$userCheck = isset( $_SESSION["user"]["id"] ) ? App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" ) : App::get( "user" )->checkUser( -1, "rights" );
 
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
@@ -73,11 +69,7 @@ class PagesController {
 	 */
 	public function gebruik() {
 		/* If the user session data is present, if not we pass a invalid id to get a error back. */
-		if( isset( $_SESSION["user"]["id"] ) ) {
-            $userCheck = App::get( "user" )->checkUser( $_SESSION["user"]["id"] );
-        } else {
-			$userCheck = App::get( "user" )->checkUser( -1 );
-		}
+		$userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
 		/* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {

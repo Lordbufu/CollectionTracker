@@ -1,3 +1,5 @@
+            <div class="banner-butt" id="banner-butt" >
+
                 <button id="ww-reset-butt" class="banner-reset-butt button" onclick=wwResetClick() > Wachtw Reset </button>
 
                 <form class="logoff-form" id="logoff-form" method="post" action="/logout">
@@ -12,3 +14,4 @@
                 </form>
 
                 <?php endif; ?>
+                </div>
