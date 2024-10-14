@@ -42,7 +42,7 @@
 				<script src="js/mobile-specific.js"></script>
 			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/beheer-ipad.css" >
-			<?php //else : ?>
+			<?php else : ?>
 				<script src="js/static-elements.js"></script>
 			<?php endif; break; endswitch; ?>
 
