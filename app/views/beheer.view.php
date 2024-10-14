@@ -1,46 +1,76 @@
-<?php require('partials/header.php'); ?>
-<div class="content-container">
+<!DOCTYPE html>
 
-    <?php require('partials/message-pop-in.html'); ?>
+<html>
+
+	<head>
+        <?php require( "templates/shared/header.php" ); ?>
+    </head>
+
+	<body class="main-flex" id="main-flex" >
+
+        <noscript> You need to enable JavaScript to run this app. </noscript>
+
+        <?php require( "pop-ins/message-pop-in.html" ); ?>
+
+        <div class="sub-grid-1" id="sub-grid-1">
+
+			<?php require( "templates/beheer/beheer-banner-buttons.php" ); ?>
+
+			<div class="banner-head" id="banner-head" > <h1 class="header-text" id="header-text" > Collectie Tracker: Beheer </h1> </div>
+
+		</div>
+
+		<div class="sub-grid-2" id="sub-grid-2" >
+
+			<div class="contr-cont-1" id="contr-cont-1" >
+                <?php require( "templates/beheer/beheer-contr-cont-1.html" ); ?>
+            </div>
+
+			<div class="contr-cont-2" id="contr-cont-2" >
+                <?php require( "templates/beheer/beheer-contr-cont-2.php" ); ?>
+            </div>
+
+			<div class="contr-cont-3" id="contr-cont-3" >
+                <?php require( "templates/beheer/beheer-contr-cont-3.html" ); ?>
+            </div>
+
+		</div>
+
+		<div class="sub-grid-3" id="sub-grid-3" >
+
+            <div class="table-header" id="table-header" >
+
+                <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
+                <h2 id="beheer-albView-text" class="beheer-weerg-header" > <?= $_SESSION["page-data"]["huidige-serie"] ?> </h2>
+                <?php else: ?>
+                <h2 id="beheer-serieView-text" class="beheer-weerg-header" > Huidige Series: </h2>
+                <?php endif; ?>
+
+            </div>
+
+            <div class="table-templ" id="table-templ" >
+
+            <?php if( !isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                    require( "templates/beheer/beheer-serie-table.php" );
+                } else { require( "templates/beheer/beheer-album-table.php" ); } ?>
+
+            </div>
+
+        </div>
+
+        <?php
+            require( "pop-ins/beheer/beheer-serie-maken-pop-in.php" );
+            require( "pop-ins/beheer/beheer-serie-bewerken-pop-in.php" );
+            require( "pop-ins/beheer/beheer-album-toevoegen-pop-in.php" );
+            require( "pop-ins/beheer/beheer-album-bewerken-pop-in.php" );
+            require( "pop-ins/beheer/beheer-isbn-scan-pop-in.php" );
+            require( "pop-ins/beheer/beheer-wachtwoord-reset2-pop-in.html" );
+        ?>
+
+		<footer class="sub-grid-4" id="sub-grid-4">
+            <?php require( "templates/shared/footer.php" ); ?>
+        </footer>
+
+    </body>
     
-    <div id="title-banner" class="banner-container">
-
-        <div id="title-buttons" class="title-buttons">
-            <button id="ww-reset-butt" class="ww-reset-butt" onclick=wwResetClick()> Wachtw Reset </button>
-            <form class="logoff-form" id="logoff-form" method="post" action="/logout">
-                <input class="logoff-butt" type="submit" value="Afmelden" />
-            </form>
-            <?php if(isset($_SESSION['page-data']['huidige-serie'])): ?>
-                <form class="back-form" id="back-form" method="post" action="/beheer">
-                    <input id="beheer-back-inp" class="beheer-back-inp" name="return" value="back" hidden />
-                    <input id="beheer-back-butt" class="beheer-back-butt" type="submit" value="< Series" />
-                </form>
-            <?php endif; ?>
-        </div>
-
-        <div id="title-cont" class="title-banner">
-            <h1 class="title-text"> Collectie Tracker: Beheer Applicatie </h1>
-        </div>
-        
-    </div>
-
-    <?php
-        require('partials/beheer-contr-templ.php');
-        /* Check session tag to see what view template has to be loaded. */
-        if( !isset( $_SESSION['page-data']['huidige-serie'] ) ) {
-            require('partials/beheer-weerg-templ.php');
-        } else {
-            require('partials/beheer-albView-templ.php');
-        }
-
-        /* All hidden pop-ins that are loaded not visable on screen */
-        require('partials/beheer-serie-maken-pop-in.php');
-        require('partials/beheer-serie-bewerken-pop-in.php');
-        require('partials/beheer-album-toevoegen-pop-in.php');
-        require('partials/beheer-album-bewerken-pop-in.php');
-        require('partials/beheer-barcode-scanner.php');
-        require('partials/beheer-wachtwoord-reset2-pop-in.html');
-
-        // The footer
-        require('partials/footer.php');
-    ?>
+</html>

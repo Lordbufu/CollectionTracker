@@ -15,18 +15,18 @@ class Router {
     }
     
     /* Get function. */
-	public function get($uri, $controller) {
+	public function get( $uri, $controller ) {
         $this->routes["GET"][$uri] = $controller;
     }
 	
     /* Post function. */
-	public function post($uri, $controller) {
+	public function post( $uri, $controller ) {
         $this->routes["POST"][$uri] = $controller;
     }
     
     /* Direct function. */
-    public function direct($uri, $requestType) {
-        foreach ($this->routes[$requestType] as $route => $controller) {
+    public function direct( $uri, $requestType ) {
+        foreach ( $this->routes[$requestType] as $route => $controller ) {
 
             if( strpos( $route, "{" ) && strpos( $route, "}" ) ) {
                 $pattern = "/(.*)\/(\{(.*)\})/i";
@@ -47,7 +47,7 @@ class Router {
     }
   
     /* callAction function, to ensure the right controller action is triggered. */
-    protected function callAction($controller, $action, $id=null) {
+    protected function callAction( $controller, $action, $id = null ) {
         $controller = "App\\Controllers\\{$controller}";
         $controller = new $controller;
 

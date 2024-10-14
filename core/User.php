@@ -19,8 +19,8 @@ class User {
     protected $noUserErr = [ "userError1" => "Geen gebruiker gevonden, neem contact op met uw Administrator!" ];
     protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
     protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
-    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om de website te bezoeken !!" ];
-    protected $authFailed = [ "fetchResponse" => "Access denied, Account authentication failed !" ];
+    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om deze pagina te bezoeken !!" ];
+    protected $authFailed = [ "fetchResponse" => "Toegang geweigerd, Account authentication mislukt !" ];
     protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /*  setUser($data):
@@ -40,31 +40,39 @@ class User {
         $errorMsg;
 
         /* Attempt to request all current users. */
-        $tempUsers = App::get("database")->selectAll("gebruikers");
+        $tempUsers = App::get( "database" )->selectAll( "gebruikers" );
 
         /* Check if there where any users set, or if there wa a DB error. */
         if( !is_string( $tempUsers ) ) {
             /* Loop over all users. */
             foreach( $tempUsers as $key => $user ) {
                 /* If a duplicate name detected, store the correct error. */
-                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) { $errorMsg["error"] = $this->userNameErr; }
+                if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) {
+                    $errorMsg["error"] = $this->userNameErr;
+                }
 
                 /* If a duplicate e-mail is detected, check if a error was set for the name and merge both errors. */
                 if( $user["Gebr_Email"] === $data["Gebr_Email"] ) {
                     if( is_array( $errorMsg ) ) {
                         $errorMsg["error"] = array_merge( $this->userNameErr, $this->userEmailErr );
                     /* Otherwhise just add the e-mail error. */
-                    } else { $errorMsg["error"] = $this->userEmailErr; }
+                    } else {
+                        $errorMsg["error"] = $this->userEmailErr;
+                    }
                 }
             }
         /* If there was a DB error getting all users, store the correct error. */
-        } else { $errorMsg["error"] = $this->noUserErr; }
+        } else {
+            $errorMsg["error"] = $this->noUserErr;
+        }
 
         /* Evaluate if there are any errors stored, and attempt to insert the user if not. */
         if( !isset( $errorMsg ) ) {
-            $store = App::get("database")->insert( "gebruikers", $data );
+            $store = App::get( "database" )->insert( "gebruikers", $data );
         /* If there where, simply return the errors to the caller. */
-        } else { return $errorMsg; }
+        } else {
+            return $errorMsg;
+        }
 
         /* If there was no error string from the DB, return a feedback message, else return a DB error message. */
         return !is_string($store) ? $this->userAdd : [ "error" => $this->dbError ];
@@ -82,7 +90,7 @@ class User {
         /* If no user is set, attempt to set one, and return an error if failed. */
         if( !isset( $this->user ) ) {
             try {
-                $this->user = App::get("database")->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
+                $this->user = App::get( "database" )->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
             } catch(Exception $e) {
                 return $this->noUserErr;
             }
@@ -101,20 +109,20 @@ class User {
                 On Validate - Boolean
                 Failed      - Assoc Array
      */
-    public function validateUser($id, $pw) {
+    public function validateUser( $id, $pw ) {
         /* If the $id input was a e-mail, i check if a user is stored with said e-mail, and return a error if not. */
         if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
-            if( !isset( App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
+            if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
                 return $this->credError;
             } else {
-                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0];
+                $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0];
             }
         /* If the $id input was not a e-mail, i also check if a user was stored with said e-mail, and return a error if not. */
         } else {
-            if( !isset (App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
+            if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
                 return $this->credError;
             } else {
-                $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0];
+                $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0];
             }
         }
 
@@ -128,7 +136,7 @@ class User {
     }
 
     /*  checkUser($id=null, $rights=null):
-            This function checks if the uiser is valid, and if the user rights are set to Admin or not.
+            This function checks if the user is valid, and if the user rights are set to Admin or not.
                 $id     (string) - The index of the user we want to check, most likely take from the session.
                 $rights (string) - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.
             
@@ -136,10 +144,10 @@ class User {
                 On Validate - Boolean
                 Failed      - Assoc Array
      */
-    public function checkUser($id=null, $rights=null ) {
+    public function checkUser( $id = null, $rights = null ) {
         /* If the user is not set, and the id was passed, we set the user based on the id. */
         if( !isset( $this->user ) && isset( $id ) ) {
-            $this->user = App::get("database")->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
+            $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
         }
 
         /* If the id was passed, and it matches with the current user, */
@@ -147,9 +155,10 @@ class User {
             /* If the rights where set and equal to "Admin", i return TRUE */
             if( isset( $rights ) && $this->user["Gebr_Rechten"] === "Admin" ) {
                 return TRUE;
-            /* If failed i return the authFailed error */
-            } elseif( !isset( $rights ) ) {
+            /* If rights was not set, the user is still valid for a user login. */
+            } elseif( !isset( $rights ) && $this->user["Gebr_Rechten"] === "gebruiker" ) {
                 return TRUE;
+            /* If failed i return the authFailed error */
             } else {
                 return $this->authFailed;
             }
@@ -175,7 +184,8 @@ class User {
     }
 
     /*  evalUser():
-            To evaluate the users rights, i return true is a user and false if admin, and a error otherwhise.
+            To evaluate the users rights, i return true if account is a user and false if a admin, and a error otherwhise.
+            This is only used during the login process, the rest can be done with 'checkUser($id, $rights)'.
 
             Return Value:
                 On user     - Bool
@@ -183,9 +193,9 @@ class User {
                 On Failed   - Assoc Array
      */
     public function evalUser() {
-        if($this->user["Gebr_Rechten"] === "gebruiker") {
+        if( $this->user["Gebr_Rechten"] === "gebruiker" ) {
             return TRUE;
-        } else if($this->user["Gebr_Rechten"] === "Admin") {
+        } else if( $this->user["Gebr_Rechten"] === "Admin" ) {
             return FALSE;
         } else {
             return $this->rightsError;
@@ -203,9 +213,9 @@ class User {
                 On Update - Boolean.
                 On Failed - Assoc Array.
      */
-    public function updateUser($table, $data, $id) {
-        $store = App::get("database")->update( $table, $data, $id );
+    public function updateUser( $table, $data, $id ) {
+        $store = App::get( "database" )->update( $table, $data, $id );
 
-        return is_string($store) ? $this->dbError : TRUE;
+        return is_string( $store ) ? $this->dbError : TRUE;
     }
 }

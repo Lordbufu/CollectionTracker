@@ -1,0 +1,343 @@
+/* Remove the fixed height from the landingpage */
+.sub-grid-1 {
+    height: auto;
+}
+
+/* The banner buttons fixed sizes */
+.banner-reset-butt, .banner-logoff-butt, .banner-back-butt {
+    height: 1.5em;
+    width: 7.1em;
+}
+
+/* Adjust the controller sub-grid to match the amount of controllers, and center them */
+.sub-grid-2 {
+    grid-template-columns: 15% 20% 15%;
+    justify-content: center;
+    justify-items: center;
+}
+
+/* Styles shared between both used control containers */
+.contr-cont-1, .contr-cont-2, .contr-cont-3 {
+    display: flex;
+    flex-direction: column;
+    border: var(--main-border-body);
+    border-radius: var(--main-border-rad);
+    padding: var(--main-padding);
+    width: fit-content;
+    height: 7em;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Set all 3 labels to a bold text style */
+.contr-serie-lab, .contr-album-lab, .album-zoek-lab { font-weight: bold; }
+
+/* Set serie form to flex, and position the elements */
+.contr-serie-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Create space between the header label and input */
+.contr-serie-lab {
+    margin-bottom: 1em;
+}
+
+/* The input label, where the input and span are nested inside */
+.contr-serie-lab-inp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 2.5em;
+}
+
+/* The input that has its text replaced */
+.contr-serie-inp {
+    margin: 0.7em 0;
+    padding: 0.3em 0;
+    text-align: center;
+    width: 16em;
+}
+
+/* The text that is move around */
+.contr-serie-span {
+    font-size: small;
+    display: block;
+    position: relative;
+    bottom: 2.4em;
+    transition: 0.2s;
+    opacity: 0.5;
+}
+
+/* The animation for the span/inp placeholder stuff */
+.contr-serie-inp:focus + .contr-serie-span, .contr-serie-inp:not(:placeholder-shown) + .contr-serie-span {
+    opacity: 1;
+    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.7em);
+    color: var(--main-lab-col-1);
+    background-color: var(--main-lab-col-2);
+	border: var(--main-border-body);
+	border-radius: var(--main-border-rad);
+    width: 80%;
+    align-self: center;
+}
+
+/* The serie maken submit button */
+.contr-serie-butt {
+    margin-bottom: 0.2em;
+    width: 16em;
+    height: 1.5em;
+    width: 100%;
+}
+
+/* The album toevoegen form */
+.contr-album-form {
+    display: grid;
+    justify-items: center;
+    margin: 0.1em 0.2em;
+    padding: 0.2em 0;
+}
+
+/* Form label, select, input and button elements */
+.contr-cont-2 label, .contr-cont-2 select, .contr-cont-2 input, .contr-cont-2 button {
+    text-align: center;
+    margin-bottom: 0.2em;
+}
+
+/* Set width to fit its content */
+.contr-album-select, .contr-album-opt {
+    width: fit-content;
+}
+
+/* The add album submit button */
+.contr-album-subm {
+    margin: 0.1em 0.2em;
+    width: 100%;
+}
+
+/* The bar-code scan button style */
+.contr-album-isbn-search {
+    margin: 0.1em 0.2em;
+    width: 100%;
+}
+
+/* The album toevoegen form */
+.album-zoek-form {
+    display: grid;
+    justify-items: center;
+    margin: 0.1em 0.2em;
+}
+
+/* Main search option container */
+.search-opt-cont {
+    display: flex;
+    margin-bottom: 0.4em;
+}
+
+/* Search option container for each option*/
+.search-opt-naam-cont, .search-opt-albNr-cont, .search-opt-isbn-cont {
+    font-size: 0.7em;
+    border: var(--main-border-body);
+    border-radius: var(--main-border-rad);
+    margin: 0.1em;
+    width: 6em;
+    height: 2.7em;
+}
+
+/* The label that visualy makes the switch body */
+.album-zoek-naam, .album-zoek-nr, .album-zoek-isbn {
+    position: relative;
+    display: inline-block;
+    width: 3em;
+    height: 1.5em;
+    font-size: 0.7em;
+}
+
+/* The checkbox input that we visually hide */
+.album-zoek-naam-inp, .album-zoek-nr-inp, .album-zoek-isbn-inp {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The span that will become the slider button */
+.album-zoek-naam-slider, .album-zoek-nr-slider, .album-zoek-isbn-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--main-slid-backgr);
+    border-radius: 1.5em;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* The slider button before switched styling */
+.album-zoek-naam-slider:before, .album-zoek-nr-slider:before, .album-zoek-isbn-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.5em;
+    width: 1.5em;
+    left: 0.01em;
+    background-color: var(--main-knob-col);
+    border-radius: var(--main-border-rad);
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* The background for when the slider is checked */
+.album-zoek-naam-inp:checked + .album-zoek-naam-slider, .album-zoek-nr-inp:checked + .album-zoek-nr-slider, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider {
+    background-color: var(--main-slid-backgr-2);
+}
+
+/* The animation for when the checkbox is checked, with support for older and different browsers */
+.album-zoek-naam-inp:checked + .album-zoek-naam-slider:before, .album-zoek-nr-inp:checked + .album-zoek-nr-slider:before, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider:before {
+    -webkit-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+}
+
+/* Adjust the column size for the table grid */
+.sub-grid-3 {
+    grid-template-columns: 80%;
+}
+
+/* The table header container */
+.table-header {
+    width: 100%;
+    margin: 0.2em 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* Remove the user-agents default header margin */
+.table-header h2 {
+    margin: 0;
+}
+
+/* The table content container */
+.table-templ {
+    width: 100%;
+    display:flex;
+    justify-content: center;
+}
+
+/* Serie view specific changes */
+/* The table title column */
+.serie-tafel-titles th {
+    border: var(--main-border-body);
+    font-weight: normal;
+}
+
+/* Table row content */
+.serie-naam, .serie-maker, .serie-opmerk, .serie-albums, .serie-gebruikers {
+    border: var(--main-border-body);
+    font-weight: normal;
+    padding: 0.1em;
+}
+
+/* Adjust table column sizes */
+.serie-albums, .serie-gebruikers {
+    width: 5em;
+}
+
+.serie-naam, .serie-maker {
+    width: 12em;
+}
+
+/* Background image for the view/edit/delete button */
+.serie-bekijken-butt {
+    background-image: url("../images/view.png");
+}
+
+.serie-bewerken-butt {
+    background-image: url("../images/edit.png");
+}
+
+.serie-verwijderen-butt {
+    background-image: url("../images/delete.png");
+}
+
+/* Shared button styles */
+.serie-bekijken-butt, .serie-bewerken-butt, .serie-verwijderen-butt {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 2.5em;
+    width: 2.5em;
+    border: unset;
+    cursor: pointer;
+}
+
+/* The table title column */
+.albums-tafel-titles th {
+    border: var(--main-border-body);
+    font-weight: normal;
+}
+
+/*.album-schrTitle {} /* Intended for later, one of the extra features */
+/*.album-opmTitle {} /* Intended for later, one of the extra features */
+
+/* Table row content */
+.album-naam, .album-nummer, .album-uitgave, .album-schr, .album-cover, .album-isbn, .album-opm {
+    border: var(--main-border-body);
+    font-weight: normal;
+    padding: 0.1em;
+}
+
+/* Make sure the name always fits */
+.album-naam {
+    width: fit-content;
+    padding: 0.2em;
+}
+
+/* Adjust table column sizes, cause these dont need a lot of screen space */
+.album-nummer {
+    width: 3em;
+}
+
+.album-uitgave {
+    width: 5.2em;
+}
+
+.album-schr {
+    width: 3em;
+}
+
+/* Background image for the edit/delete button */
+.album-bewerken-butt {
+    background-image: url("../images/edit.png");
+}
+
+.album-verwijderen-butt {
+    background-image: url("../images/delete.png");
+}
+
+/* Shared button styles */
+.album-bewerken-butt, .album-verwijderen-butt {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 2.5em;
+    width: 2.5em;
+    border: unset;
+    cursor: pointer;
+}
+
+/* Change for various lower resolutions, so things are still displayed somewhat correctly */
+/* Below 1630px, the column need more space, to prevent over-lapping*/
+@media only screen and ( width <= 1630px ) { .sub-grid-2 { grid-template-columns: 20% 20% 20%; } }
+
+/* Change columns and margin so things don't clip/overlap */
+@media only screen and ( width <= 1480px ) {
+    .sub-grid-1 { grid-template-columns: 20% 80%; }
+    .banner-head { margin-right: 20%; }
+    .sub-grid-2 { grid-template-columns: 30% 30% 30%; }
+    .sub-grid-3 { grid-template-columns: 75%; }
+}
+
+/* Make the table cover the entire page now */
+@media only screen and ( width <= 1220px ) { .sub-grid-3 { grid-template-columns: 100%; } }
+
+/* Pop-in specific: */
+.butt-box { align-items: center; }
