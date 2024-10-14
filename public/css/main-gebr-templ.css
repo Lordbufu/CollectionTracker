@@ -1,0 +1,180 @@
+/* User page banner elements */
+.banner-container {
+    display: grid;
+    width: 98.5vw;
+    grid-template-areas: 'menu title-text';                         /* Define the grid */
+    background-color: var(--main-banner-color);
+    border-radius: var(--main-border-radius);
+    margin: var(--main-page-margin);
+    align-items: center;                                            /* To ensure its childeren are horizontally positioned */
+    z-index: 1;
+}
+
+/* User banner buttons */
+.title-buttons {
+    display: flex;
+    grid-area: menu;
+    justify-content: center;                                        /* Align elements to grid */
+}
+
+.logoff-butt {
+    display: flex;
+    font-size: medium;
+    background: var(--main-butt-color);
+    border: solid 0.1em;
+    border-radius: 0.4em;
+    border-color: black;
+    cursor: pointer;
+    padding: 0.4em;
+    align-items: center;                                            /* Position text horizontally */
+    justify-content: center;                                        /* Position text vertically */
+}
+.logoff-butt:hover { background: var(--main-butt-hover); }
+
+/* User banner text */
+.title-banner { grid-area: title-text; }
+
+.title-text { text-align: center; }
+
+/* Controller Containers */
+.contr-cont {
+    display: inline-grid;
+    width: 98.5vw;
+    grid-template-areas: 'serie album scan';
+    justify-content: center;
+    justify-items: center;
+    text-align: center;
+    padding: 0.5em;
+    z-index: 1;
+}
+
+/* Assign grid area */
+.serie-sel-cont { grid-area: serie; }
+.album-zoek-cont { grid-area: album; }
+.album-scan-cont { grid-area: scan; }
+
+/* controller content containers */
+.serie-sel-cont, .album-zoek-cont, .album-scan-cont {
+    display: flex;
+    border: solid 0.15em black;
+    border-radius: 0.2em;
+    padding: 0.2em;
+    margin: 0.2em;
+    width: fit-content;
+    height: 6em;
+}
+
+/* controller form content */
+.serie-sel-form, .album-zoek-form , .album-scan-form {
+    display: inline-grid;
+    justify-content: center;
+    margin: 0.1em;
+    padding: 0.1em;
+}
+
+/* controlller label content */
+.serie-sel-lab, .album-zoek-lab, .album-scan-lab { font-weight: bold; }
+
+/* controller serie select input */
+.serie-sel {
+    text-align: center;
+    margin: 0.2em;
+    padding: 0.2em;
+}
+
+/* controller album search input */
+#album-zoek-inp {
+    background-image: url('/images/searchicon.png');
+    background-repeat: no-repeat;
+    text-align: center;
+}
+
+/* controller submit buttons */
+.serie-sel-subm, .album-zoek-subm, .album-scan-subm {
+    background: var(--main-butt-color);
+    border: 0.15em;
+    border-radius: 0.4em;
+    cursor: pointer;
+}
+.serie-sel-subm:hover, .album-zoek-subm:hover, .album-scan-subm:hover { background: var(--main-butt-hover); }
+
+/* weergave table content */
+.gebr-weerg-cont {
+    display: inline-block;
+    padding: 0.1em;
+    text-align: center;
+}
+
+.gebr-weerg-cont th {
+    border: 0.15em solid black;
+    padding: 0.2em;
+}
+
+/* weergave header */
+.weergave-header {
+    font-size: x-large;
+    margin: 0.1em;
+}
+
+.album-tafel { display: inline-table; }
+
+/* Toggle switches for Albums */
+.album-aanwezig-toggle {
+    /*z-index: -1;    /* For some reason i nee to move this back, so my static container goes over the top ? */
+    position : relative ;
+    display : inline-block;
+    width : 4em;
+    height : 2em;
+    background-color: red;
+    border-radius: 1em;
+    border: 0.02em solid gray;
+    top: 0.1em;
+}
+
+/* After slide changes */
+.album-aanwezig-toggle:after {
+    content: '';
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background-color: gray;
+    left: 0.01em;
+    transition:  all 0.5s;
+}
+
+/* Checkbox checked effect */
+.album-aanwezig-checkbox:checked + .album-aanwezig-toggle::after { left : 2em; }
+
+/* Checkbox checked toggle label bg color */
+.album-aanwezig-checkbox:checked + .album-aanwezig-toggle { background-color: green; }
+
+/* Data vanished */
+.album-aanwezig-data { display: none; }
+
+/* Footer Content */
+.footer {
+    justify-content: center;
+    background: var(--main-banner-color);
+    border-radius: 0.2em;
+    margin: 0.1em 0.2em;
+}
+
+.footer p { font-weight: bold; }
+
+/* Temp code for the barcode scanning option (will place this properly when mobile css templates are remade) */
+.album-scan-form {
+    justify-items: center;
+    align-content: center;
+}
+
+.album-scan-subm {
+    height: 2em;
+    width: 12em;
+    margin: 1em;
+}
+
+/* Background color for elements that where made static later on. */
+.serie-sel-cont { background: white; }
+.album-zoek-cont { background: white; }
+.album-scan-cont { background: white; }

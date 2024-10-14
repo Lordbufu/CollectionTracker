@@ -1,0 +1,57 @@
+/* Changes regardless of orientation */
+/* Adjust grid size of the buttons, to be more inline with a smaller screen ratio */
+.banner-container { grid-template-columns: 6rem auto; }
+
+/* To save space, we place the buttons vertically instead of inline */
+.title-buttons {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9em;
+}
+
+/* Adjust the header font-size and paragrapgh width for the smaller screen ratio */
+.text-content-container h2 { font-size: 1.4em; }
+.text-content-container p { width: 80vw; }
+
+/* Ensure the footer text is now below each other */
+.footer {
+    display: flex;
+    flex-direction: column;
+    padding: 0.2em
+}
+
+/* Changes specific to normal orientation */
+@media only screen and not (orientation: landscape) {
+    /* Adjust title size and margin, so it doesnt wrap */
+    .title-text {
+        margin-right: 1rem;
+        font-size: 1.4em;
+    }
+
+    /* Set a fixed size for the images, because calc based on width doesnt work well for mobile */
+    .example-container img {
+        width: 6em;
+        height: 8em;
+    }
+
+    /* Make sure the sticky header is wide enough */
+    .sticky { width: 97vw; }
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) {
+    /* Adjust title size and margin, so it doesnt wrap */
+    .title-text {
+        margin-right: 6rem;
+        font-size: 1.8em;
+    }
+
+    /* Set a fixed size for the images, because calc based on width doesnt work well for mobile */
+    .example-container img {
+        width: 10em;
+        height: 12em;
+    }
+
+    /* Make sure the sticky header is wide enough */
+    .sticky { width: 98vw; }
+}

@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+    "require": {
+        "mobiledetect/mobiledetectlib": "^4.8"
+    }
+}

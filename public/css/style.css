@@ -1,0 +1,154 @@
+/* Re-useable variables, for main page design */
+:root {
+  --main-background-color: rgba(255, 255, 255, 1);
+  --main-fade-background-color: rgba(0, 0, 0, 0.4);
+  --main-fade-fallback-color: rgba(0, 0, 0, 1);
+  --main-banner-color: rgba(94, 158, 255, 1);
+  --main-text-color: rgba(0, 0, 0, 1);
+  --main-butt-color: rgba(94, 125, 255, 1);
+  --main-butt-hover: rgba(59, 185, 42, 1);
+  --main-butt-img-hover: rgba(59, 185, 42, 0.2);
+  --main-link-hover: rgba(199, 37, 37, 0.801);
+  --main-border-radius: 0.2em;
+  --main-page-margin: 0.1em 0.2em;
+}
+
+/* Default body layout */
+body {
+  font-family: Arial, sans-serif;
+  display: block;
+  margin: 0em;
+  padding: 0em;
+}
+
+/* Grid Container Style */
+.content-container {
+    display: grid;
+    grid-template-areas: 'banner' 'text' 'image' 'footer';
+    margin: var(--main-page-margin);
+}
+
+/* Assign elements to gird area's */
+.banner-container {grid-area: banner; }
+.text-content-container { grid-area: text; }
+.contr-cont { grid-area: text; }
+.example-container { grid-area: image; }
+.beheer-weerg-cont { grid-area: image; }
+.gebr-weerg-cont { grid-area: image; }
+.footer { grid-area: footer; }
+
+/* Styles shared between devices */
+/* Banner related things for a static banner/menu */
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding-top: 0;
+}
+
+/* User feedback container */
+.message-container {
+    z-index: 2;
+    display: none;
+    position: fixed;
+    text-align: center;
+    background-color: var(--main-butt-hover);
+    width: fit-content;
+    top: -10%;
+    left: 40%;
+    right: 40%;
+    margin: 0.2em;
+    padding: 0.2em;
+}
+
+.response-message { font-size: smaller; }
+
+/* Album cover styles for pop-in and table content */
+.album-cover {
+    height: 4em;
+    width: 4em;
+}
+
+.album-cover-img {
+    height: 3.9em;
+    width: 3.9em;
+    margin: 0;
+}
+
+/* Temp code for extra features */
+/* Main search option container */
+.search-opt-cont {
+    display: flex;
+    align-items: center;
+}
+
+/* Search option container for each option*/
+.search-opt-naam-cont, .search-opt-albNr-cont, .search-opt-isbn-cont {
+    font-size: 0.7em;
+    border: 0.1em solid black;
+    border-radius: 0.3em;
+    margin: 0.1em;
+    width: 6em;
+    height: 2.7em;
+}
+
+/* Label for the switch */
+.album-zoek-naam, .album-zoek-nr, .album-zoek-isbn {
+    position: relative;
+    display: inline-block;
+    width: 3em;
+    height: 1.5em;
+    font-size: 0.7em;
+}
+
+/* The checkbox input that we visually hide */
+.album-zoek-naam-inp, .album-zoek-nr-inp, .album-zoek-isbn-inp {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The span that will become the slider */
+.album-zoek-naam-slider, .album-zoek-nr-slider, .album-zoek-isbn-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--main-link-hover);
+    border-radius: 1.5em;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* The slider before switched styling */
+.album-zoek-naam-slider:before, .album-zoek-nr-slider:before, .album-zoek-isbn-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.5em;
+    width: 1.5em;
+    left: 0.01em;
+    bottom: 0.01em;
+    background-color: grey;
+    border-radius: 50%;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* The background for when the slider is checked */
+.album-zoek-naam-inp:checked + .album-zoek-naam-slider, .album-zoek-nr-inp:checked + .album-zoek-nr-slider, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider {
+    background-color: green;
+}
+
+/* The background for when the slider is in focus */
+.album-zoek-naam-inp:focus + .album-zoek-naam-slider, .album-zoek-nr-inp:focus + .album-zoek-nr-slider, .album-zoek-isbn-inp:focus + .album-zoek-isbn-slider {
+    box-shadow: 0 0 1px green;
+}
+
+/* The animation for when the checkbox is checked */
+.album-zoek-naam-inp:checked + .album-zoek-naam-slider:before, .album-zoek-nr-inp:checked + .album-zoek-nr-slider:before, .album-zoek-isbn-inp:checked + .album-zoek-isbn-slider:before {
+    -webkit-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+}
