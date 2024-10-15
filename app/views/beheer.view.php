@@ -65,6 +65,7 @@
             require( "pop-ins/beheer/beheer-album-bewerken-pop-in.php" );
             require( "pop-ins/beheer/beheer-isbn-scan-pop-in.php" );
             require( "pop-ins/beheer/beheer-wachtwoord-reset2-pop-in.html" );
+            require( "pop-ins/beheer/review-isbn-titles.php" );
         ?>
 
 		<footer class="sub-grid-4" id="sub-grid-4">

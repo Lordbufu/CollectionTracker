@@ -90,11 +90,19 @@ class LogicController {
             /* Redirect the user according to the user rights evaluation. */
             if( $userRightsCheck === TRUE ) {
                 App::get( "session" )->setVariable( "user", [ "admin" => FALSE ] );
-                App::get( "session" )->setVariable( "header", [ "feedB" => [ 'welcome' => "Welcome " . App::get( "user" )->getUserName() ] ] );
+
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ 'welcome' => "Welcome " . App::get( "user" )->getUserName() ]
+                ] );
+
                 return App::redirect( "gebruik" );
             } elseif( $userRightsCheck === FALSE ) {
                 App::get( "session" )->setVariable( "user", [ "admin" => TRUE ] );
-                App::get( "session" )->setVariable( "header", [ "feedB" => [ "welcome" => "Welcome " . App::get( "user" )->getUserName() ] ] );
+
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "welcome" => "Welcome " . App::get( "user" )->getUserName() ]
+                ] );
+
                 return App::redirect( "beheer" );
             /* If the user rights evaluation failed, i store the error and redirect to the pop-in. */
             } else {
@@ -249,13 +257,18 @@ class LogicController {
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_string( $store ) ) {
-                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het toevoegen van: " . $_POST["serie-naam"] . " is gelukt !" ] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het toevoegen van: " . $_POST["serie-naam"] . " is gelukt !" ]
+                ] );
+
                 unset( $_SESSION["page-data"]["series"] );
+
                 return App::redirect( "beheer" );
             } else {
                 App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 return App::redirect( "beheer" );
             }
+
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
             App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
@@ -304,12 +317,17 @@ class LogicController {
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_array( $store ) ) {
-                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het aanpassen van: " . $_POST["naam"] . " is gelukt !"]
+                ] );
+
                 unset( $_SESSION["page-data"]["series"] );
+
                 return App::redirect( "beheer" );
             } else {
                 App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 App::get( "session" )->setVariable( "page-data", [ "edit-serie" => $_POST["index"] ] );
+
                 return App::redirect( "beheer#serieb-pop-in" );
             }
 
@@ -342,9 +360,14 @@ class LogicController {
 
             /* Evaluate the DB operation, and return the correct feedback, reset the correct session data and redirect back to the page. */
             if( !is_array( $remove_1 ) || !is_array($remove_2) ) {
-                App::get( "session" )->setVariable( "header", [ "feedB" => [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ] ] );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ]
+                ] );
+
                 unset( $_SESSION["page-data"]["series"] );
+
                 return App::redirect( "beheer" );
+
             /* Store either of returned errors if set, since there identical if both are set anyway. */
             } else {
                 if( is_array( $remove_1 ) ) {
@@ -352,6 +375,7 @@ class LogicController {
                 } else if( is_array($remove_2) ) {
                     App::get( "session" )->setVariable( "header", [ "error" => $remove_2 ] );
                 }
+
                 return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
@@ -412,10 +436,7 @@ class LogicController {
             $albumData["Album_Serie"] = $_POST["serie-index"];
             $albumData["Album_ISBN"] = ( !empty( $_POST["album-isbn"] ) || $_POST["album-isbn"] !== "" ) ? $_POST["album-isbn"] : 0;
             $albumData["Album_Nummer"] = ( !empty( $_POST["album-nummer"] ) ) ? $_POST["album-nummer"] : 0;
-
-            if( !empty( $_POST["album-datum"] ) ) {
-                $albumData["Album_UitgDatum"] = $_POST["album-datum"];
-            }
+            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
 
             /* Album cover loop, for base64 conversion, or re-adding of the one stored in the session */
             if( $_FILES["album-cover"]["error"] === 0 ) {
@@ -434,36 +455,17 @@ class LogicController {
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
             if( !is_array( $store ) ) {
-                App::get( "session" )->setVariable( "header",
-                    [ "feedB" =>
-                        [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ]
-                    ]
-                );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ]
+                ] );
 
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
-                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-                    unset( $_SESSION["page-data"]["albums"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) {
-                    unset( $_SESSION["page-data"]["album-dupl"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["add-album"] ) ) {
-                    unset( $_SESSION["page-data"]["add-album"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) {
-                    unset( $_SESSION["page-data"]["isbn-scan"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["isbn-search"] ) ) {
-                    unset( $_SESSION["page-data"]["isbn-search"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["searched"] ) ) {
-                    unset( $_SESSION["page-data"]["searched"] );
-                }
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
+                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); }
+                if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); }
+                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
+                if( isset( $_SESSION["page-data"]["isbn-search"] ) ) { unset( $_SESSION["page-data"]["isbn-search"] ); }
+                if( isset( $_SESSION["page-data"]["searched"] ) ) { unset( $_SESSION["page-data"]["searched"] ); }
 
                 return App::redirect( "beheer" );
             } else {
@@ -507,11 +509,9 @@ class LogicController {
             //  TODO: Figure out where $ablName should come from, seems odd that its is currently nothing.
             /* Evaluate the itemCheck and DB action. */
             if( !is_array( $itemCheck ) && !is_array( $store ) ) {
-                App::get( "session" )->setVariable( "header",
-                    [ "feedB" =>
-                        [ "fetchResponse" => "Het verwijderen van: " . $itemCheck . " is geslaagd!" ]
-                    ]
-                );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het verwijderen van: " . $itemCheck . " is geslaagd!" ]
+                ] );
 
                 unset( $_SESSION["page-data"]["albums"] );
 
@@ -574,13 +574,8 @@ class LogicController {
             }
 
             /* Store the remaining data for SQL */
-            if( isset( $_POST["album-nummer"] ) ) {
-                $albumData["Album_Nummer"] = $_POST["album-nummer"];
-            }
-
-            if( !empty( $_POST["album-datum"] ) ) {
-                $albumData["Album_UitgDatum"] = $_POST["album-datum"];
-            }
+            if( isset( $_POST["album-nummer"] ) ) { $albumData["Album_Nummer"] = $_POST["album-nummer"]; }
+            if( !empty( $_POST["album-datum"] ) ) { $albumData["Album_UitgDatum"] = $_POST["album-datum"]; }
 
             $albumData["Album_Isbn"] = isset( $_POST["album-isbn"] ) ? $_POST["album-isbn"] : 0;
             $albumData["Album_Opm"] = isset( $_POST["album-opm"] ) ? $_POST["album-opm"] : 'W.I.P';
@@ -599,7 +594,10 @@ class LogicController {
             }
 
             /* Attempt to store the album data in the SQL DB. */
-            $store = App::get( "collection" )->setAlbum( $albumData, [ "Album_Index" => $_POST["album-index"], "Album_Serie" => $_POST["serie-index"] ] );
+            $store = App::get( "collection" )->setAlbum( $albumData, [
+                "Album_Index" => $_POST["album-index"],
+                "Album_Serie" => $_POST["serie-index"]
+            ] );
 
             /* Evaluate the DB action, and store the correct response (unset data if required), and redirect back to the admin page. */
             if( is_array( $store ) ) {
@@ -607,19 +605,12 @@ class LogicController {
 
                 return App::redirect( "beheer" );
             } else {
-                App::get( "session" )->setVariable( "header",
-                    [ "feedB" => 
+                App::get( "session" )->setVariable( "header", [ "feedB" => 
                         [ "fetchResponse" => "Het aanpassen van: " . $_POST["album-naam"] . " is gelukt !" ]
-                    ]
-                );
+                ] );
 
-                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-                    unset( $_SESSION["page-data"]["albums"] );
-                }
-
-                if( isset( $_SESSION["page-data"]["album-edit"] ) ) {
-                    unset( $_SESSION["page-data"]["album-edit"] );
-                }
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
+                if( isset( $_SESSION["page-data"]["album-edit"] ) ) { unset( $_SESSION["page-data"]["album-edit"] ); }
 
                 return App::redirect( "beheer" );
             }
@@ -648,7 +639,8 @@ class LogicController {
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
             $store = App::get( "user" )->updateUser( "gebruikers",
-                [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ], [ "Gebr_Email" => $_POST["email"] ]
+                [ "Gebr_WachtW" => password_hash( $_POST["wachtwoord1"], PASSWORD_BCRYPT ) ],
+                [ "Gebr_Email" => $_POST["email"] ]
             );
 
             /* Evaluate the DB action, and store the correct response, and redirect back to the correct page. */
@@ -656,11 +648,9 @@ class LogicController {
                 App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 return App::redirect( "beheer#ww-reset-pop-in" );
             } else {
-                App::get( "session" )->setVariable( "header",
-                    [ "feedB" =>
-                        [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ]
-                    ]
-                );
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het wachtwoord van: " . $_POST["email"] . " is aangepast !" ]
+                ] );
 
                 return App::redirect( "beheer" );
             }
@@ -739,21 +729,17 @@ class LogicController {
             if( !is_array( $store ) ) {
                 /* If no errors, evaluated the checkState and execute the correct logic. */
                 if( $_POST["checkState"] === "false" ) {
-                    App::get( "session" )->setVariable( "header",
-                        [ "feedB" =>
-                            [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . ", is toegvoegd aan uw collectie!" ]
-                        ]
-                    );
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
+                        [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . ", is toegvoegd aan uw collectie!" ]
+                    ] );
 
                     unset( $_SESSION["page-data"]["colllections"] );
 
                     return App::redirect( "gebruik" );
                 } elseif( $_POST["checkState"] === "true" ) {
-                    App::get( "session" )->setVariable( "header",
-                        [ "feedB" =>
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
                             [ "fetchResponse" => "Het album: " . $_POST["albumNaam"] . ", is verwijdert van uw collectie!" ]
-                        ]
-                    );
+                    ] );
 
                     unset( $_SESSION["page-data"]["colllections"] );
 
@@ -807,49 +793,47 @@ class LogicController {
             /* Check if the isbn was set, and start the parsing/processing logic. */
             if( isset( $_POST["album-isbn"] ) ) {
                 /* Attempt to get data from the Google API. */
-                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"] );
+                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"], $_POST["serie-index"] );
+
+                // If there is a data array returned,
+                if( isset( $result[0] ) ) {
+                    // and the first index is called titles,
+                    if( $result[0] === "Titles" ) {
+                        // i store that data in the session,
+                        $_SESSION["page-data"]["show-titles"] = $result;
+
+                        // and return to a user choice pop-in.
+                        return App::redirect( "beheer#isbn-preview" );
+                    }
+                }
 
                 /* Items that arent provided via the Google API, and should be there by default in the POST. */
-                if( isset( $_POST["album-index"] ) ) {
-                    $result["Album_Index"] = $_POST["album-index"];
-                }
-
-                if( isset( $_POST["serie-index"] ) ) {
-                    $result["Album_Serie"] = $_POST["serie-index"];
-                }
+                if( isset( $_POST["album-index"] ) ) { $result["Album_Index"] = $_POST["album-index"]; }
+                if( isset( $_POST["serie-index"] ) ) { $result["Album_Serie"] = $_POST["serie-index"]; }
 
                 /* Items that can only be user input, only applies for editing albums. */
                 if( isset( $_POST["album-nummer"] ) ) { $result["Album_Nummer"] = $_POST["album-nummer"]; }
 
                 /* Items that need to be taken from the Google API search if avaible, otherwhise take the user input, only applies for editing albums. */
-                if( !isset( $result["Album_Naam"] ) && !empty( $_POST["album-naam"] ) ) {
-                    $result["Album_Naam"] = $_POST["album-naam"];
-                }
-
-                if( !isset( $result["Album_UitgDatum"] ) && !empty( $_POST["album-datum"] ) ) {
-                    $result["Album_UitgDatum"] = $_POST["album-datum"];
-                }
-
-                if( !isset( $result["Album_Opm"] ) && !empty( $_POST["album-opm"] ) ) {
-                    $result["Album_Opm"] = $_POST["album-opm"];
-                }
+                if( !isset( $result["Album_Naam"] ) && !empty( $_POST["album-naam"] ) ) { $result["Album_Naam"] = $_POST["album-naam"]; }
+                if( !isset( $result["Album_UitgDatum"] ) && !empty( $_POST["album-datum"] ) ) { $result["Album_UitgDatum"] = $_POST["album-datum"]; }
+                if( !isset( $result["Album_Opm"] ) && !empty( $_POST["album-opm"] ) ) { $result["Album_Opm"] = $_POST["album-opm"]; }
+            // Loop for when the user had to make a choice, between several items that share the same isbn.
+            } elseif( isset( $_POST["isbn-choice"] ) && isset( $_POST["title-choice"] ) ) {
+                // Get that specific choice and store it, for processing.
+                $result = App::get( "isbn" )->get_data( $_POST["isbn-choice"], null, $_POST["title-choice"] );
             }
 
             /* Evaluate the result, and prepare the correct feedback and page-data, on error we redirect back to the admin page. */
             if( isset( $result ) ) {
                 if( !isset( $result["error"] ) ) {
-                    App::get( "session" )->setVariable( "header",
-                        [ "feedB" =>
-                            [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ]
-                        ]
-                    );
-
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
+                        [ "fetchResponse" => "Controleer of de ingevulde gegevens kloppen en compleet zijn !" ]
+                    ] );
                 } else {
-                    App::get( "session" )->setVariable( "header",
-                        [ "feedB" =>
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
                             [ "fetchResponse" => $result["error"] ]
-                        ]
-                    );
+                    ] );
 
                     return App::redirect( "beheer" );
                 }
@@ -899,6 +883,7 @@ class LogicController {
             }
 		} else {
 			App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+
 			return App::redirect( "" );
 		}
     }
@@ -925,13 +910,12 @@ class LogicController {
                 /* */
                 if( isset( $eColl["addToColl"] ) ) {
                     $store = App::get( "collection" )->setColl( "collecties", $ids );
+
                     if( !is_array( $store ) ) {
 
-                        App::get( "session" )->setVariable( "header",
-                            [ "feedB" =>
-                                [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is toegvoegd aan uw collectie!" ]
-                            ]
-                        );
+                        App::get( "session" )->setVariable( "header", [ "feedB" =>
+                            [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is toegvoegd aan uw collectie!" ]
+                        ] );
 
                     } else {
                         App::get( "session" )->setVariable( "header", [ "error" => $store ] );
@@ -942,11 +926,9 @@ class LogicController {
                 if( isset( $eColl["remFromColl"] ) ) {
                     $store = App::get( "collection" )->remItem( "collecties", $ids );
                     if( !is_array( $store ) ) {
-                        App::get( "session" )->setVariable( "header",
-                            [ "feedB" =>
-                                [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is verwijdert van uw collectie!" ]
-                            ]
-                        );
+                        App::get( "session" )->setVariable( "header", [ "feedB" =>
+                            [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is verwijdert van uw collectie!" ]
+                        ] );
                     } else {
                         App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                     }
@@ -954,11 +936,9 @@ class LogicController {
 
                 /* */
                 if( isset( $eColl["inSerie"] ) && !$eColl["inSerie"] ) {
-                    App::get( "session" )->setVariable( "header",
-                        [ "feedB" =>
-                            [ "fetchResponse" => "Het ablum: " . $result["album-naam"] . ", zit niet in deze serie!" ]
-                        ]
-                    );
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
+                        [ "fetchResponse" => "Het ablum: " . $result["album-naam"] . ", zit niet in deze serie!" ]
+                    ] );
                 }
 
                 /* Unset all session states, to prevent broken page logic. */

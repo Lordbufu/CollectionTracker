@@ -103,7 +103,7 @@
                             <label class="modal-form-alb-cov-lab button" id="modal-albumt-cov-lab" for="albumt-form-alb-cov">
                                 <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="albumt-form-alb-cov" name="album-cover" />
                             <?php if( !empty( $store["Album_Cover"] ) ) : ?>
-                                Selecteer nogmaals een Album Cover
+                                Nieuwe Cover Selecteren
                             <?php else : ?>
                                 Selecteer een Album Cover
                             <?php endif; ?>
@@ -143,7 +143,11 @@
 
                             <div class="modal-form-fake-triger"> </div>
 
+                        <?php if( !empty( $store["Album_Cover"] ) ) : ?>
+                            <div class="modal-form-fake-triger" id="modal-form-albAdd-cov-trigger" > </div>
+                        <?php else : ?>
                             <div class="modal-form-fake-triger" id="modal-form-albAdd-cov-trigger" hidden > </div>
+                        <?php endif; ?>
 
                             <div class="modal-form-fake-triger" id="modal-form-addCov-trigger" > </div>
 
