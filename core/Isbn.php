@@ -7,9 +7,9 @@
  */
 
 //  TODO/Notes:
-    // - Test what happens if a request returns more then 1 item, so far i have not been able to find one that returns more then 1.
-    // - Review how i handle the search/request, atm im just pre-filling data that i have, but maybe the 'client' wants something else ?¿
-    // - Clean up comments and left over code from the testing phase.
+//      - Test what happens if a request returns more then 1 item, example isbn = 0123456789.
+//      - Review how i handle the search/request, atm im just pre-filling data that i have, but maybe the 'client' wants something else ?¿
+//      - Clean up comments and left over code from the testing phase.
 
 namespace App\Core;
 
@@ -55,15 +55,13 @@ class Isbn {
             $this->new["error"] = "No items found !!";
         } else {
             $this->new["error"] = "To many items found";
+            //die( var_dump( print_r( $data ) ) );
         }
 
         /* Check if something was stored, loop over the data to parse it into the new data array. */
         if( !empty( $temp ) ) {
-
             foreach( $temp as $key => $value ) {
-
                 if( $key === "volumeInfo" ) {
-
                     foreach( $value as $iKey => $iValue ) {
                         /* The album-naam, is the parsed title. */
                         if( $iKey === "title" ) {
@@ -85,10 +83,8 @@ class Isbn {
 
                         /* For the isbn/ean, i need a bit more logic, as its nested inside the industryIdentifiers */
                         if( $iKey === "industryIdentifiers" ) {
-
                             /* If there is only 1 parsed result, check the type of code first */
                             if( count( $iValue ) == 1) {
-
                                 if( $iValue[0]["type"] !== "ISBN_10" || $iValue[0]["type"] !== "ISBN_13" ) {
                                     /* If the codes match, store the parsed one. */
                                     if( $iValue[0]["identifier"] == $isbn ) {
@@ -98,20 +94,16 @@ class Isbn {
 
                             /* If there are more, attempt to find the correct one. */
                             } else {
-
                                 for( $i=0; $i < 2; $i++) {
-
                                     if( $iValue[$i]["type"] == "ISBN_10" || $iValue[$i]["type"] == "ISBN_13" ) {
                                         $x = $i + 1;
 
                                         if( isset( $iValue[$x]["type"] ) ) {
-                                            
                                             if( $iValue[$x]["identifier"] !== $isbn ) {
                                                 $this->new["Album_ISBN"] = $iValue[$x]["identifier"];
                                             }
 
                                         } else {
-
                                             if( $iValue[$i]["identifier"] !== $isbn ) {
                                                 $this->new["Album_ISBN"] = $iValue[$i]["identifier"];
                                             }
