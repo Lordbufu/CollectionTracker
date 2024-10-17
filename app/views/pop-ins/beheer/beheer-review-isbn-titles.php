@@ -10,6 +10,7 @@
         margin-top: 0.2em;
     }
 </style>
+
 <div id="isbn-preview" class="modal-cont" >
 
     <div class="modal-content-cont" id="isbn-review-content-cont" >
@@ -28,6 +29,7 @@
         <?php // Store the titles,
             if( isset( $_SESSION["page-data"]["show-titles"] ) ) {
                 $store = $_SESSION["page-data"]["show-titles"];
+                unset( $_SESSION["page-data"]["show-titles"] );
             } ?>
 
         <div class="modal-body" id="isbn-review-body" >

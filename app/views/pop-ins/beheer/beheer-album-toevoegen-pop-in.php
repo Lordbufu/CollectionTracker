@@ -38,14 +38,16 @@
                         /* Loop for manual isbn seaching */
                         if( isset( $_SESSION["page-data"]["isbn-search"] ) && isset( $_SESSION["page-data"]["searched"] ) ) {
                             $store = $_SESSION["page-data"]["isbn-search"];
+                            unset( $_SESSION["page-data"]["searched"] );
                         }
 
                     /* Only normal add-album cases remain */
                     } else  {
 
-                        // Still check if a value was set, to prevent unexpected errors.
+                        // Still check if a value was set, and unset to prevent unexpected errors.
                         if( isset($_SESSION["page-data"]["add-album"] ) ) {
                             $store = $_SESSION["page-data"]["add-album"];
+                            unset( $_SESSION["page-data"]["add-album"] );
                         }
                     }
                 ?>

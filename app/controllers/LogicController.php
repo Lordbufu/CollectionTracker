@@ -4,7 +4,9 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-/* LogicController Class: For all complex logic required to add/update/remove items to/from the database. */
+/*  LogicController Class:
+        For all complex logic required to add/update/remove items to/from the database.
+ */
 class LogicController {
     /* Landingpage functions */
     /*  dbCreation():
@@ -385,6 +387,7 @@ class LogicController {
         }
     }
 
+    //  TODO: Review if the session tags should not be unset somewhere else.
     /*  albumT():
             This function checks the album name, and either stores that user input, or returns it for the user to correct it.
                 $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
@@ -404,7 +407,8 @@ class LogicController {
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
-            /* Check if the POST data was set for the item name check. */
+
+            /* Trigger a duplicate entry check on the album name. */
             if( isset( $_POST["album-naam"] ) ) {
                 $itemCheck = App::get( "collection" )->checkItemName( "album", $_POST["album-naam"], $_POST["serie-index"] );
             }
@@ -426,6 +430,7 @@ class LogicController {
                 App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ] );
                 App::get( "session" )->setVariable( "page-data", [ "album-dupl" => $returnData ] );
                 return App::redirect( "beheer#albumt-pop-in" );
+
             /* Otherwhise i can store the name for processing it. */
             } else {
                 $albumData["Album_Naam"] = htmlspecialchars( $_POST["album-naam"] );
@@ -446,8 +451,14 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
+            // If a cover was passed on via the duplicate entry check, use that blob and remove the session data.
             } elseif( isset( $_SESSION["page-data"]["album-dupl"]["Album_Cover"] ) ) {
                 $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["Album_Cover"];
+                unset( $_SESSION["page-data"]["album-dupl"] );
+            // If a cover was found using the search feature, store that blob, and remove the session data.
+            } elseif( isset( $_SESSION["page-data"]["isbn-search"]["Album_Cover"] ) ) {
+                $albumData["Album_Cover"] = $_SESSION["page-data"]["isbn-search"]["Album_Cover"];
+                unset( $_SESSION["page-data"]["isbn-search"] );
             }
 
             /* Attempt to store the album in the SQL DB */
@@ -461,10 +472,7 @@ class LogicController {
 
                 /* Unset specific session page-data or states, to ensure the expected page behavior */
                 if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
-                if( isset( $_SESSION["page-data"]["album-dupl"] ) ) { unset( $_SESSION["page-data"]["album-dupl"] ); }
-                if( isset( $_SESSION["page-data"]["add-album"] ) ) { unset( $_SESSION["page-data"]["add-album"] ); }
                 if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
-                if( isset( $_SESSION["page-data"]["isbn-search"] ) ) { unset( $_SESSION["page-data"]["isbn-search"] ); }
                 if( isset( $_SESSION["page-data"]["searched"] ) ) { unset( $_SESSION["page-data"]["searched"] ); }
 
                 return App::redirect( "beheer" );
@@ -472,6 +480,7 @@ class LogicController {
                 App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 return App::redirect( "beheer" );
             }
+
         /* Return the error to JS, and redirect to the landingpage. */
         } else {
             App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
@@ -757,8 +766,10 @@ class LogicController {
         }
     }
 
-    //  TODO: Wait for user feedback, to see if anything need changing.
-    //  TODO: Add isbn-search submit, regardless of any required form fields.
+    //  Admin scan/search TODO list:
+    //      - Wait for user feedback, to see if anything need changing.
+    //      - Check, clean and condense the newly added comments.
+    //      - Review if the userScan()/userIsbn() function still work as expected.
 
     /*	scan(): This function simply set the correct session tag, and redirects to the pop-in to load the correct template. */
 	public function scan() {
@@ -795,33 +806,30 @@ class LogicController {
                 /* Attempt to get data from the Google API. */
                 $result = App::get( "isbn" )->get_data( $_POST["album-isbn"], $_POST["serie-index"] );
 
-                // If there is a data array returned,
+               /* If there is a data array returned, and the first index is called titles, i store that data in the session, and return to a user choice pop-in. */
                 if( isset( $result[0] ) ) {
-                    // and the first index is called titles,
                     if( $result[0] === "Titles" ) {
-                        // i store that data in the session,
                         $_SESSION["page-data"]["show-titles"] = $result;
 
-                        // and return to a user choice pop-in.
                         return App::redirect( "beheer#isbn-preview" );
                     }
                 }
 
-                /* Items that arent provided via the Google API, and should be there by default in the POST. */
+                /* Data that isnt provided via the Google API, and should be there by default in the POST. */
                 if( isset( $_POST["album-index"] ) ) { $result["Album_Index"] = $_POST["album-index"]; }
                 if( isset( $_POST["serie-index"] ) ) { $result["Album_Serie"] = $_POST["serie-index"]; }
 
-                /* Items that can only be user input, only applies for editing albums. */
+                /* Data that can only be user input, only applies for editing albums. */
                 if( isset( $_POST["album-nummer"] ) ) { $result["Album_Nummer"] = $_POST["album-nummer"]; }
 
-                /* Items that need to be taken from the Google API search if avaible, otherwhise take the user input, only applies for editing albums. */
+                /* Data that need to be taken from the Google API search if avaible, otherwhise take the user input, only applies for editing albums. */
                 if( !isset( $result["Album_Naam"] ) && !empty( $_POST["album-naam"] ) ) { $result["Album_Naam"] = $_POST["album-naam"]; }
                 if( !isset( $result["Album_UitgDatum"] ) && !empty( $_POST["album-datum"] ) ) { $result["Album_UitgDatum"] = $_POST["album-datum"]; }
                 if( !isset( $result["Album_Opm"] ) && !empty( $_POST["album-opm"] ) ) { $result["Album_Opm"] = $_POST["album-opm"]; }
-            // Loop for when the user had to make a choice, between several items that share the same isbn.
+            /* Get the user choices if more then 1 item was detected, and store that as a result for processing. */
             } elseif( isset( $_POST["isbn-choice"] ) && isset( $_POST["title-choice"] ) ) {
-                // Get that specific choice and store it, for processing.
                 $result = App::get( "isbn" )->get_data( $_POST["isbn-choice"], null, $_POST["title-choice"] );
+                $result["Album_Serie"] = $_POST["serie-index"];
             }
 
             /* Evaluate the result, and prepare the correct feedback and page-data, on error we redirect back to the admin page. */
@@ -851,10 +859,9 @@ class LogicController {
                 }
 
                 // This is a bit dodgy, but the only goodway atm to detect where the input came from.
-                // Came from the album-bewerken pop-in.
+                /* Check what pop-in got us here, using POST data, and return (redirect) to the correct pop-in */
                 if( isset( $_POST["serie-index"] ) && isset( $_POST["album-index"] ) ) {
                     return App::redirect( "beheer#albumb-pop-in" );
-                // Came from the album-toevoegen pop-in.
                 } elseif( $_POST["serie-index"] ) {
                     return App::redirect( "beheer#albumt-pop-in" );
                 }
@@ -866,7 +873,10 @@ class LogicController {
 		}
     }
 
-    //  TODO: Wait for user feedback, to see if anything need changing.
+    //  User TODO List:
+    //      - Wait for user feedback, to see if anything need changing.
+    //      - See if i can make this a bit faster, the amount of loops etc make this a bit slow on the processing end of things.
+
     /* userScan(): */
     public function userScan() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -888,8 +898,6 @@ class LogicController {
 		}
     }
 
-    //  TODO: Wait for user feedback, to see if anything need changing.
-    //  TODO: See if i can make this a bit faster, the amount of loops etc make this a bit slow on the processing end of things.
     /* userIsbn(): */
     public function userIsbn() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -965,15 +973,18 @@ class LogicController {
      */
 
     /* Debug info, for testing the isbn manual search functions.
+        // Optional isbn 1
         9780340626580
         Suske & Wiske
         Lambiorix
         alb nr 14
-     */
 
-    /* Debug info, for testing the isbn manual search functions.
+        // Optional isbn 2
         9789020666526
         De Kameleon in het goud
+
+        // Optional isbn 3 (gives several items and thus a user choice)
+        0123456789
      */
 }
 ?>

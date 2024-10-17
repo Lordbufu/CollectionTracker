@@ -26,7 +26,6 @@
                             unset( $_SESSION["page-data"]["album-edit"] );
                         } elseif( isset( $_SESSION["page-data"]["isbn-search"] ) ) {
                             $store = $_SESSION["page-data"]["isbn-search"]; 
-                            unset( $_SESSION["page-data"]["isbn-search"] );
                         }
                     ?>
 

@@ -36,7 +36,10 @@ class Collection {
             So it can be displayed, each time getSeries is called, the number is updated.
      */
     protected function countAlbums() {
-        foreach( $this->series as $key => $value ) { $this->series[$key]["Album_Aantal"] = App::get( "database" )->countAlbums( $value["Serie_Index"] ); }
+        foreach( $this->series as $key => $value ) {
+            $this->series[$key]["Album_Aantal"] = App::get( "database" )->countAlbums( $value["Serie_Index"] );
+        }
+
         return;
     }
 
@@ -52,12 +55,28 @@ class Collection {
     public function getItemName( $type, $id1, $id2 = null ) {
         switch( $type ) {
             case "serie":
-                if( !isset( $this->series ) ) { $this->getSeries(); }
-                foreach( $this->series as $index => $serie ) { if( $id1 == $serie["Serie_Index"] ) { return $serie["Serie_Naam"]; } }
+                if( !isset( $this->series ) ) {
+                    $this->getSeries();
+                }
+
+                foreach( $this->series as $index => $serie ) {
+                    if( $id1 == $serie["Serie_Index"] ) {
+                        return $serie["Serie_Naam"];
+                    }
+                }
+
                 return $this->$dbError;
             case "album":
-                if(! isset( $this->albums ) ) { $this->getAlbums( $id1 ); }
-                foreach( $this->albums as $index => $album ) { if( $id2 == $album["Album_Index"] ) { return $album["Album_Naam"]; } }
+                if(! isset( $this->albums ) ) {
+                    $this->getAlbums( $id1 );
+                }
+
+                foreach( $this->albums as $index => $album ) {
+                    if( $id2 == $album["Album_Index"] ) {
+                        return $album["Album_Naam"];
+                    }
+                }
+
                 return $this->$dbError;
         }
     }
@@ -92,24 +111,37 @@ class Collection {
     public function checkItemName( $type, $name, $sIndex = null, $aIndex = null ) {
         switch( $type ) {
             case "serie":
-                if( !isset( $this->series ) ) { $this->getSeries(); }
+                if( !isset( $this->series ) ) {
+                    $this->getSeries();
+                }
+
                 foreach( $this->series as $index => $serie ) {
+
                     if( str_replace( " ", "", $name ) === str_replace( " ", "", $serie["Serie_Naam"] ) ) {
                         if( $sIndex !== null && $sIndex != $serie["Serie_Index"] ) {
                             return $this->dupError;
-                        } else if ( $sIndex === null ) { return $this->dupError; }
+                        } else if ( $sIndex === null ) {
+                            return $this->dupError;
+                        }
                     }
                 }
+
                 return FALSE;
             case "album":
-                if( !isset( $this->albums ) ) { $this->getAlbums( $sIndex ); }
+                if( !isset( $this->albums ) ) {
+                    $this->getAlbums( $sIndex );
+                }
+
                 foreach( $this->albums as $index => $album ) {
                     if( str_replace( " ", "", $album["Album_Naam"] ) === str_replace( " ", "", $name ) ) {
                         if( $aIndex !== null && $aIndex != $album["Album_Index"] ) {
                             return $this->dupError;
-                        } else if ( $aIndex === null ) { return $this->dupError; }
+                        } else if ( $aIndex === null ) {
+                            return $this->dupError;
+                        }
                     }
                 }
+
                 return FALSE;
         }
     }
@@ -163,7 +195,10 @@ class Collection {
     public function setSerie( $data, $update = null ) {
         if( $update === null ) {
             $store = App::get( "database" )->insert( "series", $data );
-        } else { $store = App::get( "database" )->update( "series", $data, [ "Serie_Index" => $update ] ); }
+        } else {
+            $store = App::get( "database" )->update( "series", $data, [ "Serie_Index" => $update ] );
+        }
+        
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
