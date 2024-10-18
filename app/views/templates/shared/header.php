@@ -46,7 +46,9 @@
 				<script src="js/static-elements.js"></script>
 			<?php endif; break; endswitch; ?>
 
-		<?php if( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
+		<?php if( isset( $device ) ) : ?>
+				<script> localStorage.setItem( "device", "<?= $device ?>" ); </script>
+		<?php elseif( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
 				foreach( $_SESSION["header"]["error"] as $key => $value ) : ?>
 				<script> localStorage.setItem( "<?= $key ?>", "<?= $value ?>" ); </script>
 		<?php endforeach; unset( $_SESSION["header"]["error"] ); endif;

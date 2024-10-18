@@ -18,7 +18,6 @@
                 <?php
                     /* Deal with duplicate entries detected by PhP */
                     if( isset( $_SESSION["page-data"]["album-dupl"] ) ) {
-
                         foreach( $_SESSION["page-data"]["album-dupl"] as $key => $value ) {
                             $store[$key] = $value;
                         }
@@ -27,7 +26,6 @@
 
                     /* Deal with manual ISBN searches, and barcode scanning  */
                     } elseif( isset( $_SESSION["page-data"]["isbn-search"] ) || isset( $_SESSION["page-data"]["isbn-scan"] ) ) {
-
                         /* Code for barcode scanning */
                         if( isset( $_SESSION["page-data"]["isbn-scan"] ) && isset( $_SESSION["page-data"]["barcode"] ) ) {
                             $store = $_SESSION["page-data"]["isbn-scan"];
@@ -40,15 +38,11 @@
                             $store = $_SESSION["page-data"]["isbn-search"];
                             unset( $_SESSION["page-data"]["searched"] );
                         }
-
+                        
                     /* Only normal add-album cases remain */
-                    } else  {
-
-                        // Still check if a value was set, and unset to prevent unexpected errors.
-                        if( isset($_SESSION["page-data"]["add-album"] ) ) {
-                            $store = $_SESSION["page-data"]["add-album"];
-                            unset( $_SESSION["page-data"]["add-album"] );
-                        }
+                    } elseif( isset($_SESSION["page-data"]["add-album"] ) )  {
+                        $store = $_SESSION["page-data"]["add-album"];
+                        unset( $_SESSION["page-data"]["add-album"] );
                     }
                 ?>
                     <form class="modal-form" id="albumt-form" enctype="multipart/form-data" method="post" action="/albumT" >

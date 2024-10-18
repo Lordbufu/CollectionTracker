@@ -560,7 +560,6 @@ function onScanSuccess( decodedText, decodedResult ) {
     formatName = decodedResult["result"]["format"]["formatName"];
     document.getElementById("albumS-form-isbn").value = decodedText;
     html5QrcodeScanner.clear();
-    //console.log( formatName );
     document.getElementById("modal-form-scan").submit();
     return;
 }
@@ -573,20 +572,17 @@ function onScanError( errorMessage ) {
 }
 
 /*  submitIsbnSearch(e):
-        This simple removes the required tag from inputs, so i can submit only the ISBN that needs to be searched.
+        This simple removes the required tag from the name inputs, so i can submit only the ISBN that needs to be searched.
         It does have to look at the target id, so we load the correct elements for either album add or edit.
  */
 function submitIsbnSearch( e ) {
-    let input_1, input_2;
+    let input_1;
 
     if( e.target.id === "modal-form-albAdd-isbn-triger" ) {
         input_1 = document.getElementById("albumt-form-alb-naam");
-        input_2 = document.getElementById("albumt-form-alb-isbn");
     } else if( e.target.id === "modal-form-albEdit-isbn-triger" ) {
         input_1 = document.getElementById("albumb-form-alb-naam");
-        input_2 = document.getElementById("albumb-form-alb-isbn");
     }
 
     input_1.removeAttribute("required");
-    input_2.removeAttribute("required");
 }

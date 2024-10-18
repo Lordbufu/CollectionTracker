@@ -18,6 +18,12 @@
     top: 5em;
 }
 
+/* Adjust the feedback container size, so its look more normal */
+.message-container {
+    left: 10%;
+    right: 10%;
+}
+
 
 /* Changes specific to normal orientation */
 @media only screen and not (orientation: landscape) {
@@ -42,12 +48,15 @@
         grid-template-areas: "cont1" "cont2" "cont3";
         grid-template-columns: 100%;
         grid-template-rows: 34% 46% 20%;
+        grid-row-gap: 0.2em;
+        row-gap: 0.2em;
     }
 
     /* Remove white space from serie select controller */
     .contr-cont-1 {
         height: 5em;
         margin-right: 0;
+        margin-bottom: 2em;
     }
 
     /* Remove white space from scanner controller */

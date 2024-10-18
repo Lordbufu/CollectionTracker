@@ -332,7 +332,7 @@ class Collection {
             foreach( $oValue as $iKey => $iValue ) {
 
                 /* If the key is Album_ISBN, and it matches the scanned ISBN */
-                if( $iKey === "Album_ISBN" && $iValue === $fData["album-isbn"] ) {
+                if( $iKey === "Album_ISBN" && $iValue === $fData["Album_ISBN"] ) {
                     /* Store said album data in a temp variable, and set a flag that it is. */
                     $tempFetch = $oValue;
                     $match = [ "inSerie" => TRUE ];

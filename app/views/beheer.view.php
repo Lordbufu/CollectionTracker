@@ -50,9 +50,13 @@
 
             <div class="table-templ" id="table-templ" >
 
-            <?php if( !isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+            <?php
+                if( !isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
                     require( "templates/beheer/beheer-serie-table.php" );
-                } else { require( "templates/beheer/beheer-album-table.php" ); } ?>
+                } else {
+                    require( "templates/beheer/beheer-album-table.php" );
+                }
+            ?>
 
             </div>
 
@@ -65,6 +69,7 @@
             require( "pop-ins/beheer/beheer-album-bewerken-pop-in.php" );
             require( "pop-ins/beheer/beheer-isbn-scan-pop-in.php" );
             require( "pop-ins/beheer/beheer-wachtwoord-reset2-pop-in.html" );
+
             // Load review pop-in, if a isbn scan returned more then 1 item.
             if( isset( $_SESSION["page-data"]["show-titles"] ) ) {
                 require( "pop-ins/beheer/beheer-review-isbn-titles.php" );

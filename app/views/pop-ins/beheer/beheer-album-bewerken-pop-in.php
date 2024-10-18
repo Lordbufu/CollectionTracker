@@ -124,11 +124,11 @@
 
                             <div class="modal-form-fake-triger" > </div>
 
-                            <?php if( !empty( $store["Album_Cover"] ) ) : ?>
+                        <?php if( !empty( $store["Album_Cover"] ) ) : ?>
                             <div class="modal-form-fake-triger" id="modal-form-albEdit-cov-trigger" > </div>
-                            <?php else : ?>
+                        <?php else : ?>
                             <div class="modal-form-fake-triger" id="modal-form-albEdit-cov-trigger" hidden > </div>
-                            <?php endif; ?>
+                        <?php endif; ?>
 
                             <div class="modal-form-fake-triger" > </div>
 

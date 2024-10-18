@@ -172,6 +172,7 @@ class LogicController {
             /* Add session tag, for the album-toevoegen pop-in */
             if( isset($_POST["album-toev"] ) ) {
                 App::get( "session" )->setVariable( "page-data", [ "add-album" => App::get( "collection" )->getSerInd( $_POST["album-toev"] ) ] );
+                //die( var_dump( print_r( $_SESSION["page-data"]["add-album"] ) ) );
                 return App::redirect( "beheer#albumt-pop-in" );
             }
 
@@ -768,10 +769,11 @@ class LogicController {
 
     //  Admin scan/search TODO list:
     //      - Wait for user feedback, to see if anything need changing.
-    //      - Check, clean and condense the newly added comments.
-    //      - Review if the userScan()/userIsbn() function still work as expected.
+    //      - Check, clean and condense the comments.
 
-    /*	scan(): This function simply set the correct session tag, and redirects to the pop-in to load the correct template. */
+    /*	scan():
+            This function simply set the correct session tag, and redirects to the pop-in to load the correct template.
+     */
 	public function scan() {
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" ) : App::get( "user" )->checkUser( -1, "rights" );
@@ -875,22 +877,26 @@ class LogicController {
 
     //  User TODO List:
     //      - Wait for user feedback, to see if anything need changing.
-    //      - See if i can make this a bit faster, the amount of loops etc make this a bit slow on the processing end of things.
+    //      - Check, clean and condense the comments.
 
-    /* userScan(): */
+    /*  userScan():
+            This function set the correct tags, and gets the correct data, for the scanner form data.
+     */
     public function userScan() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
 
+        /* If user is verified, convert the serie name in the session, to a serie index */
 		if( !is_array( $userCheck ) ) {
-            if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-                App::get( "session" )->setVariable( "page-data",
-                    [ "serie-index" => App::get("collection")->getSerInd( $_SESSION["page-data"]["huidige-serie"] ) ]
-                );
+            App::get( "session" )->setVariable( "page-data",
+                [ "serie-index" => App::get("collection")->getSerInd( $_SESSION["page-data"]["huidige-serie"] ) ]
+            );
 
-                App::get( "session" )->setVariable( "page-data", [ "isbn-scan" => True ] );
-                return App::redirect( "gebruik#albumS-pop-in" );
-            }
+            /* Set the scan tag to true, and redirect to the scan pop-in */
+            App::get( "session" )->setVariable( "page-data", [ "isbn-scan" => True ] );
+
+            return App::redirect( "gebruik#albumS-pop-in" );
+        /* If user is not verified, store a error for the header, and redirect to landingpage */
 		} else {
 			App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
 
@@ -907,56 +913,62 @@ class LogicController {
 		if( !is_array( $userCheck ) ) {
             /* Attempt to get data from the Google API, if isbn was set. */
             if( isset( $_POST["album-isbn"] ) ) {
-                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"] );
+                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"], $_POST["serie-index"] );
             }
 
             /* Confirmation\processing loop goes here */
             if( isset( $_POST["serie-index"] ) ) {
                 $eColl = App::get( "collection" )->evalColl ($result, $_POST["serie-index"], $_SESSION["user"]["id"] );
-                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => App::get( "collection" )->getAlbId( $result["album-naam"] ) ];
+                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => App::get( "collection" )->getAlbId( $result["Album_Naam"] ) ];
 
-                /* */
+                /* Check if the evaluation is to add it to the collection, set the album to said collection. */
                 if( isset( $eColl["addToColl"] ) ) {
                     $store = App::get( "collection" )->setColl( "collecties", $ids );
 
+                    /* If the album was added, i store a feedback message in the session. */
                     if( !is_array( $store ) ) {
 
                         App::get( "session" )->setVariable( "header", [ "feedB" =>
-                            [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is toegvoegd aan uw collectie!" ]
+                            [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", is toegvoegd aan uw collectie!" ]
                         ] );
-
+                    /* If the ablum wasnt added, i store the error in the session. */
                     } else {
                         App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                     }
                 }
 
-                /* */
+                /* Check if the evaluation is to remove it from the collection, set the album to said collection. */
                 if( isset( $eColl["remFromColl"] ) ) {
                     $store = App::get( "collection" )->remItem( "collecties", $ids );
+
+                    /* If the album was removed, i store a feedback message in the session. */
                     if( !is_array( $store ) ) {
                         App::get( "session" )->setVariable( "header", [ "feedB" =>
-                            [ "fetchResponse" => "Het album: " . $result["album-naam"] . ", is verwijdert van uw collectie!" ]
+                            [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", is verwijdert van uw collectie!" ]
                         ] );
+                    /* If the ablum wasnt removed, i store the error in the session. */
                     } else {
                         App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                     }
                 }
 
-                /* */
+                /* If the album wasnt part of the selected serie, i store a feedback message in the session */
                 if( isset( $eColl["inSerie"] ) && !$eColl["inSerie"] ) {
                     App::get( "session" )->setVariable( "header", [ "feedB" =>
-                        [ "fetchResponse" => "Het ablum: " . $result["album-naam"] . ", zit niet in deze serie!" ]
+                        [ "fetchResponse" => "Het ablum: " . $result["Album_Naam"] . ", zit niet in deze serie!" ]
                     ] );
                 }
 
-                /* Unset all session states, to prevent broken page logic. */
-                unset( $_SESSION["page-data"]["colllections"] );
-                unset( $_SESSION["page-data"]["serie-index"] );
-                unset( $_SESSION["page-data"]["isbn-scan"] );
+                /* Remove any collection data, so the changes are re-loaded. */
+                if( isset( $_SESSION["page-data"]["colllections"] ) ) { unset( $_SESSION["page-data"]["colllections"] ); }
+                /* Unset any leftover session states, to prevent broken page logic. */
+                if( isset( $_SESSION["page-data"]["serie-index"] ) ) { unset( $_SESSION["page-data"]["serie-index"] ); }
+                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
 
                 /* Redirect to the user page, to reflect the changes. */
                 return App::redirect( "gebruik" );
             }
+        /* If user is not verified, store a error for the header, and redirect to landingpage */
 		} else {
 			App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
 			return App::redirect( "" );

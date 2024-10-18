@@ -4,13 +4,18 @@
         Most initial issue have been tested for bugs, and corrected if the result was not as expected, so all large changes have been made at this point.
         There are likely way to many 'return' statements, there are to either attempt to reduce processing time, or prevent unexpected loops/results.
  */
-let html5QrcodeScanne, zoekInp, chb1, chb2, chb3;                                           /* Globals for shared scripts */
+let localDevice, html5QrcodeScanne, zoekInp, chb1, chb2, chb3;                              /* Globals for shared scripts */
 let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm, pwSubButt;              /* Globals for the Admin page */
 let formButt, formInput;                                                                    /* Globals for the User page */
 
 /* Check the documents ready state, and start loop if ready state is complete. */
 document.onreadystatechange = () => {
     if( document.readyState === "complete" ) {
+        if( localStorage.device ) {
+            localDevice = localStorage.device;
+            localStorage.removeItem( "device" );
+        }
+
         /* If the location is the landing page, check if there was a fetch response, display the fetch response message, and delete it from the storage, and trigger the init function. */
         if( window.location.pathname === "/" ) {
             if( localStorage.fetchResponse ) {
@@ -22,12 +27,18 @@ document.onreadystatechange = () => {
             return;
         /* If the location is the user page, trigger the correct init function, and return to caller (optional). */
         } else if( window.location.pathname === "/gebruik" ) {
-            initStatic();
+            if( localDevice === "desktop" ) {
+                initStatic();
+            }
+
             initGebruik();
             return;
         /* If the location is the admin page, trigger the correct init function, and return to caller (optional). */    
         } else if( window.location.pathname === "/beheer" ) {
-            initStatic();
+            if( localDevice === "desktop" ) {
+                initStatic();
+            }
+
             initBeheer();
             return;
         }

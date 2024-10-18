@@ -14,6 +14,11 @@
 }
 
 /* Pop-in specific stuff */
+/* Adjust the feedback container size, so its look more normal */
+.message-container {
+    left: 10%;
+    right: 10%;
+}
 
 /* Changes specific to normal orientation */
 @media only screen and not (orientation: landscape) {

@@ -33,7 +33,9 @@ function initGebruik() {
 
     let config = {
         fps: 10,
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        supportedScanTypes: [
+            Html5QrcodeScanType.SCAN_TYPE_CAMERA
+        ]
     };
 
     html5QrcodeScanner = new Html5QrcodeScanner( "reader", config );

@@ -14,7 +14,7 @@
 
 //  TODO/Notes:
 //      - Review how i handle the search/request, atm there is only a user choice when several items where found.
-//      - Make sure this does not trigger if no isbn was filled in by the user.
+//          Proll best to wait for user feedback first, and see if they need\want other options.
 
 namespace App\Core;
 
@@ -204,6 +204,10 @@ class Isbn {
         /* Check if something was stored and there are no errors, prep the data for the user. */
         if( !empty( $this->temp ) && !isset( $this->new["error"] ) ) {
             $this->prep_item( $isbn );
+
+            if( $index != null && !isset( $this->new["Album_Serie"] ) ) {
+                $this->new["Album_Serie"] = $index;
+            }
         }
 
         /* If there was no valid isbn found, we simply use the function global one that was used to search the API (likely never happens). */
