@@ -20,9 +20,11 @@
 	$router->post( "aReset",		"LogicController@adminReset" );	// Admin password reset route.
 	$router->post( "gebruik",		"LogicController@gebruik" );	// Main user page.
 	$router->post( "albSta",		"LogicController@albSta" );		// Album status change route.
-	/* TEST routes for scanning barcodes and searching isbn numbers */
+	/* Routes for scanning barcodes and searching ISBN/EAN numbers */
 	$router->post( "scan", 			"LogicController@scan" );		// Admin scan trigger.
 	$router->post( "isbn", 			"LogicController@isbn" );		// Admin scan/search result evaluation.
 	$router->post( "userScan",		"LogicController@userScan" );	// User scan trigger.
 	$router->post( "userIsbn",		"LogicController@userIsbn" );	// User scan result evaluation.
+	/* Route for showing album details on mobile devices */
+	$router->post( "details",		"LogicController@loadDetails" );
 ?>

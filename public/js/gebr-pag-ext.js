@@ -1,6 +1,6 @@
 /* The init function triggred on page-load. */
 function initGebruik() {
-    /* Test code for the search option checkboxes */
+    /* Elements and Events for the search controller */
     zoekInp = document.getElementById( "album-zoek-inp" );
     chb1 = document.getElementById( "album-zoek-naam-inp" );
     chb2 = document.getElementById( "album-zoek-nr-inp" );
@@ -8,7 +8,7 @@ function initGebruik() {
     chb1.addEventListener( "change", checkBoxSearch );
     chb2.addEventListener( "change", checkBoxSearch );
     chb3.addEventListener( "change", checkBoxSearch );
-    zoekInp.disabled = true; // Disable input by default
+    zoekInp.disabled = true;
 
     /* Assing a listenEvent to all checkboxes on the page */
     const chBox = document.getElementsByClassName( "album-aanwezig-checkbox" );
@@ -55,10 +55,10 @@ function initGebruik() {
 
     /* Restore a previously set checkState */
     if( localStorage.checkState ) {
-        // To read the array, i need to JSON.parse the JSON.string data i stored.
+        /* To read the array, i need to JSON.parse the JSON.string data i stored. */
         document.getElementById( JSON.parse( localStorage.checkState )[0] ).checked = JSON.parse( localStorage.checkState )[1];
 
-        // Set the correct inner text for the input, based on the stored element id and checkbox state.
+        /* Set the correct inner text for the input, based on the stored element id and checkbox state. */
         if( JSON.parse( localStorage.checkState )[0] === "album-zoek-naam-inp" && JSON.parse( localStorage.checkState )[1] ) {
             document.getElementById( "album-zoek-span" ).innerHTML = "Zoek op album naam";
         } else if( JSON.parse( localStorage.checkState )[0] === "album-zoek-nr-inp" && JSON.parse( localStorage.checkState )[1] ) {
@@ -67,13 +67,13 @@ function initGebruik() {
             document.getElementById( "album-zoek-span" ).innerHTML = "Zoek op album isbn";
         }
 
-        // If the stored checkbox state is false (off), disable the input and change its inner tekst.
+        /* If the stored checkbox state is false (off), disable the input and change its inner tekst. */
         if( !JSON.parse( localStorage.checkState )[1] ) {
             document.getElementById( "album-zoek-span" ).innerHTML = "Selecteer een zoek optie ..";
             zoekInp.disabled = true;
         }
 
-        // Clear the stored item.
+        /* Clear the stored item. */
         localStorage.removeItem( "checkState" );
     }
 
@@ -81,6 +81,16 @@ function initGebruik() {
     if( sessionStorage.scrollPos ) {
         window.scrollTo( 0, sessionStorage.scrollPos );
         sessionStorage.removeItem( "scrollPos" );
+    }
+
+    /* Make a event for mobile only, so you can view all album details (function is located in mobile-specific.js). */
+    if( localDevice === "mobile" ) {
+        const nameEl = document.getElementsByClassName( "album-naam" );
+        let tempEl = Array.from( nameEl );
+
+        tempEl.forEach( ( item, index, arr ) => {
+            arr[index].addEventListener( "click", viewDetails );
+        } );
     }
 }
 
@@ -166,7 +176,7 @@ function albumZoek( event ) {
     const filter = zoekInp.value.toUpperCase();
     const tafelRows = document.querySelectorAll( "#album-tafel-inhoud" );
 
-    // We are searching on a name basis
+    /* We are searching on a name basis */
     if( chb1.checked === true ) {
         tafelRows.forEach( ( item, index ) => {
             const albumNaam = item.children[1].innerHTML;
@@ -180,7 +190,7 @@ function albumZoek( event ) {
             }
         } );
 
-    // We are searching on a album nr basis
+    /* We are searching on a album nr basis */
     } else if( chb2.checked === true ) {
         tafelRows.forEach( ( item, index ) => {
             const albumNr = item.children[2].innerHTML;
@@ -194,7 +204,7 @@ function albumZoek( event ) {
             }
         } );
 
-    // We are searching on a album isbn basis
+    /* We are searching on a album isbn basis */
     } else if( chb3.checked === true ) {
         tafelRows.forEach( ( item, index ) => {
             const albumIsbn = item.children[5].innerHTML;
@@ -217,20 +227,22 @@ function checkBox(e) {
     return;
 }
 
-// Test code for the qr scanner
-//  TODO: Figure out how to properly use the scan information, and see how i can combine that with my PhP Isbn class.
-//          And also figure out what todo when a code is not useable.
+/*  onScanSuccess(decodedText, decodedResult):
+        Using the qrcode scanning API, i take the ISBN/EAN number of a barcode.
+        And store that in the form, so the backend code can querry google, and then parse any usefull data
+ */
 function onScanSuccess( decodedText, decodedResult ) {
     formatName = decodedResult["result"]["format"]["formatName"];
     document.getElementById("albumSc-form-isbn").value = decodedText;
-    //console.log( formatName );
     html5QrcodeScanner.clear();
     document.getElementById("modal-form-gebr-scan").submit();
     return;
 }
 
-//  TODO: Figure out what todo with the errorMesage, for now i just console log it.
+/*  onScanError(errorMessage):
+        For now, i simply log the errorMessage, because i dunno how to handle these atm.
+ */
 function onScanError( errorMessage ) {
-    console.log( errorMessage );    // Log the error for now, so i can debug issues a bit better.
+    console.log( errorMessage );
     return;
 }

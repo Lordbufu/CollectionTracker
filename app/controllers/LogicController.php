@@ -388,7 +388,6 @@ class LogicController {
         }
     }
 
-    //  TODO: Review if the session tags should not be unset somewhere else.
     /*  albumT():
             This function checks the album name, and either stores that user input, or returns it for the user to correct it.
                 $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
@@ -452,11 +451,11 @@ class LogicController {
                 $imgContent = file_get_contents($image);
                 $dbImage = "data:image/" . $fileType . ";charset=utf8;base64," . base64_encode($imgContent);
                 $albumData["Album_Cover"] = $dbImage;
-            // If a cover was passed on via the duplicate entry check, use that blob and remove the session data.
+            /* If a cover was passed on via the duplicate entry check, use that blob and remove the session data. */
             } elseif( isset( $_SESSION["page-data"]["album-dupl"]["Album_Cover"] ) ) {
                 $albumData["Album_Cover"] = $_SESSION["page-data"]["album-dupl"]["Album_Cover"];
                 unset( $_SESSION["page-data"]["album-dupl"] );
-            // If a cover was found using the search feature, store that blob, and remove the session data.
+            /* If a cover was found using the search feature, store that blob, and remove the session data. */
             } elseif( isset( $_SESSION["page-data"]["isbn-search"]["Album_Cover"] ) ) {
                 $albumData["Album_Cover"] = $_SESSION["page-data"]["isbn-search"]["Album_Cover"];
                 unset( $_SESSION["page-data"]["isbn-search"] );
@@ -955,7 +954,7 @@ class LogicController {
                 /* If the album wasnt part of the selected serie, i store a feedback message in the session */
                 if( isset( $eColl["inSerie"] ) && !$eColl["inSerie"] ) {
                     App::get( "session" )->setVariable( "header", [ "feedB" =>
-                        [ "fetchResponse" => "Het ablum: " . $result["Album_Naam"] . ", zit niet in deze serie!" ]
+                        [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", zit niet in deze serie!" ]
                     ] );
                 }
 
@@ -975,8 +974,24 @@ class LogicController {
 		}
     }
 
+    /*  loadDetails():
+            This function requests album data, based on what element was clicked, and return a string so JS knows if said data was stored.
+            This is all JS fetch based, so the page-reloads etc are handled there.
+            
+            Return Value: String
+     */
+    function loadDetails() {
+        /* Check if formdata was recieved properly */
+        if( isset( $_POST["album-index"] ) ) {
+            $_SESSION["page-data"]["mobile-details"] = App::get( "database" )->selectAllWhere( "albums", [ "Album_Index" => $_POST["album-index"] ] )[0];
+            echo "display";
+        } else {
+            echo "request failed!";
+        }
+    }
+
     /* Debug copy and paste line
-        //die( var_dump( print( "<pre>" ) . print_r(  ) . print( "</pre>" ) ) );
+        //die( var_dump( print_r(  ) ) ) );
      */
 
     /*  Validate one liners:

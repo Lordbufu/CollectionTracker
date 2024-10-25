@@ -51,7 +51,7 @@
           require( "pop-ins/landing/landing-wachtwoord-reset.html" );
     ?>
 
-		<footer class="sub-grid-4" id="sub-grid-4">
+	<footer class="sub-grid-4" id="sub-grid-4">
         <?php require( "templates/shared/footer.php" ); ?>
     </footer>
 

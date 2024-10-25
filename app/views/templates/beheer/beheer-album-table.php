@@ -12,8 +12,10 @@
                         <th class="album-opmTitle" > Opmerking </th>
                     </tr>
 
-                    <?php if( isset( $_SESSION["page-data"]["albums"] ) ) :
-                            foreach( $_SESSION["page-data"]["albums"] as $key => $value ) : ?>
+                    <?php
+                        if( isset( $_SESSION["page-data"]["albums"] ) ) :
+                            foreach( $_SESSION["page-data"]["albums"] as $key => $value ) :
+                    ?>
 
                     <tr class="album-tafel-inhoud-<?= $value["Album_Index"] ?>" id="album-tafel-inhoud">
 
@@ -56,6 +58,9 @@
 
                     </tr>
 
-                    <?php endforeach; endif; ?>
+                    <?php
+                            endforeach;
+                        endif;
+                    ?>
 
                 </table>

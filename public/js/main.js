@@ -11,6 +11,7 @@ let formButt, formInput;                                                        
 /* Check the documents ready state, and start loop if ready state is complete. */
 document.onreadystatechange = () => {
     if( document.readyState === "complete" ) {
+        /* Check if a device tag was passed on from PhP, store that globally, and clean the storage. */
         if( localStorage.device ) {
             localDevice = localStorage.device;
             localStorage.removeItem( "device" );
@@ -27,6 +28,7 @@ document.onreadystatechange = () => {
             return;
         /* If the location is the user page, trigger the correct init function, and return to caller (optional). */
         } else if( window.location.pathname === "/gebruik" ) {
+            /* If the device tag is desktop, we load the static banner/controller script */
             if( localDevice === "desktop" ) {
                 initStatic();
             }
@@ -35,6 +37,7 @@ document.onreadystatechange = () => {
             return;
         /* If the location is the admin page, trigger the correct init function, and return to caller (optional). */    
         } else if( window.location.pathname === "/beheer" ) {
+            /* If the device tag is desktop, we load the static banner/controller script */
             if( localDevice === "desktop" ) {
                 initStatic();
             }

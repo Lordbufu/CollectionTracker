@@ -169,7 +169,7 @@ class Collection {
     public function getSerInd( $name ) {
         $temp_name_1 = str_replace( " ", "", $name );
 
-        if(!isset($this->series)) {
+        if( !isset($this->series) ) {
             $this->getSeries();
         }
 
@@ -251,8 +251,6 @@ class Collection {
     }
 
     /* Collectie Functions */
-    //  TODO: !is_string seems to not be correct for calls im sending here, might want to replace it with !is_array ?¿
-        // This needs more testing.
     /*  getColl($table, $userId):
             Get collection for a specific user from the database.
                 $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
@@ -261,21 +259,14 @@ class Collection {
             Return Type: Multi-Dimensional Array.
      */
     public function getColl( $table, $userId ) {
-        /* Set the correct id format, depending on the provided input. */
-        if( !is_string( $userId ) ) {
-
-            if( !is_array( $userId ) ) {
-                $id = [ "Gebr_Index" => $userId ];
-            } else {
-                $id = $userId;
-            }
-
+        /* Check if the user-id was set, and get there collection, or return a error. */
+        if( isset( $userId ) ) {
+            $this->collections = App::get( "database" )->selectAllWhere( $table, $userId );
         } else {
-            $id = [ "Gebr_Index" => $userId ];
+            return [ "fetchResponse" => "Incorrect user id was send, plz contact the site admin if the problem keeps happening." ];
         }
 
-        /* Set the requested collection data, and return to caller. */
-        $this->collections = App::get( "database" )->selectAllWhere( $table, $id );
+        /* Return the requested collection data to the caller. */
         return $this->collections;
     }
 
@@ -290,16 +281,7 @@ class Collection {
         /* Ensure the most recent user collection data is set. */
         $this->collections = $this->getColl( $table, [ "Gebr_Index" => $data["Gebr_Index"] ] );
 
-        /* Removed for now, as having a duplicate detection isnt very usefull anymore.
-            // Loop over the collections, to ensure its not a duplicate entry.
-            // foreach($this->collections as $key => $value) {
-            //     if($value["Alb_Index"] == $data["Alb_Index"]) {
-            //         return $this->dupColl;
-            //     }
-            // }
-         */
-
-        /* Prepare the required data, that isnt included in the App and POST data */
+        /* Prepare the required data, that isnt included in the App (yet) and POST data */
         $data["Alb_Staat"] = "";
         $data["Alb_Aantal"] = 1;
         $data["Alb_Opmerk"] = "";
@@ -311,7 +293,6 @@ class Collection {
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
-    //  TODO: Finish the comments, and update it to the changes made after the initial draft.
     /*  evalColl($fData, $sIndex, $uIndex):
             This function, evaluates if data fetched from the Google API, is set part of a collection or not.
                 $fData  (Assoc Array)   - The data that was fetched from the Google API, via the Isbn class.
@@ -343,9 +324,8 @@ class Collection {
 
             }
         }
-        /* Check if album was in the selected serie, but no collection data was found. */
+        /* Check if album was in the selected serie, but no collection data was found (needs to be added to collection). */
         if( $match["inSerie"] && empty( $tColl ) ) {
-            // This means album has to be added to the user collection.
             $match = [ "addToColl" => TRUE ];
         /* If it is in the Serie, we check if its part of the collection already. */
         } else if( $match["inSerie"] ) {

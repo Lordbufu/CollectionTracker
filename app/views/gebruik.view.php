@@ -40,21 +40,29 @@
 
             <div class="table-header" id="table-header" >
 
-                <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
+            <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
                 <h2 id="beheer-albView-text" class="beheer-weerg-header" > <?= $_SESSION["page-data"]["huidige-serie"] ?> </h2>
-                <?php else: ?>
+            <?php else: ?>
                 <h2 id="beheer-serieView-text" class="beheer-weerg-header" > Selecteer een Serie: </h2>
-                <?php endif; ?>
+            <?php endif; ?>
 
             </div>
 
-            <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-                        require( "templates/gebruik/gebruik-table-templ.php" );
-                } ?>
+            <?php
+                if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                    require( "templates/gebruik/gebruik-table-templ.php" );
+                }
+            ?>
 
         </div>
 
-        <?php require( "pop-ins/gebruik/gebruik-albumS-pop-in.php" ); ?>
+        <?php
+            require( "pop-ins/gebruik/gebruik-albumS-pop-in.php" );
+
+            if( isset( $_SESSION["page-data"]["mobile-details"] ) ) {
+                require( "pop-ins/gebruik/more-info-mobile.php" );
+            }
+        ?>
 
 		<footer class="sub-grid-4" id="sub-grid-4">
             <?php require( "templates/shared/footer.php" ); ?>

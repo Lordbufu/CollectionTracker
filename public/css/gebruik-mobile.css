@@ -24,6 +24,42 @@
     right: 10%;
 }
 
+/* Specific to view details for he user */
+#modal-info-content {
+    overflow: unset;
+}
+
+.modal-body, .extra-info-tafel, .extra-info-tafel tbody {
+    width: 97%;
+    display: block;
+    padding: 0.2em;
+}
+
+.first-data-set, .second-data-set, .third-data-set, .fourth-data-set, .fith-data-set {
+    display: grid;
+    grid-template-areas: "title value";
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
+}
+
+.first-data-name, .second-data-name, .third-data-name, .fourth-data-name, .fith-data-name {
+    grid-area: title;
+    border: var(--main-border-body);
+    padding: 0.2em 0;
+}
+
+.first-data-val, .second-data-val, .third-data-val, .fourth-data-val, .fith-data-val {
+    grid-area: value;
+    border: var(--main-border-body);
+    padding: 0.2em 0;
+    font-weight: normal;
+}
+
+.album-info-cover {
+    height: 4em;
+    width: 3.3em;
+}
+
 
 /* Changes specific to normal orientation */
 @media only screen and not (orientation: landscape) {

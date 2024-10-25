@@ -24,11 +24,11 @@
                     </div>
 
                     <form class="modal-form" id="modal-form-gebr-scan" action="/userIsbn" method="post" hidden >
-                        <?php if( isset( $_SESSION["page-data"]["serie-index"] ) ) : ?>
+                    <?php if( isset( $_SESSION["page-data"]["serie-index"] ) ) : ?>
                         <input type="text" class="modal-form-indexS" id="albumS-form-indexS" name="serie-index" value="<?= $_SESSION["page-data"]["serie-index"] ?>" hidden />
-                        <?php else : ?>
+                    <?php else : ?>
                         <input type="text" class="modal-form-indexS" id="albumS-form-indexS" name="serie-index" value="" hidden />
-                        <?php endif; ?>
+                    <?php endif; ?>
                         <input type="text" class="modal-form-indexS" id="albumSc-form-isbn" name="album-isbn" hidden />
                     </form>
 

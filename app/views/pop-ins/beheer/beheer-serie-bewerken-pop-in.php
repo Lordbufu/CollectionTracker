@@ -15,9 +15,11 @@
 
                 <div class="modal-body" id="modal-body" >
 
-                    <?php if( isset( $_SESSION["page-data"]["edit-serie"] ) ) :
+                    <?php
+                        if( isset( $_SESSION["page-data"]["edit-serie"] ) ) :
                             foreach( $_SESSION["page-data"]["series"] as $key => $value)  :
-                                if( $_SESSION["page-data"]["edit-serie"] == $value["Serie_Index"] ) : ?>
+                                if( $_SESSION["page-data"]["edit-serie"] == $value["Serie_Index"] ) :
+                    ?>
                                 
                     <form class="modal-form" id="serieb-form" method="post" action="/serieBew">
 
@@ -50,8 +52,12 @@
 
                     </form>
 
-                    <?php endif; endforeach; unset( $_SESSION["page-data"]["edit-serie"] );
-                            elseif( !isset( $_SESSION["page-data"]["edit-serie"] ) ) : ?>
+                    <?php
+                                endif;
+                            endforeach;
+                            unset( $_SESSION["page-data"]["edit-serie"] );
+                        elseif( !isset( $_SESSION["page-data"]["edit-serie"] ) ) :
+                    ?>
                     <!-- For JS reasons i need a empty pop-in if nothing is being edited -->
                     <form class="modal-form" id="serieb-form" method="post" action="/serieBew">
 
@@ -83,7 +89,9 @@
                         <div class="modal-form-right-cont" id="modal-form-right-cont"> </div>
                     </form>
 
-                    <?php endif; ?>
+                    <?php
+                        endif;
+                    ?>
 
                 </div>
 

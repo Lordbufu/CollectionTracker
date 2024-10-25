@@ -27,6 +27,7 @@
 				<link rel="stylesheet" type="text/css" href="css/gebruik.css" >
 			<?php if ( isset( $device ) && $device === "mobile" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/gebruik-mobile.css" >
+				<script src="js/mobile-specific.js"></script>
 			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/gebruik-ipad.css" >
 			<?php else : ?>
@@ -39,7 +40,6 @@
 				<link rel="stylesheet" type="text/css" href="css/beheer.css" >
 			<?php if ( isset( $device ) && $device === "mobile" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/beheer-mobile.css" >
-				<script src="js/mobile-specific.js"></script>
 			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/beheer-ipad.css" >
 			<?php else : ?>

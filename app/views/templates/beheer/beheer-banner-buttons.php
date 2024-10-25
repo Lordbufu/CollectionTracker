@@ -6,12 +6,16 @@
                     <input class="banner-logoff-butt button" type="submit" value="Afmelden" />
                 </form>
 
-                <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
+                <?php
+                    if( isset( $_SESSION["page-data"]["huidige-serie"] ) ):
+                ?>
 
                 <form class="back-form" id="back-form" method="post" action="/beheer">
                     <input id="beheer-back-inp" class="beheer-back-inp" name="return" value="back" hidden />
                     <input id="beheer-back-butt" class="banner-back-butt button" type="submit" value="< Series" />
                 </form>
 
-                <?php endif; ?>
-                </div>
+                <?php
+                    endif;
+                ?>
+            </div>

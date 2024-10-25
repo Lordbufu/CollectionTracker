@@ -238,6 +238,10 @@ class QueryBuilder {
             );
         }
 
+        if( isset( $id["Album_Index"] ) ) {
+            //die( var_dump( print_r( $sql ) ) );
+            //die( var_dump( print_r( $id ) ) );
+        }
         return $this->executeQuerry( $sql, $id );
     }
 

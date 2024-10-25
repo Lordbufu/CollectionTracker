@@ -13,8 +13,10 @@
 
                     </tr>
                     
-                    <?php if( isset( $_SESSION["page-data"]["series"] ) ) :
-                            foreach( $_SESSION["page-data"]["series"] as $key => $value ) : ?>
+                    <?php
+                        if( isset( $_SESSION["page-data"]["series"] ) ) :
+                            foreach( $_SESSION["page-data"]["series"] as $key => $value ) :
+                    ?>
 
                     <tr class="serie-tafel-inhoud-<?= $value["Serie_Index"] ?>" id="serie-tafel-inhoud-<?= $value["Serie_Index"] ?>" >
 
@@ -56,7 +58,10 @@
 
                         <th class="serie-gebruikers" id="serieGebr" > W.I.P. </th>
 
-                    <?php endforeach; endif; ?>
+                    <?php
+                            endforeach;
+                        endif;
+                    ?>
 
                     </tr>
                     

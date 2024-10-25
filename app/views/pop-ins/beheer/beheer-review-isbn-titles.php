@@ -30,7 +30,8 @@
             if( isset( $_SESSION["page-data"]["show-titles"] ) ) {
                 $store = $_SESSION["page-data"]["show-titles"];
                 unset( $_SESSION["page-data"]["show-titles"] );
-            } ?>
+            }
+        ?>
 
         <div class="modal-body" id="isbn-review-body" >
             <form class="modal-form" id="isbn-review-form" enctype="multipart/form-data" method="post" action="/isbn" >
@@ -41,13 +42,17 @@
                 <select class="modal-form-select" id="isbn-review-select" name="title-choice" id="album-toev" required>
                     <option class="modal-form-title-options" id="isbn-review-title-options" value="" > Selecteer een title </option>
 
-                    <?php foreach( $store as $key => $value ) :
+                    <?php
+                        foreach( $store as $key => $value ) :
                             // Ignore non-relevant data
                             if( $key != 0  && $key != 1 && $key != 2 ) :
-                        ?>
+                    ?>
                     <option class="modal-form-title-options" id="isbn-review-title-options-<?= $key ?>"> <?= $value ?> </option>
 
-                    <?php endif; endforeach; ?>
+                    <?php
+                            endif;
+                        endforeach;
+                    ?>
                 </select>
 
                 <!-- A button container, where the submit button and other submit related elements go (confirm checkboxes, etc). -->

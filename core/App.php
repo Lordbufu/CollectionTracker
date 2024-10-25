@@ -1,9 +1,10 @@
 <?php
 
-//  TODO: Find a solution to the Mobile-Detect API/Library, its not detecting the i-pad correctly it seems.
-//          Temp solution is a over complicated elseif loop, since both !isMobile and !isTablet are true for tablets.
-//          A bug was reported on there github, but that is still open and not solved yet, has been assigned though.
-//        So far it seems to not be an issue, but i have also not been able to test all use cases.
+/*  MobileDetect notes:
+        API/Library seems to still work, but has issues in certain use cases.
+        I opted to keep this in the project, because it seems to do the job for me so far.
+        Iff i get user error reports, it might change to something else.
+ */
 
 namespace App\Core;
 
@@ -50,7 +51,13 @@ class App {
      */
     public static function checkDevice() {
         $detect = new MobileDetect();
-		$detect->setUserAgent( $_SERVER["HTTP_USER_AGENT"] );
+        /* Adding a useragent check, to remove log clutter/spam from some bots. */
+        if( isset( $_SERVER["HTTP_USER_AGENT"] ) ) {
+		    $detect->setUserAgent( $_SERVER["HTTP_USER_AGENT"] );
+        /* Simple die, so if people are getting this, they know why. */
+        } else {
+            die("No user agent found, acces denied !");
+        }
 
         if( $detect->isTablet() && $detect->isMobile() ) {
             return static::$device = "tablet";
@@ -59,7 +66,7 @@ class App {
         } else if(!$detect->isMobile() && !$detect->isTablet()) {
             return static::$device = "desktop";
         } else {
-            die("Unknow device detected, plz contact the site administrator!");
+            die("Unknow device detected, plz contact the site administrator !");
         }
     }
 

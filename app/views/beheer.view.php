@@ -40,11 +40,11 @@
 
             <div class="table-header" id="table-header" >
 
-                <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
+            <?php if( isset( $_SESSION["page-data"]["huidige-serie"] ) ): ?>
                 <h2 id="beheer-albView-text" class="beheer-weerg-header" > <?= $_SESSION["page-data"]["huidige-serie"] ?> </h2>
-                <?php else: ?>
+            <?php else: ?>
                 <h2 id="beheer-serieView-text" class="beheer-weerg-header" > Huidige Series: </h2>
-                <?php endif; ?>
+            <?php endif; ?>
 
             </div>
 
