@@ -1,8 +1,5 @@
 <?php
 
-//  TODO/Notes:
-//      - Go over all function and inline comments, check if there still up to date/accurate.
-//      - Clean up all left over code snippets that are uncommnented.
 namespace App\Core;
 
 use App\Core\App, Exception;

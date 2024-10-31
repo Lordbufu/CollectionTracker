@@ -7,15 +7,24 @@
         The data is parsed and then processed to be presented to the user, either in the correct pop-in, or a new one with choices between items.
         Once a choice between items is made, i can use this same class to get the correct item, based on the item names that i had returned.
 
+        variables:
+            $url
+            $new
+            $temp
+
         functions:
             set_url($isbn)                  - Set the url with the provided isbn, so we can make a request.
+            check_data($data)               - 
+            prep_item($isbn)                - 
             get_data($isbn, $index, $name)  - Parse and present the data to the user.
  */
 
 //  TODO/Notes:
-//      - Review how i handle the search/request, atm there is only a user choice when several items where found.
-//          Proll best to wait for user feedback first, and see if they need\want other options.
-//      - After the above todo is resolved, review the uncommneted extra data, and either delete it or use it.
+//      - Not getting the expected results anymore, seems like google changed something, or im using a method that wasnt intended.
+//              So far i have tested the isbn codes i have noted in the LogicController, i may simply need other codes or a larger sample size.
+//              Maybe i need to user proper HTTP requests, instead of the 'hack' im using right now.
+//              Seems like the issue is solved, by replacing 'isbn:' with 'ISBN:' in the url. ¿
+//      - Figure out what todo with several authors on album.
 
 namespace App\Core;
 
@@ -23,16 +32,16 @@ use App\Core\App;
 
 class Isbn {
     /* Define the Google API base url, and make a new empty data array's to store the requested data when processed. */
-    protected $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
+    protected $url = "https://www.googleapis.com/books/v1/volumes?q=";
     protected $new = [];
     protected $temp = [];
 
     /*  set_url($isbn):
             This function simply adds the isbn value, at the end of the url string, so we can request data from the Google API.
             It also set a increases the default amount of items that is returned/show, incase there are more result found.
-    */
+     */
     protected function set_url( $isbn ) {
-        $this->url = $this->url . $isbn;
+        $this->url = $this->url . "ISBN:" . $isbn;
         $this->url = $this->url . "&startIndex=0&maxResults=40";
     }
 
@@ -60,7 +69,7 @@ class Isbn {
         }
     }
 
-    /*  prep_item():
+    /*  prep_item($isbn):
             Converts the remaining API data, to something that fits my database structure.
             For now some of the potentially usefull data, is uncommented incase i want to use it later.
                 $isbn (string)  - The ISBN the user wanted to search data for.
@@ -79,7 +88,14 @@ class Isbn {
                 foreach( $value as $iKey => $iValue ) {
 
                     /* The album-naam, is the parsed title. */
-                    if( $iKey === "title" ) { $this->new["Album_Naam"] = $iValue; }
+                    if( $iKey === "title" ) {
+                        $this->new["Album_Naam"] = $iValue;
+                    }
+
+                    /* Album writer if one is known */
+                    if( $iKey === "authors" ) {
+                        $this->new["Album_Schrijver"] = $iValue[0];
+                    }
 
                     /* The publishedDate need to be parsed/converted again, to match the HTML format. */
                     if( $iKey === "publishedDate" ) {
@@ -126,21 +142,12 @@ class Isbn {
                         }
                     }
 
-                    /* Retained for potential futhure usecases
-                        // The book author, currently not used, but might be usefull going to need feedback for this:
-                        if( $iKey === "authors" ) { $this->new["album-authors"] = $iValue[0]; }
-                        // The long format description, sometimes as long as the text on the back cover, so not very useable imo:
-                        if( $iKey === "description" ) { $this->new["album-opm"] = $iValue; }
-                        // The print type is similar to a categorie, so leaving this in just in case:
-                        if( $iKey === "printType" ) { $this->new["album-type"] = $iValue; }
-                        // There is a categorie, that i might be able to use in somekind of way later:
-                        if( $iKey === "categories" ) { $this->new["album-categories"] = $iValue[0]; }
-                        // Preview link, might be usefull later in some way ?:
-                        if( $iKey === "previewLink" ) { $this->new["album-preview"] = $iValue; }
-                     */
+                    if( $iKey === "description" ) {
+                        $this->new["Album_Opm"] = $iValue;
+                    }
                 }
-            /* The short description is stored outside of the volumeInfo  */
-            } else if( $key === "searchInfo" ) {
+            /* If not description was found, pick the other potential usefull field (for some reason located outside volumeInfo).  */
+            } else if( $key === "searchInfo" && !isset( $this->new["Album_Opm"] ) ) {
                 $this->new["Album_Opm"] = $value["textSnippet"];
             }
         }
@@ -174,6 +181,7 @@ class Isbn {
 
         /* If something was found, and it was more then a single item */
         if( $proc_data && isset( $this->temp[0] ) ) {
+
             /* If a choice hasnt been made yet, i prep and return a array with title choices for the user */
             if( $name === null ) {
                 array_push( $tempNames, "Titles" );
@@ -211,10 +219,13 @@ class Isbn {
             }
         }
 
-        /* If there was no valid isbn found, we simply use the function global one that was used to search the API (likely never happens). */
+        /* If there was no valid isbn found, we simply use the function global one that was used to search the API. */
         if( !isset( $this->new["Album_ISBN"] ) ) {
             $this->new["Album_ISBN"] = $isbn;
         }
+
+        //die( var_dump( print_r( $this->temp ) ) );
+        //die( var_dump( print_r( $this->new ) ) );
 
         return $this->new;
     }

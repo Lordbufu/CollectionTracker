@@ -1,6 +1,9 @@
 <?php
 namespace App\Core\Database;
 
+/*  Search tags to remove/edit specific content:
+        - Obsolete: as the word says, no longer usefull and can be removed.
+ */
 use PDO;
 use PDOException;
 
@@ -55,7 +58,9 @@ class QueryBuilder {
     protected $pdo;
 
     /* __construct(PDO $pdo): set this PDO to PDO class object. */
-    public function __construct( PDO $pdo ) { $this->pdo = $pdo; }
+    public function __construct( PDO $pdo ) {
+        $this->pdo = $pdo;
+    }
 
     /*  testTable($name): Check if a table is present in the DB.
             $name (string)  - The name of a table i want to check.
@@ -99,28 +104,30 @@ class QueryBuilder {
                     $naam
                 );
                 return $this->executeQuerry( $sql );
-            case "serie_meta":
-                $sql = sprintf(
-                    "create table `%s` (
-                        `Meta_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
-                        `Serie_Index` int NOT NULL COMMENT 'Serie_Index link.',
-                        `Gebr_Index` int NOT NULL COMMENT 'Gebr_Index link.',
-                        `Serie_Opm` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Korte opmerking, account specifiek.',
-                        UNIQUE KEY `Meta_Index` (`Meta_Index`),
-                        KEY `SerieM_Gebr_Link` (`Gebr_Index`),
-                        KEY `SerieM_Verz_Link` (`Serie_Index`),
-                        CONSTRAINT `VerzM_Gebr_Link` FOREIGN KEY (`Gebr_Index`) REFERENCES `gebruikers` (`Gebr_Index`),
-                        CONSTRAINT `SerieM_Serie_Link` FOREIGN KEY (`Serie_Index`) REFERENCES `series` (`Serie_Index`) ON DELETE RESTRICT ON UPDATE RESTRICT
-                    ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor collectie meta-data.'",
-                    $naam
-                );
-                return $this->executeQuerry( $sql );
+            // Obsolete now
+            // case "serie_meta":
+            //     $sql = sprintf(
+            //         "create table `%s` (
+            //             `Meta_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
+            //             `Serie_Index` int NOT NULL COMMENT 'Serie_Index link.',
+            //             `Gebr_Index` int NOT NULL COMMENT 'Gebr_Index link.',
+            //             `Serie_Opm` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Korte opmerking, account specifiek.',
+            //             UNIQUE KEY `Meta_Index` (`Meta_Index`),
+            //             KEY `SerieM_Gebr_Link` (`Gebr_Index`),
+            //             KEY `SerieM_Verz_Link` (`Serie_Index`),
+            //             CONSTRAINT `VerzM_Gebr_Link` FOREIGN KEY (`Gebr_Index`) REFERENCES `gebruikers` (`Gebr_Index`),
+            //             CONSTRAINT `SerieM_Serie_Link` FOREIGN KEY (`Serie_Index`) REFERENCES `series` (`Serie_Index`) ON DELETE RESTRICT ON UPDATE RESTRICT
+            //         ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor collectie meta-data.'",
+            //         $naam
+            //     );
+            //     return $this->executeQuerry( $sql );
             case "albums":
                 $sql = sprintf(
                     "create table `%s` (
                         `Album_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
                         `Album_Serie` int NOT NULL COMMENT 'Serie index link.',
                         `Album_Nummer` int COMMENT 'Uitgavenummer',
+                        `Album_Schrijver` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL COMMENT 'Schrijver van het album.',
                         `Album_Naam` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Titel van het album.',
                         `Album_Cover` longblob COMMENT '(Optioneel) Cover plaatje (jpeg).',
                         `Album_UitgDatum` date COMMENT 'Datum van uitgave.',
@@ -238,10 +245,6 @@ class QueryBuilder {
             );
         }
 
-        if( isset( $id["Album_Index"] ) ) {
-            //die( var_dump( print_r( $sql ) ) );
-            //die( var_dump( print_r( $id ) ) );
-        }
         return $this->executeQuerry( $sql, $id );
     }
 
@@ -323,10 +326,5 @@ class QueryBuilder {
         }
         return $this->executeQuerry( $sql, $id );
     }
-
-    // Placeholder Function(s)
-    // To make this function properly, i would need a Serie_Index field in the collection table.
-    // Because atm im only tracking Album_Index and User_Index, since that is technically enough to track collections.
-    /*public function countUsers( $userId, $serieId ) { }*/
 }
 ?>

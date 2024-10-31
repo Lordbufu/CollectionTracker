@@ -9,7 +9,6 @@
                         <th class="serieAuthTitle">Serie Makers</th>
                         <th class="serieOpmTitle">Serie Opmerking</th>
                         <th>Aantal Albums</th>
-                        <th class="serieUsersTitle">Aantal Gebruikers</th>
 
                     </tr>
                     
@@ -24,7 +23,7 @@
 
                             <form id="serie-bekijken-form-<?= $value["Serie_Index"]; ?>" class="serie-bekijken-form" method="post" action="/beheer">
                                 <input id="serie-bekijken-form-index-<?= $value["Serie_Index"]; ?>" class="serie-bekijken-form-index" name="serie-index" value="<?= $value["Serie_Index"]; ?>" hidden />
-                                <input id="serie-bekijken-form-butt-<?= $value["Serie_Index"]; ?>" class="serie-bekijken-butt" type="submit" value=""/>
+                                <input id="serie-bekijken-form-butt-<?= $value["Serie_Index"]; ?>" class="serie-bekijken-butt" type="submit" value="" />
                             </form>
 
                         </th>
@@ -55,8 +54,6 @@
                         <th class="serie-opmerk" id="serieOpmerk" > <?= $value["Serie_Opmerk"]; ?> </th>
 
                         <th class="serie-albums" id="serieAlbums" > <?= $value["Album_Aantal"]; ?> </th>
-
-                        <th class="serie-gebruikers" id="serieGebr" > W.I.P. </th>
 
                     <?php
                             endforeach;

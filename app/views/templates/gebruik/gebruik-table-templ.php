@@ -4,8 +4,9 @@
                 <th> Aanwezig </th>
                 <th> Album Naam </th>
                 <th> Uitgave Nr </th>
-                <th class="albumCovTitle"> Cover </th>
                 <th class="albumUitTitle"> Uitgave Datum </th>
+                <th class="albumSchrijver"> Album Schrijver </th>
+                <th class="albumCovTitle"> Cover </th>
                 <th> ISBN </th>
                 <th class="albumOpmTitle"> Opmerking </th>
             </tr>
@@ -64,14 +65,19 @@
 
             <th class="album-naam" id="<?= $value["Album_Index"] ?>" > <?= $value["Album_Naam"]; ?> </th>
             <th class="album-uitgnr" id="album-uitgnr" > <?= $value["Album_Nummer"]; ?> </th>
+            <th class="album-uitgdt" id="album-uitgdt" > <?= $value['Album_UitgDatum']; ?> </th>
+            <?php if( isset( $value["Album_Schijver"] ) ) : ?>
+            <th id="album-schr" class="album-schr"> <?= $value["Album_Schijver"] ?> </th>
+            <?php else : ?>
+            <th id="album-schr" class="album-schr"> Geen </th>
+            <?php endif; ?>
             <th class="album-cover" id="album-cover" >
             <?php if( $value["Album_Cover"] == "" ) : ?>
-                <?="Geen"?>
+                Geen
             <?php else: ?>
                 <img id="album-cover-img" class="album-cover-img" src="<?= $value["Album_Cover"] ?>" >
             <?php endif; ?>
             </th>
-            <th class="album-uitgdt" id="album-uitgdt" > <?= $value['Album_UitgDatum']; ?> </th>
             <th class="album-isbn" id="album-isbn" > <?= $value['Album_ISBN']; ?> </th>
             <th class="album-opm" id="album-opm" > <?= $value['Album_Opm']; ?> </th>
         <?php

@@ -84,9 +84,12 @@
                                 <span class="modal-form-span"> Album Uitgave Datum </span>
                             </label>
 
-                            <!-- W.I.P. Album Schrijver -->
                             <label class="modal-form-label">
-                                <input type="text" class="modal-form-input" id="albumt-form-alb-schr" name="album-schrijver" placeholder="" autocomplete="on" disabled />
+                            <?php if( isset( $store["Album_Schrijver"] ) ) : ?>
+                                <input type="text" class="modal-form-input" id="albumt-form-alb-schr" name="album-schrijver" placeholder="" value=<?= $store["Album_Schrijver"] ?> autocomplete="on" />
+                            <?php else : ?>
+                                <input type="text" class="modal-form-input" id="albumt-form-alb-schr" name="album-schrijver" placeholder="" autocomplete="on" />
+                            <?php endif; ?>
                                 <span class="modal-form-span"> Album Schrijver </span>
                             </label>
 

@@ -102,7 +102,7 @@ function saveScroll( e ) {
         localStorage.setItem( "event", "serie-bew" );
         return;
     /* If the function was called from either; .... */
-    } else if( e.target.className === "serie-maken-subm" || e.target.id === "seriem-form-button" ) {
+    } else if( e.target.id === "serie-maken-subm" || e.target.id === "seriem-form-button" ) {
         localStorage.setItem( "event", "serie-maken" );
         return;
     }

@@ -20,31 +20,29 @@
                     <tr class="album-tafel-inhoud-<?= $value["Album_Index"] ?>" id="album-tafel-inhoud">
 
                         <th id="album-bewerken" class="album-bewerken">
-
                             <form class="album-bewerken-form" id="album-bewerken-form-<?= $value["Album_Index"]; ?>" method="post" action="/albumBew" >
                                 <input class="album-bewerken-inp" id="album-bew-inp-<?= $value["Album_Index"]; ?>" name="albumEdit" value="<?= $value["Album_Index"]; ?>" hidden />
                                 <input class="album-bewerken-butt" id="album-bew-<?= $value["Album_Index"]; ?>" type="submit" value="" />
                             </form>
-
                         </th>
 
                         <th id="album-verwijderen" class="album-verwijderen">
-
                             <form class="album-verwijderen-form" id="album-verwijderen-form-<?= $value["Album_Index"]; ?>" method="post" action="/albumV">
                                 <input class="album-verwijderen-inp" id="album-verw-inp1-<?= $value["Album_Index"]; ?>" name="album-index" value="<?= $value["Album_Index"]; ?>" hidden />
                                 <input class="album-verwijderen-inp" id="album-verw-inp2-<?= $value["Album_Index"]; ?>" name="serie-index" value="<?= $value["Album_Serie"]; ?>" hidden />
                                 <input class="album-verwijderen-butt" id="album-verw-<?= $value["Album_Index"]; ?>" type="submit" value="" />
                             </form>
-
                         </th>
 
                         <th id="album-naam" class="album-naam"> <?= $value["Album_Naam"] ?> </th>
-
                         <th id="album-nummer" class="album-nummer"> <?= $value["Album_Nummer"] ?> </th>
-
                         <th id="album-uitgave" class="album-uitgave"> <?= $value["Album_UitgDatum"] ?> </th>
-
-                        <th id="album-schr" class="album-schr"> W.I.P. </th>
+                        
+                        <?php if( isset( $value["Album_Schijver"] ) ) : ?>
+                        <th id="album-schr" class="album-schr"> <?= $value["Album_Schijver"] ?> </th>
+                        <?php else : ?>
+                            <th id="album-schr" class="album-schr"> Geen </th>
+                        <?php endif; ?>
 
                         <th id="album-cover" class="album-cover">
                         <?php if( isset( $value["Album_Cover"] ) ) : ?>
@@ -53,7 +51,6 @@
                         </th>
 
                         <th id="album-isbn" class="album-isbn"> <?= $value["Album_ISBN"] ?> </th>
-
                         <th id="album-opm" class="album-opm"> <?= $value["Album_Opm"] ?> </th>
 
                     </tr>

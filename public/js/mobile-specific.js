@@ -1,41 +1,44 @@
-/* Unless i add a different view details option, to the user and admin pages, this file will not be used and can be removed. */
+/*  fetchRequest(uri, method, data): This function sends the request for album details to PhP, and returns the anwser. */
+// async function fetchRequest( uri, method, data ) {
+//     /* Try to fetch the requested data. */
+//     try {
+//         const response = await fetch( uri, {
+//             method: method,
+//             body: data
+//         } );
 
-// Test code to view album details as a user.
-async function fetchRequest( uri, method, data ) {
-    const url = uri;                                                            // Set url path.
+//         /* Create new Error is the response is not ok. */
+//         if( !response.ok ) {
+//             throw new Error( `Response status: ${response.status}` );
+//         /* Else simple return the response. */
+//         } else {
+//             return response;
+//         }
+//     /* console log any errors that are caught. */
+//     } catch( error ) {
+//         console.error( error.message );
+//     }
 
-    try {                                                                       // Try the following,
-        const response = await fetch( url, {                                    // Store fetch in response using await,
-            method: method,                                                     // use the method agrument,
-            body: data                                                          // use the data parameter/
-        } );
+//     return;
+// }
 
-        if( !response.ok ) {                                                    // If the respone is not ok,
-            throw new Error( `Response status: ${response.status}` );           // throw a new error.
-        }
+// /*  viewDetails(e):
+//         This function creates new form data, and sends a request to the server, so the details of said request can be displayed.
+//         To make sure the pop-in is showed properly, i have to add the id to the url anchor, and reload the page.
+//         If there is an error, i display that using the displayMessage() function.
+//  */
+// function viewDetails( e ) {
+//     data = new FormData();
+//     data.append( "album-index", e.target.id );
 
-        return response;                                                        // return the reponse otherwhise.
-
-    } catch( error ) {                                                          // If and error was cought,
-        console.error( error.message );                                         // console log that for now.
-    }
-
-    return;                                                                     // return just in case.
-}
-
-// Test code: To send data and load the pop-in.
-function viewDetails( e ) {
-    data = new FormData();                                                      // Create new formdata,
-    data.append( "album-index", e.target.id );                                  // add album-index.
-
-    fetchRequest( "/details", "POST", data )                                    // Send request to PhP,
-        .then( ( resp ) => resp.text() )                                        // set response to text(),
-        .then( (text) => {                                                      // pull the value out of text(),
-            if( text === "display" ) {                                          // if its display,
-                location.replace( "#" + "more-info-album" );                    // and then unhide the pop-in,
-                location.reload()                                               // reload the page ¿,
-            } else {                                                            // if its not display,
-                displayMessage( text );                                         // give user feedback.
-            }
-        });
-}
+//     fetchRequest( "/details", "POST", data )
+//         .then( ( resp ) => resp.text() )
+//         .then( (text) => {
+//             if( text === "display" ) {
+//                 location.replace( "#" + "more-info-album" );
+//                 location.reload();
+//             } else {
+//                 displayMessage( text );
+//             }
+//         });
+// }

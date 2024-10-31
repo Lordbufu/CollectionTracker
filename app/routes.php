@@ -26,5 +26,5 @@
 	$router->post( "userScan",		"LogicController@userScan" );	// User scan trigger.
 	$router->post( "userIsbn",		"LogicController@userIsbn" );	// User scan result evaluation.
 	/* Route for showing album details on mobile devices */
-	$router->post( "details",		"LogicController@loadDetails" );
+	// $router->post( "details",		"LogicController@loadDetails" );
 ?>

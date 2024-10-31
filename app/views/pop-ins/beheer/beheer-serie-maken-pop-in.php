@@ -49,7 +49,7 @@
                             </label>
 
                             <div class="butt-box" id="butt-box" >
-                                <input class="modal-form-button button" id="seriem-form-button" type="submit" value="Bevestigen">
+                                <input class="modal-form-button button" id="seriem-form-button" type="submit" value="Bevestigen" >
                             </div>
 
                         </div>

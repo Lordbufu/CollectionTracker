@@ -163,7 +163,7 @@
 }
 
 /* The table content rows */
-.album-aanwezig, .album-naam, .album-uitgnr, .album-uitgdt, .album-isbn, .album-opm {
+.album-aanwezig, .album-naam, .album-uitgnr, .album-schr, .album-uitgdt, .album-isbn, .album-opm {
     border: var(--main-border-body);
     font-weight: normal;
     font-size: 0.8em;
