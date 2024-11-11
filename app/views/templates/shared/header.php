@@ -9,54 +9,72 @@
 		<script src="js/main.js"></script>
 		<script src="js/html5-qrcode.min.js"></script>
 
-	<?php switch ( $_SERVER["REQUEST_URI"] ) :
-
-			case "/": ?>
+<?php /* Load all CSS and JS for the main website paths/uri's */
+	switch( $_SERVER["REQUEST_URI"] ) :
+		case "/": ?>
 				<script src="js/land-pag-ext.js"></script>
 				<link rel="stylesheet" type="text/css" href="css/landing.css">
-			<?php if ( isset( $device ) && $device === "mobile" ) : ?>
+<?php		if( isset( $device ) && $device === "mobile" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/landing-mobile.css" >
 				<script src="js/mobile-specific.js"></script>
-			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
+<?php		elseif( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/landing-ipad.css" >
-			<?php endif; break;
-
-			case "/gebruik":
-				if( !isset( $_SESSION["user"]["id"] ) ) { header( "location:https://{$_SERVER['SERVER_NAME']}/" ); } ?>
+<?php		endif;
+			break;
+		case "/gebruik":
+			if( !isset( $_SESSION["user"]["id"] ) ) {
+				header( "location:https://{$_SERVER['SERVER_NAME']}/" );
+			} ?>
 				<script src="js/gebr-pag-ext.js"></script>
 				<link rel="stylesheet" type="text/css" href="css/gebruik.css" >
-			<?php if ( isset( $device ) && $device === "mobile" ) : ?>
+<?php		if( isset( $device ) && $device === "mobile" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/gebruik-mobile.css" >
 				<script src="js/mobile-specific.js"></script>
-			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
+<?php		elseif( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/gebruik-ipad.css" >
-			<?php else : ?>
-				<script src="js/static-elements.js"></script>
-			<?php endif; break;
-
-			case "/beheer":
-			 	if ( !isset( $_SESSION["user"]["id"] ) && isset( $_SESSION["user"]["admin"] ) ) { header( "location:https://{$_SERVER['SERVER_NAME']}/" ); } ?>
+<?php		else : ?>
+				<script src="js/static-elements.js"></script>	
+<?php		endif;
+			break;
+		case "/beheer":
+			if( !isset( $_SESSION["user"]["id"] ) && isset( $_SESSION["user"]["admin"] ) ) {
+				header( "location:https://{$_SERVER['SERVER_NAME']}/" );
+			} ?>
 				<script src="js/beheer-pag-ext.js"></script>
 				<link rel="stylesheet" type="text/css" href="css/beheer.css" >
-			<?php if ( isset( $device ) && $device === "mobile" ) : ?>
+<?php		if( isset( $device ) && $device === "mobile" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/beheer-mobile.css" >
-			<?php elseif ( isset( $device ) && $device === "tablet" ) : ?>
+<?php		elseif( isset( $device ) && $device === "tablet" ) : ?>
 				<link rel="stylesheet" type="text/css" href="css/beheer-ipad.css" >
-			<?php else : ?>
+<?php		else : ?>
 				<script src="js/static-elements.js"></script>
-			<?php endif; break; endswitch; ?>
+<?php		endif;
+			break;
+	endswitch;
 
-		<?php if( isset( $device ) ) : ?>
+	/* Set device type in browser storage */
+	if( isset( $device ) ) : ?>
 				<script> localStorage.setItem( "device", "<?= $device ?>" ); </script>
-		<?php elseif( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
-				foreach( $_SESSION["header"]["error"] as $key => $value ) : ?>
+<?php
+	endif;
+	/* Deal with errors that should be displayed to the user */
+	if( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["error"] ) ) :
+		foreach( $_SESSION["header"]["error"] as $key => $value ) : ?>			
 				<script> localStorage.setItem( "<?= $key ?>", "<?= $value ?>" ); </script>
-		<?php endforeach; unset( $_SESSION["header"]["error"] ); endif;
-			if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["feedB"] ) ) :
-				foreach( $_SESSION["header"]["feedB"] as $key => $value ) : ?>
+<?php	endforeach;
+		unset( $_SESSION["header"]["error"] );
+	endif;
+	/* Deal with general feedback that should be displayed to the user */
+	if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["feedB"] ) ) :
+		foreach( $_SESSION["header"]["feedB"] as $key => $value ) : ?>
 				<script> localStorage.setItem( "<?= $key ?>", "<?= $value ?>" ); </script>
-		<?php endforeach; unset( $_SESSION["header"]["feedB"] ); endif;
-			if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["broSto"] ) ) :
-				foreach ( $_SESSION["header"]["broSto"] as $key => $value ) : ?>
-					<script> localStorage.setItem("<?= $key ?>", "<?= $value ?>"); </script>
-		<?php endforeach; unset( $_SESSION["header"]["broSto"] ); endif; ?>
+<?php	endforeach;
+		unset( $_SESSION["header"]["feedB"] );
+	endif;
+	/* Deal with specific event tags for the browser storage */
+	if ( isset( $_SESSION["header"] ) && isset( $_SESSION["header"]["broSto"] ) ) :
+		foreach ( $_SESSION["header"]["broSto"] as $key => $value ) : ?>
+				<script> localStorage.setItem("<?= $key ?>", "<?= $value ?>"); </script>
+<?php	endforeach;
+		unset( $_SESSION["header"]["broSto"] );
+	endif; ?>
