@@ -30,9 +30,11 @@
                 <?php require( "templates/beheer/beheer-contr-cont-2.php" ); ?>
             </div>
 
-			<div class="contr-cont-3" id="contr-cont-3" >
-                <?php require( "templates/beheer/beheer-contr-cont-3.html" ); ?>
-            </div>
+        <?php
+            if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
+                require( "templates/beheer/beheer-contr-cont-3.html" );
+            }
+        ?>
 
 		</div>
 

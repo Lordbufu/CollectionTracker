@@ -159,7 +159,6 @@ function initBeheer() {
 
     /* Listen Event for the album search option */
     const albZoekInp = document.getElementById( "album-zoek-inp" );
-    albZoekInp.addEventListener( "input", albumZoek );
 
     /* Code for the search option controller checkboxes */
     zoekInp = document.getElementById( "album-zoek-inp" );
@@ -167,13 +166,19 @@ function initBeheer() {
     chb2 = document.getElementById( "album-zoek-nr-inp" );
     chb3 = document.getElementById( "album-zoek-isbn-inp" );
 
-    chb1.addEventListener( "change", checkBoxSearch );
-    chb2.addEventListener( "change", checkBoxSearch );
-    chb3.addEventListener( "change", checkBoxSearch )
+    /* Quick fix for assign errors for the events, when the search controller is 'hidden' */
+    if( albZoekInp !== null ) {
+        albZoekInp.addEventListener( "input", albumZoek );
+        chb1.addEventListener( "change", checkBoxSearch );
+        chb2.addEventListener( "change", checkBoxSearch );
+        chb3.addEventListener( "change", checkBoxSearch );
 
-    if( !zoekInp.disabled ) {
-        zoekInp.disabled = true;
+        if( !zoekInp.disabled ) {
+            zoekInp.disabled = true;
+        }
     }
+
+
 
     /* Restore a previously set checkState */
     if( localStorage.checkState ) {
