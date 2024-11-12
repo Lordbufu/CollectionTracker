@@ -39,7 +39,6 @@ class LogicController {
         App::get( "database" )->createTable( "gebruikers" );
         App::get( "database" )->createAdmin();
         App::get( "database" )->createTable( "series" );
-        //App::get( "database" )->createTable( "serie_meta" );  // currently_removed cause no longer seems usefull.
         App::get( "database" )->createTable( "albums" );
         App::get( "database" )->createTable( "collecties" );
         return App::redirect( "" );
@@ -609,7 +608,7 @@ class LogicController {
 
             $albumData["Album_Isbn"] = isset( $_POST["album-isbn"] ) ? $_POST["album-isbn"] : 0;
             if( isset( $_POST["album-schrijver"] ) ) { $albumData["Album_Schrijver"] = $_POST["album-schrijver"]; }
-            if( isset( $_POST["album-opm"] ) ) { $$albumData["Album_Opm"] = $_POST["album-opm"]; }
+            if( isset( $_POST["album-opm"] ) ) { $albumData["Album_Opm"] = $_POST["album-opm"]; }
 
             /* Album cover loop, for base64 conversion */
             if( $_FILES["album-cover"]["error"] === 0 ) {
