@@ -30,7 +30,7 @@
                             <form class="album-verwijderen-form" id="album-verwijderen-form-<?= $value["Album_Index"]; ?>" method="post" action="/albumV">
                                 <input class="album-verwijderen-inp" id="album-verw-inp1-<?= $value["Album_Index"]; ?>" name="album-index" value="<?= $value["Album_Index"]; ?>" hidden />
                                 <input class="album-verwijderen-inp" id="album-verw-inp2-<?= $value["Album_Index"]; ?>" name="serie-index" value="<?= $value["Album_Serie"]; ?>" hidden />
-                                <input class="album-verwijderen-butt" id="album-verw-<?= $value["Album_Index"]; ?>" type="submit" value="" />
+                                <input class="album-verwijderen-butt" id="<?= $value["Album_Index"]; ?>" type="submit" value="" onclick="return albumVerwijderen( event )" />
                             </form>
                         </th>
 

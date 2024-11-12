@@ -369,8 +369,32 @@ function coverInpCheck( e ) {
     }
 }
 
-/*  serieVerwijderen(e:
-        A simple confirmation check, that displays the serie name, and triggers the submit button base on said confirmation.
+/* albumVerwijderen(e):
+        A simple confitmation check, that displays the album name, and triggers the submit button based on said confirmation.
+            rowCol  - The table row in witch the button was pressed.
+            rowArr  - The table row in array format for easier access.
+            conf    - The confirmation box when the button is pressed.
+        
+        Return Value: Boolean
+ */
+function albumVerwijderen( e ){
+    const rowCol = document.getElementsByClassName( "album-tafel-inhoud-" + e.target.id );
+    const rowArr = Array.from(rowCol);
+    const conf = confirm( "Weer u zeker dat het album: " + rowArr[0].children[2].innerHTML + "\n verwijdert moet worden ?" );
+
+    if( conf ) {
+        return true;
+    } else {
+        if( sessionStorage.scrollPos ) {
+            sessionStorage.removeItem("scrollPos");
+        }
+
+        return false;
+    }
+}
+
+/*  serieVerwijderen(e):
+        A simple confirmation check, that displays the serie name, and triggers the submit button based on said confirmation.
             rowCol  - The table row in witch the button was pressed.
             rowArr  - The table row in array format for easier access.
             conf    - The confirmation box when the button is pressed.
