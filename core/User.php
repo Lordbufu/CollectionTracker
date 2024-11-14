@@ -1,4 +1,10 @@
 <?php
+/*  TODO List:
+        - Search Tag -> PHP Warning:
+            Some issues when making duplicate account names and duplicate e-mails, need to reproduce the error.
+        - Search Tag -> Got error:
+            Not entirely sure what caused this, seems like somehow there was no valid array returned for getting a user ?
+ */
 
 namespace App\Core;
 
@@ -51,9 +57,9 @@ class User {
                     $errorMsg["error"] = $this->userNameErr;
                 }
 
-                /* If a duplicate e-mail is detected, check if a error was set for the name and merge both errors. */
+                /* If a duplicate e-mail is detected, check if a error was set for a duplicate name and merge both errors. */
                 if( $user["Gebr_Email"] === $data["Gebr_Email"] ) {
-                    if( is_array( $errorMsg ) ) {
+                    if( is_array( $errorMsg ) ) {                                                       // PHP Warning: Undefined variable $errorMsg
                         $errorMsg["error"] = array_merge( $this->userNameErr, $this->userEmailErr );
                     /* Otherwhise just add the e-mail error. */
                     } else {
@@ -147,7 +153,7 @@ class User {
     public function checkUser( $id = null, $rights = null ) {
         /* If the user is not set, and the id was passed, we set the user based on the id. */
         if( !isset( $this->user ) && isset( $id ) ) {
-            $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
+            $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];   // Got error 'PHP message: PHP Warning: Undefined array key 0
         }
 
         /* If the id was passed, and it matches with the current user, */

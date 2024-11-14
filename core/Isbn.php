@@ -229,5 +229,45 @@ class Isbn {
 
         return $this->new;
     }
+
+    // W.I.P.
+    /*  get_user_data($isbn):
+     */
+    public function get_user_data( $isbn ) {
+        /* Combine the isbn code and url. */
+        if( isset( $isbn ) ) {
+            $this->set_url( $isbn );
+        }
+
+        /* Convert data to string, and make array out of that, then pre-process it with the check_data() function */
+        $content = file_get_contents( $this->url );
+        $data = json_decode( $content, true );
+        $proc_data = $this->check_data( $data );
+
+        /* If data was stored in the class global $temp */
+        if( $proc_data && !empty( $this->temp ) ) {
+
+            /* Loop over the multi dimensional array */
+            for( $i = 0; $i < count( $this->temp ); $i++ ) {
+
+                /* if a industry identifier was parsed */
+                if( isset( $this->temp[$i]["volumeInfo"]["industryIdentifiers"] ) ) {
+
+                    /* loop over this sub-arraym and store the ISBN10 & 13 values in the class global $new array */
+                    foreach( $this->temp[$i]["volumeInfo"]["industryIdentifiers"] as $oKey => $oValue ) {
+                        if( $oValue["type"] == "ISBN_10" ) {
+                            $this->new[$oValue["type"]] = $oValue["identifier"];
+                        }
+
+                        if( $oValue["type"] == "ISBN_13" ) {
+                            $this->new[$oValue["type"]] = $oValue["identifier"];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $this->new;
+    }
 }
 ?>

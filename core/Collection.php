@@ -41,6 +41,9 @@ class Collection {
     }
 
     /* Generic functions to reduce item specific functions */
+    //  REVIEW:
+            // the "serie" case needs a review, since i had to change the album one.
+            // Although i had it planned to rewrite this entire class anyway.
     /*  getItemName($type, $id1, $id2=null):
             This function gets all name requests, depending on the type that was passed.
                 $type   - The type name of the item we want to get the name of (album/serie).
@@ -68,9 +71,11 @@ class Collection {
                     $this->getAlbums( $id1 );
                 }
 
-                foreach( $this->albums as $index => $album ) {
-                    if( $id2 == $album["Album_Index"] ) {
-                        return $album["Album_Naam"];
+                foreach( $this->albums as $oKey => $oValue ) {
+                    foreach( $oValue as $index => $value ) {
+                        if( $id2["Album_Index"] == $value ) {
+                            return $oValue["Album_Naam"];
+                        }
                     }
                 }
 
@@ -250,8 +255,8 @@ class Collection {
     /* Collectie Functions */
     /*  getColl($table, $userId):
             Get collection for a specific user from the database.
-                $table (string) - The db table, so i can just pass that along from other functions, even though its always from collections xD
-                $userId (int)   - User id from the session data.
+                $table (string)         - The db table, so i can just pass that along from other functions, even though its always from collections xD
+                $userId (Assoc Array)   - User id from the session data.
             
             Return Type: Multi-Dimensional Array.
      */
@@ -290,11 +295,14 @@ class Collection {
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
+// Currently Under review !
+    // TODO: Add/update/clean-up comments.
+
     /*  evalColl($fData, $sIndex, $uIndex):
             This function, evaluates if data fetched from the Google API, is set part of a collection or not.
                 $fData  (Assoc Array)   - The data that was fetched from the Google API, via the Isbn class.
                 $sIndex (Int)           - The index of the serie, where the barcode was scanned for.
-                $uIndex (Int)           - The index of the user that scanned the barcode.
+                $uIndex (Assoc Array)   - The index of the user that scanned the barcode.
             
             Return Value: Boolean.
      */
@@ -309,23 +317,51 @@ class Collection {
             /* Loop over every item in a album */
             foreach( $oValue as $iKey => $iValue ) {
 
-                /* If the key is Album_ISBN, and it matches the scanned ISBN */
-                if( $iKey === "Album_ISBN" && $iValue === $fData["Album_ISBN"] ) {
-                    /* Store said album data in a temp variable, and set a flag that it is. */
-                    $tempFetch = $oValue;
-                    $match = [ "inSerie" => TRUE ];
-                /* Ensure $match wasnt set already, and set a flag that the album isnt in the current serie. */
-                } else if ( !isset( $match ) ) {
-                    $match = [ "inSerie" => FALSE ];
+                /* For admin scans, but also if no isbn was found with the user scan, if the key is Album_ISBN */
+                if( isset( $fData["Album_ISBN"] ) ) {
+                    /* and it matches the scanned ISBN */
+                    if( $iKey === "Album_ISBN" && $iValue === $fData["Album_ISBN"] ) {
+                        /* Store said album data in a temp variable, and set a flag that it is */
+                        $tempFetch = $oValue;
+                        $match = [ "inSerie" => TRUE ];
+                        $match["Album_Index"] = $oValue["Album_Index"];
+                    }
+                }
+
+                /* For user scanned data, if the key is ISBN_10, and it matches the scanned ISBN */
+                if( isset( $fData["ISBN_10"] ) ) {
+                    if( $iKey === "Album_ISBN" && $iValue === $fData["ISBN_10"] ) {
+                        /* Store said album data in a temp variable, and set the correct flag */
+                        $tempFetch = $oValue;
+                        $match = [ "inSerie" => TRUE ];
+                        $match["Album_Index"] = $oValue["Album_Index"];
+                    }
+                }
+
+                /* For user scanned data, if the key is ISBN_13, and it matches the scanned ISBN */
+                if( isset( $fData["ISBN_13"] ) ) {
+                    if( $iKey === "Album_ISBN" && $iValue === $fData["ISBN_13"] ) {
+                        /* Store said album data in a temp variable, and set the correct flag */
+                        $tempFetch = $oValue;
+                        $match = [ "inSerie" => TRUE ];
+                        $match["Album_Index"] = $oValue["Album_Index"];
+                    }
                 }
 
             }
         }
-        /* Check if album was in the selected serie, but no collection data was found (needs to be added to collection). */
+
+        /* If no match was found after all loops are done, i set the inSerie to false */
+        if( !isset( $match ) ) {
+            $match = [ "inSerie" => FALSE ];
+        }
+
+        /* When in the serie, but not user collection data was found, album has to be added */
         if( $match["inSerie"] && empty( $tColl ) ) {
-            $match = [ "addToColl" => TRUE ];
-        /* If it is in the Serie, we check if its part of the collection already. */
-        } else if( $match["inSerie"] ) {
+            $match["addToColl"] = TRUE;
+
+        /* When in the serie, and user collection data was found, */
+        } elseif( $match["inSerie"] && !empty( $tColl ) ) {
 
             /* Loop over the current collection data */
             foreach( $tColl as $oKey => $oValue ) {
@@ -333,11 +369,8 @@ class Collection {
                 /* Loop over every entry in said collection data */
                 foreach( $oValue as $iKey => $iValue ) {
 
-                    /* Check if the album index values match, only logical action, would be to remove the album from the collection. */
-                    if( $iKey == "Alb_Index" && $tempFetch["Album_Index"] == $iValue ) {
-                        $match = [ "remFromColl" => TRUE ];
-                    }
-
+                    /* Check if index values match, and set the remove tag */
+                    $match["remFromColl"] = TRUE;
                 }
             }
         }

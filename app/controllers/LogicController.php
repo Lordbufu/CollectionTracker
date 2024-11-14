@@ -216,7 +216,7 @@ class LogicController {
             /* Store the albums and name for a serie, if the admin is viewing a serie */
             if( !empty( $_POST["serie-index"] ) ) {
                 App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_POST["serie-index"] ) );
-                App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => App::get( "collection" )->getItemName( "serie", $_POST["serie-index"] ) ] );
+                App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => App::get( "collection" )->getItemName( "serie", [ "Serie_Index" => $_POST["serie-index"] ] ) ] );
                 return App::redirect( "beheer" );
             }
 
@@ -530,7 +530,7 @@ class LogicController {
         if( !is_array( $userCheck ) ) {
 
             if( isset( $_POST["album-index"] ) ) {
-                $itemCheck = App::get( "collection" )->getItemName( "album", $_POST["serie-index"], $_POST["album-index"] );
+                $itemCheck = App::get( "collection" )->getItemName( "album", [ "Album_Serie" => $_POST["serie-index"] ], [ "Album_Index" => $_POST["album-index"] ]);
                 $store = App::get( "collection" )->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
             } else {
                 return App::redirect( "beheer" );
@@ -936,9 +936,7 @@ class LogicController {
 		}
     }
 
-    /*  userScan():
-            This function set the correct tags, and gets the correct data, for the scanner form data.
-     */
+    /* userScan(): This function set the correct tags, and gets the correct data, for the scanner form data. */
     public function userScan() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
@@ -961,70 +959,79 @@ class LogicController {
 		}
     }
 
-    /* userIsbn(): */
+    /*  userIsbn(): W.I.P. */
     public function userIsbn() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get( "user" )->checkUser( $_SESSION["user"]["id"] ) : App::get( "user" )->checkUser( -1 );
 
         /* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
-            /* Attempt to get data from the Google API, if isbn was set. */
-            if( isset( $_POST["album-isbn"] ) ) {
-                $result = App::get( "isbn" )->get_data( $_POST["album-isbn"], $_POST["serie-index"] );
+
+            /* If there is a user id and a serie-index, try to get extra data from the google API */
+            if( isset( $_SESSION["user"]["id"] ) && isset( $_POST["serie-index"] ) && isset( $_POST["album-isbn"] ) ) {
+                $result = App::get( "isbn" )->get_user_data( $_POST["album-isbn"] );
+
+                /* If nothing was was, set the scanned isbn as a result, with the coorect array key */
+                if( empty( $result ) ) {
+                    $result = [ "Album_ISBN" => $_POST["album-isbn"] ];
+                } elseif( isset( $result["error"] ) ) {
+                    $result = [ "Album_ISBN" => $_POST["album-isbn"] ];
+                }
+
+                /* Evaluate what to do with the scanned data, using the above defined $result */
+                $eColl = App::get( "collection" )->evalColl ( $result, $_POST["serie-index"], [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
             }
 
-            /* Confirmation\processing loop goes here */
-            if( isset( $_POST["serie-index"] ) ) {
-                $eColl = App::get( "collection" )->evalColl ($result, $_POST["serie-index"], $_SESSION["user"]["id"] );
-                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => App::get( "collection" )->getAlbId( $result["Album_Naam"] ) ];
+            /* Format the required identifiers and name, using what ever data there is for it */
+            if( isset( $result["Album_Index"] ) ) {
+                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => $result["Album_Index"] ];
+                $name = App::get( "collection" )->getItemName( "album", [ "Album_Serie" => $_POST["serie-index"] ], [ "Album_Index" => $result["Album_Index"] ] );
+            } elseif( isset( $eColl["Album_Index"] ) ) {
+                $ids = [ "Gebr_Index" => $_SESSION["user"]["id"], "Alb_Index" => $eColl["Album_Index"] ];
+                $name = App::get( "collection" )->getItemName( "album", [ "Album_Serie" => $_POST["serie-index"] ], [ "Album_Index" => $eColl["Album_Index"] ] );
+            }
 
-                /* Check if the evaluation is to add it to the collection, set the album to said collection. */
-                if( isset( $eColl["addToColl"] ) ) {
-                    $store = App::get( "collection" )->setColl( "collecties", $ids );
+            /* If the evaluation is to add it, and a album index was set */
+            if( isset( $eColl["addToColl"] ) ) {
+                /* Attempt to add to collection, */
+                $store = App::get( "collection" )->setColl( "collecties", $ids );
 
-                    /* If the album was added, i store a feedback message in the session. */
-                    if( !is_array( $store ) ) {
-
-                        App::get( "session" )->setVariable( "header", [ "feedB" =>
-                            [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", is toegvoegd aan uw collectie!" ]
-                        ] );
-                    /* If the ablum wasnt added, i store the error in the session. */
-                    } else {
-                        App::get( "session" )->setVariable( "header", [ "error" => $store ] );
-                    }
-                }
-
-                /* Check if the evaluation is to remove it from the collection, set the album to said collection. */
-                if( isset( $eColl["remFromColl"] ) ) {
-                    $store = App::get( "collection" )->remItem( "collecties", $ids );
-
-                    /* If the album was removed, i store a feedback message in the session. */
-                    if( !is_array( $store ) ) {
-                        App::get( "session" )->setVariable( "header", [ "feedB" =>
-                            [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", is verwijdert van uw collectie!" ]
-                        ] );
-                    /* If the ablum wasnt removed, i store the error in the session. */
-                    } else {
-                        App::get( "session" )->setVariable( "header", [ "error" => $store ] );
-                    }
-                }
-
-                /* If the album wasnt part of the selected serie, i store a feedback message in the session */
-                if( isset( $eColl["inSerie"] ) && !$eColl["inSerie"] ) {
+                /* If the album was added or not, i store a matching feedback message in the session */
+                if( !is_array( $store ) ) {
                     App::get( "session" )->setVariable( "header", [ "feedB" =>
-                        [ "fetchResponse" => "Het album: " . $result["Album_Naam"] . ", zit niet in deze serie!" ]
+                        [ "fetchResponse" => "Het album: " . $name . ", is toegvoegd aan uw collectie!" ]
                     ] );
+                } else {
+                    App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 }
+            /* If the evaluation is to remove it, and a album index was set */
+            } elseif( isset( $eColl["remFromColl"] ) ) {
+                /* Attempt to remove from collection, */
+                $store = App::get( "collection" )->remItem( "collecties", $ids );
 
-                /* Remove any collection data, so the changes are re-loaded. */
-                if( isset( $_SESSION["page-data"]["colllections"] ) ) { unset( $_SESSION["page-data"]["colllections"] ); }
-                /* Unset any leftover session states, to prevent broken page logic. */
-                if( isset( $_SESSION["page-data"]["serie-index"] ) ) { unset( $_SESSION["page-data"]["serie-index"] ); }
-                if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
-
-                /* Redirect to the user page, to reflect the changes. */
-                return App::redirect( "gebruik" );
+                /* If the album was removed or not, i store a matching feedback message in the session */
+                if( !is_array( $store ) ) {
+                    App::get( "session" )->setVariable( "header", [ "feedB" =>
+                        [ "fetchResponse" => "Het album: " . $name . ", is verwijdert van uw collectie!" ]
+                    ] );
+                } else {
+                    App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                }
+            /* If the evaluation found nothing, set user feedback */
+            } elseif( isset( $eColl["inSerie"] ) && !$eColl["inSerie"] ) {
+                App::get( "session" )->setVariable( "header", [ "feedB" =>
+                    [ "fetchResponse" => "Het album dat gescanned is, bevind zich niet in deze serie!" ]
+                ] );
             }
+
+            /* Remove any collection data, so the changes are re-loaded. */
+            if( isset( $_SESSION["page-data"]["colllections"] ) ) { unset( $_SESSION["page-data"]["colllections"] ); }
+            /* Unset any leftover session states, to prevent broken page logic. */
+            if( isset( $_SESSION["page-data"]["serie-index"] ) ) { unset( $_SESSION["page-data"]["serie-index"] ); }
+            if( isset( $_SESSION["page-data"]["isbn-scan"] ) ) { unset( $_SESSION["page-data"]["isbn-scan"] ); }
+
+            /* Redirect to the user page, to reflect the changes. */
+            return App::redirect( "gebruik" );
         /* If user is not verified, store a error for the header, and redirect to landingpage */
 		} else {
 			App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
