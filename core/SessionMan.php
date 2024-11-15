@@ -97,11 +97,19 @@ class SessionMan {
      */
     public function setVariable( $name, $data ) {
         foreach( $data as $key => $value ) {
-
-            // Potentially redundant
             /* Loop specifically for isbn-searches */
             if( $key == "isbn-search" ) {
                 $_SESSION[$name][$key] = $value;
+                return;
+            }
+
+            if( isset( $value["Serie_Index"] ) ) {
+                $_SESSION[$name]["series"] = $data;
+                return;
+            }
+
+            if( isset( $value["Album_Index"] ) ) {
+                $_SESSION[$name]["albums"] = $data;
                 return;
             }
 
@@ -115,12 +123,12 @@ class SessionMan {
 
                 /* Serie index values */
                 if( isset( $value["Serie_Index"] ) ) {
-                    $_SESSION[$name]["series"] = $data;
-                    return;
+                    //$_SESSION[$name]["series"] = $data;
+                    //return;
                 /* Album index values */
                 } elseif( isset( $value["Album_Index"] ) ) {
-                    $_SESSION[$name]["albums"] = $data;
-                    return;
+                    //$_SESSION[$name]["albums"] = $data;
+                    //return;
                 /* Collection index values */
                 } elseif( isset( $value["Col_Index"] ) ) {
                     $_SESSION[$name]["collections"] = $data;

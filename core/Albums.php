@@ -4,6 +4,10 @@ namespace App\Core;
 
 use Exception;
 
+/*  Reminder of the error array structure, that is required to display the errors:
+        [ "error" => [ "fetchResponse" => { Message that needs to be displayed } ] ];
+ */
+
 /*  Album class explained:
         This class handles all albums related actions, so we can keep the controllers somewhat nice and clean.
         Errors are dealt with via try/catch/throw statements, so any feedback to users, has to be done in the controller.
@@ -35,6 +39,7 @@ use Exception;
 class Albums {
     protected $albums;
 
+    // Tested and working as expected
     /*  loadAlbums($id):
             This function load the requested data, in the class global $albums variable, with no more then 2 identifier pairs.
             If any exceptions are thrown, they should be caught in the functions using this, PDO exceptions are filtered out with a dbFail error.
@@ -69,13 +74,14 @@ class Albums {
         }
     }
 
+    // Tested and working as expected
     /*  getAlbum($id):
             The function attempts to load, and return, the requested album data.
                 $id (Assoc Array)   - id pair(s) we want to get, for example a serie id (max 2).
             
             Return Type:
-                On success -> Associative Array.
-                On failure -> String
+                On success -> associative array
+                On failure -> multi-dimensional array
      */
     public function getAlbums( $id ) {
         try {
@@ -87,10 +93,11 @@ class Albums {
             }
         /* Handle any exception messages during this process */
         } catch( Exception $e ) {
-            return "Error: " . $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
+    // Tested and working as expected
     /*  setAlbum($data, $id):
             This function can update and insert album data, based on the optional id parameter.
             It also does a duplicate name check, inside the serie the album is in, using the getAlbAtt() function.
@@ -100,7 +107,7 @@ class Albums {
                 $store (String/Bool)    - Temp variable to store the outcome of the database action.
             
             Return Value:
-                On failure - String
+                On failure - multi-dimensional array
                 On success - Boolean
      */
     public function setAlbum( $data, $id=null ) {
@@ -132,17 +139,19 @@ class Albums {
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         /* Handle any exception messages during this process */
         } catch( Exception $e ) {
-            return "Error: " . $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
+    // Testing & Replacing in progress
+    // Replacing done, errors need testing.
     /*  delAblum($id):
             This function deals with all delete requests, database errors are replaced with a generic error.
                 $id     - The id('s) associated with said item, can support up to 2 id pairs.
                 $store  - The temp store to evaluate the execution of the query.
             
             Return Value:
-                On failure   -> String.
+                On failure   -> multi-dimensional array.
                 On success   -> Boolean
      */
     public function delAlbum( $id ) {
@@ -158,7 +167,7 @@ class Albums {
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         /* Handle any exception messages during this process */
         } catch( Exception $e ) {
-            return "Error: " . $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 

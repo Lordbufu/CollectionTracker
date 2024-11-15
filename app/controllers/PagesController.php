@@ -49,7 +49,14 @@ class PagesController {
 
 			/* If no album data is set, and we are not looking at a series, re-populate the albums. */
 			if( empty( $_SESSION["page-data"]["albums"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-				App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_SESSION["page-data"]["huidige-serie"] ) );
+				$serId = [ "Album_Serie" => App::get("collection")->getSerInd( $_SESSION["page-data"]["huidige-serie"] ) ];
+				$tempAlbums = App::get( "albums" )->getAlbums( $serId );
+
+				if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
+					App::get( "session" )->setVariable( "page-data", $tempAlbums );
+				} else {
+					App::get( "session" )->setVariable( "header", $tempAlbums );
+				}
 			}
 
 			return App::view( "beheer" );

@@ -18,9 +18,11 @@ class Errors {
     protected $authFailed = "Toegang geweigerd, Account authentication mislukt !";
     protected $rightsError = "U heeft geen rechten om deze pagina te bezoeken !!";
 
+    /* Album related errors ? */
+
     /* Load errors */
     protected $loadFail = "The loading process for items failed, plz contact your Administrator if this keeps happening!";
-    protected $idToBig = "To many Identiefier pairs to load items, plz contact your Administrator if this keeps happening!";
+    protected $idToBig = "Er waren te veel indentifiers, neem contact op met de administrator als dit blijft gebeuren!";
     protected $noItems = "No items loaded, plz contact your Administrator if this keeps happening!";
 
     /* Search errors */
@@ -36,7 +38,7 @@ class Errors {
     protected $dbFail = "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!";
 
     /* Default, Generic errors, and single errors */
-    protected $defaultErr = "Een onbekend probleem is opgevangen, neem contact op met uw Administrator, als dit probleem zich blijft voordoen!.";
+    protected $defaultErr = "Een onbekend probleem is opgevangen, neem contact op met de administrator als dit blijft gebeuren!";
     protected $deviceErr = "Onbekend apparaat gevonden, neem contact op met uw Administrator!";
     protected $UsrAgeErr = "Geen user agent gevonden, toegang geweigert!";
 
@@ -61,7 +63,7 @@ class Errors {
                 return $this->authFailed;
             case "rightsError":
                 return $this->rightsError;
-            /* ... related errors */
+            /* Album related errors */
             case "load":                    // For the class load functions
                 return $this->loadFail;
             case "noItems":                 // For functions using the class global load function

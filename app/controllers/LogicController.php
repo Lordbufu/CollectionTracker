@@ -10,18 +10,19 @@
  */
 
 /*  Search tags to remove/edit specific content:
-        - die
+        - die:
             - Need to remove any lingering debug lines, that stop the webprocess and print out potentially harmfull data.
-        - W.I.P.
+        - W.I.P.:
             - Some of these fields need adjusting, because they where either added or removed from the project.
-        - currently_removed
+        - currently_removed:
             - Stuff that was removed, and needs to be cleaned up.
-        - Add comments
+        - Add comments:
             - Need to add a meaningfull comment, as this was added after the concepting & cleanup stage, likely patch or fix related.
-        - Clean-up
+        - Clean-up:
             - Needs reviewing, likely a TODO noted near it, also related to patching/fixing/cleanup.
-        - PHP Warning
+        - PHP Warning:
             - Some odd errors i ran into testing various things.
+        - Review:
  */
 
 namespace App\Controllers;
@@ -217,15 +218,28 @@ class LogicController {
             }
 
             /* Populate the session series data is there is non */
-            if( empty($_SESSION["page-data"]["series"] ) ) {
+            if( empty( $_SESSION["page-data"]["series"] ) ) {
                 App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getSeries() );
             }
 
             /* Store the albums and name for a serie, if the admin is viewing a serie */
             if( !empty( $_POST["serie-index"] ) ) {
-                unset( $_SESSION["page-data"]["albums"] );
-                App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_POST["serie-index"] ) );
-                App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => App::get( "collection" )->getItemName( "serie", [ "Serie_Index" => $_POST["serie-index"] ] ) ] );
+                $tempAlbums = App::get( "albums" )->getAlbums( [ "Album_Serie" => $_POST["serie-index"] ] );
+                $serName = App::get( "collection" )->getItemName( "serie", [ "Serie_Index" => $_POST["serie-index"] ] );
+
+                if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
+                    unset( $_SESSION["page-data"]["albums"] );
+                    App::get( "session" )->setVariable( "page-data", $tempAlbums );
+                } else {
+                    App::get( "session" )->setVariable( "header", $tempAlbums );
+                }
+
+                if( isset( $serName ) && !isset( $serName["error"] ) ) {
+                    App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => $serName ] );
+                } else {
+                    App::get( "session" )->setVariable( "header", $serName );
+                }
+                
                 return App::redirect( "beheer" );
             }
 
@@ -385,11 +399,11 @@ class LogicController {
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
-            $remove_1 = App::get( "collection" )->remItem( "albums", [ "Album_Serie" => $_POST["serie-index"] ] );
-            $remove_2 = App::get( "collection" )->remItem( "series", [ "Serie_Index" => $_POST["serie-index"], "Serie_Naam" => $_POST["serie-naam"] ] );
+            $remove_1 = App::get( "albums" )->delAlbum( "albums", [ "Album_Serie" => $_POST["serie-index"] ] );
+            $remove_2 = App::get( "collection" )->remAlbum( "series", [ "Serie_Index" => $_POST["serie-index"], "Serie_Naam" => $_POST["serie-naam"] ] );
 
             /* Evaluate the DB operation, and return the correct feedback, reset the correct session data and redirect back to the page. */
-            if( !is_array( $remove_1 ) || !is_array($remove_2) ) {
+            if( $remove_1 || !is_array($remove_2) ) {
                 App::get( "session" )->setVariable( "header", [ "feedB" =>
                     [ "fetchResponse" => "Het verwijderen van: " . $_POST["serie-naam"] . " en alle albums is geslaagd!" ]
                 ] );
@@ -400,7 +414,7 @@ class LogicController {
 
             /* Store either of returned errors if set, since there identical if both are set anyway. */
             } else {
-                if( is_array( $remove_1 ) ) {
+                if( isset( $remove_1["error"] ) ) {
                     App::get( "session" )->setVariable( "header", [ "error" => $remove_1 ] );
                 } else if( is_array($remove_2) ) {
                     App::get( "session" )->setVariable( "header", [ "error" => $remove_2 ] );
@@ -492,10 +506,10 @@ class LogicController {
             }
 
             /* Attempt to store the album in the SQL DB */
-            $store = App::get( "collection" )->setAlbum( $albumData );
+            $store = App::get( "albums" )->setAlbum( $albumData );
 
             /* Evaluate the DB store request, and redirect/store feedback information accordingly. */
-            if( !is_array( $store ) ) {
+            if( isset( $store ) && !isset( $store["error"] ) ) {
                 App::get( "session" )->setVariable( "header", [ "feedB" =>
                     [ "fetchResponse" => "Het toevoegen van: " . $_POST["album-naam"] . " is gelukt !" ]
                 ] );
@@ -507,7 +521,7 @@ class LogicController {
 
                 return App::redirect( "beheer" );
             } else {
-                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
+                App::get( "session" )->setVariable( "header", $store );
                 return App::redirect( "beheer" );
             }
 
@@ -540,13 +554,13 @@ class LogicController {
 
             if( isset( $_POST["album-index"] ) ) {
                 $itemCheck = App::get( "collection" )->getItemName( "album", [ "Album_Serie" => $_POST["serie-index"] ], [ "Album_Index" => $_POST["album-index"] ]);
-                $store = App::get( "collection" )->remItem( "albums", [ "Album_Index" => $_POST["album-index"] ] );
+                $store = App::get( "albums" )->delAlbum( [ "Album_Index" => $_POST["album-index"] ] );
             } else {
                 return App::redirect( "beheer" );
             }
 
             /* Evaluate the itemCheck and DB action. */
-            if( !is_array( $itemCheck ) && !is_array( $store ) ) {
+            if( !is_array( $itemCheck ) && $store ) {
                 App::get( "session" )->setVariable( "header", [ "feedB" =>
                     [ "fetchResponse" => "Het verwijderen van: " . $itemCheck . " is geslaagd!" ]
                 ] );
@@ -556,6 +570,7 @@ class LogicController {
                 return App::redirect( "beheer" );
             /* Store the correct error, and redirect accordingly */
             } else {
+                // Review if i need both errors to be displayed or just one.
                 if( is_array( $itemCheck ) ) {
                     App::get( "session" )->setVariable( "header", [ "error" => $itemCheck ]);
                 } elseif( is_array( $store ) ) {
@@ -643,23 +658,23 @@ class LogicController {
             }
 
             /* Attempt to store the album data in the SQL DB. */
-            $store = App::get( "collection" )->setAlbum( $albumData, [
+            $store = App::get( "albums" )->setAlbum( $albumData, [
                 "Album_Index" => $_POST["album-index"],
                 "Album_Serie" => $_POST["serie-index"]
             ] );
 
             /* Evaluate the DB action, and store the correct response (unset data if required), and redirect back to the admin page. */
-            if( is_array( $store ) ) {
-                App::get( "session" )->setVariable( "header", [ "error" => $store ] );
-
-                return App::redirect( "beheer" );
-            } else {
+            if( isset( $store ) && !isset( $store["error"] ) ) {
                 App::get( "session" )->setVariable( "header", [ "feedB" => 
                         [ "fetchResponse" => "Het aanpassen van: " . $_POST["album-naam"] . " is gelukt !" ]
                 ] );
 
                 if( isset( $_SESSION["page-data"]["huidige-serie"] ) ) { unset( $_SESSION["page-data"]["albums"] ); }
                 if( isset( $_SESSION["page-data"]["album-edit"] ) ) { unset( $_SESSION["page-data"]["album-edit"] ); }
+
+                return App::redirect( "beheer" );
+            } else {
+                App::get( "session" )->setVariable( "header", $store );
 
                 return App::redirect( "beheer" );
             }
@@ -725,15 +740,41 @@ class LogicController {
 
         /* Validate the userCheck result, and execute the correct logic. */
         if( !is_array( $userCheck ) ) {
-            /* Always unset the collection data in the session, and repopulate the series and collections. */
-            unset( $_SESSION["page-data"]["collections"] );
-            App::get( "session" )->setVariable( "page-data", App::get("collection")->getSeries() );
-            App::get( "session" )->setVariable( "page-data", App::get("collection")->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+            /* Always unset and reload all series data, for serie selection related functions */
+            $tempSerie = App::get("collection")->getSeries();
+
+            if( isset( $tempSerie ) && !isset( $tempSerie["error"] ) ) {
+                unset( $_SESSION["page-data"]["collections"] );
+                App::get( "session" )->setVariable( "page-data", $tempSerie );
+            } else {
+                App::get( "session" )->setVariable( "header", $tempSerie );
+            }
 
             /* If a collection is being viewed, get all albums for that serie, and the user there collection data, before setting the correct flag in the session */
             if( !empty( $_POST["serie_naam"] ) ) {
-                App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_POST["serie_naam"] ) );
-                App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+                /* Unset and reload the user its collection data first */
+                $tempColl = App::get( "collection" )->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
+
+                if( isset( $tempColl ) && !isset( $tempColl["error"] ) ) {
+                    unset( $_SESSION["page-data"]["collections"] );
+                    App::get( "session" )->setVariable( "page-data", $tempColl );
+                } else {
+                    App::get( "session" )->setVariable( "header", $tempColl );
+                }
+
+                /* Then unset and reload all albums from the selected serie */
+                $albId = [ "Album_Serie" => App::get("collection")->getSerInd( $_POST["serie_naam"] ) ];
+                $tempAlbums = App::get( "albums" )->getAlbums( $albId );
+                
+
+                if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
+                    unset( $_SESSION["page-data"]["albums"] );
+                    App::get( "session" )->setVariable( "page-data", $tempAlbums );
+                } else {
+                    App::get( "session" )->setVariable( "header", $tempAlbums );
+                }
+                
+                /* And finally make sure the correct tag is set for the table header */
                 App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => $_POST["serie_naam"] ] )  ;
             }
 

@@ -1,5 +1,10 @@
 <?php
 
+/*  TODO/Clean-up List:
+        Search tag -> Replaced with:
+            Function has been replaced with a new OOP structure, and can be removed.
+ */
+
 namespace App\Core;
 
 use App\Core\App, Exception;
@@ -67,8 +72,8 @@ class Collection {
 
                 return $this->dbError;
             case "album":
-                if(! isset( $this->albums ) ) {
-                    $this->getAlbums( $id1 );
+                if(!isset( $this->albums ) ) {
+                    $this->getAlbums( $id1["Album_Serie"] );    // tempfix
                 }
 
                 foreach( $this->albums as $oKey => $oValue ) {
@@ -83,6 +88,7 @@ class Collection {
         }
     }
 
+    // Replacing the album calls.
     /*  remItem($table, $id):
             This function deals with all delete/remove requests.
                 $table  - The database table where items need to be removed from.
@@ -205,6 +211,7 @@ class Collection {
     }
 
     /* Album Functions */
+    // Replaced with: App::get("albums")->getAlbums( [ "key1" => "value1", "key2" => "value2" ] );
     /*  getAlbums($partId):
             This function gets all albums from a series, based on a serie name or index.
                 $partId (String or Int)  - Can both take a serie name or index value, to get the associciated albums.
@@ -232,6 +239,7 @@ class Collection {
         return $tempAlbum["Album_Index"];
     }
 
+    // Replaced with: App::get("albums")->setAlbum( [{album-data-array}], [ "key1" => "value1", "key2" => "value2" ] );
     /*  setAlbum($data, update=null):
             This function either adds or updates the album database, based on the $update parameter.
                 $data (Assoc Array) : The Album data that needs to be stored.

@@ -3,7 +3,7 @@
             Here i mainly bootstrap App bindings, that allow mw to more easily use certain classes.
             It basically left over from the online course this App is based on, i see no reason to move/change this atm.
      */
-    use App\Core\{ App, Errors, SessionMan, User, Collection, Isbn };
+    use App\Core\{ App, Errors, SessionMan, User, Collection, Isbn, Albums };
     use App\Core\Database\{ QueryBuilder, Connection };
 
     App::bind( "config", require "../config.php" );                                                             // Create a binding for the DB config file.
@@ -15,4 +15,5 @@
 
     /* Refactored OOP stuff */
     App::bind( "errors", new Errors );                                                                          // Create a binding for the Errors class.
+    App::bind( "albums", new Albums );                                                                          // Create a binding for the Albums class.
 ?>
