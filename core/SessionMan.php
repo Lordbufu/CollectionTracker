@@ -5,6 +5,9 @@
         - Do a final review of the ini_set() settings in the __construct() function, to ensure im not doing something stupid or unwanted.
  */
 
+// Search tags:
+    // redundant
+
 namespace App\Core;
 
 /*  SessionMan Class:
@@ -95,6 +98,7 @@ class SessionMan {
     public function setVariable( $name, $data ) {
         foreach( $data as $key => $value ) {
 
+            // Potentially redundant
             /* Loop specifically for isbn-searches */
             if( $key == "isbn-search" ) {
                 $_SESSION[$name][$key] = $value;

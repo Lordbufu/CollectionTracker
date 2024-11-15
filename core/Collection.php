@@ -24,8 +24,8 @@ class Collection {
             Return Value    : INT
      */
     protected function getSerId( $name ) {
-        $tempSerie = App::get( "database" )->selectAllWhere( "series", [ "Serie_Naam" => $name ] )[0];
-        return $tempSerie["Serie_Index"];
+        $tempSerie = App::get( "database" )->selectAllWhere( "series", [ "Serie_Naam" => $name ] )[0];  // PHP Warning:  Undefined array key 0
+        return $tempSerie["Serie_Index"];                                                               // PHP Warning:  Trying to access array offset on value of type null
     }
 
     /*  countAlbums():
@@ -60,12 +60,12 @@ class Collection {
                 }
 
                 foreach( $this->series as $index => $serie ) {
-                    if( $id1 == $serie["Serie_Index"] ) {
+                    if( $id1["Serie_Index"] == $serie["Serie_Index"] ) {
                         return $serie["Serie_Naam"];
                     }
                 }
 
-                return $this->$dbError;
+                return $this->dbError;
             case "album":
                 if(! isset( $this->albums ) ) {
                     $this->getAlbums( $id1 );
@@ -79,7 +79,7 @@ class Collection {
                     }
                 }
 
-                return $this->$dbError;
+                return $this->dbError;
         }
     }
 

@@ -20,6 +20,8 @@
             - Need to add a meaningfull comment, as this was added after the concepting & cleanup stage, likely patch or fix related.
         - Clean-up
             - Needs reviewing, likely a TODO noted near it, also related to patching/fixing/cleanup.
+        - PHP Warning
+            - Some odd errors i ran into testing various things.
  */
 
 namespace App\Controllers;
@@ -44,6 +46,7 @@ class LogicController {
         return App::redirect( "" );
     }
     
+    // Refactored and tested for the new errors class
     /*  register():
             The POST route for account registration, that uses the user class to process the request.
                 $temp   : The user input that needs to be stored.
@@ -72,6 +75,7 @@ class LogicController {
         }
     }
 
+    // Refactored and tested for the new errors class
     /*  login():
             The POST route for the login process, where the user class is used to validate the user.
             And where the SESSION data is set, linking a user to a session, so we can verify the user later on.
@@ -108,21 +112,24 @@ class LogicController {
             /* Evaluate the user rights. */
             $userRightsCheck = App::get( "user" )->evalUser();
 
-            /* Redirect the user according to the user rights evaluation. */
-            if( $userRightsCheck === TRUE ) {
-                App::get( "session" )->setVariable( "user", [ "admin" => FALSE ] );
+            /* Get name and set welcome message, or store the error if no name was found */
+            $uName = App::get( "user" )->getUserName();
 
+            if( !is_array( $uName ) ) {
                 App::get( "session" )->setVariable( "header", [ "feedB" =>
                     [ 'welcome' => "Welcome " . App::get( "user" )->getUserName() ]
                 ] );
+            } else {
+                App::get( "session" )->setVariable( "header", [ "error" => $uName ] );
+            }
+
+            /* Store admin rights in session, and redirect to the correct page */
+            if( $userRightsCheck === TRUE ) {
+                App::get( "session" )->setVariable( "user", [ "admin" => FALSE ] );
 
                 return App::redirect( "gebruik" );
             } elseif( $userRightsCheck === FALSE ) {
                 App::get( "session" )->setVariable( "user", [ "admin" => TRUE ] );
-
-                App::get( "session" )->setVariable( "header", [ "feedB" =>
-                    [ "welcome" => "Welcome " . App::get( "user" )->getUserName() ]
-                ] );
 
                 return App::redirect( "beheer" );
             /* If the user rights evaluation failed, i store the error and redirect to the pop-in. */
@@ -169,6 +176,7 @@ class LogicController {
 
         /* Validate the userCheck result, and execute the correct logic */
         if( !is_array( $userCheck ) ) {
+
             /* Skip all other logic if a pop-in is closed */
             if( isset( $_POST["close-pop-in"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
                 return App::view( "beheer" );
@@ -215,6 +223,7 @@ class LogicController {
 
             /* Store the albums and name for a serie, if the admin is viewing a serie */
             if( !empty( $_POST["serie-index"] ) ) {
+                unset( $_SESSION["page-data"]["albums"] );
                 App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getAlbums( $_POST["serie-index"] ) );
                 App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => App::get( "collection" )->getItemName( "serie", [ "Serie_Index" => $_POST["serie-index"] ] ) ] );
                 return App::redirect( "beheer" );
@@ -817,6 +826,7 @@ class LogicController {
 		}
     }
 
+    //  W.I.P.
     /*  isbn():
             This function attempt to get as much item data as possible, from the Google API, so forms can be pre-filled.
             This works for both the ISBN search function, as the bar-code scanner, though only give ISBN/EAN book information in return.
@@ -838,7 +848,7 @@ class LogicController {
                 if( isset( $result[0] ) ) {
                     if( $result[0] === "Titles" ) {
                         $_SESSION["page-data"]["show-titles"] = $result;
-                        $_SESSION["page-data"]["add-album"] = $_POST["album-index"];
+                        $_SESSION["page-data"]["add-album"] = $_POST["album-index"];    // PHP Warning:  Undefined array key "album-index"
 
                         /* Store a tag to see what pop-in was used. */
                         if( isset( $_POST["serie-index"] ) && isset( $_POST["album-index"] ) ) {
@@ -846,7 +856,7 @@ class LogicController {
                             $_SESSION["page-data"]["temp-alb-nr"] = $_POST["album-nummer"];
                         } else {
                             $_SESSION["page-data"]["shown-titles"]["toevoegen"] = true;
-                            $_SESSION["page-data"]["temp-alb-nr"] = $_POST["album-nummer"];
+                            $_SESSION["page-data"]["temp-alb-nr"] = $_POST["album-nummer"];     // PHP Warning:  Undefined array key "album-nummer"
                         }
 
                         return App::redirect( "beheer#isbn-preview" );
@@ -967,8 +977,8 @@ class LogicController {
         /* Validate the userCheck result, and execute the correct logic. */
 		if( !is_array( $userCheck ) ) {
 
-            /* If there is a user id and a serie-index, try to get extra data from the google API */
-            if( isset( $_SESSION["user"]["id"] ) && isset( $_POST["serie-index"] ) && isset( $_POST["album-isbn"] ) ) {
+            /* If there is a serie-index and a album-isbn, try to get extra data from the google API */
+            if( isset( $_POST["serie-index"] ) && isset( $_POST["album-isbn"] ) ) {
                 $result = App::get( "isbn" )->get_user_data( $_POST["album-isbn"] );
 
                 /* If nothing was was, set the scanned isbn as a result, with the coorect array key */
@@ -991,12 +1001,12 @@ class LogicController {
                 $name = App::get( "collection" )->getItemName( "album", [ "Album_Serie" => $_POST["serie-index"] ], [ "Album_Index" => $eColl["Album_Index"] ] );
             }
 
-            /* If the evaluation is to add it, and a album index was set */
+            /* If the evaluation is to add it */
             if( isset( $eColl["addToColl"] ) ) {
                 /* Attempt to add to collection, */
                 $store = App::get( "collection" )->setColl( "collecties", $ids );
 
-                /* If the album was added or not, i store a matching feedback message in the session */
+                /* If the album was added or not, i store a matching feedback or error message in the session */
                 if( !is_array( $store ) ) {
                     App::get( "session" )->setVariable( "header", [ "feedB" =>
                         [ "fetchResponse" => "Het album: " . $name . ", is toegvoegd aan uw collectie!" ]
@@ -1004,12 +1014,12 @@ class LogicController {
                 } else {
                     App::get( "session" )->setVariable( "header", [ "error" => $store ] );
                 }
-            /* If the evaluation is to remove it, and a album index was set */
+            /* If the evaluation is to remove it */
             } elseif( isset( $eColl["remFromColl"] ) ) {
                 /* Attempt to remove from collection, */
                 $store = App::get( "collection" )->remItem( "collecties", $ids );
 
-                /* If the album was removed or not, i store a matching feedback message in the session */
+                /* If the album was removed or not, i store a matching feedback or error message in the session */
                 if( !is_array( $store ) ) {
                     App::get( "session" )->setVariable( "header", [ "feedB" =>
                         [ "fetchResponse" => "Het album: " . $name . ", is verwijdert van uw collectie!" ]

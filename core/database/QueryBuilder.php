@@ -87,7 +87,8 @@ class QueryBuilder {
                         `Gebr_WachtW` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Wachtwood (hashed).',
                         `Gebr_Rechten` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'App Account rechten.',
                         PRIMARY KEY (`Gebr_Index`) COMMENT 'Primary index key voor gebruikers.',
-                        UNIQUE (`Gebr_Email`) COMMENT 'Unique waarde voor e-mails, zodat er geen dubbele waardes zijn.'
+                        UNIQUE (`Gebr_Email`) COMMENT 'Unique waarde voor e-mails, zodat er geen dubbele waardes zijn.',
+                        UNIQUE (`Gebr_Naam`) COMMENT 'Zodat de naam gebruikt kunnen worden voor de login.'
                     ) CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT = 'Tafel voor de App Gebruikers.'",
                     $naam
                 );
@@ -104,23 +105,6 @@ class QueryBuilder {
                     $naam
                 );
                 return $this->executeQuerry( $sql );
-            // Obsolete now
-            // case "serie_meta":
-            //     $sql = sprintf(
-            //         "create table `%s` (
-            //             `Meta_Index` int NOT NULL AUTO_INCREMENT COMMENT 'Unique index.',
-            //             `Serie_Index` int NOT NULL COMMENT 'Serie_Index link.',
-            //             `Gebr_Index` int NOT NULL COMMENT 'Gebr_Index link.',
-            //             `Serie_Opm` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'Korte opmerking, account specifiek.',
-            //             UNIQUE KEY `Meta_Index` (`Meta_Index`),
-            //             KEY `SerieM_Gebr_Link` (`Gebr_Index`),
-            //             KEY `SerieM_Verz_Link` (`Serie_Index`),
-            //             CONSTRAINT `VerzM_Gebr_Link` FOREIGN KEY (`Gebr_Index`) REFERENCES `gebruikers` (`Gebr_Index`),
-            //             CONSTRAINT `SerieM_Serie_Link` FOREIGN KEY (`Serie_Index`) REFERENCES `series` (`Serie_Index`) ON DELETE RESTRICT ON UPDATE RESTRICT
-            //         ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor collectie meta-data.'",
-            //         $naam
-            //     );
-            //     return $this->executeQuerry( $sql );
             case "albums":
                 $sql = sprintf(
                     "create table `%s` (
@@ -204,8 +188,8 @@ class QueryBuilder {
         } else {
             try {
                 $statement = $this->pdo->prepare( $sql );
-                $statement->execute( $id );
-                return $statement->fetchAll( PDO::FETCH_ASSOC );
+                $statement->execute( $id );                         // PHP Warning:  Array to string conversion
+                return $statement->fetchAll( PDO::FETCH_ASSOC );    // PHP Warning:  Array to string conversion
             } catch( PDOException $e ) {
                 return "Error: " . $e->getMessage();
             }

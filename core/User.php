@@ -4,12 +4,19 @@
             Some issues when making duplicate account names and duplicate e-mails, need to reproduce the error.
         - Search Tag -> Got error:
             Not entirely sure what caused this, seems like somehow there was no valid array returned for getting a user ?
+        - Search Tag -> Debug Notes:
+            Unexplained un-reproducable error, there is likely some code somewhere, that is missing the correct parameter.
  */
 
 namespace App\Core;
 
+/*  Reminder of the error array structure, that is required to display the errors:
+        [ "error" => [ "fetchResponse" => { Message that needs to be displayed } ] ];
+ */
+
 use Exception;
 
+// Refactored and tested for the new errors class
 /*  User Class:
         To clean up the LogicController and processing class, i off-loaded the user related things to this class.
         Everything is based on return values, so i only need to evaluate most of the time, and sometimes pass on a error.
@@ -18,17 +25,7 @@ use Exception;
 class User {
     /* Protected user variable, to store the requested user. */
     protected $user;
-
-    /* All potential errors that can occure during user related actions. */
-    protected $userNameErr = [ "userError1" => "Deze gebruiker bestaat al." ];
-    protected $userEmailErr = [ "userError2" => "E-mail adres reeds ingebruik." ];
-    protected $noUserErr = [ "userError1" => "Geen gebruiker gevonden, neem contact op met uw Administrator!" ];
-    protected $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
-    protected $credError = [ "loginFailed" => "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!" ];
-    protected $rightsError = [ "loginFailed" => "U heeft geen rechten om deze pagina te bezoeken !!" ];
-    protected $authFailed = [ "fetchResponse" => "Toegang geweigerd, Account authentication mislukt !" ];
-    protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
-
+    
     /*  setUser($data):
             Attempts to add user to database, and check for duplicate e-mails & names.
                 $data           (Assoc Array)           - The user input, sanitized in the controller.
@@ -42,48 +39,46 @@ class User {
                 On Failed   : Assoc Array
      */
     public function setUser($data) {
-        /* Undefined error variable, it was generating errors before. */
+        /* Message for when the user was added to the database */
+        $userAdd = [ "userCreated" => "Gebruiker aangemaakt, u kunt nu inloggen!" ];
+        /* Undefined error variable, it was generating errors before */
         $errorMsg;
 
-        /* Attempt to request all current users. */
+        /* Attempt to request all current users */
         $tempUsers = App::get( "database" )->selectAll( "gebruikers" );
 
-        /* Check if there where any users set, or if there wa a DB error. */
+        /* Check if there where any users set, or if there wa a DB error */
         if( !is_string( $tempUsers ) ) {
-            /* Loop over all users. */
+            /* Loop over all users */
             foreach( $tempUsers as $key => $user ) {
-                /* If a duplicate name detected, store the correct error. */
+                /* If a duplicate name detected, store the correct error */
                 if( $user["Gebr_Naam"] === $data["Gebr_Naam"] ) {
-                    $errorMsg["error"] = $this->userNameErr;
+                    $errorMsg["error"]["userError1"] = App::get( "errors" )->getError( "userNameErr" );
                 }
 
-                /* If a duplicate e-mail is detected, check if a error was set for a duplicate name and merge both errors. */
+                /* If a duplicate e-mail is detected, check if a error was set for a duplicate name and merge both errors */
                 if( $user["Gebr_Email"] === $data["Gebr_Email"] ) {
-                    if( is_array( $errorMsg ) ) {                                                       // PHP Warning: Undefined variable $errorMsg
-                        $errorMsg["error"] = array_merge( $this->userNameErr, $this->userEmailErr );
-                    /* Otherwhise just add the e-mail error. */
-                    } else {
-                        $errorMsg["error"] = $this->userEmailErr;
-                    }
+                    $errorMsg["error"]["userError2"] = App::get( "errors" )->getError( "userEmailErr" );
                 }
             }
-        /* If there was a DB error getting all users, store the correct error. */
+        /* If there was a DB error getting all users, store the correct error */
         } else {
-            $errorMsg["error"] = $this->noUserErr;
+            $errorMsg["error"]["userError1"] = App::get( "errors" )->getError( "noUserErr" );
         }
 
-        /* Evaluate if there are any errors stored, and attempt to insert the user if not. */
+        /* Evaluate if there are any errors stored, and attempt to insert the user if not */
         if( !isset( $errorMsg ) ) {
             $store = App::get( "database" )->insert( "gebruikers", $data );
-        /* If there where, simply return the errors to the caller. */
+        /* If there where, simply return the errors to the caller */
         } else {
             return $errorMsg;
         }
 
-        /* If there was no error string from the DB, return a feedback message, else return a DB error message. */
-        return !is_string($store) ? $this->userAdd : [ "error" => $this->dbError ];
+        /* If there was no error string from the DB, return a feedback message, else return a DB error message */
+        return !is_string($store) ? $userAdd : [ "error" => App::get( "errors" )->getError( "dbFail" ) ];
     }
 
+    // Refactored and tested for the new errors class
     /*  getUserName():
             Simple get user name function, that sets the user based on the stored id in the session.
             Returns either the user name, or an error that there was no user found (from the register functions).
@@ -98,7 +93,7 @@ class User {
             try {
                 $this->user = App::get( "database" )->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
             } catch(Exception $e) {
-                return $this->noUserErr;
+                return [ "fetchResponse" => App::get( "errors" )->getError( "noUserErr" ) ];
             }
         }
 
@@ -106,6 +101,7 @@ class User {
         return $this->user["Gebr_Naam"];
     }
 
+    // Refactored and tested for the new errors class
     /*  validateUser($id, $pw):
             Validate if the user id is in the database, and validate if the stored PW matches the user input.
                 $id (string)    - The user its credentials, either a valid e-mail or user name.
@@ -119,14 +115,14 @@ class User {
         /* If the $id input was a e-mail, i check if a user is stored with said e-mail, and return a error if not. */
         if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
             if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
-                return $this->credError;
+                return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
             } else {
                 $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0];
             }
         /* If the $id input was not a e-mail, i also check if a user was stored with said e-mail, and return a error if not. */
         } else {
             if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
-                return $this->credError;
+                return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
             } else {
                 $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0];
             }
@@ -137,10 +133,17 @@ class User {
             return TRUE;
         } else {
             unset($this->user);
-            return $this->credError;
+            return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
         }
     }
 
+    /* Debug Notes:
+        - For some reason i get a few errors, that i have not been able to reproduce, related to the user index.
+            - selectAllWhere -> Got error 'PHP message: PHP Warning: Undefined array key 0
+            - $this->user["Gebr_Index"] -> PHP Warning:  Trying to access array offset on value of type null
+     */
+
+    // Refactored and tested for the new errors class
     /*  checkUser($id=null, $rights=null):
             This function checks if the user is valid, and if the user rights are set to Admin or not.
                 $id     (string) - The index of the user we want to check, most likely take from the session.
@@ -153,7 +156,7 @@ class User {
     public function checkUser( $id = null, $rights = null ) {
         /* If the user is not set, and the id was passed, we set the user based on the id. */
         if( !isset( $this->user ) && isset( $id ) ) {
-            $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];   // Got error 'PHP message: PHP Warning: Undefined array key 0
+            $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Index" => $id ] )[0];
         }
 
         /* If the id was passed, and it matches with the current user, */
@@ -166,14 +169,15 @@ class User {
                 return TRUE;
             /* If failed i return the authFailed error */
             } else {
-                return $this->authFailed;
+                return [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ];
             }
-        /* If failed i return the authFailed error */            
+        /* If failed i return the authFailed error */
         } else {
-            return $this->authFailed;
+            return [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ];
         }
     }
 
+    // Refactored and tested for the new errors class
     /*  getUserId():
             To bind users and sessions, i only need there Database index key.
 
@@ -185,10 +189,11 @@ class User {
         if( isset( $this->user ) ) {
             return $this->user["Gebr_Index"];
         } else {
-            return $this->noUserErr;
+            return [ "fetchResponse" => App::get( "errors" )->getErrors( "noUserErr" ) ];
         }
     }
 
+    // Refactored and tested for the new errors class
     /*  evalUser():
             To evaluate the users rights, i return true if account is a user and false if a admin, and a error otherwhise.
             This is only used during the login process, the rest can be done with 'checkUser($id, $rights)'.
@@ -204,10 +209,11 @@ class User {
         } else if( $this->user["Gebr_Rechten"] === "Admin" ) {
             return FALSE;
         } else {
-            return $this->rightsError;
+            return [ "loginFailed" => App::get( "errors" )->getErrors( "rightsError" ) ];
         }
     }
 
+    // Refactored and tested for the new errors class
     /*  updateUser($table, $data, $id):
             This function deals with updating the user, and return a boolean.
                 $table  (string)        - The DB table that needs updating (always 'gebruikers').
@@ -222,6 +228,6 @@ class User {
     public function updateUser( $table, $data, $id ) {
         $store = App::get( "database" )->update( $table, $data, $id );
 
-        return is_string( $store ) ? $this->dbError : TRUE;
+        return is_string( $store ) ? [ "fetchResponse" => App::get( "errors" )->getErrors( "dbFail" ) ] : TRUE;
     }
 }
