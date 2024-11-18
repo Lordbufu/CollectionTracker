@@ -15,26 +15,29 @@ namespace App\Core;
             $savepath (string)  - Hardcoded savepath outside the webroot so they cant be requested.
 
         $_SESSION data structure reminder:
-            - header    : Content that i required in the header, like js related things.
-                - error (Assoc Array)   : Error feedback for the end user.
-                - feedB (Assoc Array)   : General feedback for the end user.
-                - broSto (Assoc Array)  : Data specific for the browser storage for JS.
-            - user      : Content that i use to check user related data.
-                - id    (int)           : The id to bind the user to a specific session.
-                - Admin (bool)          : To seperate users from admins, only set if said user is a admin.
-            - page-data : Content that is related to albums/series and collections.
-                - albums (Assoc Array)      : All album data that needs to be displayed.
-                - series (Assoc Array)      : All serie data that needs to be displayed.
-                - collections (Assoc Array) : All collection data that needs to be displayed.
-            - page-data : Special flags used to trigger specific logic.
+            - header                            : Content that i required in the header, like js related things.
+                - error (Assoc Array)           : Error feedback for the end user.
+                - feedB (Assoc Array)           : General feedback for the end user.
+                - broSto (Assoc Array)          : Data specific for the browser storage for JS.
+
+            - user                              : Content that i use to check user related data.
+                - id    (string)                : The id to bind the user to a specific session.
+                - Admin (bool)                  : To seperate users from admins, only set if said user is a admin.
+
+            - page-data                         : Content that is related to albums/series and collections.
+                - albums (Assoc Array)          : All album data that needs to be displayed.
+                - series (Assoc Array)          : All serie data that needs to be displayed.
+                - collections (Assoc Array)     : All collection data that needs to be displayed.
+
+            - page-data                         : Special flags used to trigger specific logic.
                 - serie-dupl (Assoc Array)      : The POST data from the duplicate serie.
                 - alb-dupl (Assoc Array)        : The POST data from the duplicate album.
                 - Album_Cover (blob)            : Temp store for any uploaded album covers, when a duplicate name was detected.
                 - isbn-search (Assoc Array)     : The results of searching the Google API for a ISBN number.
                 - huidige-serie (string)        : The current selected serie, for both the user and admin.
                 - new-serie (string)            : The serie name that was added using the admin controller for creating a serie.
-                - edit-serie (int)              : The series index of the serie that is requested for editing.
-                - add-album (int)               : The serie index key, that the user wants to add a album to.
+                - edit-serie (string)           : The series index of the serie that is requested for editing.
+                - add-album (string)            : The serie index key, that the user wants to add a album to.
                 - isbn-scan (string)            : A state that indicated the users wants to scan a barcode for its isbn/ean code.
                 - mobile-details (Assoc Array)  : A temp store for album details on mobile phones, this might still be removed later on.
                 - shown-titles (Assoc Array)    : Here i store what pop-in de user came from.

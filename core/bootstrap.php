@@ -3,17 +3,18 @@
             Here i mainly bootstrap App bindings, that allow mw to more easily use certain classes.
             It basically left over from the online course this App is based on, i see no reason to move/change this atm.
      */
-    use App\Core\{ App, Errors, SessionMan, User, Collection, Isbn, Albums };
+    use App\Core\{ App, Errors, SessionMan, User, Albums, Series, Collecties, Isbn, Collection };
     use App\Core\Database\{ QueryBuilder, Connection };
 
-    App::bind( "config", require "../config.php" );                                                             // Create a binding for the DB config file.
-    App::bind( "database", new QueryBuilder( Connection::make( App::get( "config" )["database"] ) ) );          // Create a binding for the querry builder.
-    App::bind( "user", new User );                                                                              // Create a binding for the User class.
-    App::bind( "collection", new Collection );                                                                  // Create a binding for the Collection class
-    App::bind( "session", new SessionMan );                                                                     // Create a binding for the Session Manager class.
-    App::bind( "isbn", new Isbn );                                                                              // Create a binding for the ISBN class.
-
-    /* Refactored OOP stuff */
-    App::bind( "errors", new Errors );                                                                          // Create a binding for the Errors class.
-    App::bind( "albums", new Albums );                                                                          // Create a binding for the Albums class.
+    /* Bind all database related thing, and extra classes */
+    App::bind( "config", require "../config.php" );
+    App::bind( "database", new QueryBuilder( Connection::make( App::get( "config" )["database"] ) ) );
+    App::bind( "user", new User );
+    App::bind( "collection", new Collection );
+    App::bind( "session", new SessionMan );
+    App::bind( "isbn", new Isbn );
+    App::bind( "errors", new Errors );
+    App::bind( "albums", new Albums );
+    App::bind( "series", new Series );
+    App::bind( "collecties", new Collecties );
 ?>

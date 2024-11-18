@@ -1,13 +1,6 @@
 <?php
 
-/*  TODO List:
-        - Re-think/-design the load process, so the 0 rows returned update querry exception isnt a issue.
- */
-
-/*  Search Tags:
-        - Old code:
-            Stuff that was fixed, and can likely be removed after further testing.
- */
+/* TODO List: Review all function and inline comments, to make sure they are up-to-date. */
 
 namespace App\Core;
 
@@ -54,15 +47,7 @@ class Collecties {
             throw new Exception( App::get( "errors" )->getError( "load" ) );
         }
 
-        return TRUE;    // Temp fix for a failed thought process.
-
-        // Old code that doesnt work with the 0 rows changed DB error
-        /* If the class global is a string, i need to throw a DB error */
-        // if( is_string( $this->collections ) ) {
-        //     throw new Exception( App::get( "errors" )->getError( "dbFail" ) );
-        // } else {
-        //     return TRUE;
-        // }
+        return TRUE;
     }
 
     /*  evalCol($id):
@@ -72,7 +57,7 @@ class Collecties {
             Return Value: Boolean
      */
     protected function evalCol( $id ) {
-        // Temp solution for the 0 rows changed error.
+        /* If the global collections, is a string, the table was empty and thus i return FALSE */
         if( is_string( $this->collections ) ) {
             return FALSE;
         }
@@ -97,9 +82,7 @@ class Collecties {
             For now it also returns a Exception, when no items are loaded, this might change later when i convert it into live code.
                 $id (Assoc Array)   - The user id, of the user requesting collection data.
             
-            Return Value:
-                On failure: String.
-                On success: Multi-dimensional, Associative Array ¿.
+            Return Value: Multi-dimensional Array
      */
     public function getCol( $id ) {
         try {
@@ -117,7 +100,7 @@ class Collecties {
             }
         /* Handle any exception messages during this process, this includes any database exceptions */
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
@@ -171,7 +154,7 @@ class Collecties {
             }
         /* Handle any exception messages during this process, this includes any database exceptions */
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 }

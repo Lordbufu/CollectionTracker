@@ -44,12 +44,12 @@ class PagesController {
 
 			/* If no series data is set, set the series data. */
             if( empty( $_SESSION["page-data"]["series"] ) ) {
-				App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getSeries() );
+				App::get( "session" )->setVariable( "page-data", App::get( "series" )->getSeries() );
 			}
 
 			/* If no album data is set, and we are not looking at a series, re-populate the albums. */
 			if( empty( $_SESSION["page-data"]["albums"] ) && isset( $_SESSION["page-data"]["huidige-serie"] ) ) {
-				$serId = [ "Album_Serie" => App::get("collection")->getSerInd( $_SESSION["page-data"]["huidige-serie"] ) ];
+				$serId = [ "Album_Serie" => App::get( "series" )->getSerAtt( "Serie_Index", [ "Serie_Naam" => $_SESSION["page-data"]["huidige-serie"] ] ) ];
 				$tempAlbums = App::get( "albums" )->getAlbums( $serId );
 
 				if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
@@ -82,15 +82,23 @@ class PagesController {
 		if( !is_array( $userCheck ) ) {
 			/* If the series page-data is not set set it, otherwhise unset and reset it. */
 			if( !isset( $_SESSION["page-data"]["series"] ) ) {
-				App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getSeries() ); 
+				App::get( "session" )->setVariable( "page-data", App::get( "series" )->getSeries() ); 
 			} else {
 				unset( $_SESSION["page-data"]["series"] );
-				App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getSeries() );
+				App::get( "session" )->setVariable( "page-data", App::get( "series" )->getSeries() );
 			}
 
 			/* Always unset and reset the collection data, before redirecting to the user page. */
 			unset( $_SESSION["page-data"]["collections"] );
-			App::get( "session" )->setVariable( "page-data", App::get( "collection" )->getColl( "collecties", [ "Gebr_Index" => $_SESSION["user"]["id"] ] ) );
+			$tempCol = App::get( "collecties" )->getCol( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
+
+			/* Either store the error or the collection data in the session */
+			if( !isset( $tempCol["error"] ) ) {
+				App::get( "session" )->setVariable( "page-data", $tempCol );
+			} else {
+				App::get( "session" )->setVariable( "header", $tempCol );
+			}
+			
 			return App::view( "gebruik" );
 		} else {
 			App::get( "session" )->setVariable( "header", $userCheck );

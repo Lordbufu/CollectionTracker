@@ -1,9 +1,6 @@
 <?php
 
-/*  TODO/Clean-up List:
-        Search tag -> Replaced with:
-            Function has been replaced with a new OOP structure, and can be removed.
- */
+/* This class is mostly redundant atm, it will remain untill the last few function have been refactored. */
 
 namespace App\Core;
 
@@ -21,6 +18,7 @@ class Collection {
     protected $dbError = [ "fetchResponse" => "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!" ];
 
     /* Protected internal functions */
+    // Redundant ¿
     /*  getSetId($name):
             Get serie index based on serie name.
 
@@ -33,6 +31,8 @@ class Collection {
         return $tempSerie["Serie_Index"];                                                               // PHP Warning:  Trying to access array offset on value of type null
     }
 
+    // Redundant ¿
+    // Relocated to the Series class
     /*  countAlbums():
             We use the database to count the number of albums in a series, and store it in the global.
             So it can be displayed, each time getSeries is called, the number is updated.
@@ -45,10 +45,9 @@ class Collection {
         return;
     }
 
-    /* Generic functions to reduce item specific functions */
-    //  REVIEW:
-            // the "serie" case needs a review, since i had to change the album one.
-            // Although i had it planned to rewrite this entire class anyway.
+    // Redundant
+    // Albums calls replaced with: App::get("albums")->getAlbAtt( "{column-name}", [ "key1" => "value1" ], [ "key2" => "value2" ] );
+    // Series calls replaced with: App::get("series")->getSerAtt( "{column-name}",  [ "key1" => "value1" ] );
     /*  getItemName($type, $id1, $id2=null):
             This function gets all name requests, depending on the type that was passed.
                 $type   - The type name of the item we want to get the name of (album/serie).
@@ -88,7 +87,9 @@ class Collection {
         }
     }
 
-    // Replacing the album calls.
+    // Redundant
+    // Albums calls replaced with: App::get("albums")->delAlbum( [ "key1" => "value1", "key2" => "value2" ] );
+    // Series calls replaced with: App::get("series")->delSerie( [ "key1" => "value1", "key2" => "value2" ] );
     /*  remItem($table, $id):
             This function deals with all delete/remove requests.
                 $table  - The database table where items need to be removed from.
@@ -104,6 +105,9 @@ class Collection {
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
+    // Redundant
+    // Series calls replaced with: App::get("series")->SerChDup( {name-to-check} );
+    // Album calls replaced with: App::get("albums")->SerChDup( {name-to-check}, [ "key1" => "value1" ] );
     /*  checkItemName($type, $name, $index=null):
             Function to check item names on request, to prevent duplicate DB entries during various actions.
             The check is done after removing all whitespace from the strings, to detect more identical entry cases.
@@ -155,6 +159,8 @@ class Collection {
     }
 
     /* Series Functions */
+    // Redundant
+    // Replaced with: App::get("series")->getSeries();
     /*  getSeries():
             Simple get all series from DB, add a album count to each serie, and return them all to the caller.
 
@@ -166,6 +172,8 @@ class Collection {
         return $this->series;
     }
 
+    // Redundant
+    // Replaced with: App::get("series")->getSerAtt( "{column-name}", [ "key1" => "value1" ] );
     /*  getSerInd($name):
             This function takes a serie name, and finds the matching serie index.
             Before i compare the names, i need to remove any whitespaces, so whitespaces are not compared.
@@ -190,6 +198,8 @@ class Collection {
         }
     }
 
+    // Redundant
+    // Replaced with: App::get("series")->setSerie( [form-data], idForUpdate );
     /*  setSerie($data, update=null):
             This functions set the a serie in the database, all filtering etc is done in the controller.
             And now also deals with updating series, simply indicated by the optional parameter.
@@ -211,6 +221,7 @@ class Collection {
     }
 
     /* Album Functions */
+    // Redundant
     // Replaced with: App::get("albums")->getAlbums( [ "key1" => "value1", "key2" => "value2" ] );
     /*  getAlbums($partId):
             This function gets all albums from a series, based on a serie name or index.
@@ -228,6 +239,8 @@ class Collection {
         }
     }
 
+    // Redundant ¿
+    // Replacement in progress, there was nothing to replace ¿
     /*  getAlbId($name):
             Get serie index based on album name.
                 $name (String)  : The name of the album we want the index for.
@@ -239,6 +252,7 @@ class Collection {
         return $tempAlbum["Album_Index"];
     }
 
+    // Redundant
     // Replaced with: App::get("albums")->setAlbum( [{album-data-array}], [ "key1" => "value1", "key2" => "value2" ] );
     /*  setAlbum($data, update=null):
             This function either adds or updates the album database, based on the $update parameter.
@@ -260,7 +274,8 @@ class Collection {
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
-    /* Collectie Functions */
+    // Redundant
+    // Replaced with: App::get("collecties")->getCol( [ "key1" => "value1" ] )
     /*  getColl($table, $userId):
             Get collection for a specific user from the database.
                 $table (string)         - The db table, so i can just pass that along from other functions, even though its always from collections xD
@@ -280,6 +295,8 @@ class Collection {
         return $this->collections;
     }
 
+    // Redundant
+    // Replaced with: App::get("collecties")->changeCol( [{collection-data}] );
     /*  setColl($table, $data):
             Function to set collection data, so the user can add items to a collection.
                 $table (String)             : The table name that i want to update, witch is always collections in this case.
@@ -303,9 +320,8 @@ class Collection {
         return is_string( $store ) ? $this->dbError : TRUE;
     }
 
-// Currently Under review !
-    // TODO: Add/update/clean-up comments.
-
+    // Redundant
+    // Replaced with: App::get("collecties")->changeCol( [{collection-data}] );
     /*  evalColl($fData, $sIndex, $uIndex):
             This function, evaluates if data fetched from the Google API, is set part of a collection or not.
                 $fData  (Assoc Array)   - The data that was fetched from the Google API, via the Isbn class.

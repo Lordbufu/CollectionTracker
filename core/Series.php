@@ -1,8 +1,6 @@
 <?php
 
-/*  TODO List:
-        - Include countAlbums on the class comments.
- */
+/* TODO List: Review all function and inline comments, to make sure they are up-to-date. */
 
 namespace App\Core;
 
@@ -13,6 +11,10 @@ use Exception;
         Errors are dealt with via try/catch/throw statements, so any feedback to users, has to be done in the controller.
 
         Below a few short examples of how to use this:
+            #count serie albums: The countAlbums() function.
+                To count albums from all series:
+                    $this->countAbl
+
             # get/load series: The getSeries() and loadSeries() function.
                 To load all series:
                     App::get("series")->getSeries()
@@ -68,16 +70,16 @@ class Series {
         if( is_string( $this->series ) ) {
             throw new Exception( App::get( "errors" )->getError( "dbFail" ) );
         } else {
-            $this->countAlbums();
+            $this->countAlb();
             return TRUE;
         }
     }
 
     /*  countAlbums():
             We use the database to count the number of albums in a series, and store it in the global.
-            So it can be displayed, each time getSeries is called, the number is updated.
+            So it can be displayed, each time loadSeries() is called, the number is updated.
      */
-    protected function countAlbums() {
+    protected function countAlb() {
         foreach( $this->series as $key => $value ) {
             $this->series[$key]["Album_Aantal"] = App::get( "database" )->countAlbums( $value["Serie_Index"] );
         }
@@ -113,7 +115,7 @@ class Series {
 
         /* Catch and return any exceptions */
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
@@ -157,7 +159,7 @@ class Series {
             /* If either the insert or update returned an error, i return a generic error, else i return TRUE */
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
@@ -183,7 +185,7 @@ class Series {
             /* Throw exception if database returned a error string, or TRUE  if not */
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
 
@@ -200,7 +202,6 @@ class Series {
             $key = implode( array_keys( array_slice( $id, 0, 1 ) ) );
 
             /* Load all series */
-            $this->loadSeries();
             if( $this->loadSeries() ) {
                 /* Loop over the serie data, with a inner/outer loop */
                 foreach( $this->series as $oKey => $oValue ) {
@@ -220,8 +221,48 @@ class Series {
             }
         /* Handle any exception messages during this process */
         } catch( Exception $e ) {
-            return $e->getMessage();
+            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
         }
     }
+
+    /* SerChDup($name, $id):
+        Fairly straight forward duplicate name check, returning a true of false.
+            $name      (String)     - The name that needs to be checked.
+            $duplicate (Boolean)    - A store to set when comparing inside the loop.
+        
+        Return Value:
+            On failure - Multi-Dimensional Array
+            On Success - Boolean
+     */
+    public function SerChDup( $name ) {
+        $duplicate;
+
+        /* (Re-)Load series */
+        if( $this->loadSeries() ) {
+            /* Loop over all series */
+            foreach( $this->series as $oKey => $oValue) {
+                /* Loop over each serie */
+                foreach( $oValue as $iKey => $iValue ) {
+                    /* Stop when key is Serie_Naam */
+                    if( $iKey == "Serie_Naam" ) {
+                        /* Compate Serie_Naam value with $name, set duplicate if its a match */
+                        if( str_replace( " ", "", $iValue ) == str_replace( " ", "", $name ) ) {
+                            $duplicate = TRUE;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /* If duplicate is not set return error, else return duplicate (TRUE) */
+        if( !isset( $duplicate ) ) {
+            return FALSE;
+        } else {
+            return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "dupl" ) ] ];
+        }
+    }
+
 }
+
 ?>
