@@ -228,13 +228,14 @@ class Series {
     /* SerChDup($name, $id):
         Fairly straight forward duplicate name check, returning a true of false.
             $name      (String)     - The name that needs to be checked.
+            $id        (String)     - The index of the serie that is being edited.
             $duplicate (Boolean)    - A store to set when comparing inside the loop.
         
         Return Value:
             On failure - Multi-Dimensional Array
             On Success - Boolean
      */
-    public function SerChDup( $name ) {
+    public function SerChDup( $name, $id=null ) {
         $duplicate;
 
         /* (Re-)Load series */
@@ -245,17 +246,23 @@ class Series {
                 foreach( $oValue as $iKey => $iValue ) {
                     /* Stop when key is Serie_Naam */
                     if( $iKey == "Serie_Naam" ) {
-                        /* Compate Serie_Naam value with $name, set duplicate if its a match */
+                        /* Compare Serie_Naam value with $name, set duplicate if its a match */
                         if( str_replace( " ", "", $iValue ) == str_replace( " ", "", $name ) ) {
                             $duplicate = TRUE;
+
+                            /* Check if the provided id, is the id of the item that was checked, then if duplicate is set unset it */
+                            if( !empty( $id ) && $oValue["Serie_Index"] == $id ) {
+                                if( isset( $duplicate ) ) {
+                                    unset( $duplicate );
+                                }
+                            }
                         }
                     }
                 }
             }
         }
 
-
-        /* If duplicate is not set return error, else return duplicate (TRUE) */
+        /* If duplicate is not set return FALSE, else return error */
         if( !isset( $duplicate ) ) {
             return FALSE;
         } else {

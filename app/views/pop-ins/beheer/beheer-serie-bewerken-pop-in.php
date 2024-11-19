@@ -27,6 +27,8 @@
 
                         <div class="modal-form-left-cont" id="modal-form-left-cont">
 
+                            <p id="modal-small-text" class="modal-small-text" > De serie naam is een verplicht veld </p>
+
                             <label class="modal-form-label">
                                 <input type="text" class="modal-form-input" id="serieb-form-serieNaam" name="naam" placeholder="" value="<?= $value["Serie_Naam"] ?>" autocomplete="on" required />
                                 <span class="modal-form-span"> Serie Naam </span>

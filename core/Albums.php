@@ -131,7 +131,7 @@ class Albums {
             }
 
             /* If either the insert or update returned an error, i return a generic error, else i return TRUE */
-            return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
+            return !empty( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         /* Handle any exception messages during this process */
         } catch( Exception $e ) {
             return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
@@ -219,14 +219,15 @@ class Albums {
 
     /*  albChDup($name, $id):
             This function simply checks, if a album name is duplicate with the specfified serie.
-                $name   (string) - The name of the album that needs to be checked.
-                $sId    (string) - The serie index the album is part of.
+                $name (String)      - The name of the album that needs to be checked.
+                $sId  (Assoc Array) - The serie index the album is part of.
+                $aId  (String)      - The index of the album being edited.
             
             Return Value:
                 On failure  - Multi-Dimensional Array
                 On success  - Boolean.
      */
-    public function albChDup( $name, $sId ) {
+    public function albChDup( $name, $sId, $aId=null ) {
         $duplicate;
 
         if( $this->loadAlbums( $sId ) ) {
@@ -235,6 +236,12 @@ class Albums {
                     if( $iKey == "Album_Naam" ) {
                         if( $name == $iValue ) {
                             $duplicate = TRUE;
+                            if( isset( $aId ) && $oValue["Album_Index"] == $aId ) {
+                                
+                                if( isset( $duplicate ) ) {
+                                    unset( $duplicate );
+                                }
+                            }
                         }
                     }
                 }

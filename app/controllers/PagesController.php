@@ -61,7 +61,7 @@ class PagesController {
 
 			return App::view( "beheer" );
 		} else {
-			App::get( "session" )->setVariable( "header", [ "error" => $userCheck ] );
+			App::get( "session" )->setVariable( "header", $userCheck );
 			return App::redirect( "" );
 		}
 	}

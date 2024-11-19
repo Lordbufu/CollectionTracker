@@ -27,9 +27,9 @@
         </div>
 
         <?php // Store the titles,
-            if( isset( $_SESSION["page-data"]["shown-titles"] ) ) {
-                $store = $_SESSION["page-data"]["shown-titles"];
-                unset( $_SESSION["page-data"]["shown-titles"] );
+            if( isset( $_SESSION["page-data"]["show-titles"] ) ) {
+                $store = $_SESSION["page-data"]["show-titles"];
+                unset( $_SESSION["page-data"]["show-titles"] );
             }
         ?>
 

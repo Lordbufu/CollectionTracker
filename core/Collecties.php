@@ -138,11 +138,11 @@ class Collecties {
             /* If the album is part of this user collection, i remove it and prepare a user feedback message */
             if( $eval ) {
                 $store = App::get( "database" )->remove( "collecties", [ "Gebr_Index" => $data["Gebr_Index"], "Alb_Index" => $data["Alb_Index"] ] );
-                $feedback = [ "fetchResponse" => "The album: {$albumNaam}, was removed from your collection." ];
+                $feedback = [ "fetchResponse" => "Het album: {$albumNaam}, is uit je collectie verwijdert." ];
             /* If the album is not part of this user collection, i add it and prepare a user feedback message */
             } else {
                 $store = App::get( "database" )->insert( "collecties", $data );
-                $feedback = [ "fetchResponse" => "The album: {$albumNaam}, was added to your collection." ];
+                $feedback = [ "fetchResponse" => "Het album: {$albumNaam}, is aan je collectie toegevoegd." ];
             }
 
             /* Return the feedback if the data was stored/removed */

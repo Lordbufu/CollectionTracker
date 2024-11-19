@@ -371,8 +371,17 @@
 /* fake extra trigger to align items with a image preview */
 /* Fake extra trigger */
 .modal-form-fake-extraTriger {                                                                                  
-    height: 7.4rem;
-    width: 2.5rem;
+    height: 7.4em;
+    width: 2.5em;
     border: unset;
     margin: 0.6em 0;
+}
+
+/* Required field text */
+#modal-small-text {
+    font-size: 0.7em;
+    font-style: italic;
+    font-weight: bold;
+    color: red;
+    margin-bottom: 0.35em;
 }

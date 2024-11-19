@@ -78,7 +78,6 @@ class User {
         return !is_string($store) ? $userAdd : [ "error" => App::get( "errors" )->getError( "dbFail" ) ];
     }
 
-    // Refactored and tested for the new errors class
     /*  getUserName():
             Simple get user name function, that sets the user based on the stored id in the session.
             Returns either the user name, or an error that there was no user found (from the register functions).
@@ -93,7 +92,7 @@ class User {
             try {
                 $this->user = App::get( "database" )->selectAllWhere( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
             } catch(Exception $e) {
-                return [ "fetchResponse" => App::get( "errors" )->getError( "noUserErr" ) ];
+                return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "noUserErr" ) ] ];
             }
         }
 
@@ -101,7 +100,6 @@ class User {
         return $this->user["Gebr_Naam"];
     }
 
-    // Refactored and tested for the new errors class
     /*  validateUser($id, $pw):
             Validate if the user id is in the database, and validate if the stored PW matches the user input.
                 $id (string)    - The user its credentials, either a valid e-mail or user name.
@@ -115,14 +113,14 @@ class User {
         /* If the $id input was a e-mail, i check if a user is stored with said e-mail, and return a error if not. */
         if( filter_var( $id, FILTER_VALIDATE_EMAIL ) ) {
             if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0] ) ) {
-                return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
+                return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ] ];
             } else {
                 $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Email" => $id ] )[0];
             }
         /* If the $id input was not a e-mail, i also check if a user was stored with said e-mail, and return a error if not. */
         } else {
             if( !isset( App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0] ) ) {
-                return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
+                return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ] ];
             } else {
                 $this->user = App::get( "database" )->selectAllWhere( "gebruikers", [ "Gebr_Naam" => $id ] )[0];
             }
@@ -133,17 +131,10 @@ class User {
             return TRUE;
         } else {
             unset($this->user);
-            return [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ];
+            return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "credError" ) ] ];
         }
     }
 
-    /* Debug Notes:
-        - For some reason i get a few errors, that i have not been able to reproduce, related to the user index.
-            - selectAllWhere -> Got error 'PHP message: PHP Warning: Undefined array key 0
-            - $this->user["Gebr_Index"] -> PHP Warning:  Trying to access array offset on value of type null
-     */
-
-    // Refactored and tested for the new errors class
     /*  checkUser($id=null, $rights=null):
             This function checks if the user is valid, and if the user rights are set to Admin or not.
                 $id     (string) - The index of the user we want to check, most likely take from the session.
@@ -169,15 +160,14 @@ class User {
                 return TRUE;
             /* If failed i return the authFailed error */
             } else {
-                return [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ];
+                return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ] ];
             }
         /* If failed i return the authFailed error */
         } else {
-            return [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ];
+            return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "authFailed" ) ] ];
         }
     }
 
-    // Refactored and tested for the new errors class
     /*  getUserId():
             To bind users and sessions, i only need there Database index key.
 
@@ -189,11 +179,10 @@ class User {
         if( isset( $this->user ) ) {
             return $this->user["Gebr_Index"];
         } else {
-            return [ "fetchResponse" => App::get( "errors" )->getErrors( "noUserErr" ) ];
+            return [ "error" => [ "fetchResponse" => App::get( "errors" )->getErrors( "noUserErr" ) ] ];
         }
     }
 
-    // Refactored and tested for the new errors class
     /*  evalUser():
             To evaluate the users rights, i return true if account is a user and false if a admin, and a error otherwhise.
             This is only used during the login process, the rest can be done with 'checkUser($id, $rights)'.
@@ -209,11 +198,10 @@ class User {
         } else if( $this->user["Gebr_Rechten"] === "Admin" ) {
             return FALSE;
         } else {
-            return [ "loginFailed" => App::get( "errors" )->getErrors( "rightsError" ) ];
+            return [ "error" => [ "loginFailed" => App::get( "errors" )->getErrors( "rightsError" ) ] ];
         }
     }
 
-    // Refactored and tested for the new errors class
     /*  updateUser($table, $data, $id):
             This function deals with updating the user, and return a boolean.
                 $table  (string)        - The DB table that needs updating (always 'gebruikers').
@@ -228,6 +216,6 @@ class User {
     public function updateUser( $table, $data, $id ) {
         $store = App::get( "database" )->update( $table, $data, $id );
 
-        return is_string( $store ) ? [ "fetchResponse" => App::get( "errors" )->getErrors( "dbFail" ) ] : TRUE;
+        return is_string( $store ) ? [ "error" => [ "fetchResponse" => App::get( "errors" )->getErrors( "dbFail" ) ] ] : TRUE;
     }
 }

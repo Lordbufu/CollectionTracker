@@ -19,35 +19,37 @@
                         if( isset( $_SESSION["page-data"]["album-edit"] ) ) {
                             foreach( $_SESSION["page-data"]["albums"] as $index => $album ) {
                                 if( $album["Album_Index"] == $_SESSION["page-data"]["album-edit"] ) {
-                                    $store = $_SESSION["page-data"]["albums"][$index];
+                                    $eStore = $_SESSION["page-data"]["albums"][$index];
                                 }
                             }
 
                             unset( $_SESSION["page-data"]["album-edit"] );
                         } elseif( isset( $_SESSION["page-data"]["isbn-search"] ) ) {
-                            $store = $_SESSION["page-data"]["isbn-search"]; 
+                            $eStore = $_SESSION["page-data"]["isbn-search"]; 
                         }
                     ?>
 
                     <form class="modal-form" id="albumb-form" enctype="multipart/form-data" method="post" action="/albumBew" >
 
-                    <?php if( isset( $store["Album_Serie"] ) ) : ?>
-                        <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="<?= $store["Album_Serie"] ?>" hidden />
+                    <?php if( isset( $eStore["Album_Serie"] ) ) : ?>
+                        <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="<?= $eStore["Album_Serie"] ?>" hidden />
                     <?php else : ?>
                         <input type="text" class="modal-form-indexS" id="albumb-form-indexS" name="serie-index" value="" hidden />
                     <?php endif; ?>
 
-                    <?php if( isset( $store["Album_Index"] ) ) : ?>
-                        <input type="text" class="modal-form-indexA" id="albumb-form-indexA" name="album-index" value="<?= $store["Album_Index"] ?>" hidden />
+                    <?php if( isset( $eStore["Album_Index"] ) ) : ?>
+                        <input type="text" class="modal-form-indexA" id="albumb-form-indexA" name="album-index" value="<?= $eStore["Album_Index"] ?>" hidden />
                     <?php else : ?>
                         <input type="text" class="modal-form-indexA" id="albumb-form-indexA" name="album-index" value="" hidden />
                     <?php endif; ?>
 
                         <div class="modal-form-left-cont">
 
+                            <p id="modal-small-text" class="modal-small-text" > De album naam & isbn zijn verplichte velden </p>
+
                             <label class="modal-form-label">
-                            <?php if( isset( $store["Album_Naam"] ) ) : ?>
-                                <input type="text" class="modal-form-input" id="albumb-form-alb-naam" name="album-naam" placeholder="" value="<?= $store["Album_Naam"] ?>" autocomplete="on" required />
+                            <?php if( isset( $eStore["Album_Naam"] ) ) : ?>
+                                <input type="text" class="modal-form-input" id="albumb-form-alb-naam" name="album-naam" placeholder="" value="<?= $eStore["Album_Naam"] ?>" autocomplete="on" required />
                             <?php else : ?>
                                 <input type="text" class="modal-form-input" id="albumb-form-alb-naam" name="album-naam" placeholder="" value="" autocomplete="on" required />
                             <?php endif; ?>
@@ -55,8 +57,8 @@
                             </label>
 
                             <label class="modal-form-label">
-                            <?php if( isset( $store["Album_Nummer"] ) ) : ?>
-                                <input type="number" min="0" class="modal-form-input" id="albumb-form-alb-nr" name="album-nummer" placeholder="" value="<?= $store["Album_Nummer"] ?>" autocomplete="on" />
+                            <?php if( isset( $eStore["Album_Nummer"] ) ) : ?>
+                                <input type="number" min="0" class="modal-form-input" id="albumb-form-alb-nr" name="album-nummer" placeholder="" value="<?= $eStore["Album_Nummer"] ?>" autocomplete="on" />
                             <?php else : ?>
                                 <input type="number" min="0" class="modal-form-input" id="albumb-form-alb-nr" name="album-nummer" placeholder="" value="" autocomplete="on" />
                             <?php endif; ?>
@@ -64,8 +66,8 @@
                             </label>
 
                             <label class="modal-form-label">
-                            <?php if( isset( $store["Album_UitgDatum"] ) ) : ?>
-                                <input type="date" class="modal-form-input" id="albumb-form-alb-date" name="album-datum" placeholder=""  value="<?= $store["Album_UitgDatum"] ?>" autocomplete="on" />
+                            <?php if( isset( $eStore["Album_UitgDatum"] ) ) : ?>
+                                <input type="date" class="modal-form-input" id="albumb-form-alb-date" name="album-datum" placeholder=""  value="<?= $eStore["Album_UitgDatum"] ?>" autocomplete="on" />
                             <?php else : ?>
                                 <input type="date" class="modal-form-input" id="albumb-form-alb-date" name="album-datum" placeholder=""  value="" autocomplete="on" />                                
                             <?php endif; ?>
@@ -73,8 +75,8 @@
                             </label>
 
                             <label class="modal-form-label">
-                            <?php if( isset( $store["Album_Schrijver"] ) ) : ?>
-                                <input type="text" class="modal-form-input" id="albumb-form-alb-schr" name="album-schrijver" placeholder="" value=<?= $store["Album_Schrijver"] ?> autocomplete="on" />
+                            <?php if( isset( $eStore["Album_Schrijver"] ) ) : ?>
+                                <input type="text" class="modal-form-input" id="albumb-form-alb-schr" name="album-schrijver" placeholder="" value="<?= $eStore["Album_Schrijver"] ?>" autocomplete="on" />
                             <?php else : ?>
                                 <input type="text" class="modal-form-input" id="albumb-form-alb-schr" name="album-schrijver" placeholder="" autocomplete="on" />
                             <?php endif; ?>
@@ -82,8 +84,8 @@
                             </label>
 
                             <div class="modal-album-cover" id="albumB-cover">
-                            <?php if( !empty( $store["Album_Cover"] ) ) : ?>
-                                <img class="modal-album-cover-img" id="albumb-cover-img" src="<?= $store["Album_Cover"] ?>" alt='album-cover'/>
+                            <?php if( !empty( $eStore["Album_Cover"] ) ) : ?>
+                                <img class="modal-album-cover-img" id="albumb-cover-img" src="<?= $eStore["Album_Cover"] ?>" alt='album-cover'/>
                             <?php endif; ?>
                             </div>
 
@@ -93,8 +95,8 @@
                             </label>
 
                             <label class="modal-form-label">
-                            <?php if( isset( $store["Album_ISBN"] ) ) : ?>
-                                <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="<?= $store["Album_ISBN"] ?>" autocomplete="on" required />
+                            <?php if( isset( $eStore["Album_ISBN"] ) ) : ?>
+                                <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="<?= $eStore["Album_ISBN"] ?>" autocomplete="on" required />
                             <?php else : ?>
                                 <input class="modal-form-input" id="albumb-form-alb-isbn" name="album-isbn" placeholder="" value="" autocomplete="on" required />
                             <?php endif; ?>
@@ -102,8 +104,8 @@
                             </label>
 
                             <label class="modal-form-label" >
-                            <?php if( isset( $store["Album_Opm"] ) ) :?>
-                                <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="<?= $store["Album_Opm"] ?>" autocomplete="on" />
+                            <?php if( isset( $eStore["Album_Opm"] ) ) :?>
+                                <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="<?= $eStore["Album_Opm"] ?>" autocomplete="on" />
                             <?php else : ?>
                                 <input class="modal-form-input" id="albumb-form-alb-opm" name="album-opm" placeholder="" value="" autocomplete="on" />
                             <?php endif; ?>
@@ -127,7 +129,7 @@
 
                             <div class="modal-form-fake-triger" > </div>
 
-                        <?php if( !empty( $store["Album_Cover"] ) ) : ?>
+                        <?php if( !empty( $eStore["Album_Cover"] ) ) : ?>
                             <div class="modal-form-fake-triger" id="modal-form-albEdit-cov-trigger" > </div>
                         <?php else : ?>
                             <div class="modal-form-fake-triger" id="modal-form-albEdit-cov-trigger" hidden > </div>

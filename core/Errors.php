@@ -1,8 +1,9 @@
 <?php
-/*  TODO\Reminder List:
-        - Review how i could best add the other classes i wrote, so i can have all errors in here.
-        - Review if switch is the best way to check the error request, so far performance seems good so far.
+
+/*  TODO List:
+        - Add somekind of comment to the class itself.
  */
+
 namespace App\Core;
 
 /*  Reminder of the error array structure, that is required to display the errors:

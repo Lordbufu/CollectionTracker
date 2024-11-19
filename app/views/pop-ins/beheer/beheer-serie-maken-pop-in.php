@@ -19,6 +19,8 @@
 
                         <div class="modal-form-left-cont" id="modal-form-left-cont">
 
+                            <p id="modal-small-text" class="modal-small-text" > De serie naam is een verplicht veld </p>
+
                             <label class="modal-form-label">
                             <?php if( isset( $_SESSION["page-data"]["new-serie"] ) ): ?>
                                 <input type='text' class='modal-form-input' id='seriem-form-serieNaam' name='serie-naam' placeholder='' value='<?=$_SESSION["page-data"]["new-serie"]?>' autocomplete='on' required >

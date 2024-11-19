@@ -1,12 +1,4 @@
 <?php
-/*  TODO List:
-        - Review setVariable() its special tags, because i think "isbn-search" isnt usefull at the end of the loop anymore.
-        - Remove/replace the last debug lines, they should not longer be usefull, or need to be replaced with something more constructive.
-        - Do a final review of the ini_set() settings in the __construct() function, to ensure im not doing something stupid or unwanted.
- */
-
-// Search tags:
-    // redundant
 
 namespace App\Core;
 
@@ -40,6 +32,7 @@ namespace App\Core;
                 - add-album (string)            : The serie index key, that the user wants to add a album to.
                 - isbn-scan (string)            : A state that indicated the users wants to scan a barcode for its isbn/ean code.
                 - mobile-details (Assoc Array)  : A temp store for album details on mobile phones, this might still be removed later on.
+                - show-title (Assoc Array)      : Here i store the Google API titles, if more then 1 item was found.
                 - shown-titles (Assoc Array)    : Here i store what pop-in de user came from.
                     - bewerken  (boolean)       : Indicates the isbn search was doing via the edit pop-in.
                     - toevoegen (boolean)       : Indicates the isbn search was doing via the add pop-in.
@@ -100,51 +93,34 @@ class SessionMan {
      */
     public function setVariable( $name, $data ) {
         foreach( $data as $key => $value ) {
-            /* Loop specifically for isbn-searches */
-            if( $key == "isbn-search" ) {
-                $_SESSION[$name][$key] = $value;
-                return;
-            }
-
-            if( isset( $value["Serie_Index"] ) ) {
-                $_SESSION[$name]["series"] = $data;
-                return;
-            }
-
-            if( isset( $value["Album_Index"] ) ) {
-                $_SESSION[$name]["albums"] = $data;
-                return;
-            }
-
             /* Main loop starting with anything that isnt a array */
             if( !is_array( $value ) ) {
                 $_SESSION[$name][$key] = $value;
                 return;
-
-            /* Everything else that isnt single value */
-            } else {
-
-                /* Serie index values */
-                if( isset( $value["Serie_Index"] ) ) {
-                    //$_SESSION[$name]["series"] = $data;
-                    //return;
-                /* Album index values */
-                } elseif( isset( $value["Album_Index"] ) ) {
-                    //$_SESSION[$name]["albums"] = $data;
-                    //return;
-                /* Collection index values */
-                } elseif( isset( $value["Col_Index"] ) ) {
-                    $_SESSION[$name]["collections"] = $data;
-                    return;
-                /* All remaining tags that are expected */
-                } elseif( $key == "feedB"  || $key == "error" || $key == "broSto" || $key == "album-dupl" || $key == "serie-dupl" || "isbn-search") {
-                    $_SESSION[$name][$key] = $value;
-                    return;
-
-                //  TODO: Temp debug error, should never be reached during production.
-                } else {
-                    die("Unexpected data is being passed to the session setVariable function!");
-                }
+            /* Loop for storing series data */
+            } else if( isset( $value["Serie_Index"] ) && $key != "serie-dupl" ) {
+                $_SESSION[$name]["series"] = $data;
+                return;
+            /* Loop for storing album data */
+            } else if( isset( $value["Album_Index"] ) && $key != "isbn-search" && $key != "isbn-scan" && $key != "album-dupl" ) {
+                $_SESSION[$name]["albums"] = $data;
+                return;
+            /* Loop for storing collection data */
+            } else if( isset( $value["Col_Index"] ) ) {
+                $_SESSION[$name]["collections"] = $data;
+                return;
+            /* Loop specifically for isbn-searches and barcode scans */
+            } if( $key == "isbn-search" || $key == "isbn-scan" ) {
+                $_SESSION[$name][$key] = $value;
+                return;
+            /* Loop for duplicate items */
+            } else if( $key == "album-dupl" && $key == "serie-dupl" ) {
+                $_SESSION[$name][$key] = $value;
+                return;
+            /* Loop for errors, feedback and browser storage  */
+            } else if( $key == "feedB"  || $key == "error" || $key == "broSto" ) {
+                $_SESSION[$name][$key] = $value;
+                return;
             }
         }
     }
