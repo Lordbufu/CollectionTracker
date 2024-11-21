@@ -163,13 +163,14 @@ class Series {
         }
     }
 
+    // Totally Finished
     /*  delSerie($id):
             This function deals with all delete requests, database errors are replaced with a generic error.
                 $id     - The id('s) associated with said item, can support up to 2 id pairs.
                 $store  - The temp store to evaluate the execution of the query.
             
             Return Value:
-                On failure   -> String.
+                On failure   -> Array
                 On success   -> Boolean
      */
     public function delSerie( $id ) {
@@ -184,17 +185,19 @@ class Series {
 
             /* Throw exception if database returned a error string, or TRUE  if not */
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
+    // Totally Finished
     /*  getSerAtt( $name, $id ):
-            This is basically a extended version, of a getId() function, but then for any attribute from a object.
-                $name (string)      - The name of the database column we want to request.
-                $id (Assoc Array)   - The identifier we have of the object (Expecting).
+            This is basically a extended version, of a getId() function, but then for any attribute from a serie object.
+                $name (String)  - The name of the database column we want to request.
+                $id (Array)     - The identifier we have of the object (Expecting).
+                $key (String)   - The $id index as string value, so i can compare it to indexes in the itteration loops.
             
-            Return Value: String.
+            Return Value:
+                On failure - Array
+                On success - String
      */
     public function getSerAtt( $name, $id ) {
         try {
@@ -217,14 +220,14 @@ class Series {
                 /* Throw exception message, if no match was found */
                 throw new Exception( App::get("errors")->getError( "attr" ) );
             } else {
+                /* Throw exception message, if no items are loaded */
                 throw new Exception( App::get( "errors" )->getError( "noItems" ) );
             }
         /* Handle any exception messages during this process */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
+    // Totally Finished
     /* SerChDup($name, $id):
         Fairly straight forward duplicate name check, returning a true of false.
             $name      (String)     - The name that needs to be checked.
@@ -232,42 +235,44 @@ class Series {
             $duplicate (Boolean)    - A store to set when comparing inside the loop.
         
         Return Value:
-            On failure - Multi-Dimensional Array
+            On failure - Array
             On Success - Boolean
      */
     public function SerChDup( $name, $id=null ) {
-        $duplicate;
+        try {
+            $duplicate;
 
-        /* (Re-)Load series */
-        if( $this->loadSeries() ) {
-            /* Loop over all series */
-            foreach( $this->series as $oKey => $oValue) {
-                /* Loop over each serie */
-                foreach( $oValue as $iKey => $iValue ) {
-                    /* Stop when key is Serie_Naam */
-                    if( $iKey == "Serie_Naam" ) {
-                        /* Compare Serie_Naam value with $name, set duplicate if its a match */
-                        if( str_replace( " ", "", $iValue ) == str_replace( " ", "", $name ) ) {
-                            $duplicate = TRUE;
+            /* (Re-)Load series */
+            if( $this->loadSeries() ) {
+                /* Loop over all series */
+                foreach( $this->series as $oKey => $oValue) {
+                    /* Loop over each serie */
+                    foreach( $oValue as $iKey => $iValue ) {
+                        /* Stop when key is Serie_Naam */
+                        if( $iKey == "Serie_Naam" ) {
+                            /* Compare Serie_Naam value with $name, set duplicate if its a match */
+                            if( str_replace( " ", "", $iValue ) == str_replace( " ", "", $name ) ) {
+                                $duplicate = TRUE;
 
-                            /* Check if the provided id, is the id of the item that was checked, then if duplicate is set unset it */
-                            if( !empty( $id ) && $oValue["Serie_Index"] == $id ) {
-                                if( isset( $duplicate ) ) {
-                                    unset( $duplicate );
+                                /* Check if the provided id, is the id of the item that was checked, then if duplicate is set unset it */
+                                if( !empty( $id ) && $oValue["Serie_Index"] == $id ) {
+                                    if( isset( $duplicate ) ) {
+                                        unset( $duplicate );
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        /* If duplicate is not set return FALSE, else return error */
-        if( !isset( $duplicate ) ) {
-            return FALSE;
-        } else {
-            return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "dupl" ) ] ];
-        }
+            /* If duplicate is not set return FALSE, else return error */
+            if( !isset( $duplicate ) ) {
+                return FALSE;
+            } else {
+                throw new Exception( App::get( "errors" )->getError( "dupl" ) );
+            }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
 }

@@ -26,6 +26,8 @@
 //              Seems like the issue is solved, by replacing 'isbn:' with 'ISBN:' in the url. ¿
 //      - Figure out what todo with several authors on album.
 
+// Search Tag: W.I.P.
+
 namespace App\Core;
 
 use App\Core\App;
@@ -153,7 +155,7 @@ class Isbn {
         }
     }
 
-    /*  get_data($isbn, $index=null, name=null):
+    /*  get_data($isbn, $index, name):
             This function uses a isbn from either a user or scanned input, and parses the google API to find related data.
             If there is related data, that data is then checked and parsed for usefull things, and stored in the global new data array.
                 $isbn (string)                  - The isbn code from the user, or the build-in scan function.
@@ -163,7 +165,7 @@ class Isbn {
                 $data (Multi-dim Assoc Array)   - The string data converted via Json into easier to process data for PhP.
                 $tempNames (Array)              - A default array, for storing names from multiple items, that the user has to pick one from.
             
-            Return Value: Assoc Array.
+            Return Value: Associative Array.
      */
     public function get_data( $isbn, $index=null, $name=null ) {
         /* A temp data array, so i can easily detect how many items there are parsed. */
@@ -223,9 +225,6 @@ class Isbn {
         if( !isset( $this->new["Album_ISBN"] ) ) {
             $this->new["Album_ISBN"] = $isbn;
         }
-
-        //die( var_dump( print_r( $this->temp ) ) );
-        //die( var_dump( print_r( $this->new ) ) );
 
         return $this->new;
     }

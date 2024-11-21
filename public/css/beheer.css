@@ -241,9 +241,10 @@
     width: 5em;
 }
 
-.serie-naam, .serie-maker {
+/* Uncommented: because it messed up the overall layout to much */
+/* .serie-naam, .serie-maker {
     width: 12em;
-}
+} */
 
 /* Background image for the view/edit/delete button */
 .serie-bekijken-butt {
@@ -287,7 +288,7 @@
 
 /* Make sure the name always fits */
 .album-naam {
-    width: fit-content;
+    width: 10em;
     padding: 0.2em;
 }
 
@@ -301,7 +302,7 @@
 }
 
 .album-schr {
-    width: 3em;
+    width: 7em;
 }
 
 /* Background image for the edit/delete button */
@@ -341,3 +342,15 @@
 
 /* Pop-in specific: */
 .butt-box { align-items: center; }
+
+/* Last minute changes */
+/* Dive text box inside a table, to enable overflow scrolling. */
+.album-opm-div {
+    overflow-y: scroll;
+    height: 4em;
+}
+
+/* Extra fake div to align the isbn search button */
+#small-text-triger {
+    height: 1em;
+}

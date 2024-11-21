@@ -1,4 +1,5 @@
 /* Globals for the input listen events */
+let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm, pwSubButt;
 let naamChecked = false, isbnChecked = false;
 
 /* On-pageload init function, triggered from main.js */
@@ -95,9 +96,9 @@ function initBeheer() {
 
     const config = {
         fps: 10,
-        // supportedScanTypes: [
-        //     Html5QrcodeScanType.SCAN_TYPE_CAMERA
-        // ]
+        supportedScanTypes: [
+            Html5QrcodeScanType.SCAN_TYPE_CAMERA
+        ]
     };
 
     html5QrcodeScanner = new Html5QrcodeScanner( "reader", config );
@@ -112,6 +113,17 @@ function initBeheer() {
     if( localStorage.fetchResponse !== null ) {
         displayMessage( localStorage.fetchResponse );
         localStorage.removeItem( "fetchResponse" );
+    }
+
+    /* Error loops, for when there are more then 1 error to display */
+    if(  localStorage.error1 ) {
+        displayMessage( localStorage.error1 );
+        localStorage.removeItem( "error1" );
+    }
+
+    if(  localStorage.error2 ) {
+        displayMessage( localStorage.error2 );
+        localStorage.removeItem( "error2" );
     }
 
     if( localStorage.isbnSearch ) {

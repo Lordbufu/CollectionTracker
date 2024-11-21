@@ -1,5 +1,4 @@
 <?php
-/* TODO List: Few comments are still not clear enough for the code there intended for. */
 
 namespace App\Core;
 

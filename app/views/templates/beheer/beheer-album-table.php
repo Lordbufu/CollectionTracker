@@ -51,7 +51,7 @@
                         </th>
 
                         <th id="album-isbn" class="album-isbn"> <?= $value["Album_ISBN"] ?> </th>
-                        <th id="album-opm" class="album-opm"> <?= $value["Album_Opm"] ?> </th>
+                        <th id="album-opm" class="album-opm"> <div class="album-opm-div" > <?= $value["Album_Opm"] ?> </div> </th>
 
                     </tr>
 

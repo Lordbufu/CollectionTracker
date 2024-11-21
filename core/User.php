@@ -1,22 +1,9 @@
 <?php
-/*  TODO List:
-        - Search Tag -> PHP Warning:
-            Some issues when making duplicate account names and duplicate e-mails, need to reproduce the error.
-        - Search Tag -> Got error:
-            Not entirely sure what caused this, seems like somehow there was no valid array returned for getting a user ?
-        - Search Tag -> Debug Notes:
-            Unexplained un-reproducable error, there is likely some code somewhere, that is missing the correct parameter.
- */
 
 namespace App\Core;
 
-/*  Reminder of the error array structure, that is required to display the errors:
-        [ "error" => [ "fetchResponse" => { Message that needs to be displayed } ] ];
- */
-
 use Exception;
 
-// Refactored and tested for the new errors class
 /*  User Class:
         To clean up the LogicController and processing class, i off-loaded the user related things to this class.
         Everything is based on return values, so i only need to evaluate most of the time, and sometimes pass on a error.
@@ -135,7 +122,7 @@ class User {
         }
     }
 
-    /*  checkUser($id=null, $rights=null):
+    /*  checkUser($id, $rights):
             This function checks if the user is valid, and if the user rights are set to Admin or not.
                 $id     (string) - The index of the user we want to check, most likely take from the session.
                 $rights (string) - If we want to check the user rights or not, if not it defaults to null so it doesnt need to be set.

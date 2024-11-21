@@ -385,3 +385,15 @@
     color: red;
     margin-bottom: 0.35em;
 }
+
+/* ISBN title review pop-in */
+#isbn-review-content-cont {
+    max-width: unset;
+    width: fit-content;
+}
+
+#isbn-review-body {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.2em;
+}

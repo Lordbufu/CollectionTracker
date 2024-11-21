@@ -1,3 +1,5 @@
+let formButt, formInput;
+
 /* The init function triggred on page-load. */
 function initGebruik() {
     /* Elements and Events for the search controller */
@@ -32,10 +34,10 @@ function initGebruik() {
     zoekButt.addEventListener("click", saveScroll);
 
     let config = {
-        fps: 10
-        // supportedScanTypes: [
-        //     Html5QrcodeScanType.SCAN_TYPE_CAMERA
-        // ]
+        fps: 10,
+        supportedScanTypes: [
+            Html5QrcodeScanType.SCAN_TYPE_CAMERA
+        ]
     };
 
     html5QrcodeScanner = new Html5QrcodeScanner( "reader", config );

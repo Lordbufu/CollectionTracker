@@ -1,8 +1,6 @@
 <?php
 
-/*  TODO List:
-        - Add somekind of comment to the class itself.
- */
+/* TODO List: - Add somekind of comment to the class itself. */
 
 namespace App\Core;
 

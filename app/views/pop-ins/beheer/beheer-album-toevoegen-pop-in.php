@@ -139,6 +139,8 @@
 
                         <div class="modal-form-right-cont" id="modal-albumT-right-cont">
 
+                            <div id="small-text-triger" class="modal-form-fake-triger"> </div>
+
                             <div class="modal-form-fake-triger"> </div>
 
                             <div class="modal-form-fake-triger"> </div>

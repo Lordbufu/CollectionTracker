@@ -112,9 +112,7 @@ class Collecties {
                 $store (empty array/String) - The result of the database operation of storing/removing said data.
                 $feedback (Assoc Array)     - The string that is shown to the user, to reflect if something was added or removed.
             
-            Return Value:
-                On Failure: String.
-                On success: Assoc Array.
+            Return Value: Array (Associative and/or Multi-Dimensional).
      */
     public function changeCol( $data ) {
         try {

@@ -1,16 +1,3 @@
-<style>
-    #isbn-review-content-cont {
-        max-width: unset;
-        width: fit-content;
-    }
-
-    #isbn-review-body {
-        display: flex;
-        flex-direction: column;
-        margin-top: 0.2em;
-    }
-</style>
-
 <div id="isbn-preview" class="modal-cont" >
 
     <div class="modal-content-cont" id="isbn-review-content-cont" >

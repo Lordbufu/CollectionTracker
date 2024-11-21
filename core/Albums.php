@@ -71,13 +71,12 @@ class Albums {
         }
     }
 
+    // Totally Finished
     /*  getAlbum($id):
             The function attempts to load, and return, the requested album data.
                 $id (Assoc Array)   - id pair(s) we want to get, for example a serie id (max 2).
             
-            Return Type:
-                On success -> Associative Array
-                On failure -> Multi-Dimensional Array
+            Return Type: Multi-Dimensional Array
      */
     public function getAlbums( $id ) {
         try {
@@ -88,9 +87,7 @@ class Albums {
                 throw new Exception( App::get( "errors" )->getError( "noItems" ) );
             }
         /* Handle any exception messages during this process */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
     /*  setAlbum($data, $id):
@@ -133,15 +130,14 @@ class Albums {
             /* If either the insert or update returned an error, i return a generic error, else i return TRUE */
             return !empty( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         /* Handle any exception messages during this process */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
+    // Totally Finished
     /*  delAblum($id):
             This function deals with all delete requests, database errors are replaced with a generic error.
-                $id     - The id('s) associated with said item, can support up to 2 id pairs.
-                $store  - The temp store to evaluate the execution of the query.
+                $id    (Array)          - The id('s) associated with said item, can support up to 2 id pairs.
+                $store (Bool\String)    - The temp store to evaluate the execution of the query.
             
             Return Value:
                 On failure   -> Multi-Dimensional Array
@@ -159,21 +155,21 @@ class Albums {
 
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
         /* Handle any exception messages during this process */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
+    // Totally Finished
     /*  getAlbAtt($name, $id_1, $id_2):
             This is basically a extended version, of a getId() function, but then for any attribute from a object.
             The return value when a match is found, depends slightly on the requested attribute.
-                $name (string)      - The name of the database column we want the value of.
-                $id_1 (Assoc Array) - The identifier of the album that selects the specific album (name, index, isbn).
-                $id_2 (Assoc Array) - The identifier for the serie the album is in, intentionally seperated from id_1.
+                $name (String)  - The name of the database column we want the value of.
+                $id_1 (Array)   - The identifier of the album that selects the specific album (name, index, isbn).
+                $id_2 (Array)   - The identifier for the serie the album is in, intentionally seperated from id_1.
+                $key  (String)  - The $id_1 index as string value, so i can compare it to indexes in the itteration loops.
             
             Return Value:
-                On failure -> Multi-Dimensional Array
-                On success -> String/Int/DateTime/Blob
+                On failure -> Array
+                On success -> What ever the database has stored.
      */
     public function getAlbAtt( $name, $id_1, $id_2=null ) {
         try {
@@ -212,11 +208,10 @@ class Albums {
             /* Throw exception message, if no match was found */
             throw new Exception( App::get( "errors" )->getError( "attr" ) );
         /* Handle any exception messages during this process */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
+    // Totally Finished
     /*  albChDup($name, $id):
             This function simply checks, if a album name is duplicate with the specfified serie.
                 $name (String)      - The name of the album that needs to be checked.
@@ -228,31 +223,38 @@ class Albums {
                 On success  - Boolean.
      */
     public function albChDup( $name, $sId, $aId=null ) {
-        $duplicate;
+        try {
+            $duplicate;
 
-        if( $this->loadAlbums( $sId ) ) {
-            foreach( $this->albums as $oKey => $oValue) {
-                foreach( $oValue as $iKey => $iValue ) {
-                    if( $iKey == "Album_Naam" ) {
-                        if( $name == $iValue ) {
-                            $duplicate = TRUE;
-                            if( isset( $aId ) && $oValue["Album_Index"] == $aId ) {
-                                
-                                if( isset( $duplicate ) ) {
-                                    unset( $duplicate );
+            /* Attempt to load the required albums */
+            if( $this->loadAlbums( $sId ) ) {
+                /* Loop over all loaded albums */
+                foreach( $this->albums as $oKey => $oValue) {
+                    foreach( $oValue as $iKey => $iValue ) {
+                        /* Check if the name equals the name being added/edited, and set duplicate if that is the case */
+                        if( $iKey == "Album_Naam" ) {
+                            if( $name == $iValue ) {
+                                $duplicate = TRUE;
+                                /* Check if there is a album id, and it it matches the current items id */
+                                if( isset( $aId ) && $oValue["Album_Index"] == $aId ) {
+                                    /* Unset duplicate if set, because the user is editing that item */
+                                    if( isset( $duplicate ) ) { unset( $duplicate ); }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            if( !isset( $duplicate ) ) {
-                return FALSE;
-            } else {
-                return [ "error" => [ "fetchResponse" => App::get( "errors" )->getError( "dupl" ) ] ];
+                /* If duplicate isnt set after the loops are done, there is no duplicate name, so i return FALSE */
+                if( !isset( $duplicate ) ) {
+                    return FALSE;
+                /* In all other cases, i throw a duplicate error for user feedback */
+                } else {
+                    throw new Exception(  App::get( "errors" )->getError( "dupl" ) );
+                }
             }
-        }
+        /* Handle any exception messages during this process */
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 }
 

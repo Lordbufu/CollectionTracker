@@ -1,27 +1,29 @@
 <?php
 
-/*  Project cleanup W.I.P. stuff:
-        - Add a overflow scroll to the Album_Opmerking table entry, incase it goes beyond a acceptable height.
-        - Review all comments once more, to make sure its all correct.
+/*  Search tags to remove/edit specific content:
+        - COMPATIBILITY \ REVIEW :
+            Left in because im unsure if the issue is resolved correctly, now i can uncomment and make it work, while i debug and trace down the source.
+        - W.I.P.:
+            Needs user feedback, and a review based on the feedback.
  */
 
-/*  Search tags to remove/edit specific content:
-        - die:
-            - Need to remove any lingering debug lines, that stop the webprocess and print out potentially harmfull data.
-        - W.I.P.:
-            - Some of these fields need adjusting, because they where either added or removed from the project.
-        - currently_removed:
-            - Stuff that was removed, and needs to be cleaned up.
-        - Add comments:
-            - Need to add a meaningfull comment, as this was added after the concepting & cleanup stage, likely patch or fix related.
-        - Clean-up:
-            - Needs reviewing, likely a TODO noted near it, also related to patching/fixing/cleanup.
-        - PHP Warning:
-            - Some odd errors i ran into testing various things.
-        - Review:
-            - Review the code snippets, i might have to change something here, because i could write a solution at the time.
-        - Refactor:
-            - Rework the code, as to many things have changed, thus breaking said code logic.
+/* Debug copy and paste line
+    //die( var_dump( print_r(  ) ) ) );
+ */
+
+/*  Validate one liners:
+        Admin -> $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" ) : App::get( "user" )->checkUser( -1, "rights" );
+        User -> $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
+ */
+
+/* Debug info, for testing the isbn manual search functions.
+    // Optional isbn 2
+    9020667505
+    9789020642506
+    De Kameleon in het goud
+
+    // Optional isbn 3 ( 200+ items found )
+    0123456789
  */
 
 namespace App\Controllers;
@@ -48,8 +50,8 @@ class LogicController {
     
     /*  register():
             The POST route for account registration, that uses the user class to process the request.
-                $temp   : The user input that needs to be stored.
-                $store  : The outcome of the user class trying to store the user data.
+                $temp   (Array) : The user input that needs to be stored
+                $store  (Array) : The outcome of the user class trying to store the user data
             
             Return Value:
                 On sucess   - Redirect -route-> '/#login-pop-in'
@@ -77,9 +79,9 @@ class LogicController {
     /*  login():
             The POST route for the login process, where the user class is used to validate the user.
             And where the SESSION data is set, linking a user to a session, so we can verify the user later on.
-                $pw (string)                    - The password input from the user.
-                $cred (string)                  - The user credentials (e-mail or user name).
-                $userCheck (Bool/Assoc Array)   - The user check validation result.
+                $pw          (String)           - The password input from the user
+                $cred        (String)           - The user credentials (e-mail or user name)
+                $userCheck   (Bool/Assoc Array) - The user check validation result
                 $userIdFetch (Bool/Assoc Array) - The user Index fetch result
             
             Return Value (redirect):
@@ -145,7 +147,8 @@ class LogicController {
     /*  logout():
             The POST '/logout' route, cleaning and ending the user session, before redirecting to home.
 
-            Return Value    - Redirect -route-> '/'
+                Return Value:
+                    - Redirect -route-> '/'
      */
     public function logout() {
         App::get( "session" )->endSession();
@@ -156,8 +159,12 @@ class LogicController {
     /*  beheer():
             The POST route for '/beheer', this is similar to the GET route in the 'PageController'.
             But here is also deal with loading the Series view, and thus loading all related albums.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $checkSerie (Bool/Assoc Array)  - The item duplicate check, based on the item naam and potentially index.
+                $userCheck  (Bool/Array)    - The user check based on the stored session data
+                $checkName  (Bool/Array)    - Evaluate if the name is duplicate or not
+                $serInd     (String/Array)  - The item duplicate check, based on the item naam and potentially index
+                $impTags    (Array)         - Important session tags, if set the session page-data can not be cleared/cleaned
+                $tempAlbums (Array)         - Temp store for all albums associated to a serie
+                $serName    (Array)         - Serie name for the table title
             
             Return Type:
                 On Validation fail          - Redirect  -route-> '/'
@@ -165,7 +172,7 @@ class LogicController {
                 On Name check pass          - Redirect  -route-> '/beheer#seriem-pop-in'
                 On pop-in close             - View      -route-> '/beheer.view.php'
                 On Album add trigger        - Redirect  -route-> '/beheer#albumt-pop-in'
-                In all other cases          - View      -route-> '/beheer.view.php' 
+                Failsave unexpected cases   - View      -route-> '/beheer.view.php' 
                 
      */
     public function beheer() {
@@ -224,6 +231,7 @@ class LogicController {
                 $tempAlbums = App::get( "albums" )->getAlbums( [ "Album_Serie" => $_POST["serie-index"] ] );
                 $serName = App::get( "series" )->getSerAtt( "Serie_Naam", [ "Serie_Index" => $_POST["serie-index"] ] );
 
+                /* Set the ablums in the session, or store the correct error for user feedback */
                 if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
                     unset( $_SESSION["page-data"]["albums"] );
                     App::get( "session" )->setVariable( "page-data", $tempAlbums );
@@ -231,6 +239,7 @@ class LogicController {
                     App::get( "session" )->setVariable( "header", $tempAlbums );
                 }
 
+                /* Set the serie naam in the session, or store the correct error for user feedback */
                 if( isset( $serName ) && !isset( $serName["error"] ) ) {
                     App::get( "session" )->setVariable( "page-data", [ "huidige-serie" => $serName ] );
                 } else {
@@ -259,10 +268,10 @@ class LogicController {
     /*  serieM():
             The POST route for '/serieM', for checking series names and creating series.
             Where the latter is related to the pop-in form, and the former to the name input from the controller.
-                $userCheck  (Bool/Assoc Array)  - The user check based on the stored session data.
-                $itemCheck  (Bool/Assoc Array)  - The item duplicate check, based on the item naam and potentially index.
-                $sqlData    (Assoc Array)       - The POST data prepared for the SQL database.
-                $store      (Bool/Assoc Array)  - The result of the database operation.
+                $userCheck  (Bool/Array)  - The user check based on the stored session data
+                $checkName  (Bool/Array)  - Evaluate if the name is duplicate or not
+                $sqlData    (Array)       - The POST data prepared for the SQL database
+                $store      (Bool/Array)  - The result of the database operation
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -317,10 +326,10 @@ class LogicController {
 
     /*  serieBew():
             This function deals with editing serie data on the admin page, and stores the changes made.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
-                $serieData (Assoc Array)        - The POST data prepared for the SQL Database.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array)   - The user check based on the stored session data
+                $checkName (Bool/Array)   - Evaluate if the name is duplicate or not
+                $serieData (Array)        - The POST data prepared for the SQL Database
+                $store     (Bool/Array)   - The result of the database operation
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -378,9 +387,8 @@ class LogicController {
 
     /*  serieVerw():
             This removes a serie and all its albums from the database, and gives back user feedback based on that.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $serieData (Assoc Array)        - The POST data prepared for the SQL Database.
-                $remove_# (Bool/Assoc Array)    - The result of the database operations.
+                $userCheck (Bool/Array)   - The user check based on the stored session data
+                $remove_# (Bool/Array)    - The result of the database operations
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -406,13 +414,19 @@ class LogicController {
 
                 return App::redirect( "beheer" );
 
-            // REVIEW - I need to find a way, to store and display both errors if they happen, so i likely need a extra entry in the related sessionmanager function.
-            /* For now i only store one of the potential errors */
+            /* Send errors to JS for user feedback, and redirect to the admin page */
             } else {
+
                 if( isset( $remove_1["error"] ) ) {
-                    App::get( "session" )->setVariable( "header", $remove_1 );
-                } elseif( isset( $remove_2["error"] ) ) {
-                    App::get( "session" )->setVariable( "header", $remove_2 );
+                    App::get( "session" )->setVariable( "header", [ "error" =>
+                        [ "error1" => $remove_1["error"]["fetchResponse"] ]
+                    ] );
+                }
+
+                if( isset( $remove_2["error"] ) ) {
+                    App::get( "session" )->setVariable( "header", [ "error" =>
+                        [ "error2" => $remove_2["error"]["fetchResponse"] ]
+                    ] );
                 }
 
                 return App::redirect( "beheer" );
@@ -426,10 +440,10 @@ class LogicController {
 
     /*  albumT():
             This function checks the album name, and either stores that user input, or returns it for the user to correct it.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
-                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array)   - The user check based on the stored session data
+                $itemCheck (Bool/Array)   - The item duplicate check, based on the item naam and potentially index
+                $albumData (Array)        - The POST data prepared for the SQL Database
+                $store     (Bool/Array)   - The result of the database operation
             
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -529,10 +543,9 @@ class LogicController {
 
     /*  albumV():
             The remove album function, with a trigger to repopulate the session data after removal.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
-                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array)   - The user check based on the stored session data
+                $itemCheck (Bool/Array)   - The item duplicate check, based on the item naam and potentially index
+                $store     (Bool/Array)   - The result of the database operation
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -565,11 +578,12 @@ class LogicController {
                 return App::redirect( "beheer" );
             /* Store the correct error, and redirect accordingly */
             } else {
-                // REVIEW - do i need both errors to be displayed or just one ?
                 if( is_array( $itemCheck ) ) {
-                    App::get( "session" )->setVariable( "header", $itemCheck );
-                } elseif( is_array( $store ) ) {
-                    App::get( "session" )->setVariable( "header", $store );
+                    App::get( "session" )->setVariable( "header", [ "error" => [ "error1" => $itemCheck["error"]["fetchResponse"] ] ] );
+                }
+
+                if( is_array( $store ) ) {
+                    App::get( "session" )->setVariable( "header", [ "error" => [ "error2" => $store["error"]["fetchResponse"] ] ] );
                 }
 
                 return App::redirect( "beheer" );
@@ -581,12 +595,14 @@ class LogicController {
         }
     }
 
+    // Pending:
+        // Waiting for Testing results and or feedback/errors.
     /*  albumBew():
             This function deal with all album-bewerken actions, but does currently cause unwanted page refreshes.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $itemCheck (Bool/Assoc Array)   - The item duplicate check, based on the item naam and potentially index.
-                $albumData (Assoc Array)        - The POST data prepared for the SQL Database.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array)   - The user check based on the stored session data
+                $itemCheck (Bool/Array)   - The item duplicate check, based on the item naam and potentially index
+                $albumData (Array)        - The POST data prepared for the SQL Database
+                $store     (Bool/Array)   - The result of the database operation
             
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -608,7 +624,6 @@ class LogicController {
                 return App::redirect( "beheer#albumb-pop-in" );
             }
 
-            //die(var_dump(print_r($_POST)));
             /* Check item name for duplicate entries. */
             $itemCheck = App::get( "albums" )->albChDup( $_POST["album-naam"], [ "Album_Serie" => $_POST["serie-index"] ], $_POST["album-index"] );
 
@@ -643,15 +658,13 @@ class LogicController {
                 unset( $_SESSION["page-data"]["Album_Cover"] ); // unset after using it.
             }
 
-            // Clean-up
-            // TODO: Figure out what has gone wrong here.
-            // Temp fix, check for empty datafields, and unset them.
-            // for some reason i end up with empty data fields, and that makes the querry fail.
-            foreach( $albumData as $key => $value ) {
-                if( empty( $value ) ) {
-                    unset( $albumData[$key] );
-                }
-            }
+            // COMPATIBILITY: leaving this here incase the issue comes back later.
+            //      for some reasons, empty fields were causing problems with the SQL querry.
+            // foreach( $albumData as $key => $value ) {
+            //     if( empty( $value ) ) {
+            //         unset( $albumData[$key] );
+            //     }
+            // }
 
             /* Attempt to store the album data in the SQL DB. */
             $store = App::get( "albums" )->setAlbum( $albumData, [
@@ -683,8 +696,8 @@ class LogicController {
 
     /*  adminReset():
             This function can reset user passwords, since that is missing from the main page login-pop-in.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+                $store     (Bool/Array) - The result of the database operation
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'
@@ -724,7 +737,11 @@ class LogicController {
     /* User-Page functions */
     /*  gebruik():
             The POST route for '/gebruik', this is similar to the GET route in the 'PageController'.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+                $tempSerie (Array)      - To evaluate the database get request
+                $tempCol (Array)        - To evaluate the database get request
+                $albId (Int/Array)      - Request the id required for getting the series its ablums.
+                $tempAbums (Array)      - To evaluate the database get request
 
             Return Value:
                 On sucess   - View      -route-> '../gebruik.view.php'
@@ -751,6 +768,7 @@ class LogicController {
                 /* Unset and reload the user its collection data first */
                 $tempColl = App::get( "collecties" )->getCol( [ "Gebr_Index" => $_SESSION["user"]["id"] ] );
 
+                /* If no errors are set, unset the old collection data, and load the newly requested data */
                 if( isset( $tempColl ) && !isset( $tempColl["error"] ) ) {
                     unset( $_SESSION["page-data"]["collections"] );
                     App::get( "session" )->setVariable( "page-data", $tempColl );
@@ -759,17 +777,24 @@ class LogicController {
                     App::get( "session" )->setVariable( "header", $tempColl );
                 }
 
-                // Review: need to change the AlbId part, and ensure any errors are set for user feedback.
                 /* Then unset and reload all albums from the selected serie */
                 $albId = [ "Album_Serie" => App::get( "series" )->getSerAtt( "Serie_Index", [ "Serie_Naam" => $_POST["serie_naam"] ] ) ];
-                $tempAlbums = App::get( "albums" )->getAlbums( $albId );
-                
 
-                if( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
+                /* Make sure the id isnt a error, befor requesting the album datas */
+                if( !isset( $albId["error"] ) ) {
+                    $tempAlbums = App::get( "albums" )->getAlbums( $albId );
+                /* store this error as error1 for JS */
+                } elseif( isset( $albId["error"] ) ) {
+                    App::get( "session" )->setVariable( "header", [ "error" => [ "error1" => $albId["error"]["fetchResponse"] ] ] );
+                }
+
+                /* If the album request had an error, store that as error2 for JS */
+                if( isset( $tempAlbums["error"] ) ) {
+                    App::get( "session" )->setVariable( "header", [ "error" => [ "error1" => $tempAlbums["error"]["fetchResponse"] ] ] );
+                /* if the request was done, unset album session data, and store the new data  */
+                } elseif( isset( $tempAlbums ) && !isset( $tempAlbums["error"] ) ) {
                     unset( $_SESSION["page-data"]["albums"] );
                     App::get( "session" )->setVariable( "page-data", $tempAlbums );
-                } else {
-                    App::get( "session" )->setVariable( "header", $tempAlbums );
                 }
                 
                 /* And finally make sure the correct tag is set for the table header */
@@ -786,9 +811,9 @@ class LogicController {
 
     /*  albSta():
             The POST route for '/albSta', where we create collection data, based on what album(s) got toggled on/off.
-                $userCheck (Bool/Assoc Array)   - The user check based on the stored session data.
-                $ids        (Assoc Array)       - Id's required for setting and removing collection data.
-                $store     (Bool/Assoc Array)   - The result of the database operation.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+                $colData (Array)        - Id's required for setting and removing collection data
+                $store (Bool/Array      - The result of the database operation
             
             Return Value:
                 On Added    - View      -route-> '../gebruik.view.php'
@@ -828,9 +853,15 @@ class LogicController {
         }
     }
 
-
     /*	scan():
             This function simply set the correct session tag, and redirects to the pop-in to load the correct template.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+                $serInd (Int/Array)     - The serie index of the serie the album should be added to.
+            
+            Return Value:
+                On auth failure -redirect-route-> "/"
+                On error        -redirect-route-> "/beheer"
+                On success      -redirect-route-> "/beheer#albumS-pop-in"
      */
 	public function scan() {
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -840,9 +871,18 @@ class LogicController {
 		if( !is_array( $userCheck ) ) {
             if( isset( $_POST["album-toev"] ) ) {
                 $serInd = App::get( "series" )->getSerAtt( "Serie_Index", [ "Serie_Naam" => $_POST["album-toev"] ] );
-                App::get( "session" )->setVariable( "page-data", [ "serie-index" => $serInd ] );
-                App::get( "session" )->setVariable( "page-data", [ "isbn-scan" => True ] );
-                return App::redirect( "beheer#albumS-pop-in" );
+
+                /* Check for errors, and store the error in the session for JS */
+                if(isset($serInd["error"])) {
+                    App::get( "session" )->setVariable( "header", $serInd );
+                /* Else prepare the correct page-data, and redirect to the scan pop-in */
+                } else {
+                    App::get( "session" )->setVariable( "page-data", [ "serie-index" => $serInd ] );
+                    App::get( "session" )->setVariable( "page-data", [ "isbn-scan" => True ] );
+                    return App::redirect( "beheer#albumS-pop-in" );
+                }
+                
+                return App::redirect( "beheer" );
             }
         /* Return the error to JS, and redirect to the landingpage. */
 		} else {
@@ -854,6 +894,15 @@ class LogicController {
     /*  isbn():
             This function attempt to get as much item data as possible, from the Google API, so forms can be pre-filled.
             This works for both the ISBN search function, as the bar-code scanner, though only give ISBN/EAN book information in return.
+            When called from a album-edit pop-in, it will attempt to add the old data back, if nothing was found in the API.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+                $result (Array)         - The parsed data from the Google Books API
+            
+            Return Value:
+                On auth failure -redirect-route-> "/"
+                On error        -redirect-route-> "/beheer"
+                Multy Items     -redirect-route-> "/beheer#isbn-preview"
+                On success      -redirect-route-> "/beheer#albumt-pop-in" or "/beheer#albumb-pop-in"
      */
     public function isbn() {
 		/* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -962,7 +1011,13 @@ class LogicController {
 		}
     }
 
-    /* userScan(): This function set the correct tags, and gets the correct data, for the scanner form data. */
+    /*  userScan():
+            This function set the correct tags, and gets the correct data, for the scanner form data.
+                $userCheck (Bool/Array) - The user check based on the stored session data
+
+            Return Value:
+                On auth failure -redirect-route-> "/"
+     */
     public function userScan() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
         $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
@@ -981,15 +1036,17 @@ class LogicController {
 		}
     }
 
-    /*  userIsbn(): W.I.P.
+    /*  userIsbn():
             This function checks the isbn provided by userScan(), against album data from the selected serie.
             If a match is found, it will attempt to add or remove the item from the collection, and returns feedback to the user about this process.
-                $userCheck
-                $albId
-                $colIds
-                $store
+                $userCheck  (Bool/Array)    - The outcome of the user evalulation.
+                $albId      (Int/Array)     - The outcome of requesting a album index.
+                $colIds     (Array)         - The collection of identifiers that i need to make/delete a collection item.
+                $store      (Array)         - The outcome of trying to change a item its collection status.
 
             Return Value:
+                On Validation fail          - Redirect -route-> '/'
+                On Success                  - Redirect -route-> '/gebruik'
      */
     public function userIsbn() {
         /* If the user session data is present, evaluate it for the admin rights, if not we pass a invalid id to get a error back. */
@@ -1033,6 +1090,7 @@ class LogicController {
 		}
     }
 
+    // W.I.P. (working atm, but its alos just a draft/example)
     /*  loadDetails():
             This function requests album data, based on what element was clicked, and return a string so JS knows if said data was stored.
             This is all JS fetch based, so the page-reloads etc are handled there.
@@ -1048,24 +1106,5 @@ class LogicController {
             echo "request failed!";
         }
     }
-
-    /* Debug copy and paste line
-        //die( var_dump( print_r(  ) ) ) );
-     */
-
-    /*  Validate one liners:
-            Admin -> $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get( "user" )->checkUser( $_SESSION["user"]["id"], "rights" ) : App::get( "user" )->checkUser( -1, "rights" );
-            User -> $userCheck = isset( $_SESSION["user"]["id"] ) ? App::get("user")->checkUser( $_SESSION["user"]["id"] ) : App::get("user")->checkUser( -1 );
-     */
-
-    /* Debug info, for testing the isbn manual search functions.
-        // Optional isbn 2
-        9020667505
-        9789020642506
-        De Kameleon in het goud
-
-        // Optional isbn 3 ( 200+ items found )
-        0123456789
-     */
 }
 ?>

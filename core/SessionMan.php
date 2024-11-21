@@ -110,7 +110,7 @@ class SessionMan {
                 $_SESSION[$name]["collections"] = $data;
                 return;
             /* Loop specifically for isbn-searches and barcode scans */
-            } if( $key == "isbn-search" || $key == "isbn-scan" ) {
+            } else if( $key == "isbn-search" || $key == "isbn-scan" ) {
                 $_SESSION[$name][$key] = $value;
                 return;
             /* Loop for duplicate items */

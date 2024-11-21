@@ -5,8 +5,6 @@
         There are likely way to many 'return' statements, there are to either attempt to reduce processing time, or prevent unexpected loops/results.
  */
 let localDevice, html5QrcodeScanne, zoekInp, chb1, chb2, chb3;                              /* Globals for shared scripts */
-let createAlbumSubm, editAlbumSubm, createSerieSubm, editSerieSubm, pwSubButt;              /* Globals for the Admin page */
-let formButt, formInput;                                                                    /* Globals for the User page */
 
 /* Check the documents ready state, and start loop if ready state is complete. */
 document.onreadystatechange = () => {
