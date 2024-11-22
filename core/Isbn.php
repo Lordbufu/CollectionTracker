@@ -26,8 +26,6 @@
 //              Seems like the issue is solved, by replacing 'isbn:' with 'ISBN:' in the url. ¿
 //      - Figure out what todo with several authors on album.
 
-// Search Tag: W.I.P.
-
 namespace App\Core;
 
 use App\Core\App;
@@ -49,11 +47,11 @@ class Isbn {
 
     /*  check_data($data):
             This function processes the parsed data, to see if there was anything usefull in the Google API database.
-            And either stores it in the temp array, or it stores a error in the new array.
+            And either stores it in the temp array, or it stores a error in the new array
 
-                $data (Assoc Array) - The API data that was requested in get_data().
+                $data (Assoc Array) - The API data that was requested in get_data()
 
-            Return value: Boolean.
+            Return value: Boolean
      */
     protected function check_data( $data ) {
         /* If there was only 1 item, store that in the $temp array, and return true. */
@@ -74,9 +72,9 @@ class Isbn {
     /*  prep_item($isbn):
             Converts the remaining API data, to something that fits my database structure.
             For now some of the potentially usefull data, is uncommented incase i want to use it later.
-                $isbn (string)  - The ISBN the user wanted to search data for.
+                $isbn (string)  - The ISBN the user wanted to search data for
 
-            Return value: None.
+            Return value: None
      */
     protected function prep_item( $isbn ) {
         /* Temp store for converting the data into a useable format. */
@@ -158,14 +156,13 @@ class Isbn {
     /*  get_data($isbn, $index, name):
             This function uses a isbn from either a user or scanned input, and parses the google API to find related data.
             If there is related data, that data is then checked and parsed for usefull things, and stored in the global new data array.
-                $isbn (string)                  - The isbn code from the user, or the build-in scan function.
-                $index (string)                 - A optional parameter, that can store the serie index, when there a several choices to pick from.
-                $name (string)                  - The title the user picked, when we returned a item choice.
-                $content (string)               - The Google API data converted to a string.
-                $data (Multi-dim Assoc Array)   - The string data converted via Json into easier to process data for PhP.
-                $tempNames (Array)              - A default array, for storing names from multiple items, that the user has to pick one from.
+                $isbn (string)      - The isbn code from the user, or the build-in scan function
+                $index (string)     - A optional parameter, that can store the serie index, when there a several choices to pick from
+                $name (string)      - The title the user picked, when we returned a item choice
+                $data (Array)       - File content of the url, converted to string data, and json decoded to make it more workable.
+                $tempNames (Array)  - A default array, for storing names from multiple items, that the user has to pick one from
             
-            Return Value: Associative Array.
+            Return Value: Array
      */
     public function get_data( $isbn, $index=null, $name=null ) {
         /* A temp data array, so i can easily detect how many items there are parsed. */
@@ -177,8 +174,7 @@ class Isbn {
         }
 
         /* Convert data to string, and make array out of that, then pre-process it with the check_data() function */
-        $content = file_get_contents( $this->url );
-        $data = json_decode( $content, true );
+        $data = json_decode( file_get_contents( $this->url ), true );
         $proc_data = $this->check_data( $data );
 
         /* If something was found, and it was more then a single item */
@@ -224,46 +220,6 @@ class Isbn {
         /* If there was no valid isbn found, we simply use the function global one that was used to search the API. */
         if( !isset( $this->new["Album_ISBN"] ) ) {
             $this->new["Album_ISBN"] = $isbn;
-        }
-
-        return $this->new;
-    }
-
-    // W.I.P.
-    /*  get_user_data($isbn):
-     */
-    public function get_user_data( $isbn ) {
-        /* Combine the isbn code and url. */
-        if( isset( $isbn ) ) {
-            $this->set_url( $isbn );
-        }
-
-        /* Convert data to string, and make array out of that, then pre-process it with the check_data() function */
-        $content = file_get_contents( $this->url );
-        $data = json_decode( $content, true );
-        $proc_data = $this->check_data( $data );
-
-        /* If data was stored in the class global $temp */
-        if( $proc_data && !empty( $this->temp ) ) {
-
-            /* Loop over the multi dimensional array */
-            for( $i = 0; $i < count( $this->temp ); $i++ ) {
-
-                /* if a industry identifier was parsed */
-                if( isset( $this->temp[$i]["volumeInfo"]["industryIdentifiers"] ) ) {
-
-                    /* loop over this sub-arraym and store the ISBN10 & 13 values in the class global $new array */
-                    foreach( $this->temp[$i]["volumeInfo"]["industryIdentifiers"] as $oKey => $oValue ) {
-                        if( $oValue["type"] == "ISBN_10" ) {
-                            $this->new[$oValue["type"]] = $oValue["identifier"];
-                        }
-
-                        if( $oValue["type"] == "ISBN_13" ) {
-                            $this->new[$oValue["type"]] = $oValue["identifier"];
-                        }
-                    }
-                }
-            }
         }
 
         return $this->new;

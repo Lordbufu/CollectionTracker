@@ -25,7 +25,7 @@ class PagesController {
 			The admin page get function, to load the default series data, and validate the user & rights.
 				$userCheck (Array)	- Error for when account validation failed
 				$impTags (Array)	- Tag that determin if the session page-data can be unset or not
-				$serId (Int/Array)	- The id required for getting albums associated with a series.
+				$serId (Int/Array)	- The id required for getting albums associated with a series
 				$tempAlbums (Array)	- The temp store for getAlbum(), so i can check for errors
 
 			Return Value:

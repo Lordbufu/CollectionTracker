@@ -1,8 +1,10 @@
 <?php
     /*  bootstrap.php:
-            Here i mainly bootstrap App bindings, that allow mw to more easily use certain classes.
-            It basically left over from the online course this App is based on, i see no reason to move/change this atm.
+            Here i mainly bootstrap App bindings, that allow me to more easily use certain classes.
+            Its bit of a left over from the course i followed, normally this isnt how you would manage these things.
+            But for the scope of this project, this is more then fine imo.
      */
+
     use App\Core\{ App, Errors, SessionMan, User, Albums, Series, Collecties, Isbn };
     use App\Core\Database\{ QueryBuilder, Connection };
 
@@ -16,4 +18,5 @@
     App::bind( "albums", new Albums );
     App::bind( "series", new Series );
     App::bind( "collecties", new Collecties );
+
 ?>

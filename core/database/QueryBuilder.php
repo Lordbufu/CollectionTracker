@@ -82,13 +82,13 @@ class QueryBuilder {
                 $sql = sprintf(
                     "create table `%s` (
                         `Gebr_Index` INT NOT NULL AUTO_INCREMENT COMMENT 'Gebruikers index.',
-                        `Gebr_Naam` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Naam v/d gebruiker.',
+                        `Gebr_Naam` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Naam v/d gebruiker.',
                         `Gebr_Email` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'E-mail voor de login.',
                         `Gebr_WachtW` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Wachtwood (hashed).',
                         `Gebr_Rechten` TINYTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'App Account rechten.',
                         PRIMARY KEY (`Gebr_Index`) COMMENT 'Primary index key voor gebruikers.',
                         UNIQUE (`Gebr_Email`) COMMENT 'Unique waarde voor e-mails, zodat er geen dubbele waardes zijn.',
-                        UNIQUE (`Gebr_Naam`) COMMENT 'Zodat de naam gebruikt kunnen worden voor de login.'
+                        UNIQUE (`Gebr_Naam`) COMMENT 'Zodat de naam ook gebruikt kunnen worden voor de login.'
                     ) CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT = 'Tafel voor de App Gebruikers.'",
                     $naam
                 );

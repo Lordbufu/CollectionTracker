@@ -1,7 +1,5 @@
 <?php
 
-/* TODO List: Review all function and inline comments, to make sure they are up-to-date. */
-
 namespace App\Core;
 
 use Exception;
@@ -26,7 +24,7 @@ class Collecties {
 
     /*  loadCol($id):
             Loads the collection for the requested user id, or re-loads if already set.
-                $id (Assoc Array)   - The requested user id, that needs it colletion data loaded.
+                $id (Array)   - The requested user id, that needs it colletion data loaded.
             
             Return Value: None.
      */
@@ -52,7 +50,7 @@ class Collecties {
 
     /*  evalCol($id):
             Basically a duplication check, so i know if need to add or remove to/from a collection, based on album index values.
-                $id (Assoc Array)   - The index of the album that needs to be checked.
+                $id (Array)   - The index of the album that needs to be checked.
 
             Return Value: Boolean
      */
@@ -80,9 +78,9 @@ class Collecties {
     /*  getCol($id):
             This function simple loads, and returns, all collection data for the requested user id.
             For now it also returns a Exception, when no items are loaded, this might change later when i convert it into live code.
-                $id (Assoc Array)   - The user id, of the user requesting collection data.
+                $id (Array)   - The user id, of the user requesting collection data.
             
-            Return Value: Multi-dimensional Array
+            Return Value: Array
      */
     public function getCol( $id ) {
         try {
@@ -99,20 +97,18 @@ class Collecties {
                 throw new Exception( App::get( "errors" )->getError( "noItems" ) );
             }
         /* Handle any exception messages during this process, this includes any database exceptions */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
     /*  changeCol($data):
             This function either stores or removes data, based on the evalCol() function.
-                $data (Assoc Array)         - The data required to add/remove to/from a collection.
-                $albumNaam (string)         - The name of the album/item that is being added/removed.
-                $eval (Boolean)             - The evaluation of the duplication check from evalCol().
-                $store (empty array/String) - The result of the database operation of storing/removing said data.
-                $feedback (Assoc Array)     - The string that is shown to the user, to reflect if something was added or removed.
+                $data (Array)         - The data required to add/remove to/from a collection.
+                $albumNaam (string)   - The name of the album/item that is being added/removed.
+                $eval (Boolean)       - The evaluation of the duplication check from evalCol().
+                $store (array/String) - The result of the database operation of storing/removing said data.
+                $feedback (Array)     - The string that is shown to the user, to reflect if something was added or removed.
             
-            Return Value: Array (Associative and/or Multi-Dimensional).
+            Return Value: Array
      */
     public function changeCol( $data ) {
         try {
@@ -151,9 +147,7 @@ class Collecties {
                 throw new Exception( App::get( "errors" )->getError( "noProc" ) );
             }
         /* Handle any exception messages during this process, this includes any database exceptions */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 }
 

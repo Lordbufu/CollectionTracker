@@ -40,7 +40,7 @@ class Albums {
     /*  loadAlbums($id):
             This function load the requested data, in the class global $albums variable, with no more then 2 identifier pairs.
             If any exceptions are thrown, they should be caught in the functions using this, PDO exceptions are filtered out with a dbFail error.
-                $id (Assoc Array)   - Optional indentifier(s), to narrow down the requested albums.
+                $id (Array)   - Optional indentifier(s), to narrow down the requested albums.
             
             Return Value:
                 On failure - String
@@ -71,12 +71,11 @@ class Albums {
         }
     }
 
-    // Totally Finished
     /*  getAlbum($id):
             The function attempts to load, and return, the requested album data.
-                $id (Assoc Array)   - id pair(s) we want to get, for example a serie id (max 2).
+                $id (Array)   - id pair(s) we want to get, for example a serie id (max 2).
             
-            Return Type: Multi-Dimensional Array
+            Return Type: Array
      */
     public function getAlbums( $id ) {
         try {
@@ -93,13 +92,13 @@ class Albums {
     /*  setAlbum($data, $id):
             This function can update and insert album data, based on the optional id parameter.
             It also does a duplicate name check, inside the serie the album is in, using the getAlbAtt() function.
-                $data (Assoc Array)     - The album data represented in a Associative Array
-                $id (Assoc Array)       - The id of the album that needs to be updated.
+                $data (Array)           - The album data represented in a Associative Array
+                $id (Array)             - The id of the album that needs to be updated.
                 $nameCheck (String/Int) - Temp variable to check for duplicate names, using the getAlbAtt() function.
                 $store (String/Bool)    - Temp variable to store the outcome of the database action.
             
             Return Value:
-                On failure - Multi-Dimensional Array
+                On failure - Array
                 On success - Boolean
      */
     public function setAlbum( $data, $id=null ) {
@@ -133,7 +132,6 @@ class Albums {
         } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /*  delAblum($id):
             This function deals with all delete requests, database errors are replaced with a generic error.
                 $id    (Array)          - The id('s) associated with said item, can support up to 2 id pairs.
@@ -158,7 +156,6 @@ class Albums {
         } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /*  getAlbAtt($name, $id_1, $id_2):
             This is basically a extended version, of a getId() function, but then for any attribute from a object.
             The return value when a match is found, depends slightly on the requested attribute.
@@ -211,7 +208,6 @@ class Albums {
         } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /*  albChDup($name, $id):
             This function simply checks, if a album name is duplicate with the specfified serie.
                 $name (String)      - The name of the album that needs to be checked.

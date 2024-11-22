@@ -79,10 +79,10 @@ class LogicController {
     /*  login():
             The POST route for the login process, where the user class is used to validate the user.
             And where the SESSION data is set, linking a user to a session, so we can verify the user later on.
-                $pw          (String)           - The password input from the user
-                $cred        (String)           - The user credentials (e-mail or user name)
-                $userCheck   (Bool/Assoc Array) - The user check validation result
-                $userIdFetch (Bool/Assoc Array) - The user Index fetch result
+                $pw          (String)       - The password input from the user
+                $cred        (String)       - The user credentials (e-mail or user name)
+                $userCheck   (Bool/Array)   - The user check validation result
+                $userIdFetch (Bool/Array)   - The user Index fetch result
             
             Return Value (redirect):
                 If validated as Admin   - Redirect -route-> '/beheer'
@@ -856,7 +856,7 @@ class LogicController {
     /*	scan():
             This function simply set the correct session tag, and redirects to the pop-in to load the correct template.
                 $userCheck (Bool/Array) - The user check based on the stored session data
-                $serInd (Int/Array)     - The serie index of the serie the album should be added to.
+                $serInd (Int/Array)     - The serie index of the serie the album should be added to
             
             Return Value:
                 On auth failure -redirect-route-> "/"
@@ -894,7 +894,7 @@ class LogicController {
     /*  isbn():
             This function attempt to get as much item data as possible, from the Google API, so forms can be pre-filled.
             This works for both the ISBN search function, as the bar-code scanner, though only give ISBN/EAN book information in return.
-            When called from a album-edit pop-in, it will attempt to add the old data back, if nothing was found in the API.
+            When called from a album-edit pop-in, it will attempt to add the old data back, if nothing was found in the API
                 $userCheck (Bool/Array) - The user check based on the stored session data
                 $result (Array)         - The parsed data from the Google Books API
             
@@ -1039,10 +1039,10 @@ class LogicController {
     /*  userIsbn():
             This function checks the isbn provided by userScan(), against album data from the selected serie.
             If a match is found, it will attempt to add or remove the item from the collection, and returns feedback to the user about this process.
-                $userCheck  (Bool/Array)    - The outcome of the user evalulation.
-                $albId      (Int/Array)     - The outcome of requesting a album index.
-                $colIds     (Array)         - The collection of identifiers that i need to make/delete a collection item.
-                $store      (Array)         - The outcome of trying to change a item its collection status.
+                $userCheck  (Bool/Array)    - The outcome of the user evalulation
+                $albId      (Int/Array)     - The outcome of requesting a album index
+                $colIds     (Array)         - The collection of identifiers that i need to make/delete a collection item
+                $store      (Array)         - The outcome of trying to change a item its collection status
 
             Return Value:
                 On Validation fail          - Redirect -route-> '/'

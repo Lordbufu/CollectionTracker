@@ -1,13 +1,14 @@
 <?php
 
-/* TODO List: - Add somekind of comment to the class itself. */
-
 namespace App\Core;
 
-/*  Reminder of the error array structure, that is required to display the errors:
-        [ "error" => [ "fetchResponse" => { Message that needs to be displayed } ] ];
- */
+/*   Errors Class:
+        This class is a bit of a experiment, i noticed i was re-writing feedback/errors in certain classes.
+        So i opted to create this class, so i could more easily re-use certain messages, and use those in combination with try/catch loops.
 
+        Reminder of the error array structure, that is required to display the errors:
+                [ "error" => [ "fetchResponse" => { Message that needs to be displayed } ] ];
+ */
 class Errors {
     /* User related errors */
     protected $userNameErr = "Deze gebruiker bestaat al, kies alstublieft een andere gebruikers naam.";
@@ -16,24 +17,19 @@ class Errors {
     protected $credError = "Uw inlog gegevens zijn niet correct, probeer het nogmaals!!";
     protected $authFailed = "Toegang geweigerd, Account authentication mislukt !";
     protected $rightsError = "U heeft geen rechten om deze pagina te bezoeken !!";
-
     /* Load errors */
     protected $loadFail = "Het laad process for deze items is gefaald,neem contact op met de Administrator als dit blijft gebeuren!";
     protected $idToBig = "Er waren te veel indentifiers, neem contact op met de administrator als dit blijft gebeuren!";
     protected $noItems = "Geen items geladen, neem contact op met de Administrator als dit blijft gebeuren!";
-
     /* Search errors */
     protected $idNotValid = "De id is niet volledige voor het zoeken, neem contact op met de Administrator als dit blijft gebeuren!";
     protected $attrFail = "Kan de gevraagde eigenschap niet vinden, neem contact op met de Administrator als dit blijft gebeuren!";
-
     /* Errors when checking database entries against provided data */
     protected $duplName = "Deze naam is al in gebruik, kies aub een andere naam!";
     protected $noUserId = "Er is geen user id gevonden, neem contact op met de Administrator als dit blijft gebeuren!";
     protected $noProcess = "Collectie data kan niet verwerkt worden, neem contact op met de Administrator als dit blijft gebeuren!";
-
     /* Database errors */
     protected $dbFail = "Er was een database error, neem contact op met de administrator als dit blijft gebeuren!";
-
     /* Default, Generic errors, and single errors */
     protected $defaultErr = "Een onbekend probleem is opgevangen, neem contact op met de Administrator als dit blijft gebeuren!";
     protected $deviceErr = "Onbekend apparaat gevonden, neem contact op met uw Administrator!";
@@ -47,7 +43,6 @@ class Errors {
      */
     public function getError( $name=null ) {
         switch( $name ) {
-            /* User related errors */
             case "userNameErr":
                 return $this->userNameErr;
             case "userEmailErr":
@@ -60,7 +55,6 @@ class Errors {
                 return $this->authFailed;
             case "rightsError":
                 return $this->rightsError;
-            /* Album, Serie and Collection related errors */
             case "load":
                 return $this->loadFail;
             case "noItems":
@@ -77,15 +71,12 @@ class Errors {
                 return $this->noUserId;
             case "idToBig":
                 return $this->idToBig;
-            /* Collection specific error */
             case "noProc":
                 return $this->noProcess;
-            /* Default, Generic errors, and single errors */
             case "UsrAgeErr":
                 return $this->UsrAgeErr;
             case "deviceErr":
                 return $this->deviceErr;
-            /* Default error that should never be used/reached */
             default:
                 return $this->defaultErr;
         }

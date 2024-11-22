@@ -1,7 +1,5 @@
 <?php
 
-/* TODO List: Review all function and inline comments, to make sure they are up-to-date. */
-
 namespace App\Core;
 
 use Exception;
@@ -42,9 +40,9 @@ class Series {
 
     /*  loadSeries($id):
             This function deals with all loading events, both without a id, as with no more then 2 id sets.
-                $id (Assoc Array)   - Optional identifier to request DB entries.
+                $id (Array)   - Optional identifier to request DB entries
             
-            Return Value: None.
+            Return Value: None
      */
     protected function loadSeries( $id=null ) {
         /* Ensure the class global $series is empty before loading */
@@ -89,10 +87,10 @@ class Series {
 
     /*  getSeries($id):
             This function is designed to get, all series, or [a] specific serie(s).
-                $id (Assoc Array)   - Optional identifier to request specific DB entries.
+                $id (Array)   - Optional identifier to request specific DB entries
             
             Return Value:
-                On success: Multi-Dimensional Associative Array.
+                On success: Array
                 On failure: String
      */
     public function getSeries( $id=null ) {
@@ -114,18 +112,16 @@ class Series {
             }
 
         /* Catch and return any exceptions */
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
     /*  setSerie($data, $id):
             This function can insert and update serie data, based on the optional $id parameter.
             It will also check for duplicate names, using the getSerAtt() function.
-                $data (Assoc Array)     - The serie data represented in a Associative Array
-                $id (Assoc Array)       - The id of the serie that needs to be updated.
-                $nameCheck (String/Int) - Temp variable to check for duplicate names, using the getAlbAtt() function.
-                $store (String/Bool)    - Temp variable to store the outcome of the database action.
+                $data (Array)           - The serie data represented in a Associative Array
+                $id (Array)             - The id of the serie that needs to be updated
+                $nameCheck (String/Int) - Temp variable to check for duplicate names, using the getAlbAtt() function
+                $store (String/Bool)    - Temp variable to store the outcome of the database action
             
             Return Value:
                 On failure - String
@@ -158,16 +154,13 @@ class Series {
 
             /* If either the insert or update returned an error, i return a generic error, else i return TRUE */
             return is_string( $store ) ? throw new Exception( App::get( "errors" )->getError( "db" ) ) : TRUE;
-        } catch( Exception $e ) {
-            return [ "error" => [ "fetchResponse" => $e->getMessage() ] ];
-        }
+        } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /*  delSerie($id):
             This function deals with all delete requests, database errors are replaced with a generic error.
-                $id     - The id('s) associated with said item, can support up to 2 id pairs.
-                $store  - The temp store to evaluate the execution of the query.
+                $id (Array)             - The id('s) associated with said item, can support up to 2 id pairs
+                $store (Array/String)   - The temp store to evaluate the execution of the query
             
             Return Value:
                 On failure   -> Array
@@ -188,12 +181,11 @@ class Series {
         } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /*  getSerAtt( $name, $id ):
             This is basically a extended version, of a getId() function, but then for any attribute from a serie object.
-                $name (String)  - The name of the database column we want to request.
-                $id (Array)     - The identifier we have of the object (Expecting).
-                $key (String)   - The $id index as string value, so i can compare it to indexes in the itteration loops.
+                $name (String)  - The name of the database column we want to request
+                $id (Array)     - The identifier we have of the object (Expecting)
+                $key (String)   - The $id index as string value, so i can compare it to indexes in the itteration loops
             
             Return Value:
                 On failure - Array
@@ -227,12 +219,11 @@ class Series {
         } catch( Exception $e ) { return [ "error" => [ "fetchResponse" => $e->getMessage() ] ]; }
     }
 
-    // Totally Finished
     /* SerChDup($name, $id):
         Fairly straight forward duplicate name check, returning a true of false.
-            $name      (String)     - The name that needs to be checked.
-            $id        (String)     - The index of the serie that is being edited.
-            $duplicate (Boolean)    - A store to set when comparing inside the loop.
+            $name      (String)     - The name that needs to be checked
+            $id        (String)     - The index of the serie that is being edited
+            $duplicate (Boolean)    - A store to set when comparing inside the loop
         
         Return Value:
             On failure - Array
