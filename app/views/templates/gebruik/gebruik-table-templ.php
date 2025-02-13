@@ -66,8 +66,8 @@
             <th class="album-naam" id="<?= $value["Album_Index"] ?>" > <?= $value["Album_Naam"]; ?> </th>
             <th class="album-uitgnr" id="album-uitgnr" > <?= $value["Album_Nummer"]; ?> </th>
             <th class="album-uitgdt" id="album-uitgdt" > <?= $value['Album_UitgDatum']; ?> </th>
-            <?php if( isset( $value["Album_Schijver"] ) ) : ?>
-            <th id="album-schr" class="album-schr"> <?= $value["Album_Schijver"] ?> </th>
+            <?php if(isset($value["Album_Schrijver"])) : ?>
+            <th id="album-schr" class="album-schr"> <?= $value["Album_Schrijver"]?> </th>
             <?php else : ?>
             <th id="album-schr" class="album-schr"> Geen </th>
             <?php endif; ?>

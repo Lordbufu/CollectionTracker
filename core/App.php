@@ -56,7 +56,7 @@ class App {
 		    $detect->setUserAgent( $_SERVER["HTTP_USER_AGENT"] );
         /* Simple die, so if people are getting this, they know why. */
         } else {
-            die( App::get( "errors" )->getErrors( "UsrAgeErr" ) );
+            die( App::get( "errors" )->getError( "UsrAgeErr" ) );
         }
 
         if( $detect->isTablet() && $detect->isMobile() ) {
@@ -66,7 +66,7 @@ class App {
         } else if(!$detect->isMobile() && !$detect->isTablet()) {
             return static::$device = "desktop";
         } else {
-            die( App::get( "errors" )->getErrors( "deviceErr" ) );
+            die( App::get( "errors" )->getError( "deviceErr" ) );
         }
     }
 
