@@ -1,0 +1,131 @@
+/* Adjust the banner header font size */
+.header-text {
+    font-size: 1.5em;
+}
+
+/* Better fitting font-size for mobile */
+.content-header {
+    font-size: 1.1em;
+}
+
+/* Slightly smaller font-size */
+.content-intro, .content-info {
+    font-size: 0.9em;
+}
+
+/* Adjust footer text font size */
+.sub-grid-4 {
+    font-size: 0.7em;
+}
+
+/* Pop-in specific styles */
+/* Adjust the feedback container size, so its look more normal */
+.message-container {
+    left: 10%;
+    right: 10%;
+}
+
+/* Changes specific to normal orientation */
+@media only screen and not (orientation: landscape) {
+    /* Adjust grid area size to make sense */
+    .sub-grid-1 {
+        grid-template-columns: 20% 80%;
+    }
+
+    /* There is not need for a margin adjust on this screen size */
+    .header-text {
+        margin-right: 0;
+    }
+
+    /* Adjust to cover almost the entire screen width */
+    .sub-grid-2 {
+        grid-template-columns: 0 100% 0;
+    }
+
+    /* Remove padding, and adjust line-height so it all fits on screen */
+    .content-intro, .content-info {
+        padding: 0;
+        line-height: 1.2;
+    }
+
+    /* Give the grid almost the entire screen width */
+    .sub-grid-3 {
+        grid-template-columns: 95%;
+    }
+
+    /* Make the example images auto-scale based on view height (vw) */
+    .img-1, .img-2, .img-3, .img-4, .img-5, .img-6 {
+        width: calc(.450 * 50vw);
+        height: calc(.450 * 50vw);
+    }
+
+    /* Adjust flex direction for the footer content */
+    .footer-info-1, .footer-info-2, .footer-info-3 {
+        flex-direction: inherit;
+    }
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) {
+    /* Adjust grid area size to make sense */
+    .sub-grid-1 {
+        grid-template-columns: 15% 85%;
+    }
+
+    /* Adjust the header margin to match the grid change */
+    .header-text {
+        margin-right: 15%;
+    }
+
+    /* Adjust the column space to display the text normaly */
+    .sub-grid-2 {
+        grid-template-columns: 0 100% 0;
+    }
+
+    /* Adjust the line height a bit so it fits better */
+    .content-intro, .content-info {
+        line-height: 1.4;
+    }
+
+    /* Cover almost the entire screen width */
+    .sub-grid-3 {
+        grid-template-columns: 95%;
+    }
+
+    /* Make the example images auto-scale based on view height (vw) */
+    .img-1, .img-2, .img-3, .img-4, .img-5, .img-6 {
+        width: calc(.350 * 50vw);
+        height: calc(.350 * 50vw);
+    }
+
+    /* Adjust flex direction for the footer content */
+    .footer-info-1, .footer-info-2, .footer-info-3 {
+        flex-direction: row;
+    }
+
+    /* Pop-in specific stuff */
+    /* Set top container to overflow, so you can scroll to see the bottom */
+    .modal-cont {
+        overflow: scroll;
+    }
+
+    /* Make the pop-in fit better on screen */
+    .modal-content-cont {
+        top: 1.5em;
+    }
+
+    /* Adjust font-size and set a max-height, so it all fits on screen */
+    .modal-body {
+        font-size: 0.8em;
+        max-height: 20em;
+    }
+
+    /* Various adjustments, so the markers stay on screen */
+    .modal-ord-list li {
+        position: relative;
+        padding: 0.2em;
+        text-wrap: unset;
+        left: 1.5em;
+        width: 25em;
+    }
+}

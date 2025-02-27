@@ -1,0 +1,255 @@
+.sub-grid-1 {
+    height: auto;
+}
+
+.banner-reset-butt, .banner-logoff-butt, .banner-back-butt {
+    height: 1.5em;
+    width: 7.1em;
+}
+
+.sub-grid-2 {
+    grid-template-columns: 15% 20% 15%;
+    justify-content: center;
+    justify-items: center;
+}
+
+.contr-cont-1, .contr-cont-2, .contr-cont-3 {
+    display: flex;
+    flex-direction: column;
+    border: var(--main-border-body);
+    border-radius: var(--main-border-rad);
+    padding: var(--main-padding);
+    width: fit-content;
+    height: 7em;
+    align-items: center;
+    justify-content: center;
+}
+
+.contr-cont-2 {
+    min-width: 20em;
+}
+
+.contr-reeks-lab, .contr-item-lab, .item-zoek-lab {
+    font-weight: bold;
+}
+
+.contr-reeks-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.contr-reeks-lab {
+    margin-bottom: 1em;
+}
+
+.contr-reeks-lab-inp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 2.5em;
+}
+
+.contr-reeks-inp {
+    margin: 0.7em 0;
+    padding: 0.3em 0;
+    text-align: center;
+    width: 16em;
+}
+
+.contr-reeks-span {
+    font-size: small;
+    display: block;
+    position: relative;
+    bottom: 2.4em;
+    transition: 0.2s;
+    opacity: 0.5;
+}
+
+.contr-reeks-inp:focus + .contr-reeks-span, .contr-reeks-inp:not(:placeholder-shown) + .contr-reeks-span {
+    opacity: 1;
+    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.7em);
+    color: var(--main-lab-col-1);
+    background-color: var(--main-lab-col-2);
+    border: var(--main-border-body);
+    border-radius: var(--main-border-rad);
+    width: 80%;
+    align-self: center;
+}
+
+.contr-reeks-butt {
+    margin-bottom: 0.2em;
+    width: 16em;
+    height: 1.5em;
+    width: 100%;
+}
+
+.contr-item-form {
+    display: grid;
+    justify-items: center;
+    margin: 0.1em 0.2em;
+    padding: 0.2em 0;
+}
+
+.contr-cont-2 label, .contr-cont-2 select, .contr-cont-2 input, .contr-cont-2 button {
+    text-align: center;
+    margin-bottom: 0.2em;
+}
+
+.contr-item-select, .contr-item-opt {
+    width: fit-content;
+}
+
+.contr-item-subm {
+    margin: 0.1em 0.2em;
+    width: 100%;
+}
+
+.contr-item-isbn-search {
+    margin: 0.1em 0.2em;
+    width: 100%;
+}
+
+.sub-grid-3 {
+    grid-template-columns: 80%;
+}
+
+.table-header {
+    width: 100%;
+    margin: 0.2em 0;
+    display: flex;
+    justify-content: center;
+}
+
+.table-header h2 {
+    margin: 0;
+}
+
+.table-templ {
+    width: 100%;
+    display:flex;
+    justify-content: center;
+}
+
+.reeks-table-titles th {
+    border: var(--main-border-body);
+    font-weight: normal;
+}
+
+.reeks-naam, .reeks-maker, .reeks-opmerk, .reeks-items, .reeks-gebruikers {
+    border: var(--main-border-body);
+    font-weight: normal;
+    padding: 0.1em;
+}
+
+.reeks-items, .reeks-gebruikers {
+    width: 5em;
+}
+
+.reeks-naam, .reeks-maker {
+    width: 12em;
+}
+
+.reeks-view-butt {
+    background-image: url("../images/view.png");
+}
+
+.reeks-edit-butt {
+    background-image: url("../images/edit.png");
+}
+
+.reeks-del-butt {
+    background-image: url("../images/delete.png");
+}
+
+.reeks-view-butt, .reeks-edit-butt, .reeks-del-butt {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 2.5em;
+    width: 2.5em;
+    border: unset;
+    cursor: pointer;
+}
+
+.items-table-titles th {
+    border: var(--main-border-body);
+    font-weight: normal;
+}
+
+.item-naam, .item-nummer, .item-uitgave, .item-schr, .item-cover, .item-isbn, .item-opm {
+    border: var(--main-border-body);
+    font-weight: normal;
+    padding: 0.1em;
+}
+
+.item-naam {
+    width: fit-content;
+    padding: 0.2em;
+}
+
+.item-nummer {
+    width: 3em;
+}
+
+.item-uitgave {
+    width: 5.2em;
+}
+
+.item-schr {
+    width: 3em;
+}
+
+.item-bew-butt {
+    background-image: url("../images/edit.png");
+}
+
+.item-verw-butt {
+    background-image: url("../images/delete.png");
+}
+
+.item-bew-butt, .item-verw-butt {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: white;
+    background-size: contain;
+    height: 2.5em;
+    width: 2.5em;
+    border: unset;
+    cursor: pointer;
+}
+
+.butt-box {
+    align-items: center;
+}
+
+@media only screen and (width <= 1630px) {
+    .sub-grid-2 {
+        grid-template-columns: 20% 20% 20%;
+    }
+}
+
+@media only screen and (width <= 1480px) {
+    .sub-grid-1 {
+        grid-template-columns: 20% 80%;
+    }
+
+    .banner-head {
+        margin-right: 20%;
+    }
+
+    .sub-grid-2 {
+        grid-template-columns: 30% 30% 30%;
+    }
+
+    .sub-grid-3 {
+        grid-template-columns: 75%;
+    }
+}
+
+@media only screen and (width <= 1220px) {
+    .sub-grid-3 {
+        grid-template-columns: 100%;
+    }
+}

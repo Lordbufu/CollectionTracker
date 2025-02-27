@@ -1,0 +1,298 @@
+/* The main pop-in layout:
+        modal-cont -> Main top level container, also used as the faded background.
+            modal-content-cont: The second level container, functioning as the main body of the pop-in.
+                modal-header-cont -> Header sub-container.
+                    modal-header-text -> The actual header text.
+                    modal-header-close-form -> The close button.
+                modal-body -> The main body container.
+                    modal-form -> the form content of the pop-in.
+                        butt-box -> the submit button container.
+                            modal-form-button -> the actual submit button.
+    Pop-in is triggers via the id name in the uri (for example: '/beheer#isbn-preview').
+    And is captured via '.modal-cont:traget', to trigger visibility of the entire top level container.
+ */
+.modal-cont {
+    position: fixed;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background-color: var(--main-backgr-fallb);
+    background-color: var(--main-backgr-fade);
+    visibility: hidden;
+} .modal-cont:target {
+    visibility: visible;
+}
+
+/* Main body content, set to inline-table to maket he isbn title choice fit with long names. */
+.modal-content-cont {
+    display: inline-table;
+    flex-direction: column;
+    position: relative;
+    top: 15em;
+    background-color: var(--main-pop-in-col);
+    min-width: 14em;
+    max-width: 20em;
+    width: 17em;
+    border-radius: var(--main-border-rad);
+    text-wrap: balance;
+}
+
+/* Modal header content, incl the close button/form. */
+.modal-header-cont {
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--main-border-rad);
+    background-color: var(--main-banner-col);
+    padding: 0.4em;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-header-text {
+    font-size: 1.1em;
+    width: 95%;
+    margin: 0;
+}
+
+.modal-header-close {
+    font-size: 1.8em;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--main-text-color);
+    margin: 0 0.2em;
+    background: none;
+    border: 0;
+    cursor: pointer;
+} .modal-header-close:hover {
+    color: var(--main-butt-hover);
+}
+
+/* The main content body, always including a form. */
+.modal-body {
+    display: grid;
+    grid-template-areas: "l-cont r-cont";
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-form {
+    grid-area: l-cont;
+    margin: 0.5em 0;
+}
+
+/* Left-side & Right-side of the pop-in form. */
+.modal-form-left-cont {
+    grid-area: l-cont;
+    padding: 0.1em 0;
+}
+
+.modal-form-right-cont {
+    grid-area: r-cont;
+    padding: 0.1em 0.2em;
+}
+
+/* The label/input/span magic to move and display placeholder tekst. */
+.modal-form-label {
+    position: relative;
+    display: inline-grid;
+    justify-items: center;
+    height: 2.5em;
+    margin: 0.2em;
+}
+
+.modal-form-input {
+    text-align: center;
+    width: 14em;
+    height: 1.3em;
+    margin: 0.3em;
+    padding: 0.4em;
+}
+
+/* Remove file input display */
+#item-cover-inp {
+    display: none;
+}
+
+.modal-form-span {
+    font-size: small;
+    text-align: center;
+    display: block;
+    position: relative;
+    bottom: 2.1em;
+    transition: 0.2s;
+    opacity: 0.5;
+    width: 14em;
+} .modal-form-input:focus + .modal-form-span, .modal-form-input:not(:placeholder-shown) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.7em);
+    color: var(--main-lab-col-1);
+    background-color: var(--main-lab-col-2);
+    border-radius: var(--main-border-rad);
+    padding: 0.1em 0;
+} .modal-form-input:focus + .modal-form-span, .modal-form-input:not(:-ms-input-placeholder) + .modal-form-span {
+    opacity: 1;
+    transform: scale(0.9) translate(-100%) translateX(100%) translateY(-1.7em);
+    color: var(--main-lab-col-1);
+    background-color: var(--main-lab-col-2);
+    border-radius: var(--main-border-rad);
+    padding: 0.1em 0;
+}
+
+/* The submit buttons/checkboxes. */
+.butt-box {
+    display: flex;
+    flex-direction: column;
+    grid-area: l-cont;
+    margin: 0.4em 0;
+    width: 100%;
+    align-content: center;
+}
+
+.modal-form-button {
+    width: 70%;
+    height: 2.5em;
+    font-size: 1em;
+}
+
+.modal-form-checkbox {
+    display: inline;
+    position: inherit;
+    margin: 0.1em;
+} .modal-form-checkbox:hover {
+    cursor: pointer;
+}
+
+/* Pop-in Paragraphs, listed items, agree-text and fake-links for user agreement pop-ins etc. */
+.modal-body p {
+    font-size: 1em;
+}
+
+.modal-body ol {
+    font-size: 0.8em;
+    margin: 0.1em;
+}
+
+.modal-body li {
+    margin: 0.1em;
+    margin-right: 0.2em;
+    padding: 0.1em;
+} .modal-body li::marker {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.modal-gebr-ov-button {
+    display: block;
+    width: 70%;
+    padding: 0.7em;
+}
+
+.modal-form-agree-text {
+    font-size: 0.7em;
+}
+
+.modal-form-link {
+    margin: 0.3em;
+    font-size: 0.8em;
+    text-decoration: none;
+} .modal-form-link:hover {
+    color: var(--main-butt-hov);
+    cursor: pointer;
+}
+
+/* Item Cover related stuff, also used in some table previews */
+.item-cover {
+    border: var(--main-border-body);
+    height: 4em;
+    width: 3.3em;
+}
+
+.item-cover-img {
+    width: 3.2em;
+    height: 3.9em;
+}
+
+.modal-form-cov-lab {
+    font-size: small;
+    display: inline-block;
+    padding: 0.4em;
+    margin-bottom: 0.3em;
+}
+
+.modal-item-cover-img {
+    height: 7.4em;
+    width: 6.4em;
+    margin: 0;
+}
+
+/* All fake triggers used to align elements on both sides. */
+.modal-form-fake-trigger {
+    height: 2em;
+    margin: 0.54em 0;
+}
+
+/* The item-cover fake trigger, set to max img height */
+.modal-form-cov-trigger {
+    height: 7.4em;
+}
+
+/* ISBN lookup button */
+.modal-form-isbn-trigger {
+    background-image: url("../images/search-symbol.png");
+    background-color: var(--main-butt-col);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border: 0.1em solid black;
+    border-radius: 0.1em;
+    height: 2.4em;
+    cursor: pointer;
+}
+
+/* Fake extra trigger, not sure what this was used for .modal-form-fake-extraTrigger { height: 7.4em; width: 2.5em; border: unset; margin: 0.6em 0; } */
+/* Review required, since these are all id's instead of classes */
+/* Adjust display for make-up reasons */ 
+#account-maken-form {
+    display: block;
+}
+
+/* Center element with margin */
+#logoff-submit {
+    margin-left: 2em;
+}
+
+/* Adjust padding for the placeholdertekst */
+#modal-body-p {
+    padding: 0.4em;
+}
+
+/* Adjust display for make-up reasons */
+#login-form {
+    display: block;
+}
+
+/* Adjust display for make-up reasons */
+#ww-reset-form {
+    display: block;
+}
+
+/* Required field text */
+#modal-small-text {
+    font-size: 0.7em;
+    font-style: italic;
+    font-weight: bold;
+    color: red;
+    margin-bottom: 0.35em;
+}
+
+/* ISBN title review pop-in */
+#isbn-review-content-cont {
+    max-width: unset;
+    width: fit-content;
+}
+
+#isbn-review-body {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.2em;
+}

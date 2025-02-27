@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+    "require": {
+        "mobiledetect/mobiledetectlib": "^4.8",
+        "php-console/php-console": "^3.1"
+    }
+}
