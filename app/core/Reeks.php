@@ -28,11 +28,17 @@ class Reeks {
         return;
     }
 
-    /*  checkDup($name) */
+    /*  checkDup($name):
+            This function checks for duplicate reeks names, and if a index is provided it checks if it wasnt the same as the requested items index.
+            Because the index defaults to null, any 
+     */
     protected function checkDup($name, $index=null) {
         foreach($this->reeks as $key => $items) {
             if($items['Reeks_Naam'] === $name) {
-                if($items['Reeks_Index'] === $index) {
+                if($items['Reeks_Index'] != $index) {
+                    $this->duplicate = TRUE;
+                    return TRUE;
+                } else {
                     $this->duplicate = TRUE;
                     return TRUE;
                 }

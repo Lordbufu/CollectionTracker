@@ -15,7 +15,9 @@ class FileHandler {
         $this->file = $file;
 
         /* return FALSE if no array was set, */
-        if(!is_array($this->file)) { return FALSE; }
+        if(!is_array($this->file)) {
+            return FALSE;
+        }
 
         /* return true if all seems well. */
         return TRUE;
@@ -67,7 +69,6 @@ class FileHandler {
         }
     }
 
-    //  TODO: Write error condition for this, so i dont store odd strings that are not images ¿
     /*  procUrl($url): */
     public function procUrl($url) {
         /* Init curl to request the image data from the Google api url. */
