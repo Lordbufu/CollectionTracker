@@ -10,7 +10,7 @@ if(isset($_SESSION['page-data']['mobile-details'])) {
 
         <div class="modal-header-cont">
             <div class="modal-header-text">
-                <h3><?= $store['Album_Naam'] ?? '' ?></h3>
+                <h3><?= inpFilt($store['Album_Naam']) ?? '' ?></h3>
             </div>
             <a class="modal-header-close" href="/gebruik">&times;</a>
         </div>
@@ -41,7 +41,7 @@ if(isset($_SESSION['page-data']['mobile-details'])) {
 
                 <tr class="fith-data-set">
                     <th class="fith-data-name">Opmerking:</th>
-                    <th class="fith-data-val"><?=$store['Album_Opm']?></th>
+                    <th class="fith-data-val"><?=inpFilt($store['Album_Opm'])?></th>
                 </tr>
             </table>
 

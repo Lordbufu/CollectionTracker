@@ -51,6 +51,11 @@
 </div>
 
 <style>
-    .modal-form { display: block; }
-    .modal-body p { padding: 0.2em; }
+    .modal-form {
+        display: block;
+    }
+
+    .modal-body p {
+        padding: 0.2em;
+    }
 </style>

@@ -1,8 +1,9 @@
 <div class="table-header">
-    <h2 class="table-header-text"><?=$_SESSION['page-data']['huidige-reeks'] ?? 'Selecteer een Reeks'?></h2>
+    <h2 class="table-header-text"><?=inpFilt($_SESSION['page-data']['huidige-reeks']) ?? 'Selecteer een Reeks'?></h2>
 </div>
 
 <table class="reeks-table">
+
     <tr class="reeks-table-titles">
         <th style="border: 0px;"></th>
         <th style="border: 0px;"></th>
@@ -12,8 +13,10 @@
         <th class="reeksOpmTitle">Reeks Opmerking</th>
         <th>Reeks Items</th>
     </tr>
-<?php if(isset($_SESSION['page-data']['reeks'])) :
-        foreach($_SESSION['page-data']['reeks'] as $key => $value) : ?>
+
+<?php   // Loop over the reeks data is there is any
+if(isset($_SESSION['page-data']['reeks'])) :
+    foreach($_SESSION['page-data']['reeks'] as $key => $value) : ?>
     <tr class="reeks-table-cont-<?=$value['Reeks_Index']?>">
         <th class="reeks-view">
             <form class="reeks-view-form" method="post" action="/selReeks">
@@ -21,6 +24,7 @@
                 <input class="reeks-view-butt" type="submit" value=""/>
             </form>
         </th>
+
         <th class="reeks-bew">
             <form class="reeks-edit-form" method="post" action="/rEdit">
                 <input class="reeks-edit-form-method" name="_method" value="PATCH" hidden/>
@@ -28,6 +32,7 @@
                 <input class="reeks-edit-butt" id="reeks-edit-butt" type="submit" value=""/>
             </form>
         </th>
+
         <th class="reeks-del">
             <form class="reeks-edit-form" method="post" action="/rDel">
                 <input class="reeks-del-form-method" name="_method" value="DELETE" hidden/>
@@ -36,13 +41,17 @@
                 <input class="reeks-del-butt" id="<?=$value['Reeks_Index']?>" value="" onclick="return reeksVerwijderen(event)"/>
             </form>
         </th>
-        <th class="reeks-naam"><?=$value['Reeks_Naam']?></th>
-        <th class="reeks-maker"><?=$value['Reeks_Maker']?></th>
-        <th class="reeks-opmerk"><?=$value['Reeks_Opmerk']?></th>
+
+        <th class="reeks-naam"><?=inpFilt($value['Reeks_Naam'])?></th>
+        <th class="reeks-maker"><?=inpFilt($value['Reeks_Maker'])?></th>
+        <th class="reeks-opmerk"><?=inpFilt($value['Reeks_Opmerk'])?></th>
         <th class="reeks-items"><?=$value['Item_Aantal']?></th>
     </tr>
-    <?php endforeach; endif; ?>
+<?php
+    endforeach;
+endif; ?>
 </table>
+
 <script>
     /* Elements, button states and listen events for editing a serie */
     const serieBewButt = document.getElementsByClassName('reeks-edit-butt');

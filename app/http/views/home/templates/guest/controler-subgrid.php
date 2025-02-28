@@ -1,4 +1,6 @@
-<div class="contr-cont-1"></div>
+<div class="contr-cont-1">
+</div>
+
 <div class="contr-cont-2">
     <h2 class="content-header">Welcome bij de Collectie Tracker</h2>		
     <p class="content-intro">
@@ -12,4 +14,6 @@
         Echter word er ook al gedacht aan een barcode scanner, afhankelijk van hoe dat gaat, kan het wellicht ook helpen bij het maken van series.
     </p>
 </div>
-<div class="contr-cont-3"></div>
+
+<div class="contr-cont-3">
+</div>

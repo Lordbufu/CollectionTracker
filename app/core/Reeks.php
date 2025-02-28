@@ -20,18 +20,22 @@ class Reeks {
     /*  countItems(): */
     protected function countItems() {
         foreach($this->reeks as $key => $value ) {
-            $this->reeks[$key]['Item_Aantal'] = App::resolve('database')->countItems(['Item_Reeks' => $value['Reeks_Index']]);
+            $this->reeks[$key]['Item_Aantal'] = App::resolve('database')->countItems([
+                'Item_Reeks' => $value['Reeks_Index']
+            ]);
         }
 
         return;
     }
 
     /*  checkDup($name) */
-    protected function checkDup($name) {
+    protected function checkDup($name, $index=null) {
         foreach($this->reeks as $key => $items) {
             if($items['Reeks_Naam'] === $name) {
-                $this->duplicate = TRUE;
-                return TRUE;
+                if($items['Reeks_Index'] === $index) {
+                    $this->duplicate = TRUE;
+                    return TRUE;
+                }
             }
         }
 
@@ -109,7 +113,7 @@ class Reeks {
         }
 
         /* If duplicate is true now, return a duplicate error for user feedback. */
-        if($this->checkDup($data['naam'])) {
+        if($this->checkDup($data['naam'], $data['index'])) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 

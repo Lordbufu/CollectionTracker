@@ -1,5 +1,5 @@
 Global TODO List:
+    - Look at all user inputs, and make sure they are filtered properly before displaying them on the website again (even after being stored in the database).
     - Review what css is redundant in 'modal-style.css', considering the latest re-factor of the design/code base.
-    - Review the parsing for the FileHandler, it might still need more decent error handeling, so i dont store potentially harmfull strings.
-    - Review CSS opmaak van alle pop-ins, zodat de kleine rode tekst goed te lezen is, en niet overlapt wordt.
+    - Review the parsing for the FileHandler, it might still need more decent error handeling, so i dont store potentially harmfull strings ¿
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.

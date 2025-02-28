@@ -44,14 +44,14 @@
         /* Live specific settings */
         'live' => [
             'database' => [
-                'host' => '#redacted#',
+                'host' => 'localhost',
                 'port' => 3306,
                 'dbname' => 'collectie_tracker',
                 'charset' => 'utf8mb4'
             ],
             'credentials' => [
-                'username' => '#redacted#',
-                'password' => '#redacted#'
+                'username' => 'Verzameling_App',
+                'password' => 'Z_VFQ(foXV*KxKPw'
             ],
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT

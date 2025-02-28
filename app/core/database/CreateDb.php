@@ -7,7 +7,7 @@ class CreateDb {
     protected static function gebruikersCreate() {
         return $sql = "CREATE TABLE `gebruikers` (
             `Gebr_Index` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Gebruikers index.',
-            `Gebr_Naam` tinytext NOT NULL COMMENT 'Naam v/d gebruiker.',
+            `Gebr_Naam` varchar(255) NOT NULL COMMENT 'Naam v/d gebruiker.',
             `Gebr_Email` varchar(255) NOT NULL COMMENT 'E-mail voor de login.',
             `Gebr_WachtW` text NOT NULL COMMENT 'Wachtwood (hashed).',
             `Gebr_Rechten` tinytext NOT NULL COMMENT 'App Account rechten.',

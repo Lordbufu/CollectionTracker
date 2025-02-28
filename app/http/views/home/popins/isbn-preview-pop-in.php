@@ -3,27 +3,29 @@
         <div class="modal-header-cont">
             <h3 class="modal-header-text">ISBN Search Review</h3>
 
-            <?php if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') : ?>
+<?php if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') : ?>
             <form class="modal-header-close-form" method="post" action="/gebruik">
                 <input class="modal-header-input" name="close" value="back" hidden/>
                 <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
 
-            <?php elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') : ?>
+<?php elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') : ?>
             <form class="modal-header-close-form" method="post" action="/beheer">
                 <input class="modal-header-input" name="close" value="back" hidden/>
                 <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
-            <?php endif; ?>
+<?php endif; ?>
 
         </div>
 
-        <?php if(isset($_SESSION['_flash']['isbn-choices'])) {
-                $store = $_SESSION['_flash']['isbn-choices'];
-                $store['index'] = $_SESSION['_flash']['tags']['reeks-index'];
-                $store['isbn'] = $_SESSION['_flash']['tags']['isbn-scanned'];
-                unset($_SESSION['_flash']['tags']);
-            } ?>
+<?php
+if(isset($_SESSION['_flash']['isbn-choices'])) {
+    $store = $_SESSION['_flash']['isbn-choices'];
+    $store['index'] = $_SESSION['_flash']['tags']['reeks-index'];
+    $store['isbn'] = $_SESSION['_flash']['tags']['isbn-scanned'];
+    unset($_SESSION['_flash']['tags']);
+}
+?>
         <div class="modal-body">
 
             <form class="modal-form" enctype="multipart/form-data" method="post" action="/scanConf">
@@ -33,10 +35,15 @@
                 <div class="modal-form-left-cont" id="modal-form-left-cont">
                     <select class="modal-form-select" name="title-choice" id="item-choice" required>
                         <option class="modal-form-title-options" value="">Selecteer een title</option>
-                        <?php foreach($store as $key => $value) :   // Ignore the 'Titles', 'isbn' & 'index' entries.
-                                if($key != 0 && $key !== 'isbn' && $key !== 'index') : ?>
+<?php   // Ignore the 'Titles', 'isbn' & 'index' entries.
+    foreach($store as $key => $value) :
+        if($key != 0 && $key !== 'isbn' && $key !== 'index') :
+?>
                         <option class="modal-form-title-options"><?=$value?></option>
-                        <?php endif; endforeach; ?>
+<?php
+        endif;
+    endforeach;
+?>
                     </select>
 
                     <div class="butt-box">

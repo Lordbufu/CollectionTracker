@@ -4,7 +4,7 @@ use App\Core\App;
 
 /* Prep the user data, by looking at what crendtials are used first, and then storing the correct data keys. */
 if(isset($_POST['accountCred']) && App::resolve('validator')->email($_POST['accountCred'])) {
-    $uCred['Gebr_Email'] = $_POST['accountCred']; 
+    $uCred['Gebr_Email'] = $_POST['accountCred'];
 } else {
     $uCred['Gebr_Naam'] = $_POST['accountCred'];
 }
@@ -36,21 +36,23 @@ if(!$auth) {
             'log-fail' => TRUE
         ],
         'oldForm' => [
-            'accountCred' => inpFilt($_POST['accountCred'])
+            'accountCred' => $_POST['accountCred']
     ]];
 
     App::resolve('session')->flash($flash);
     return App::redirect('home#login-pop-in', TRUE);
 }
 
-/* If a user was set from the databse, get the user data, and store a welcome message in the '_flash'. */
+/* If a user was set from the database, get the user data, and store a welcome message in the '_flash'. */
 if(isset($_SESSION['user']['id'])) {
     $user = App::resolve('user')->getUser([
         'Gebr_Index' => $_SESSION['user']['id']
     ]);
 
+    $userName = $user['Gebr_Naam'];
+
     App::resolve('session')->flash('feedback', [
-        'login' => "Welcome: {$user['Gebr_Naam']}, Uw login is geslaagd."
+        'login' => "Welcome: {$userName}, Uw login is geslaagd."
     ]);
 }
 

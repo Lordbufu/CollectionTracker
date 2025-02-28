@@ -8,14 +8,16 @@ if(isset($_POST['index'])) {
         'Reeks_Index' => $_POST['index']
     ]);
 
-    $ids = ['Reeks_Index' => $_POST['index']];
+    $ids = [
+        'Reeks_Index' => $_POST['index']
+    ];
 
     $oldForm = [
         'method' => $_POST['_method'],
         'index' => $_POST['index'],
-        'naam' => inpFilt($_POST['naam']),
-        'makers' => inpFilt($_POST['makers']),
-        'opmerking' => inpFilt($_POST['opmerking'])
+        'naam' => $_POST['naam'],
+        'makers' => $_POST['makers'],
+        'opmerking' => $_POST['opmerking']
     ];
 }
 

@@ -1,7 +1,19 @@
-<?php if(isset($_SESSION['_flash']['tags']['rNaam'])) { $store['naam'] = $_SESSION['_flash']['tags']['rNaam']; }
-    if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
-    if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
-    if(isset($_SESSION['_flash']['tags']['method'])) { $store['method'] = $_SESSION['_flash']['tags']['method']; }
+<?php
+if(isset($_SESSION['_flash']['tags']['rNaam'])) {
+    $store['naam'] = $_SESSION['_flash']['tags']['rNaam'];
+}
+
+if(isset($_SESSION['_flash']['oldForm'])) {
+    $store = $_SESSION['_flash']['oldForm'];
+}
+
+if(isset($_SESSION['_flash']['oldItem'])) {
+    $store = $_SESSION['_flash']['oldItem'];
+}
+
+if(isset($_SESSION['_flash']['tags']['method'])) {
+    $store['method'] = $_SESSION['_flash']['tags']['method'];
+}
 ?>
 
 <div id="reeks-maken-pop-in" class="modal-cont" >
@@ -17,23 +29,24 @@
 
         <div class="modal-body">
             <div class="modal-form-left-cont">
+
                 <form class="modal-form" method="post" action="/reeksM">
                     <p id="modal-small-text" class="modal-small-text" > De serie naam is een verplicht veld </p>
                     <input class="modal-form-hidden-method" name="_method" value="<?=$store['method']?>" hidden/>
                     <input class="modal-form-hidden-index" name="index" value="<?=$store['index'] ?? ''?>" hidden/>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=$store['naam'] ?? ''?>"/>
+                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=inpFilt($store['naam']) ?? ''?>"/>
                         <span class="modal-form-span">Reeks Naam</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" name="makers" placeholder="" autocomplete="on" value="<?=$store['makers'] ?? ''?>"/>
+                        <input type="text" class="modal-form-input" name="makers" placeholder="" autocomplete="on" value="<?=inpFilt($store['makers']) ?? ''?>"/>
                         <span class="modal-form-span">Makers/Artiesten</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" name="opmerking" placeholder="" autocomplete="on" value="<?=$store['opmerking'] ?? ''?>"/>
+                        <input type="text" class="modal-form-input" name="opmerking" placeholder="" autocomplete="on" value="<?=inpFilt($store['opmerking']) ?? ''?>"/>
                         <span class="modal-form-span">Opmerking/Notitie</span>
                     </label>
 

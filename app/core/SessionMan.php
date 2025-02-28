@@ -69,22 +69,23 @@ class SessionMan {
 
         session_start();    // Soonest point i can activate the user session
 
-        /* Set browser name if not set, requires 'browscap' file to work, cause it needs to parse the user-agent */
-        if(!isset($this->browser)) {
-            $this->setBrowser($_SERVER['HTTP_USER_AGENT']);
-        }
+        // Cant use this in the live version atm, so i have uncommneted it untill i know a better solution
+        // /* Set browser name if not set, requires 'browscap' file to work, cause it needs to parse the user-agent */
+        // if(!isset($this->browser)) {
+        //     $this->setBrowser($_SERVER['HTTP_USER_AGENT']);
+        // }
 
-        /* If the browser is firefox, change the cache controle to solve JS issues. */
-        if($this->browser === 'Firefox') {
-            header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-            header("Cache-Control: post-check=0, pre-check=0", false);                  
-            header("Pragma: no-cache");
-        }
+        // /* If the browser is firefox, change the cache controle to solve JS issues. */
+        // if($this->browser === 'Firefox') {
+        //     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        //     header("Cache-Control: post-check=0, pre-check=0", false);                  
+        //     header("Pragma: no-cache");
+        // }
 
         // Debug section, to see if browser detection was the problem.
-        // header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-        // header("Cache-Control: post-check=0, pre-check=0", false);                  
-        // header("Pragma: no-cache");
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);                  
+        header("Pragma: no-cache");
 
         return;
     }

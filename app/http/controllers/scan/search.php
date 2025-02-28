@@ -6,12 +6,12 @@ use App\Core\App;
 $oldForm = [
     'rIndex' => $_POST['rIndex'],
     'iIndex' => $_POST['iIndex'],
-    'naam' => inpFilt($_POST['naam']),
+    'naam' => $_POST['naam'],
     'nummer' => $_POST['nummer'],
     'datum' => $_POST['datum'],
-    'autheur' => inpFilt($_POST['autheur']),
+    'autheur' => $_POST['autheur'],
     'isbn' => $_POST['isbn'],
-    'opmerking' => inpFilt($_POST['opmerking'])
+    'opmerking' => $_POST['opmerking']
 ];
 
 $searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rIndex'], TRUE);

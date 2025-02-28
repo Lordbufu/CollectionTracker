@@ -19,7 +19,7 @@ if(isset($_POST['index'])) {
 /* If no error was returned, store the currect select reeks name in the page-data (filtered). */
 if(!is_string($reeks)) {
     App::resolve('session')->setVariable('page-data', [
-        'huidige-reeks' => inpFilt($reeks['Reeks_Naam'])
+        'huidige-reeks' => $reeks['Reeks_Naam']
     ]);
 
     /* Attemp to get all items associated with the selected reeks. */

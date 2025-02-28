@@ -50,7 +50,7 @@ if(is_string($remCollectie)) {
 
 /* Set the feedback message for the user, in the _flash memory. */
 App::resolve('session')->flash('feedback', [
-    'success' => "De reeks: {$_POST['naam']} en al de items en collecties ervan zijn verwijderd !"
+    'success' => "De reeks: {$idPairs['reeks']['Reeks_Naam']} en al de items en collecties ervan zijn verwijderd !"
 ]);
 
 /* Incase items where set, i unset them as they are not required for the reeks view. */

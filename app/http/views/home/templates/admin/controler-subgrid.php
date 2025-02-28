@@ -20,26 +20,28 @@
 
         <select class="contr-item-select" id="item-toev" name="naam" required>
             <option value="">Selecteer een reeks</option>
-        <?php
-            if(isset($_SESSION['page-data']['reeks'])) {
-                $store = $_SESSION['page-data']['reeks'];
+<?php
+if(isset($_SESSION['page-data']['reeks'])) {
+    $store = $_SESSION['page-data']['reeks'];
+}
+
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReeks = $_SESSION['page-data']['huidige-reeks'];
+}
+
+$current = FALSE;
+
+if(isset($store)) :
+    foreach($store as $key => $value) :
+        if(isset($hReeks)) {
+            if(inpFilt($hReeks) === inpFilt($value['Reeks_Naam'])) {
+                $current = TRUE;
             }
-
-            if(isset($_SESSION['page-data']['huidige-reeks'])) {
-                $hReeks = $_SESSION['page-data']['huidige-reeks'];
-            }
-
-            $current = FALSE;
-
-            if(isset($store)) :
-                foreach($store as $key => $value) :
-                    if(isset($hReeks)) {
-                        if($hReeks === $value['Reeks_Naam']) {
-                            $current = TRUE;
-                        }
-                    } ?>
-                <option class="item-toev-opt" <?= $current ? 'selected' : '' ?>><?=$value['Reeks_Naam']?></option>
-        <?php endforeach; endif; ?>
+        } ?>
+                <option class="item-toev-opt" <?= $current ? 'selected' : '' ?>><?=inpFilt($value['Reeks_Naam'])?></option>
+<?php
+    endforeach;
+endif; ?>
         </select>
 
         <input class="contr-item-subm button" id="item-toev-subm" type="submit" value="Invoeren" />

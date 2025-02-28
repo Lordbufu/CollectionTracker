@@ -21,13 +21,13 @@ if(isset($_POST['iIndex'])) {                           // If we came here via t
     $editItem = [
         'rIndex' => $item['Item_Reeks'],
         'iIndex' => $item['Item_Index'],
-        'naam' => inpFilt($item['Item_Naam']),
-        'nummer' => inpFilt($item['Item_Nummer']),
+        'naam' => $item['Item_Naam'],
+        'nummer' => $item['Item_Nummer'],
         'datum' => $item['Item_Uitgd'],
-        'autheur' => inpFilt($item['Item_Auth']),
+        'autheur' => $item['Item_Auth'],
         'cover' => $item['Item_Plaatje'],
         'isbn' => $item['Item_Isbn'],
-        'opmerking' => inpFilt($item['Item_Opm'])
+        'opmerking' => $item['Item_Opm']
     ];
 
     $flash = [

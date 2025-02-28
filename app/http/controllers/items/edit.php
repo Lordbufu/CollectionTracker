@@ -15,12 +15,12 @@ $oldForm = [
     '_method' => $_POST['_method'],
     'rIndex' => $_POST['rIndex'],
     'iIndex' => $_POST['iIndex'] ?? '',
-    'naam' => inpFilt($_POST['naam']),
-    'nummer' => inpFilt($_POST['nummer']),
+    'naam' => $_POST['naam'],
+    'nummer' => $_POST['nummer'],
     'datum' => $_POST['datum'],
-    'autheur' => inpFilt($_POST['autheur']),
+    'autheur' => $_POST['autheur'],
     'isbn' => $_POST['isbn'],
-    'opmerking' => inpFilt($_POST['opmerking'])
+    'opmerking' => $_POST['opmerking']
 ];
 
 /* Store post as temp, and set cover state to false. */

@@ -5,12 +5,12 @@ use App\Core\App;
 /* Filter the user input, so i can savely return it to the page. */
 $oldFilData = [
     'rIndex' => $_POST['rIndex'],
-    'naam' => inpFilt($_POST['naam']),
+    'naam' => $_POST['naam'],
     'nummer' => $_POST['nummer'],
     'datum' => $_POST['datum'],
-    'autheur' => inpFilt($_POST['autheur']),
+    'autheur' => $_POST['autheur'],
     'isbn' => $_POST['isbn'],
-    'opmerking' => inpFilt($_POST['opmerking'])
+    'opmerking' => $_POST['opmerking']
 ];
 
 /*  Process the cover if one was set via the HTML input,

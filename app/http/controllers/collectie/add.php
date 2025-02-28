@@ -19,9 +19,11 @@ if(isset($collData['iIndex']) && isset($collData['rIndex'])) {                  
 
 if(is_string($store)) {                                                                             // If issues or errors,
     $mssg = isset($store) ? $store : App::resolve('errors')->getError('forms', 'input-missing');    // check what error to store,
+
     App::resolve('session')->flash('feedback', [                                                    // prep error as user feedback,
         'error' => $store
     ]);
+
     return App::redirect('gebruik', TRUE);                                                          // and redirect to gebruik-page with _flash tags.
 }
 

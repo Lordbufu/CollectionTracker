@@ -36,7 +36,7 @@
                 } ?>
         </div>
 
-        <?php
+        <?php   // Require section for pop-ins, all based on _flash tags and user rights.
             // Test code for the more info pop-in, designed for mobile devices.
             // if($_SESSION['user']['rights'] === 'user' && $device === 'mobile') {
             //     require "popins/{$_SESSION['user']['rights']}/more-info-mobile.php";
@@ -78,6 +78,7 @@
                 }
             }
             ?>
+
         <footer class="sub-grid-4">
             <?php require 'templates/footer.php'; ?>
         </footer>

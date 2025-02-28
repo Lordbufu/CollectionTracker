@@ -1,23 +1,34 @@
-<?php if(isset($_SESSION['page-data']['reeks'])) { $store = $_SESSION['page-data']['reeks']; }
-    if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReeks = $_SESSION['page-data']['huidige-reeks']; } ?>
+<?php   // Store the correct data from the session.
+if(isset($_SESSION['page-data']['reeks'])) {
+    $store = $_SESSION['page-data']['reeks'];
+}
+
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReeks = $_SESSION['page-data']['huidige-reeks'];
+}
+?>
 
 <div class="contr-cont-1">
     <form class="reeks-sel-form" action="/selReeks" method="post" >
         <label for="reeks-sel" class="reeks-sel-lab">Reeks Selecteren:</label>
         <select class="reeks-sel" name="naam" id="reeks-sel" required>
             <option class="reeks-sel-opt" value="">Selecteer een reeks</option>        
-<?php if(isset($store)) :
+<?php   // Loop over all items and see if it matches a current selection if that was already made.
+    if(isset($store)) :
         foreach($store as $key => $value) :
             if(isset($hReeks)) :
-                if($value['Reeks_Naam'] === $hReeks) : ?>
-            <option class="reeks-sel-opt" selected><?=$value['Reeks_Naam']?></option>
-        <?php else : ?>
-            <option class="reeks-sel-opt"><?=$value['Reeks_Naam']?></option>
-        <?php endif; else : ?>
-            <option class="reeks-sel-opt"><?=$value['Reeks_Naam']?></option>
-        <?php endif; endforeach; endif; ?>
+                if(inpFilt($value['Reeks_Naam']) === inpFilt($hReeks)) :
+?>
+            <option class="reeks-sel-opt" selected><?=inpFilt($value['Reeks_Naam'])?></option>
+<?php           else : ?>
+            <option class="reeks-sel-opt"><?=inpFilt($value['Reeks_Naam'])?></option>
+<?php           endif;
+            else : ?>
+            <option class="reeks-sel-opt"><?=inpFilt($value['Reeks_Naam'])?></option>
+<?php       endif;
+        endforeach;
+    endif; ?>
         </select>
-        <!-- Form submit button -->
         <input class="reeks-sel-subm button" id="reeks-sel-subm" type="submit" value="Selecteer"/>
     </form>
 
@@ -44,7 +55,9 @@
     <?php require __DIR__ . '/../item-search-cont.php'; ?>
 </div>
 
-<?php if(isset($hReeks)) : ?>
+<?php   // if a reeks was selected,
+if(isset($hReeks)) :
+?>
 <div class="contr-cont-3">
     <form class="item-scan-form" action="/scanPop" method="post">
         <label for="item-scan-subm" class="item-scan-lab">Scan barcode:</label>
@@ -58,4 +71,5 @@
     const zoekButt = document.getElementById('item-scan-subm');
     zoekButt.addEventListener('click', saveScroll);
 </script>
+
 <?php endif; ?>

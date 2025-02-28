@@ -138,6 +138,11 @@
 </script>
 
 <style>
-    .modal-body { display: inline-flex; }
-    .modal-form { display: block; }
+    .modal-body {
+        display: inline-flex;
+    }
+
+    .modal-form {
+        display: block;
+    }
 </style>

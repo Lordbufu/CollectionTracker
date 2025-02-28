@@ -3,18 +3,18 @@
         <div class="modal-header-cont">
             <h3 class="modal-header-text">Barcode Scannen</h3>
 
-        <?php if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') : ?>
+<?php if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') : ?>
             <form class="modal-header-close-form" method="post" action="/gebruik">
                 <input class="modal-header-input" name="close" value="back" hidden/>
                 <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
 
-        <?php elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') : ?>
+<?php elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') : ?>
             <form class="modal-header-close-form" method="post" action="/beheer">
                 <input class="modal-header-input" name="close" value="back" hidden/>
                 <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
-        <?php endif; ?>
+<?php endif; ?>
 
         </div>
 

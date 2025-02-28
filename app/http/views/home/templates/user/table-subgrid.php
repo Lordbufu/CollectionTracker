@@ -1,5 +1,9 @@
-<div class="table-header"> <h2 class="gebruik-weerg-header"><?=$_SESSION['page-data']['huidige-reeks'] ?? 'Selecteer een Reeks'?></h2> </div>
+<div class="table-header">
+    <h2 class="gebruik-weerg-header"><?=inpFilt($_SESSION['page-data']['huidige-reeks']) ?? 'Selecteer een Reeks'?></h2>
+</div>
+
 <table class="item-table">
+
     <tr class="item-table-titles">
         <th>Aanwezig</th>
         <th>Item Naam</th>
@@ -10,20 +14,32 @@
         <th>ISBN</th>
         <th class="itemOpmTitle">Opmerking</th>
     </tr>
-<?php if(isset($_SESSION['page-data']['items'])) { $items = $_SESSION['page-data']['items']; }
-    if(isset($_SESSION['page-data']['collecties'])) { $coll = $_SESSION['page-data']['collecties']; }
-    if(isset($items)) :
-        foreach($items as $key => $value) :
-            $aanw = false; ?>
+
+<?php // Store the correct data from the session.
+if(isset($_SESSION['page-data']['items'])) {
+    $items = $_SESSION['page-data']['items'];
+}
+
+if(isset($_SESSION['page-data']['collecties'])) {
+    $coll = $_SESSION['page-data']['collecties'];
+}
+
+if(isset($items)) : // Loop over all loaded item, and set collection status to false.
+    foreach($items as $key => $value) :
+        $aanw = false;
+?>
+
         <tr class="item-table-content-<?=$value['Item_Index']?>" id="items-table-content">
             <th class="item-aanw">
-        <?php foreach($coll as $iKey => $iValue) {
-                if($iValue['Item_Index'] === $value['Item_Index']) {
-                    $aanw = true;
-                }
+<?php   // If item is in colllection, set state to true
+        foreach($coll as $iKey => $iValue) {
+            if($iValue['Item_Index'] === $value['Item_Index']) {
+                $aanw = true;
             }
+        }
 
-            if(!$aanw) : ?>
+        if(!$aanw) :    // Render the correct 'slider' based on the collection status.
+?>
                 <form class="item-aanw-form" method="post" action="/colAdd">
                     <input class="item-aanw-form-method" name="_method" value="PUT" hidden/>
                     <input class="item-aanw-form-index" name="index" value="<?=$value['Item_Index']?>" hidden/>
@@ -32,7 +48,8 @@
                         <span class="item-aanw-slider"></span>
                     </label>
                 </form>
-        <?php else : ?>
+<?php   else : ?>
+
                 <form class="item-aanw-form" method="post" action="/colRem">
                     <input class="item-aanw-form-method" name="_method" value="DELETE" hidden/>
                     <input class="item-aanw-form-index" name="index" value="<?=$value['Item_Index']?>" hidden/>
@@ -41,12 +58,13 @@
                         <span class="item-aanw-slider"></span>
                     </label>
                 </form>
-        <?php endif; ?>
+<?php   endif; ?>
             </th>
-            <th class="item-naam" id="<?= $value['Item_Index'] ?>" ><?=$value['Item_Naam']?></th>
+
+            <th class="item-naam" id="<?=$value['Item_Index']?>"><?=inpFilt($value['Item_Naam'])?></th>
             <th class="item-uitgnr"><?=$value['Item_Nummer']?></th>
             <th class="item-uitgdt"><?=$value['Item_Uitgd']?></th>
-            <th class="item-schr"><?=$value['Item_Auth'] ?? 'Geen'?></th>
+            <th class="item-schr"><?=inpFilt($value['Item_Auth']) ?? 'Geen'?></th>
             <th class="item-cover">
             <?php if($value['Item_Plaatje'] == "") : ?>
                 Geen
@@ -55,7 +73,7 @@
             <?php endif; ?>
             </th>
             <th class="item-isbn"><?=$value['Item_Isbn']?></th>
-            <th class="item-opm"><?=$value['Item_Opm']?></th>
+            <th class="item-opm"><?=inpFilt($value['Item_Opm'])?></th>
         </tr>
         <?php endforeach; endif; ?>
     </table>

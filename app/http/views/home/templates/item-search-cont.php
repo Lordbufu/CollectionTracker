@@ -1,6 +1,7 @@
 <form class="item-zoek-form" onsubmit="event.preventDefault()">
     <label class="item-zoek-lab" for="item-zoek-inp">Item Zoeken:</label>
         <div class="search-opt-cont">
+            
             <div class="search-opt-naam-cont">
                 <label class="search-opt-naam-lab" for="item-zoek-naam-inp">Naam:</label> <br>
                 <label class="item-zoek-naam" for="item-zoek-naam-inp">
@@ -8,6 +9,7 @@
                     <span class="item-zoek-naam-slider"> </span>
                 </label>
             </div>
+
             <div class="search-opt-itemNr-cont">
                 <label class="search-opt-itemNr-lab" for="item-zoek-nr-inp">Item Nr:</label> <br>
                 <label class="item-zoek-nr" for="item-zoek-nr-inp">
@@ -15,6 +17,7 @@
                     <span class="item-zoek-nr-slider"></span>
                 </label>
             </div>
+
             <div class="search-opt-isbn-cont">
                 <label class="search-opt-isbn-lab" for="item-zoek-isbn-inp">Item Isbn:</label> <br>
                 <label class="item-zoek-isbn" for="item-zoek-isbn-inp">
@@ -23,6 +26,7 @@
                 </label>
             </div>
         </div>
+
     <label class="modal-form-label" for="item-zoek-inp">
         <input class="modal-form-input" id="item-zoek-inp" type="text" placeholder="" />
         <span class="modal-form-span" id="item-zoek-span">Zoek naar items..</span>
@@ -30,26 +34,75 @@
 </form>
 
 <style>
-    /* The item toevoegen form */
-    .item-zoek-form { display: grid; justify-items: center; margin: 0.1em 0.2em; }
-    /* Make the text bold to stand out */
-    .item-zoek-lab { font-weight: bold; }
-    /* Main search option container */
-    .search-opt-cont { display: flex; margin-bottom: 0.4em; }
-    /* Search option container for each option*/
-    .search-opt-naam-cont, .search-opt-itemNr-cont, .search-opt-isbn-cont { font-size: 0.7em; border: var(--main-border-body); border-radius: var(--main-border-rad); margin: 0.1em; width: 6em; height: 2.7em; }
-    /* The label that visualy makes the switch body */
-    .item-zoek-naam, .item-zoek-nr, .item-zoek-isbn { position: relative; display: inline-block; width: 3em; height: 1.5em; font-size: 0.7em; }
-    /* The checkbox input that we visually hide */
-    .item-zoek-naam-inp, .item-zoek-nr-inp, .item-zoek-isbn-inp { opacity: 0; width: 0; height: 0; }
-    /* The span that will become the slider button */
-    .item-zoek-naam-slider, .item-zoek-nr-slider, .item-zoek-isbn-slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--main-slid-backgr); border-radius: 1.5em; -webkit-transition: .4s; transition: .4s; }
-    /* The slider button before switched styling */
-    .item-zoek-naam-slider:before, .item-zoek-nr-slider:before, .item-zoek-isbn-slider:before { position: absolute; content: ''; height: 1.5em; width: 1.5em; left: 0.01em; background-color: var(--main-knob-col); border-radius: var(--main-border-rad); -webkit-transition: .4s; transition: .4s; }
-    /* The background for when the slider is checked */
-    .item-zoek-naam-inp:checked + .item-zoek-naam-slider, .item-zoek-nr-inp:checked + .item-zoek-nr-slider, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider { background-color: var(--main-slid-backgr-2); }
-    /* The animation for when the checkbox is checked, with support for older and different browsers */
-    .item-zoek-naam-inp:checked + .item-zoek-naam-slider:before, .item-zoek-nr-inp:checked + .item-zoek-nr-slider:before, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider:before { -webkit-transform: translateX(1.5em); -ms-transform: translateX(1.5em); transform: translateX(1.5em); }
+    .item-zoek-form {
+        display: grid;
+        justify-items: center;
+        margin: 0.1em 0.2em;
+    }
+    
+    .item-zoek-lab {
+        font-weight: bold;
+    }
+    
+    .search-opt-cont {
+        display: flex;
+        margin-bottom: 0.4em;
+    }
+    
+    .search-opt-naam-cont, .search-opt-itemNr-cont, .search-opt-isbn-cont {
+        font-size: 0.7em;
+        border: var(--main-border-body);
+        border-radius: var(--main-border-rad);
+        margin: 0.1em;
+        width: 6em;
+        height: 2.7em;
+    }
+    
+    .item-zoek-naam, .item-zoek-nr, .item-zoek-isbn {
+        position: relative;
+        display: inline-block;
+        width: 3em;
+        height: 1.5em;
+        font-size: 0.7em;
+    }
+    
+    .item-zoek-naam-inp, .item-zoek-nr-inp, .item-zoek-isbn-inp {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .item-zoek-naam-slider, .item-zoek-nr-slider, .item-zoek-isbn-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: var(--main-slid-backgr);
+        border-radius: 1.5em;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    
+    .item-zoek-naam-slider:before, .item-zoek-nr-slider:before, .item-zoek-isbn-slider:before {
+        position: absolute;
+        content: '';
+        height: 1.5em;
+        width: 1.5em;
+        left: 0.01em;
+        background-color: var(--main-knob-col);
+        border-radius: var(--main-border-rad);
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .item-zoek-naam-inp:checked + .item-zoek-naam-slider, .item-zoek-nr-inp:checked + .item-zoek-nr-slider, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider {
+        background-color: var(--main-slid-backgr-2);
+    }
+
+    .item-zoek-naam-inp:checked + .item-zoek-naam-slider:before, .item-zoek-nr-inp:checked + .item-zoek-nr-slider:before, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider:before {
+        -webkit-transform: translateX(1.5em);
+        -ms-transform: translateX(1.5em);
+        transform: translateX(1.5em);
+    }
 </style>
 
 <script>
@@ -57,7 +110,7 @@
     const itemZoekInp = document.getElementById('item-zoek-inp');
     itemZoekInp.addEventListener('input', itemZoek);
     
-    if(!itemZoekInp) {
+    if(itemZoekInp) {
         itemZoekInp.disabled = true;
     }
 

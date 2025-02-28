@@ -17,9 +17,11 @@ try {
     /* Config session settings, and start a new session. */
     App::resolve('session')->configSession();
 
-    /* If no session user data is set, set the current user as guest. */
-    if(!isset($_SESSION['user'])) {
-        App::resolve('session')->setVariable('user', ['rights' => 'guest']);
+    /* If no session user data is set, and the user agent is not 'invalid', set the current user as guest. */
+    if(!isset($_SESSION['user']) && isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_USER_AGENT'])) {
+        App::resolve('session')->setVariable('user', [
+            'rights' => 'guest'
+        ]);
     }
 
     /* Route the request based on uri and request method (either costum or PhP standard method). */

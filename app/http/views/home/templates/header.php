@@ -8,13 +8,13 @@
 		<link rel='stylesheet' type='text/css' href='css/modal-style.css'>
 		<script src="js/main.js"></script>
 
-<?php if(isset($_SESSION['_flash']['tags']['pop-in'])) :
+<?php	// Add the barcode scanning script, only when the option is triggered.
+if(isset($_SESSION['_flash']['tags']['pop-in'])) :
 	if($_SESSION['_flash']['tags']['pop-in'] === 'bScan') : ?>
 		<script src="js/html5-qrcode.min.js"></script>
 <?php endif; endif; ?>
 
 <?php // Attempt to load all css and js based on the uri and stored user.
-
 switch($_SERVER["REQUEST_URI"]) :
 	// case for default landing route -> '/':
 	case '/': ?>

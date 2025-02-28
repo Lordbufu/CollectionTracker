@@ -36,7 +36,7 @@
                         <p id="modal-small-text" class="modal-small-text" > De album naam & isbn zijn verplichte velden </p>
 
                         <label class="modal-form-label">
-                            <input type="text" class="modal-form-input" id="item-naam-inp" name="naam" value="<?=$store['naam'] ?? ''?>" placeholder="" autocomplete="on" required/>
+                            <input type="text" class="modal-form-input" id="item-naam-inp" name="naam" value="<?=inpFilt($store['naam']) ?? ''?>" placeholder="" autocomplete="on" required/>
                             <span class="modal-form-span">Item Naam</span>
                         </label>
 
@@ -51,7 +51,7 @@
                         </label>
 
                         <label class="modal-form-label">
-                            <input type="text" class="modal-form-input" name="autheur" value="<?=$store['autheur'] ?? ''?>" placeholder="" autocomplete="on"/>
+                            <input type="text" class="modal-form-input" name="autheur" value="<?=inpFilt($store['autheur']) ?? ''?>" placeholder="" autocomplete="on"/>
                             <span class="modal-form-span">Item Autheur</span>
                         </label>
 
@@ -76,7 +76,7 @@
                         </label>
 
                         <label class="modal-form-label">
-                            <input class="modal-form-input" name="opmerking" value="<?=$store['opmerking'] ?? ''?>" placeholder="" autocomplete="on"/>
+                            <input class="modal-form-input" name="opmerking" value="<?=inpFilt($store['opmerking']) ?? ''?>" placeholder="" autocomplete="on"/>
                             <span class="modal-form-span">Item Opmerking</span>
                         </label>
 

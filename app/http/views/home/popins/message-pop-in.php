@@ -1,8 +1,13 @@
 <div class="placement-container">
     <div id="message-pop-in" class="message-container">
-        <?php foreach($_SESSION['_flash']['feedback'] as $key) : ?>
+<?php
+    foreach($_SESSION['_flash']['feedback'] as $key) :
+?>
         <h1 class="response-message"><?=$key?></h1>
-        <?php endforeach; unset($_SESSION['_flash']['feedback']); ?>
+<?php
+    endforeach;
+    unset($_SESSION['_flash']['feedback']);
+?>
     </div>
 </div>
 

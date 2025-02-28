@@ -11,9 +11,10 @@ $ids = [
 ];
 
 /* Prepare the _flash tags required for this pop-in. */
-$tags = ['tags' => [
-    'reeks-index' => App::resolve('reeks')->getId($ids),
-    'pop-in' => 'bScan'
+$tags = [
+    'tags' => [
+        'reeks-index' => App::resolve('reeks')->getId($ids),
+        'pop-in' => 'bScan'
 ]];
 
 /* Flash the tags into the session. */

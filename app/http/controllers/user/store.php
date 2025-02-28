@@ -7,8 +7,8 @@ $form = App::resolve('form')::validate($_POST);
 
 /* Store the filted string inputs, that can be returned to re-fill the form on failures. */
 $temp = [
-    'naam' => inpFilt($_POST['naam']),
-    'email' => inpFilt($_POST['email'])
+    'naam' => $_POST['naam'],
+    'email' => $_POST['email']
 ];
 
 /* Store the errors and filered form data, and return to the registration pop-in. */
@@ -44,7 +44,10 @@ if(isset($_SESSION['_flash'])) {
     ]);
 }
 
-$uName = App::resolve('user')->getName(['Gebr_Email' => $_POST['email']]);
+$uName = App::resolve('user')->getName([
+    'Gebr_Email' => $_POST['email']
+]);
+
 $flash = [
     'tags' => [
         'pop-in' => 'login'
