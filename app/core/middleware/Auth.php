@@ -4,9 +4,11 @@ namespace App\Core\Middleware;
 
 use App\Core\App;
 
+/* Auth: Includes all authenticated (logged in) users, based on specific session data. */
 class Auth {
     public function handle() {
-        if(!isset($_SESSION['user']['rights'])) {
+        /* If no user data is set, redirect to the landing page. */
+        if(!isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] !== 'guest') {
             return App::redirect('');
         }
     }

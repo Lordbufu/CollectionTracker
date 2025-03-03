@@ -13,8 +13,14 @@ class Authenticator {
 
     /* If no user data was set, attempt to get the user based on the provided $id (Assoc Array), and return true/false based on the outcome. */
     protected function set($id) {
-        if(!isset($this->user)) { $this->user = App::resolve('database')->prepQuery('select', 'gebruikers', $id)->getSingle(); }
-        if(is_string($this->user)) { return FALSE; }
+        if(!isset($this->user)) {
+            $this->user = App::resolve('database')->prepQuery('select', 'gebruikers', $id)->getSingle();
+        }
+
+        if(is_string($this->user)) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 
@@ -25,14 +31,24 @@ class Authenticator {
      */
     protected function login($user) {
         /* If a active user is set, destroy the session first. */
-        if(isset($_SESSION['user']['id'])) { App::resolve('session')->destroy(); }
+        if(isset($_SESSION['user']['id'])) {
+            App::resolve('session')->destroy();
+        }
+
         /* If a session isnt started, make sure it is. */
-        if(session_status() == 1) { session_start(); }
+        if(session_status() == 1) {
+            session_start();
+        }
+
         /* Remove default guest user tag from the session if present. */
-        if(isset($_SESSION['user']['rights'])) { $_SESSION['user']['rights'] = $this->user['Gebr_Rechten']; }
+        if(isset($_SESSION['user']['rights'])) {
+            $_SESSION['user']['rights'] = $this->user['Gebr_Rechten'];
+        }
+
         /* Store user index for later authentication, includes and db requests. */
         $_SESSION['user']['id'] = $user['Gebr_Index'];
         $_SESSION['user']['rights'] = strtolower($user['Gebr_Rechten']);
+
         /* Regenerate session id on login as best practice behavior. */
         return session_regenerate_id(true);
     }
@@ -50,21 +66,31 @@ class Authenticator {
             foreach($cred as $key => $value) {
                 /* if the key is either the user email or name, check if that user can be set, and return false if not. */
                 if($key === 'Gebr_Email' || $key === 'Gebr_Naam') {
-                    if(!$this->set([$key => $value])) { return FALSE; }
+                    if(!$this->set([$key => $value])) {
+                        return FALSE;
+                    }
                 }
             }
         }
 
         /* If the user was set, verify the provided password against the store password, and login the user with the local function. */
-        if(password_verify($cred['Gebr_WachtW'], $this->user['Gebr_WachtW'])) { $this->login($this->user); }
+        if(password_verify($cred['Gebr_WachtW'], $this->user['Gebr_WachtW'])) {
+            $this->login($this->user);
+        }
+
         /* Return true/false based on if the user was set in the session. */
-        if(!isset($_SESSION['user']['id'])) { return FALSE; }
+        if(!isset($_SESSION['user']['id'])) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 
     /* Use SessionMan to end the session, return true/false depending on the outcome. */
     public function logout() {
-        if(!App::resolve('session')->destroy()) { return FALSE; }
+        if(!App::resolve('session')->destroy()) {
+            return FALSE;
+        }
 
         return TRUE;
     }

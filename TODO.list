@@ -1,4 +1,6 @@
 Global TODO List:
     - Go over all Core classes and controllers, and make sure there are useful comments:
         - Also clear up any comment clutter that is left over from the concept/design phase.
+    - Figure out how a expired session, or incorrect user data is dealt with.
+        - Atm it seems to not redirect properly, causing all kinds of weird issues.
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
