@@ -1,14 +1,6 @@
 <?php
 
-/*  TODO List:
-        - Review if checkDabase() and createDefDb() arnt a bit odd, since they both have the same evaluation process.
-        - Check if a array map for the helper classes is usefull in some shape or form.
-        - Consider various ways of how i can check, and construct the database if required.
-        - Review if i can if i need to include somekind of unique key reset option, even though i have no clue how to automatically run it every so often.
-            - Could be interesting to also review how i could setup the auto-trigger, and what kind of time frame would be best practice for that.
-        - Check if i really need to set attributes before testing tables (~line:84), i think these are normal in my live enviroment ¿
-        - As im re-building the app, review what other filters/request things i still need, to rebuild all the functionality.
- */
+//  TODO: Review if the find() function is even usefull at all, most of that kinda stuff is done via the specific classes.
 
 namespace App\Core\Database;
 
@@ -75,16 +67,18 @@ class Database {
     /*  loadCheckData(): This function simply set the result of the testTable() query, so i can evaluated the expected database structure. */
     protected function loadCheckData() {
         if(empty($this->defCheck)) {
-            $this->defCheck = [                                                                                 // Check all default content,
-                'gebruikers' => $this->prepQuery('testTable', 'gebruikers')->getErrorCode(),                    // gebruikers table,
-                'reeks' => $this->prepQuery('testTable', 'reeks')->getErrorCode(),                              // reeks table,
-                'items' => $this->prepQuery('testTable', 'items')->getErrorCode(),                              // items table,
-                'collectie' => $this->prepQuery('testTable', 'collectie')->getErrorCode(),                      // collectie table,
-                'admin' => $this->prepQuery('select', 'gebruikers', ['Gebr_Naam' => 'Administrator'])->getAll() // default admin account.
+            $this->defCheck = [
+                'gebruikers' => $this->prepQuery('testTable', 'gebruikers')->getErrorCode(),
+                'reeks' => $this->prepQuery('testTable', 'reeks')->getErrorCode(),
+                'items' => $this->prepQuery('testTable', 'items')->getErrorCode(),
+                'collectie' => $this->prepQuery('testTable', 'collectie')->getErrorCode(),
+                'admin' => $this->prepQuery('select', 'gebruikers', [
+                                'Gebr_Naam' => 'Administrator'
+                           ])->getAll()
             ];
         }
 
-        return;                                                                                                 // return to caller (not really needed but still good practice imo).
+        return;
     }
 
     /*  checkDatabase():

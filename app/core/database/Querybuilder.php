@@ -1,119 +1,173 @@
 <?php
 
-/*  TODO List:
-        - Clean up comments on the side, and move the useable parts to the top of the functions.
- */
-
 namespace App\Core\Database;
 
-/*  QueryBuilder:
-        Here i store all default queries, that are used to store/request/update/remove and test my database content.
- */
 class QueryBuilder {
-    public function select($table, $data=null) {                                        // Default select query with 2 options based on the value of $data,
-        if(!empty($data)) {                                                             // if there is data,
-            if(count($data) > 1) {                                                      // and there are more then 1 or data pairs,
-                $sql = sprintf(                                                         // i populate $sql with sprintf,
-                    'SELECT * FROM `%s` WHERE %s = %s AND %s = %s',                     // and need a select * from .. where .. = .. and .. = .. query,
-                    $table,                                                             // with the table name at the first placeholder,
-                    implode(array_keys(array_slice($data, 0, 1))),                      // the first $data pair key for the second,
-                    ':' . implode(array_keys(array_slice($data, 0, 1))),                // a placeholder for the first $data pair value on the third,
-                    implode(array_keys(array_slice($data, 1, 2))),                      // the second $data pair key on the fourth,
-                    ':' . implode(array_keys(array_slice($data, 1, 2)))                 // and finally a placeholder again for the second $data pair value on the fifth.
+    /*  select($table, $data=null):
+            Your default select querry, that can also refine the search based on the provided data (id pairs).
+                $table (String)     - The table name in string format.
+                $data (Assoc Arr)   - Associative data to refine the search (id pairs like index or name).
+                $sql (String)       - The query prepared in string format, with placeholders.
+            
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function select($table, $data=null) {
+        /* Check if the search needs to be refined. */
+        if(!empty($data)) {
+            /* Check if its not a a single ID pair. */
+            if(count($data) > 1) {
+                $sql = sprintf(
+                    'SELECT * FROM `%s` WHERE %s = %s AND %s = %s',
+                    $table,
+                    implode(array_keys(array_slice($data, 0, 1))),
+                    ':' . implode(array_keys(array_slice($data, 0, 1))),
+                    implode(array_keys(array_slice($data, 1, 2))),
+                    ':' . implode(array_keys(array_slice($data, 1, 2)))
                 );
-            } elseif(count($data) === 1) {                                              // If there is only 1 data pair,
-                $sql = sprintf(                                                         // i populate $sql with sprintf,
-                    'SELECT * FROM `%s` WHERE %s = %s',                                 // and need a select * from .. where .. = .. query,
-                    $table,                                                             // with the table name at the first placeholder,
-                    implode(array_keys($data)),                                         // the $data pair key for the second,
-                    ':' . implode(array_keys($data))                                    // and finally the $data pair value as the third.
+            /* Check if it is a single ID pair. */
+            } elseif(count($data) === 1) {
+                $sql = sprintf(
+                    'SELECT * FROM `%s` WHERE %s = %s',
+                    $table,
+                    implode(array_keys($data)),
+                    ':' . implode(array_keys($data))
                 );
             }
-        } else {                                                                        // If there is no data at all,
-            $sql = sprintf('select * from `%s`', $table);                               // i simply make a select * from .. query with the table name as first placeholder.
+        } else {
+            $sql = sprintf('select * from `%s`', $table);
         }
 
-        return $sql;                                                                    // regardless of the path above, the saved query string is always returned.
+        return $sql;
     }
 
-    public function insert($table, $data) {                                             // Insert query,
-        $sql = sprintf(                                                                 // i build the $sql with sprintf,
-            'INSERT INTO `%s` (%s) VALUES (%s)',                                        // create the query with wildcard placeholders,
-            $table,                                                                     // set the table to the first placeholder,
-            implode(', ', array_keys($data)),                                           // add the $data keys to the second placeholder,
-            ':' . implode(', :', array_keys($data))                                     // add a placeholder for the values as the third placeholder,
+    /*  insert($table, $data):
+            A simple insert query, that should be able to handle all insert request.
+                $table (String)     - The table name that should recieve the data.
+                $data (Assoc Arr)   - The data that should be inserted into said table.
+                $sql (String)       - The query prepared in string format, with placeholders.
+
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function insert($table, $data) {
+        $sql = sprintf(
+            'INSERT INTO `%s` (%s) VALUES (%s)',
+            $table,
+            implode(', ', array_keys($data)),
+            ':' . implode(', :', array_keys($data))
         );
 
-        return $sql;                                                                    // return the $sql string.
+        return $sql;
     }
 
-    public function update($table, $data, $ids) {                                       // Update query with WHERE, AND functions,
-        $update;                                                                        // $update variable to store the data pairs,
+    /*  update($table, $data, $ids):
+            A somewhat more complex update function, that does some odd magic to create the data part of the string.
+            Appending the id pairs, is done the same as in all other query functions.
+                $table (String)     - The table name that should recieve the data.
+                $data (Assoc Arr)   - The data that should be updated into said table.
+                $ids (Assoc Arr)    - Id Pairs to define what record should be updated.
+                $update (String)    - The SET part of the query string, concatinated using a simple foreach loop.
+                $sql (String)       - The query prepared in string format, with placeholders.
 
-        foreach($data as $key => $value) {                                              // loop over all data pairs,
-            if(!isset($update)) {                                                       // if $update isnt set,
-                $update = $key . '=' . "'" . $value . "'";                              // i add the data pairs directly.
-            } elseif(isset($update)) {                                                  // If update is set,
-                $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";           // i append the data pairs after the stored $update.
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function update($table, $data, $ids) {
+        $update;
+
+        /* Concatinate the data part of the querry (SET). */
+        foreach($data as $key => $value) {
+            if(!isset($update)) {
+                $update = $key . '=' . "'" . $value . "'";
+            } elseif(isset($update)) {
+                $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";
             }
         }
 
-        if(count($ids) > 1 && count($ids) !== 3) {                                      // If the $id pairs are more then 1 but no more then 2,
-            $sql = sprintf(                                                             // i build the $sql with sprintf,
-                'UPDATE %s SET %s WHERE %s = %s AND %s = %s',                           // create the query with wildcard placeholders,
-                $table,                                                                 // set the table to the first placeholder,
-                $update,                                                                // add the update string to the second placeholder,
-                implode(array_keys(array_slice($ids, 0, 1))),                           // add the first id pairs key to the third placeholder,
-                ':' . implode(array_keys(array_slice($ids, 0, 1))),                     // add a placeholder for its value to the fourth placeholder,
-                implode(array_keys(array_slice($ids, 1, 2))),                           // add the second id pairs key to the fifth placeholder,
-                ':' . implode(array_keys(array_slice($ids, 1, 2)))                      // add a placeholder for its value to the sixed placeholder.
+        /* Check ho many id pairs where provided, and adjust the query construction accordingly. */
+        if(count($ids) > 1 && count($ids) !== 3) {
+            $sql = sprintf(
+                'UPDATE %s SET %s WHERE %s = %s AND %s = %s',
+                $table,
+                $update,
+                implode(array_keys(array_slice($ids, 0, 1))),
+                ':' . implode(array_keys(array_slice($ids, 0, 1))),
+                implode(array_keys(array_slice($ids, 1, 2))),
+                ':' . implode(array_keys(array_slice($ids, 1, 2)))
             );
-        } else {                                                                        // If there was no more then 1 $id pairs,
-            $sql = sprintf(                                                             // i build the $sql with sprintf,
-                'UPDATE %s SET %s WHERE %s = %s',                                       // create the query with wildcard placeholders,
-                $table,                                                                 // set the table to the first placeholder,
-                $update,                                                                // add the update string to the second placeholder,
-                implode(array_keys(array_slice($ids, 0, 1))),                           // add the first id pairs key to the third placeholder,
-                ':' . implode(array_keys(array_slice($ids, 0, 1)))                      // add a placeholder for its value to the fourth placeholder,
-            );
-        }
-
-        return $sql;                                                                    // regardless of the path above, the saved query string is always returned.
-    }
-
-    public function delete($table, $ids) {                                              // Delete query with WHERE, AND fucntions,
-        if(count($ids) > 1 ) {                                                          // check if there are more then 1 id pairs,
-            $sql = sprintf(                                                             // build the $sql with sprintf,
-                'DELETE FROM %s WHERE %s = %s AND %s = %s',                             // create the query with wildcard placeholders,
-                $table,                                                                 // set the table to the first placeholder,
-                implode(array_keys(array_slice($ids, 0, 1))),                           // add the first ids pairs key to the second placeholder,
-                ':' . implode(array_keys(array_slice($ids, 0, 1))),                     // add a placeholder for its value to the third placeholder,
-                implode(array_keys(array_slice($ids, 1, 2))),                           // add the second ids pairs key to the fourth placeholder,
-                ':' . implode(array_keys(array_slice($ids, 1, 2)))                      // add a placeholder for its value to the fifth placeholder.
-            );
-        } else {                                                                        // If ids is only 1 data pair,
-            $sql = sprintf(                                                             // build the $sql with sprintf,
-                'DELETE FROM %s WHERE %s = %s',                                         // create the query with wildcard placeholders,
-                $table,                                                                 // set the table to the first placeholder,
-                implode(array_keys($ids)),                                              // add the first ids pairs key to the second placeholder,
-                ':' . implode(array_keys($ids))                                         // add a placeholder for its value to the third placeholder.
+        } else {
+            $sql = sprintf(
+                'UPDATE %s SET %s WHERE %s = %s',
+                $table,
+                $update,
+                implode(array_keys(array_slice($ids, 0, 1))),
+                ':' . implode(array_keys(array_slice($ids, 0, 1)))
             );
         }
 
-        return $sql;                                                                    // regardless of the path above, the saved query string is always returned.
+        return $sql;
     }
 
-    public function count($ids) {                                                       // Select query with where statement,
-        $sql = sprintf("SELECT count(*) FROM `items` WHERE `Item_Reeks` = %s",          // build sql with sprintf,
-            ':' . implode(array_keys(array_slice($ids, 0 , 1)))                         // use placeholder for the $ids,
+    /*  delete($table, $ids):
+            This function prepares a simple delete query, to remove specific data from specific tables.
+                $table (String)     - The table name that should have data removed.
+                $ids (Assoc Arr)    - Id Pairs to define what record should be removed.
+                $sql (String)       - The query prepared in string format, with placeholders.
+
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function delete($table, $ids) {
+        /* Check if how many id pairs are provided, adjusting the query construction as needed. */
+        if(count($ids) > 1 ) {
+            $sql = sprintf(
+                'DELETE FROM %s WHERE %s = %s AND %s = %s',
+                $table,
+                implode(array_keys(array_slice($ids, 0, 1))),
+                ':' . implode(array_keys(array_slice($ids, 0, 1))),
+                implode(array_keys(array_slice($ids, 1, 2))),
+                ':' . implode(array_keys(array_slice($ids, 1, 2)))
+            );
+        } else {
+            $sql = sprintf(
+                'DELETE FROM %s WHERE %s = %s',
+                $table,
+                implode(array_keys($ids)),
+                ':' . implode(array_keys($ids))
+            );
+        }
+
+        return $sql;
+    }
+
+    /*  count(ids):
+            A simple count query, that counts how many items are associated with a specific Reeks.
+                $ids (Assoc Arr)    - Id Pairs to define what record should be removed.
+                $sql (String)       - The query prepared in string format, with placeholders.
+
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function count($ids) {
+        $sql = sprintf("SELECT count(*) FROM `items` WHERE `Item_Reeks` = %s",
+            ':' . implode(array_keys(array_slice($ids, 0 , 1)))
         );
 
-        return $sql;                                                                    // and return the query.
+        return $sql;
     }
 
-    public function testTable($name) {                                                  // The testTable function based on a provided name,
-        $sql = sprintf( "SELECT 1 FROM %s LIMIT 1", $name );                            // build sql using sprintf inject the name string right away,
+    /*  testTable($name):
+            This function checks if a table has been made or not, so the tables can be created in a empty database.
+                $name (String)  - The table name in string format.
+                $sql (String)   - The query prepared in string format, with placeholders.
+
+            Return Value:
+                String -> The query prepared for the PDO.
+     */
+    public function testTable($name) {
+        $sql = sprintf( "SELECT 1 FROM %s LIMIT 1", $name );
         
-        return $sql;                                                                    // and return the query.
+        return $sql;
     }
 }
