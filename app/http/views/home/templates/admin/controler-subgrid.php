@@ -1,3 +1,12 @@
+<?php
+if(isset($_SESSION['page-data']['reeks'])) {
+    $store = $_SESSION['page-data']['reeks'];
+}
+
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReeks = $_SESSION['page-data']['huidige-reeks'];
+}
+?>
 <div class="contr-cont-1" id="contr-cont-1" >
     <form class="contr-reeks-form" method="post" action="/reeksPop">
         <label for="reeks-maken-inp" class="contr-reeks-lab">Reeks Maken:</label>
@@ -21,14 +30,6 @@
         <select class="contr-item-select" id="item-toev" name="naam" required>
             <option value="">Selecteer een reeks</option>
 <?php
-if(isset($_SESSION['page-data']['reeks'])) {
-    $store = $_SESSION['page-data']['reeks'];
-}
-
-if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $hReeks = $_SESSION['page-data']['huidige-reeks'];
-}
-
 $current = FALSE;
 
 if(isset($store)) :
@@ -58,7 +59,7 @@ endif; ?>
     itemToevSubm.addEventListener('click', saveScroll);
 </script>
 
-<?php if(isset($_SESSION['page-data']['huidige-reeks'])) : ?>
+<?php if(isset($hReeks)) : ?>
 <div class="contr-cont-3">
     <?php require __DIR__ . '/../item-search-cont.php'; ?>
 </div>

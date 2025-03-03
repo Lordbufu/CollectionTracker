@@ -2,41 +2,49 @@
 
 use App\Core\App;
 
-$oldFilData = [                                                     // Filter the user input, so i can savely return it to the page.
+/* Retain the submitted form data as is, for re-filling it on errors. */
+$oldFilData = [
+    'method' => $_POST['_method'],
     'naam' => $_POST['naam'],
     'makers' => $_POST['makers'],
     'opmerking' => $_POST['opmerking']
 ];
 
-$form = App::resolve('form')::validate($_POST);                     // Validate all user input POST data.
+/* Validate all post data via the FormValidator */
+$form = App::resolve('form')::validate($_POST);
 
-if(is_array($form)) {                                               // If a error string is returned,
-    App::resolve('session')->flash([                                // flash the required data to the session,
+/* On validation error, prep the correct _flash data, and return to the pop-in. */
+if(is_array($form)) {
+    $flash = [
         'feedback' => $form,
         'oldForm' => $oldFilData,
         'tags' => [
             'pop-in' => 'reeks-maken'
-    ]]);
+    ]];
 
-    return App::redirect('beheer#reeks-maken-pop-in', TRUE);        // redirect to te to pop-in preserving said flash data.
+    App::resolve('session')->flash($flash);
+    return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
 
-$store = App::resolve('reeks')->createReeks($_POST);                // Attempt to create the requested reeks.
+/* If the validation passed, attempt to store the POST data. */
+$store = App::resolve('reeks')->createReeks($_POST);
 
-if(is_string($store)) {                                             // If a error string is returned,
-    App::resolve('session')->flash([                                // flash the required data to the session,
+/* If the data wasnt stored properly, prepare the correct _flash data, and return to the pop-in. */
+if(is_string($store)) {
+    $flash = [
         'feedback' => [
             'error' => $store
         ],
         'oldForm' => $oldFilData,
         'tags' =>[
             'pop-in' => 'reeks-maken'
-    ]]);
+    ]];
 
-    return App::redirect('beheer#reeks-maken-pop-in', TRUE);        // redirect to te to pop-in preserving said flash data.
+    App::resolve('session')->flash($flash);
+    return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
 
-/* Store a feedback for succes, update the page-data */
+/* If the data was stored, provide usefull feedback in the _flash data, refresh the reeks paga-data and redirect to the 'beheer' */
 App::resolve('session')->flash('feedback', [
     'success' => "De reeks: {$oldFilData['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"
 ]);

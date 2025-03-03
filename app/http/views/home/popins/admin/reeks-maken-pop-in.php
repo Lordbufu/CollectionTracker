@@ -32,21 +32,21 @@ if(isset($_SESSION['_flash']['tags']['method'])) {
 
                 <form class="modal-form" method="post" action="/reeksM">
                     <p id="modal-small-text" class="modal-small-text" > De serie naam is een verplicht veld </p>
-                    <input class="modal-form-hidden-method" name="_method" value="<?=$store['method']?>" hidden/>
+                    <input class="modal-form-hidden-method" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden-index" name="index" value="<?=$store['index'] ?? ''?>" hidden/>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=inpFilt($store['naam']) ?? ''?>"/>
+                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>"/>
                         <span class="modal-form-span">Reeks Naam</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" name="makers" placeholder="" autocomplete="on" value="<?=inpFilt($store['makers']) ?? ''?>"/>
+                        <input type="text" class="modal-form-input" name="makers" placeholder="" autocomplete="on" value="<?=isset($store['makers']) ? inpFilt($store['makers']) : ''?>"/>
                         <span class="modal-form-span">Makers/Artiesten</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" name="opmerking" placeholder="" autocomplete="on" value="<?=inpFilt($store['opmerking']) ?? ''?>"/>
+                        <input type="text" class="modal-form-input" name="opmerking" placeholder="" autocomplete="on" value="<?=isset($store['opmerking']) ? inpFilt($store['opmerking']) : ''?>"/>
                         <span class="modal-form-span">Opmerking/Notitie</span>
                     </label>
 
@@ -65,10 +65,16 @@ if(isset($_SESSION['_flash']['tags']['method'])) {
     const reeksMakenInput = document.getElementById('reeks-maken-naam');
     const reeksMakenSubmit = document.getElementById('reeks-maken-submit');
     reeksMakenInput.addEventListener('input', naamCheck);
+    reeksMakenSubmit.addEventListener('click', saveScroll);
     reeksMakenSubmit.disabled = true;
 </script>
 
 <style>
-    .modal-form-left-cont { display: inline-grid; }
-    .modal-form { display: block; }
+    .modal-form-left-cont {
+        display: inline-grid;
+    }
+
+    .modal-form {
+        display: block;
+    }
 </style>

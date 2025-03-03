@@ -1,6 +1,4 @@
 Global TODO List:
-    - Ensure the reeks duplication check is used properly in other parts of the code base (Add actions for example):
-        - This duplication check need a review entirely, cause atm it seems to not make any sense, and weekend brain has already set in.
     - Go over all Core classes and controllers, and make sure there are useful comments:
         - Also clear up any comment clutter that is left over from the concept/design phase.
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.

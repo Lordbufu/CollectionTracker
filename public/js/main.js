@@ -62,9 +62,9 @@ function dispatchInputEvent(caller) {
         'cancelable': false
     });
 
-    if(caller == 'reeks-maken') {
+    if(caller == 'reeks-maken' && window.location.hash === '#reeks-maken-pop-in') {
         return reeksMakenInput.dispatchEvent(inputEvent);
-    } else if(caller == 'item-maken') {
+    } else if(caller == 'item-maken' && window.location.hash === '#items-maken-pop-in') {
         itemNaamInp.dispatchEvent(inputEvent);
         return itemIsbnInp.dispatchEvent(inputEvent);
     }
@@ -86,6 +86,7 @@ function saveScroll(e) {
     switch(caller) {
         case 'reeks-pop-req':
         case 'reeks-edit-butt':
+        case 'reeks-maken-submit':
             localStorage.setItem('event', 'reeks-maken');
             break;
         case 'item-pop-req':

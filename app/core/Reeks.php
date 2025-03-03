@@ -29,24 +29,27 @@ class Reeks {
     }
 
     /*  checkDup($name):
-            This function checks for duplicate reeks names, and if a index is provided it checks if it wasnt the same as the requested items index.
-            Because the index defaults to null, any 
+            This function checks for duplicate reeks names, and optionally check if its not the same item, if a index as provided.
+            The result of this operation, is stored in the class global $duplicate.
+                $name (String)      - The name of the reeks that is being created/edited.
+                $index (froced Int) - The index value of the reeks that is being edited.
+            
+            Return Value: None.
      */
-    protected function checkDup($name, $index=null) {
+    protected function checkDup($name, int $index=null) {
         foreach($this->reeks as $key => $items) {
             if($items['Reeks_Naam'] === $name) {
-                if($items['Reeks_Index'] != $index) {
+                if($items['Reeks_Index'] === $index && !isset($this->duplicate)) {
+                    $this->duplicate = FALSE;
+                }
+
+                if($items['Reeks_Index'] != $index && !isset($this->duplicate)) {
                     $this->duplicate = TRUE;
-                    return TRUE;
-                } else {
-                    $this->duplicate = TRUE;
-                    return TRUE;
                 }
             }
         }
 
-        $this->duplicate = FALSE;
-        return FALSE;
+        return;
     }
 
     /*  getSingReeks(): */
@@ -92,8 +95,10 @@ class Reeks {
             $this->setReeks();
         }
 
+        $this->checkDup($data['naam']);
+
         /* If duplicate is true now, return a duplicate error for user feedback. */
-        if($this->checkDup($data['naam'])) {
+        if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
@@ -118,8 +123,11 @@ class Reeks {
             $this->setReeks();
         }
 
+        /* Preform a duplication check, to see if anyother reeks entries have the same name already. */
+        $this->checkDup($data['naam'], $data['index']);
+
         /* If duplicate is true now, return a duplicate error for user feedback. */
-        if($this->checkDup($data['naam'], $data['index'])) {
+        if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 

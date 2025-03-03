@@ -1,5 +1,15 @@
+<?php
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReek = inpFilt($_SESSION['page-data']['huidige-reeks']);
+}
+
+if(isset($_SESSION['page-data']['reeks'])) {
+    $reeks = $_SESSION['page-data']['reeks'];
+}
+?>
+
 <div class="table-header">
-    <h2 class="table-header-text"><?=inpFilt($_SESSION['page-data']['huidige-reeks']) ?? 'Selecteer een Reeks'?></h2>
+    <h2 class="table-header-text"><?=$hReeks ?? 'Selecteer een Reeks'?></h2>
 </div>
 
 <table class="reeks-table">
@@ -15,8 +25,8 @@
     </tr>
 
 <?php   // Loop over the reeks data is there is any
-if(isset($_SESSION['page-data']['reeks'])) :
-    foreach($_SESSION['page-data']['reeks'] as $key => $value) : ?>
+if($reeks) :
+    foreach($reeks as $key => $value) : ?>
     <tr class="reeks-table-cont-<?=$value['Reeks_Index']?>">
         <th class="reeks-view">
             <form class="reeks-view-form" method="post" action="/selReeks">

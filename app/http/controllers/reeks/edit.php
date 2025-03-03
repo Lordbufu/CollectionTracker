@@ -40,12 +40,20 @@ if(is_string($store)) {
     return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
 
+/* Start with a clean _flash memory, then prep the correct feedback and flash it, before redirecting back to the 'beheer' page*/
 App::resolve('session')->unflash();
 
-$flash = [
-    'feedback' => [
-        'updated' => "De reeks {$oldName} \n is aangepast, met de naam {$_POST['naam']} !"
-]];
+if($oldForm['naam'] === $oldName) {
+    $flash = [
+        'feedback' => [
+            'updated' => "De reeks {$oldName} \n is aangepast !"
+    ]];
+} else {
+    $flash = [
+        'feedback' => [
+            'updated' => "De reeks {$oldName} is aangepast, \n met de nieuwe naam {$_POST['naam']} !"
+    ]];
+}
 
 App::resolve('session')->flash($flash);
 return App::redirect('beheer', TRUE);
