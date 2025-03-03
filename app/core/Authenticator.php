@@ -1,8 +1,6 @@
 <?php
 
-/*  TODO List:
-        - Review the need for 'verifyUser($id)', not sure i really need it atm.
- */
+/*  TODO List: Review the need for 'verifyUser($id)', not sure i really need it atm. */
 
 namespace App\Core;
 
@@ -11,7 +9,12 @@ use App\Core\App;
 class Authenticator {
     protected $user;
 
-    /* If no user data was set, attempt to get the user based on the provided $id (Assoc Array), and return true/false based on the outcome. */
+    /*  set($id):
+            If no user data was set, attempt to get the user based on the provided $id, and return true/false based on the outcome.
+                $id (Assoc Arr) - The Id pair that should represent a user in the database.
+            
+            Return Value: Boolean.
+     */
     protected function set($id) {
         if(!isset($this->user)) {
             $this->user = App::resolve('database')->prepQuery('select', 'gebruikers', $id)->getSingle();
@@ -25,9 +28,10 @@ class Authenticator {
     }
 
     /*  login($user):
-            $user (Assoc Array) - The stored user data that has been verified.
+            Function to login a verified user.
+                $user (Assoc Array) - The user data.
             
-            Return Value: Boolean ¿ (not used).
+            Return Value: Boolean.
      */
     protected function login($user) {
         /* If a active user is set, destroy the session first. */
@@ -40,23 +44,20 @@ class Authenticator {
             session_start();
         }
 
-        /* Remove default guest user tag from the session if present. */
-        if(isset($_SESSION['user']['rights'])) {
-            $_SESSION['user']['rights'] = $this->user['Gebr_Rechten'];
-        }
-
-        /* Store user index for later authentication, includes and db requests. */
+        /* Store user data for database and middleware logic, guest user rights are simply overwritten. */
         $_SESSION['user']['id'] = $user['Gebr_Index'];
         $_SESSION['user']['rights'] = strtolower($user['Gebr_Rechten']);
+
 
         /* Regenerate session id on login as best practice behavior. */
         return session_regenerate_id(true);
     }
 
     /*  attempt($cred):
-            $name (String)      - The name/e-mail provided by the user.
-            $password (String)  - The password provided by the user.
-            $user (String)      - The result of the db request to find the user.
+            Attempt to verify and login the user that is requesting a login.
+                $name (String)      - The name/e-mail provided by the user.
+                $password (String)  - The password provided by the user.
+                $user (String)      - The result of the db request to find the user.
 
             Return Value: Boolean.
      */
@@ -73,20 +74,28 @@ class Authenticator {
             }
         }
 
+        /* Check the provide password against the stored password. */
+        $verify = password_verify($cred['Gebr_WachtW'], $this->user['Gebr_WachtW']);
+
         /* If the user was set, verify the provided password against the store password, and login the user with the local function. */
-        if(password_verify($cred['Gebr_WachtW'], $this->user['Gebr_WachtW'])) {
-            $this->login($this->user);
+        if($verify) {
+            $login = $this->login($this->user);
         }
 
-        /* Return true/false based on if the user was set in the session. */
-        if(!isset($_SESSION['user']['id'])) {
+        /* If the login was set, and not true, the login failed. */
+        if(isset($login) && !$login) {
             return FALSE;
         }
 
+        /* Else the user was logged in. */
         return TRUE;
     }
 
-    /* Use SessionMan to end the session, return true/false depending on the outcome. */
+    /*  logout():
+            Use SessionMan to end and destroy the session, return true/false depending on the outcome.
+    
+            Return Value: Boolean.
+     */
     public function logout() {
         if(!App::resolve('session')->destroy()) {
             return FALSE;
@@ -95,7 +104,7 @@ class Authenticator {
         return TRUE;
     }
 
-    /* W.I.P. */
+    /* W.I.P. Potential backup function, for when my middleware isnt working as expected. */
     /*  verifyUser($id):
             Function to verify the logged in user, based on the provided user index ($_SESSION['user']['id']).
                 $id (Assoc Array)   - The user id tag, ready to be used for database requests.
