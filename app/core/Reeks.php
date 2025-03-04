@@ -6,7 +6,12 @@ class Reeks {
     protected $reeks;
     protected $duplicate;
 
-    /*  setReeks($ids): */
+    /*  setReeks($ids):
+            This function attempt to set the global reeks variable, and also count the items inside them.
+                $ids (Assoc Arr)    - (Optional) Id pair associate with the reeks data that need to be set.
+            
+            Return Value: None.
+     */
     protected function setReeks($ids = null) {
         if(!isset($ids)) {
             $this->reeks = App::resolve('database')->prepQuery('select', 'reeks')->getAll();
@@ -17,7 +22,11 @@ class Reeks {
         return $this->countItems();
     }
 
-    /*  countItems(): */
+    /*  countItems():
+            This function counts all items with each reeks that has been set globally.
+
+            Return Value: None.
+     */
     protected function countItems() {
         foreach($this->reeks as $key => $value ) {
             $this->reeks[$key]['Item_Aantal'] = App::resolve('database')->countItems([
@@ -52,7 +61,12 @@ class Reeks {
         return;
     }
 
-    /*  getSingReeks(): */
+    /*  getSingReeks():
+            This functions gets a single reeks, requested by specific user actions.
+                $ids (Assoc Arr)    - The id pair associated with the requested reeks.
+            
+            Return Value: Associative Array.
+     */
     public function getSingReeks($ids) {
         if(!isset($this->reeks)) {
             $this->setReeks($ids);
@@ -61,7 +75,11 @@ class Reeks {
         return $this->reeks[0];
     }
 
-    /*  getAllReeks(): */
+    /*  getAllReeks():
+            This function simplet gets all reeks data for the controller request.
+
+            Return Value: Multi-dimensional Associative Array.
+     */
     public function getAllReeks() {
         if(!isset($this->reeks)) {
             $this->setReeks();
@@ -70,7 +88,12 @@ class Reeks {
         return $this->reeks;
     }
 
-    /*  getId($ids): */
+    /*  getId($ids):
+            This function attempt to get a reeks Index, based on another id pair (like name or autheur).
+                $ids (Assoc Arr)    - The id pair associated with the reeks the id is required for.
+            
+            Return Value: Int.
+     */
     public function getId($ids) {
         if(!isset($this->reeks)) {
             $this->setReeks($ids);
@@ -79,7 +102,12 @@ class Reeks {
         return $this->reeks[0]['Reeks_Index'];
     }
 
-    /*  getName($ids): */
+    /*  getName($ids):
+            This function attempts to get a reeks name, based on other id pairs (like index or autheur)
+                $ids (Assoc Arr)    - The id pair associate with the Reeks that we need the name of.
+            
+            Return Value: String.
+     */
     public function getName($ids) {
         if(!isset($this->reeks)) {
             $this->setReeks($ids);
@@ -88,64 +116,80 @@ class Reeks {
         return $this->reeks[0]['Reeks_Naam'];
     }
 
-    /*  createReeks($data): */
+    /*  createReeks($data):
+            This function attempts to create a new Reeks record in the database, including a duplicate name check.
+                $data (Assoc Arr)       - The POST data as presented by the controller/user.
+                $dbData (Assoc Arr)     - The POST data prepared for the PDO action.
+                $store (String/null)    - A temp store to evaluate the database operation
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
     public function createReeks($data) {
-        /* Check if any reeks info was set, if not set all reeks data. */
         if(!isset($this->reeks)) {
             $this->setReeks();
         }
 
         $this->checkDup($data['naam']);
 
-        /* If duplicate is true now, return a duplicate error for user feedback. */
         if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        /* If all is well, prep the user info for the database. */
         $dbData = [
             'Reeks_Naam' => $data['naam'],
             'Reeks_Maker' => $data['makers'],
             'Reeks_Opmerk' => $data['opmerking']
         ];
 
-        /* Delegate the store action to the databse class, and request the results with getAll. */
         $store = App::resolve('database')->prepQuery('insert', 'reeks', $dbData)->getAll();
 
-        /* Either return a feedback error or TRUE, depending on the store result. */
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
     }
 
-    /*  updateReeks($ids, $data): */
+    /*  updateReeks($ids, $data):
+            This function attempts to update a reeks record in the database, incl a duplicate name check.
+                $ids (Assoc Arr)        - An id pair that is associated with the reeks record that needs to be updated.
+                $data (Assoc Arr)       - The POST data as presented by the controller/user.
+                $dbData (Assoc Arr)     - The POST data prepared for the PDO action.
+                $store (String/null)    - A temp store to evaluate the database operation
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
     public function updateReeks($ids, $data) {
-        /* Check if any reeks info was set, if not set all reeks data. */
         if(!isset($this->reeks)) {
             $this->setReeks();
         }
 
-        /* Preform a duplication check, to see if anyother reeks entries have the same name already. */
         $this->checkDup($data['naam'], $data['index']);
 
-        /* If duplicate is true now, return a duplicate error for user feedback. */
         if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        /* If all is well, prep the user info for the database. */
         $dbData = [
             'Reeks_Naam' => $data['naam'],
             'Reeks_Maker' => $data['makers'],
             'Reeks_Opmerk' => $data['opmerking']
         ];
 
-        /* Delegate the update action to the databse class, and request the results with getAll. */
         $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $dbData)->getAll();
 
-        /* Either return a feedback error or TRUE, depending on the store result. */
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
     }
 
-    /*  remReeks($ids): */
+    /*  remReeks($ids):
+            This function attempt to remove a reeks records from the database.
+                $ids (Assoc Arr)        - An id pair that is associated with the reeks record that needs to be removed.
+                $store (String/null)    - A temp store to evaluate the database operation
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
     public function remReeks($ids) {
         $store = App::resolve('database')->prepQuery('delete', 'reeks', $ids)->getAll();
 
@@ -153,6 +197,6 @@ class Reeks {
             return App::resolve('errors')->getError('reeks', 'rem-fail');
         }
 
-        return TRUE;
+        return is_string($store) ? App::resolve('errors')->getError('reeks', 'rem-fail') : TRUE;
     }
 }
