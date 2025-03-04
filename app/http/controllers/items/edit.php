@@ -31,10 +31,11 @@ $plaatje = FALSE;
 if($_FILES['cover']['error'] === 0) {
     $file = App::resolve('file')->procFile($_FILES['cover']);
     $plaatje = TRUE;
-/* If no cover input was used, attempt to request the image from the databse, and change the cover state to true. */
+/* If no cover input was used, but a new cover was stored in the session flash, attempt to process that file. */
 } elseif(isset($_SESSION['_flash']['newCover'])){
     $file = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
     $plaatje = TRUE;
+/* If no cover input was used, attempt to request the image from the databse, and change the cover state to true. */
 } else {
     $file = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']

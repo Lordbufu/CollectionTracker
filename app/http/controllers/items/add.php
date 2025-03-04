@@ -94,7 +94,7 @@ if(isset($_SESSION['page-data']['items'])) {
     ]);
 }
 
-/* unset any old _flash data that is no longer required, */
+/* Unset any old _flash data that is no longer required, and redirect to the 'beheer'-page preserving the flash data (user feedback). */
 if(isset($_SESSION['_flash']['tags']['pop-in'])) {
     if(isset($_SESSION['_flash']['oldForm'])) {
         unset($_SESSION['_flash']['oldForm']);
@@ -111,5 +111,4 @@ if(isset($_SESSION['_flash']['tags']['pop-in'])) {
     unset($_SESSION['_flash']['tags']['pop-in']);
 }
 
-/* and redirect to the 'beheer'-page preserving the flash data (user feedback). */
 return App::redirect('beheer', TRUE);
