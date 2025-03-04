@@ -1,11 +1,15 @@
-<?php
+<?php // Store the correct data from the session.
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']);
+}
+
 if(isset($_SESSION['page-data']['items'])) {
     $store = $_SESSION['page-data']['items'];
 }
 ?>
 
 <div class="table-header">
-    <h2 class="table-header-text"><?='Alle items in: ' . inpFilt($_SESSION['page-data']['huidige-reeks']) ?? 'Selecteer een Reeks'?></h2>
+    <h2 class="table-header-text"><?='Alle items in: ' . $hReeks ?? 'Selecteer een Reeks'?></h2>
 </div>
 
 <table class="items-table">

@@ -1,5 +1,19 @@
+<?php // Store the correct data from the session.
+if(isset($_SESSION['page-data']['huidige-reeks'])) {
+    $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']);
+}
+
+if(isset($_SESSION['page-data']['items'])) {
+    $items = $_SESSION['page-data']['items'];
+}
+
+if(isset($_SESSION['page-data']['collecties'])) {
+    $coll = $_SESSION['page-data']['collecties'];
+}
+?>
+
 <div class="table-header">
-    <h2 class="gebruik-weerg-header"><?=inpFilt($_SESSION['page-data']['huidige-reeks']) ?? 'Selecteer een Reeks'?></h2>
+    <h2 class="gebruik-weerg-header"><?=$hReeks ?? 'Selecteer een Reeks'?></h2>
 </div>
 
 <table class="item-table">
@@ -15,20 +29,10 @@
         <th class="itemOpmTitle">Opmerking</th>
     </tr>
 
-<?php // Store the correct data from the session.
-if(isset($_SESSION['page-data']['items'])) {
-    $items = $_SESSION['page-data']['items'];
-}
-
-if(isset($_SESSION['page-data']['collecties'])) {
-    $coll = $_SESSION['page-data']['collecties'];
-}
-
-if(isset($items)) : // Loop over all loaded item, and set collection status to false.
+<?php // Loop over all loaded item, and set collection status to false.
+if(isset($items)) :
     foreach($items as $key => $value) :
-        $aanw = false;
-?>
-
+        $aanw = false; ?>
         <tr class="item-table-content-<?=$value['Item_Index']?>" id="items-table-content">
             <th class="item-aanw">
 <?php   // If item is in colllection, set state to true
@@ -38,8 +42,8 @@ if(isset($items)) : // Loop over all loaded item, and set collection status to f
             }
         }
 
-        if(!$aanw) :    // Render the correct 'slider' based on the collection status.
-?>
+        // Render the correct 'slider' based on the collection status.
+        if(!$aanw) : ?>
                 <form class="item-aanw-form" method="post" action="/colAdd">
                     <input class="item-aanw-form-method" name="_method" value="PUT" hidden/>
                     <input class="item-aanw-form-index" name="index" value="<?=$value['Item_Index']?>" hidden/>

@@ -1,10 +1,10 @@
-<?php
+<?php // Store the correct data from the session.
 if(isset($_SESSION['page-data']['reeks'])) {
     $store = $_SESSION['page-data']['reeks'];
 }
 
 if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $hReeks = $_SESSION['page-data']['huidige-reeks'];
+    $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']);
 }
 ?>
 <div class="contr-cont-1" id="contr-cont-1" >
@@ -35,7 +35,7 @@ $current = FALSE;
 if(isset($store)) :
     foreach($store as $key => $value) :
         if(isset($hReeks)) {
-            if(inpFilt($hReeks) === inpFilt($value['Reeks_Naam'])) {
+            if($hReeks === inpFilt($value['Reeks_Naam'])) {
                 $current = TRUE;
             }
         } ?>
