@@ -21,8 +21,11 @@ if(isset($_POST['index'])) {
     ];
 }
 
+/* If a oldName was set, attemp to update the reeks, if not store a input missing error for user feedback. */
 if(isset($oldName)) {
     $store = App::resolve('reeks')->updateReeks($ids, $_POST);
+} else {
+    $store = App::resolve('errors')->getError('forms', 'input-missing');
 }
 
 /* If reeks was not stored properly, prep the correct _flash data and user feedback, before returning to the pop-in again. */
