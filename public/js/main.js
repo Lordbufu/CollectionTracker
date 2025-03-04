@@ -14,6 +14,12 @@ document.onreadystatechange = () => {
             localStorage.removeItem('user');
         }
 
+        /* In a few specific cases, i need to redirect to the default home page, and also clear the anchor tag. */
+        if(localStorage.reset) {
+            window.location = '/';
+            localStorage.removeItem('reset');
+        }
+
         /* Deal with the scroll position triggers. */
         if(sessionStorage.scrollPos) {
             window.scrollTo(0, sessionStorage.scrollPos);

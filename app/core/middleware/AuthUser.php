@@ -9,7 +9,11 @@ class AuthUser {
     public function handle() {
         /* If no user data is set, or the user isnt a user, redirect to the landing page. */
         if(!isset($_SESSION['user']['rights']) || $_SESSION['user']['rights'] !== 'user') {
-            return App::redirect('');
+            App::resolve('session')->setVariable('page-data', [
+                'reset' => TRUE
+            ]);
+
+            return;
         }
     }
 }
