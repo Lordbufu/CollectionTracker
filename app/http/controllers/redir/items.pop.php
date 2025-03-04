@@ -2,7 +2,8 @@
 
 use App\Core\App;
 
-if(isset($_POST['naam'])) {                             // If we came here via the item-toevoegen controller menu.
+/* Condition for the 'item-toevoegen' controller menu. */
+if(isset($_POST['naam'])) {
     $flash = [
         'tags' => [
             'pop-in' => 'items-maken',
@@ -13,7 +14,8 @@ if(isset($_POST['naam'])) {                             // If we came here via t
     ]];
 }
 
-if(isset($_POST['iIndex'])) {                           // If we came here via the table edit item button.
+/* Condition for the item-edit button in the table view. */
+if(isset($_POST['iIndex'])) {
     $item = App::resolve('items')->getAllFor([
         'Item_Index' => $_POST['iIndex']
     ])[0];
@@ -38,6 +40,7 @@ if(isset($_POST['iIndex'])) {                           // If we came here via t
     ]];
 }
 
+/* Store the prepared flash data, and redirect to the 'items-maken-pop-in', preserving the _flash data. */
 App::resolve('session')->flash($flash);
 
 return App::redirect('beheer#items-maken-pop-in', TRUE);
