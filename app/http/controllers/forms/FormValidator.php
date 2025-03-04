@@ -5,8 +5,17 @@ namespace App\Http\Forms;
 use App\Core\App;
 
 class FormValidator {
+    /* Global error store, to store all validation errors that need to be returned. */
     protected static $errors = [];
 
+    /*  validate($attributes):
+            This function links the validator to form validation, and provides meaningfull errors that can serve as user feedback.
+                $attributes (Assoc Arr) - The data that needs to be validated, usually the entire POST.
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
     public static function validate($attributes) {
         foreach($attributes as $key => $value) {
             if($key === 'email' && !App::resolve('validator')::email($value)) {
@@ -44,13 +53,23 @@ class FormValidator {
             return $instance->errors();
         }
 
-        return;
+        return TRUE;
     }
 
+    /*  failed():
+            A little helper function, to see if any error where set during validation.
+
+            Return Value: Int.
+     */
     public function failed() {
         return count(self::$errors);
     }
 
+    /* errors():
+            A lttle helper function, to return the errors that were set during validation.
+
+            Return Value: Associateve Array.
+     */
     public function errors() {
         return self::$errors;
     }
