@@ -5,12 +5,22 @@ namespace App\Core;
 class User {
     protected $user;
 
-    /*  setUser($ids):*/
+    /*  setUser($ids):
+            This function set the global user, based on a specific Id pair only.
+                $ids (Assoc Arr)    - The id pair associated with the requested user.
+            
+            Return Value: None.
+     */
     protected function setUser($ids) {
         $this->user = App::resolve('database')->prepQuery('select', 'gebruikers', $ids)->getSingle();
     }
 
-    /*  getUser($ids):*/
+    /*  getUser($ids):
+            This function attempt to get the requested user, db error are passed on to the caller.
+                $ids (Assoc Arr)    - The id pair associated with the requested user.
+            
+            Return Value: Associative Array
+     */
     public function getUser($ids) {
         if(!isset($this->user)) {
             $this->setUser($ids);
@@ -19,9 +29,18 @@ class User {
         return $this->user;
     }
 
-    /*  createUser($data):*/
+    /*  createUser($data):
+            This function attempts to create a user record, incl hashing the password, and set the global ser after that is done.
+                $data (Assoc Arr)       - The POST data as presented to us by the controller.
+                $sqlData (Assoc Arr)    - The user data prepared for the PDO request.
+                $store (String/null)    - A temp store to evaluate the database opperation.
+                                        - Set to a default number string, if input went missing, to trigger a default store error.
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
     public function createUser($data) {
-        /* Prepare all the user data for the database. */
         if(isset($data['naam']) && isset($data['email']) && isset($data['wachtwoord'])) {
             $sqlData = [
                 'Gebr_Naam' => $data['naam'],
@@ -31,42 +50,39 @@ class User {
             ];
 
             $store = App::resolve('database')->prepQuery('insert', 'gebruikers', null, $sqlData)->getErrorCode();
-        // just sequence of numbers, not a actual error code ¿ (triggers the default store error).
         } else {
             $store = '123456';
         }
 
-        /* Check if the error code wasnt the default nothing burger, */
+        /* Evaluate what type of error we are dealing with. */
         if($store !== '00000') {
-            /* '23000' means there is a duplicate entry detected. */
             if($store === '23000') {
                 return App::resolve('errors')->getError('user', 'user-dupl');
-            /* The rest gets a default store error for now. */
             } else {
                 return App::resolve('errors')->getError('database', 'store-error');
             }
         }
 
         if(!isset($this->user)) {
-            $this->user = $this->setUser(['Gebr_Email' => $data['email']]);
+            $this->user = $this->setUser([
+                'Gebr_Email' => $data['email']
+            ]);
         }
 
         return TRUE;
     }
 
-    /*  getName($id):*/
+    /*  getName($id):
+            This function simple attempts to retrieve the user name, based on a provided id pair.
+                $ids (Assoc Arr)    - The id pair that is associated with the record we want the name of.
+
+            Return Value: String.
+     */
     public function getName($ids) {
-        /* Check if a user is set, if not attempt to set it, discarding any return values. */
         if(!isset($this->user)) {
             $this->setUser($ids);
         }
 
-        /* If the user was set to a error string, or if the id's dont match, i return FALSE. */
-        if(is_string($this->user)) {
-            return App::resolve('errors')->getError('user', 'user-fetch');
-        }
-
-        /* If all seem well, i return the user name. */
-        return $this->user['Gebr_Naam'];
+        return is_string($this->user) ? App::resolve('errors')->getError('user', 'user-fetch') : $this->user['Gebr_Naam'];
     }
 }
