@@ -14,8 +14,10 @@ $oldForm = [
     'opmerking' => $_POST['opmerking']
 ];
 
+/* Attempt to find the ISBN data in the Google Api. */
 $searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rIndex'], TRUE);
 
+/* If there where errors, store the correct data in the session, before redirecting back to the pop-in. */
 if(is_string($searchResult)) {
     $flash = [
         'oldForm' => $oldForm,
@@ -33,6 +35,7 @@ if(is_string($searchResult)) {
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
+/* If a result was found, process said result to present the data to the user for validation. */
 if(is_array($searchResult)) {
     $newItem = [
         'iIndex' => $_POST['iIndex'],
@@ -61,6 +64,7 @@ if(is_array($searchResult)) {
     }
 }
 
+/* This seems redundant, considering there is a error path before setting a new item ? */
 if(!isset($newItem)) {
     $flash = [
         'oldForm' => $oldForm,
@@ -77,6 +81,7 @@ if(!isset($newItem)) {
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
+/* Prepare all the correct session data, and redirect to the pop-in to present the results to the user. */
 $flash = [
     'oldForm' => $newItem,
     'feedback' => [

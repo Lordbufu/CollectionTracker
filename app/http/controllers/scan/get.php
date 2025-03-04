@@ -17,7 +17,9 @@ if(!isset($_POST['item-isbn']) || !isset($_POST['reeks-index'])) {
     return App::redirect($route, TRUE);
 }
 
-/* Attempt to request data from the Google API with the scanned isbn, if user is admin switch the default function parameter to TRUE. */
+/*  Attempt to request data from the Google API with the scanned isbn,
+    if user is admin switch the default function parameter to TRUE.
+ */
 if($route === 'beheer') {
     $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index'], TRUE);
 } else {
@@ -122,7 +124,10 @@ if($aanwezig) {
     ]);
 }
 
-/* Regardless of the present state, i need to update the collection data, by simply request all collection data again. */
+/*  Regardless of the present state,
+    i need to update the collection data,
+    by simply request all collection data again.
+ */
 App::resolve('session')->setVariable('page-data', [
     'collecties' => App::resolve('collectie')->getColl()
 ]);
