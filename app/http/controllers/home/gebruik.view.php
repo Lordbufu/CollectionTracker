@@ -57,5 +57,5 @@ if(isset($_SESSION['user']['id'])) {
     }
 }
 
-/* Return the requested view. */
+/* Return the requested view, preserving the 'gebruik' page tag. */
 return App::view('home/index.view.php', null, TRUE);

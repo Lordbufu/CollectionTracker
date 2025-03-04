@@ -2,8 +2,10 @@
 
 use App\Core\App;
 
-if(isset($_POST['return'])) {                   // If a pop-in is closed,
-    App::resolve('session')->unflash();         // unflash any tags and data that might have been stored for it,
+/* If a pop-in was closed, clean up the session flash data. */
+if(isset($_POST['return'])) {
+    App::resolve('session')->unflash();
 }
 
-return App::view('home/index.view.php');        // and then return the correct view.
+/* Return the normal home view. */
+return App::view('home/index.view.php');
