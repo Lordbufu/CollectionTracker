@@ -1,7 +1,4 @@
 <?php
-/* Test Route for debugging\testing purposes */
-$router->get('/test',		'test.php');
-
 /* Routes for the public landing page. */
 $router->get('/',			'index.php');                               // Landing-page for all other types of users (that dont get the 'guest' tag).
 

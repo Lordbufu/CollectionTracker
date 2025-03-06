@@ -1,7 +1,5 @@
 <?php
 
-/*  TODO List: Review the need for 'verifyUser($id)', not sure i really need it atm. */
-
 namespace App\Core;
 
 use App\Core\App;
@@ -98,25 +96,6 @@ class Authenticator {
      */
     public function logout() {
         if(!App::resolve('session')->destroy()) {
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    /* W.I.P. Potential backup function, for when my middleware isnt working as expected. */
-    /*  verifyUser($id):
-            Function to verify the logged in user, based on the provided user index ($_SESSION['user']['id']).
-                $id (Assoc Array)   - The user id tag, ready to be used for database requests.
-            
-            Return Value: Boolean.
-     */
-    public function verifyUser($id) {
-        if(!isset($this->user)) {
-            $this->user = App::resolve('database')->prepQuery('select', 'gebruikers', $id)->getSingle();
-        }
-
-        if(is_string($this->user)) {
             return FALSE;
         }
 

@@ -1,20 +1,10 @@
 Global TODO List:
-    - Go over all Core classes, and make sure there are useful comments:
-        - Still need to clean up:
-            - App.php
-            - Isbn.php
-            - SessionMan.php
-            - Collectie.php
-            - Router.php ?
-    - Go over all controllers once more, to make sure the formatting and comments are in order.
-    - Figure out how a expired session, or incorrect user data is dealt with.
-        - Atm it seems to not redirect properly, causing all kinds of weird issues.
-    - See if i can make a more interesting complex password check, atm it seem very dumb.
-    - Review if the greaterThan function in the Validator has any remaining uses.
-    - Review if i even use the ValidationException class at all now.
-    - Remember to clean up the verifyUser() function in the Authenticator core class, as its not very usefull considering the middleware im using.
-        - Or include it in the middleware, to verify the user in a more interesting way ¿
     - Review the 'newCover' in the 'controllers\items\edit.php' file.
-    - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
     - Review a error path in the 'controllers\scan\search.php', it seems redundant to error check the returned result twice.
+    - See if i can make a more interesting complex password check, atm it seem very dumb.
+    - Add the newly added Reeks cover to all related view, and pop-ins/templates.
+        - And while doing so, add all controller related code, and class related code where needed.
+    - The 'Isbn' core class, still needs more clean up, and potentially improvements.
+        - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
+    - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.

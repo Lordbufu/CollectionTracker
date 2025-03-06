@@ -36,15 +36,4 @@ class Validator {
     public static function pwSecure(string $value): bool {
         return !ctype_alnum($value);
     }
-
-    /*  greaterThan($value, $greateThan): (Currently not used)
-            A function that checks int values, and checks if it greater then the other.
-                $value (Int)        - The value we want to compare.
-                $greaterThan (Int)  - The value it should be compared against.
-            
-            Return Value: Boolean.
-     */
-    public static function greaterThan(int $value, int $greaterThan): bool {
-        return $value > $greaterThan;
-    }
 }
