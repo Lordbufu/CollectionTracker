@@ -30,10 +30,11 @@ if(isset($_SESSION['page-data']['huidige-reeks'])) {
         <select class="contr-item-select" id="item-toev" name="naam" required>
             <option value="">Selecteer een reeks</option>
 <?php
-$current = FALSE;
 
 if(isset($store)) :
     foreach($store as $key => $value) :
+        $current = FALSE;
+        
         if(isset($hReeks)) {
             if($hReeks === inpFilt($value['Reeks_Naam'])) {
                 $current = TRUE;
