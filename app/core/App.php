@@ -1,7 +1,4 @@
 <?php
-/*  TODO List:
-        - 
- */
 
 namespace App\Core;
 
@@ -27,37 +24,43 @@ class App {
             Return Value: Boolean.
      */
     public static function initApp() {
-        self::$classMap = self::initClassMap();                                                         // Load the ClassMap required to populate the service container.
-        self::$envString = self::initEnvString(base_path('enviroment.txt'));                            // Load enviroment settings, to load the correct config data set.
+        /* Load/Init the class map and enviroment string. */
+        self::$classMap = self::initClassMap();
+        self::$envString = self::initEnvString(base_path('enviroment.txt'));
 
-        $cont = new Container();                                                                        // Open a new Container instance,
+        /* Create a container, and bind the database class and connection to it. */
+        $cont = new Container();
 
-        $cont->bind('database', function () {                                                           // bind the 'database',
-            $config = require base_path('config.php');                                                  // load the entire config.php file,
-            $envConf = $config[self::$envString];                                                       // grab the data set associate with the current enviroment,
+        $cont->bind('database', function () {
+            $config = require base_path('config.php');
+            $envConf = $config[self::$envString];
 
-            return new Database($envConf);                                                              // return the new database connection.
+            return new Database($envConf);
         });
 
-        if(!is_object($cont->resolve('database')) || !empty($cont->resolve('database')->errors)) {      // If the connection cant be resolved, or it had errors,
-            throw new Exception('The Database connection failed to initialize!');                       // throw a exception to provide usuable feedback.
+        /* Throw costum Exception if the binding the database class/connection failed. */
+        if(!is_object($cont->resolve('database')) || !empty($cont->resolve('database')->errors)) {
+            throw new Exception('The Database connection failed to initialize!');
         }
 
-        foreach(self::$classMap as $path => $obj) {                                                     // Loop over the loaded ClassMap,
-            $cont->bind($path, $obj);                                                                   // and bind them to the service container.
+        /* Loop over the class map, and bind them all to the container, then set the finished container to the App. */
+        foreach(self::$classMap as $path => $obj) {
+            $cont->bind($path, $obj);
         }
 
-        self::setContainer($cont);                                                                      // Set the service container to the App class.
+        self::setContainer($cont);
 
-        if(!self::resolve('database')->checkDatabase()) {                                               // If the default database content is missing,
-            self::resolve('database')->createDefDb();                                                   // create the default content.
+        /* Check database tables and default admin, and attempt to create if missing, recheck again to check for errors and throw error if failed. */
+        if(!self::resolve('database')->checkDatabase()) {
+            self::resolve('database')->createDefDb();
         }
 
-        if(!self::resolve('database')->checkDatabase()) {                                               // Check db again to see if something is still missing,
-            throw new Exception(self::resolve('errors')->getError('database', 'default-content'));      // throw new exception if something is wrong.
+        if(!self::resolve('database')->checkDatabase()) {
+            throw new Exception(self::resolve('errors')->getError('database', 'default-content'));
         }
 
-        return is_object(self::$container);                                                             // Return the container if its a object.
+        /* Return a boolean, based on if the container is a object or not. */
+        return is_object(self::$container);
     }
 
     /*  initClassMap():
@@ -86,6 +89,8 @@ class App {
     /*  initEnvString($file):
             This function parses the enviroment.txt file, to check what the intended run state is.
             The string in this file, corrosponds with the tag in the config.php, so a sub-set of setting can be used 'loaded'.
+
+            Return Value: String.
      */
     protected static function initEnvString($file) {
         $fileStream = fopen($file, 'r');
@@ -105,6 +110,8 @@ class App {
 
     /*  container():
             This function returns the app container as is, without resolving a specific key in it.
+
+            Return Value: Object.
      */
     public static function container() {
         return self::$container;
@@ -119,25 +126,25 @@ class App {
 
     /*  resolve($key):
             A inherited function from the Container class, with the exact same profile.
+
+            Return Value: Object\Class.
      */
     public static function resolve($key) {
         return self::$container->resolve($key);
     }
 
-    // W.I.P. Functions, that might still need seperate files/classes
     /*  checkDevice():
             This function uses the browser user agent, to detect what device is being used.
             The API MobileDetect, helps me seperate mobile/tablet and desktop clients, to ensure the right CSS is applied.
                 $detect (Object)    - The class object for MobileDetect.
             
-            Return value: None
+            Return value: String.
      */
     public static function checkDevice() {
         $detect = new MobileDetect();
-        /* Adding a useragent check, to remove log clutter/spam from some bots. */
+
         if(isset($_SERVER['HTTP_USER_AGENT'])) {
 		    $detect->setUserAgent($_SERVER['HTTP_USER_AGENT'] );
-        /* Simple die, so if people are getting this, they know why. */
         }
 
         if( $detect->isTablet() && $detect->isMobile() ) {
@@ -151,7 +158,11 @@ class App {
         }
     }
 
-    /* Attempt to set version on all views that are returned. */
+    /*  setVersion():
+            Attempt to set version of the App, based on the string value in the version.txt.
+
+            Return Value: String.
+     */
     public static function setVersion() {
         $versionFile = fopen('../version.txt', 'r');
         $version = fread($versionFile, filesize('../version.txt'));
@@ -160,22 +171,31 @@ class App {
         return $version;
     }
 
-    // W.I.P.
-    public static function view($path, $attributes = [], $tag = null) {
-        if($tag && !isset($_SESSION['_flash']['tags']['redirect'])) {
-            App::resolve('session')->flash('tags', [
-                'redirect' => TRUE
-            ]);
-        }
-
+    /*  view($path, $attributes=[]):
+            This function requires the correct view, so the page can be rendered, and an empty array to pass data to the page.
+            It also set the device type and version, in a empty attributes array, so these are always included on page as $device and $version.
+                $path (String)      - The 'path' associated with the requested view.
+                $attributes (Arr)   - The data array, that is used to pass on data to the view, always including the device type and version string.
+            
+            Return Value: Require view file.
+     */
+    public static function view($path, $attributes = []) {
         $attributes['device'] = static::checkDevice();
         $attributes['version'] = static::setVersion();
 
         extract($attributes);
+
         require base_path('app/http/views/' . $path);
     }
 
-    // W.I.P.
+    /*  redirect($path, $tag):
+            This function simply redirect the user, to the desired path based on other logic, so the router can process said request.
+            It includes a session _flash loop, to preserve flashed data, as it sometimes get lost between redirects on more complex logic.
+                $path (String)  - The path the user needs to be redirect to.
+                $tag (Boolean)  - (Optional) A flag to indicate if the flash data should be preserved.
+            
+            Return Valeue: New location via the header.
+     */
     public static function redirect($path, $tag = null) {
         if($tag && !isset($_SESSION['_flash']['tags']['redirect'])) {
             App::resolve('session')->flash('tags', ['redirect' => TRUE]);
