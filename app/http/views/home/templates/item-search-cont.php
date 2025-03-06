@@ -167,12 +167,14 @@
         localStorage.setItem('checkState', JSON.stringify(checkArr));
         
         /* If the checkbox was checked, */
-        if( event.target.checked === true ) {
+        if(event.target.checked === true) {
             /* Create a new input event, */
-            let inputEvent = new Event ('input', {
-                'bubbles': true,
-                'cancelable': false
-            });
+            let inputEvent = new Event (
+                'input', {
+                    'bubbles': true,
+                    'cancelable': false
+                }
+            );
 
             /* If the input was disabled, i enable it for the user. */
             if(itemZoekInp.disabled) {
@@ -203,12 +205,17 @@
      */
     function itemZoek(e) {
         const filter = itemZoekInp.value.toUpperCase();
-        const tafelRows = document.querySelectorAll('#items-table-content');
+        const tafelRows = document.querySelectorAll('.item-tafel-inhoud');
+        let itemNaam, itemNr, itemIsbn;
 
         /* We are searching on a name basis */
         if(chb1.checked === true) {
             tafelRows.forEach((item, index) => {
-                const itemNaam = item.children[1].innerHTML;
+                if(document.location.pathname == '/gebruik'){
+                    itemNaam = item.children[1].innerHTML;
+                } else {
+                    itemNaam = item.children[2].innerHTML;
+                }
 
                 if(itemNaam.toUpperCase().indexOf(filter) > -1) {
                     return tafelRows[index].style.display = '';
@@ -219,8 +226,12 @@
         /* We are searching on a album nr basis */
         } else if(chb2.checked === true) {
             tafelRows.forEach((item, index) => {
-                const itemNr = item.children[2].innerHTML;
-
+                if(document.location.pathname == '/gebruik'){
+                    itemNr = item.children[2].innerHTML;
+                } else {
+                    itemNr = item.children[3].innerHTML;
+                }
+                
                 if(itemNr.toUpperCase().indexOf(filter) > -1) {
                     return tafelRows[index].style.display = '';
                 } else {
@@ -230,7 +241,11 @@
         /* We are searching on a album isbn basis */
         } else if(chb3.checked === true) {
             tafelRows.forEach((item, index) => {
-                const itemIsbn = item.children[6].innerHTML;
+                if(document.location.pathname == '/gebruik'){
+                    itemIsbn = item.children[6].innerHTML;
+                } else {
+                    itemIsbn = item.children[7].innerHTML;
+                }
 
                 if(itemIsbn.toUpperCase().indexOf(filter) > -1) {
                     return tafelRows[index].style.display = '';

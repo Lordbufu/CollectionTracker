@@ -28,7 +28,7 @@ if(isset($_SESSION['page-data']['items'])) {
 <?php   // Loop over all stored items.
 foreach($store as $key => $value) : ?>
 
-    <tr class="item-tafel-inhoud-<?=$value['Item_Index']?>">
+    <tr class="item-tafel-inhoud">
         <th class="item-bew">
             <form class="item-bewerken-form" method="POST" action="/iEdit">
                 <input class="item-bew-method" name="_method" value="PATCH" hidden/>

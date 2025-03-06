@@ -33,7 +33,7 @@ if(isset($_SESSION['page-data']['collecties'])) {
 if(isset($items)) :
     foreach($items as $key => $value) :
         $aanw = false; ?>
-        <tr class="item-table-content-<?=$value['Item_Index']?>" id="items-table-content">
+        <tr class="item-tafel-inhoud" id="items-table-content-<?=$value['Item_Index']?>">
             <th class="item-aanw">
 <?php   // If item is in colllection, set state to true
         foreach($coll as $iKey => $iValue) {
