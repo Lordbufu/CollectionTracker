@@ -14,9 +14,16 @@ class Items {
      */
     protected function setItems($ids = null) {
         if(!isset($ids)) {
-            $this->items = App::resolve('database')->prepQuery('select', 'items')->getAll();
+            $this->items = App::resolve('database')->prepQuery(
+                'select',
+                'items'
+            )->getAll();
         } else {
-            $this->items = App::resolve('database')->prepQuery('select', 'items', $ids)->getAll();
+            $this->items = App::resolve('database')->prepQuery(
+                'select',
+                'items',
+                $ids
+            )->getAll();
         }
 
         if(!is_array($this->items)) {
@@ -115,7 +122,10 @@ class Items {
         ];
 
         $store = App::resolve('database')->prepQuery(
-            'insert', 'items', null, $dbData
+            'insert',
+            'items',
+            null,
+            $dbData
         )->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
@@ -160,7 +170,12 @@ class Items {
             'Item_Opm' => $data['opmerking']
         ];
 
-        $store = App::resolve('database')->prepQuery('update', 'items', $ids, $dbData)->getAll();
+        $store = App::resolve('database')->prepQuery(
+            'update',
+            'items',
+            $ids,
+            $dbData
+        )->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
     }
@@ -175,7 +190,11 @@ class Items {
                 On success - Boolean.
      */
     public function remItems($ids) {
-        $store = App::resolve('database')->prepQuery('delete', 'items', $ids)->getAll();
+        $store = App::resolve('database')->prepQuery(
+            'delete',
+            'items',
+            $ids
+        )->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'rem-fail') : TRUE;
     }

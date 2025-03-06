@@ -20,11 +20,25 @@ class Router {
     }
 
     /* Method function, simply returning the add function. */
-    public function get($uri, $controller) { return $this->add('GET', $uri, $controller); }
-    public function post($uri, $controller) { return $this->add('POST', $uri, $controller); }
-    public function delete($uri, $controller) { return $this->add('DELETE', $uri, $controller); }
-    public function patch($uri, $controller) { return $this->add('PATCH', $uri, $controller); }
-    public function put($uri, $controller) { return $this->add('PUT', $uri, $controller); }
+    public function get($uri, $controller) {
+        return $this->add('GET', $uri, $controller);
+    }
+
+    public function post($uri, $controller) {
+        return $this->add('POST', $uri, $controller);
+    }
+
+    public function delete($uri, $controller) {
+        return $this->add('DELETE', $uri, $controller);
+    }
+
+    public function patch($uri, $controller) {
+        return $this->add('PATCH', $uri, $controller);
+    }
+
+    public function put($uri, $controller) {
+        return $this->add('PUT', $uri, $controller);
+    }
 
     public function only($key) {
         $this->routes[array_key_last($this->routes)]['middleware'] = $key;
@@ -53,5 +67,7 @@ class Router {
     }
 
     // Currently not used ??
-    public function previousUrl() { return $_SERVER['HTTP_REFERER']; }
+    public function previousUrl() {
+        return $_SERVER['HTTP_REFERER'];
+    }
 }

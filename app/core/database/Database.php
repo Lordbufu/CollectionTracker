@@ -1,7 +1,5 @@
 <?php
 
-//  TODO: Review if the find() function is even usefull at all, most of that kinda stuff is done via the specific classes.
-
 namespace App\Core\Database;
 
 /* Load the required use directives, even if i can technically by-pass some, there here for make things more read-/understand-able. */
@@ -64,7 +62,9 @@ class Database {
         }
     }
 
-    /*  loadCheckData(): This function simply set the result of the testTable() query, so i can evaluated the expected database structure. */
+    /*  loadCheckData():
+            This function simply set the result of the testTable() query, so i can evaluated the expected database structure.
+     */
     protected function loadCheckData() {
         if(empty($this->defCheck)) {
             $this->defCheck = [
@@ -267,7 +267,7 @@ class Database {
         return $this->statement->errorCode();
     }
 
-    // W.I.P. Stuff below here
+    // W.I.P. Stuff below here, i dont think im actually using this atm ?
     // Intended to find a specific key, from a single search result (item name, index etc..)
     public function find($key) {
         $this->result = $this->statement->fetch();

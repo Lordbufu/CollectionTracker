@@ -73,7 +73,8 @@ if(is_array($finalItem)) {
         'tags' => [
             'method' => 'PATCH',
             'pop-in' => 'items-maken'
-    ]];
+        ]
+    ];
 /* Prepare a flesh error feedback is no item was set properly. */
 } else {
     $flash = ['feedback' => [
