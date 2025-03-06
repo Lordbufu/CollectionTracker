@@ -1,31 +1,25 @@
 <?php
-// Debug info, for testing the isbn manual search functions.
-// Optional isbn 1:
-//      9781875750214 -> returns only 1 result
+/*
+    // Debug info, for testing the isbn manual search functions.
+    // Optional isbn 1:
+    //      9781875750214 -> returns only 1 result
 
-// Optional isbn 2
-//      9020667505
-//      9789020642506
-//          De Kameleon in het goud
+    // Optional isbn 2
+    //      9020667505
+    //      9789020642506
+    //          De Kameleon in het goud
 
-// Optional isbn 3 ( 200+ items found )
-//      0123456789
-
-/*  TODO/Notes:
-        - Not getting the expected results anymore, seems like google changed something, or im using a method that wasnt intended.
-            So far i have tested the isbn codes i have noted in the LogicController, i may simply need other codes or a larger sample size.
-            Maybe i need to user proper HTTP requests, instead of the 'hack' im using right now.
-            Seems like the issue is solved, by replacing 'isbn:' with 'ISBN:' in the url. ¿
-        - Getting mixed results now, where items that share isbn codes, return results that change per request.
-            This makes it harder to confirm title choices, because your never sure if a that title was in the request agian or not.
-            Not entirely sure how to deal with this, as i dont want to spam the Google API either, else doing several request could be a solution.
-            Although doing that, would also slow my code down more then it already is being slowed down.
-        - Figure out what todo with several authors on album.
+    // Optional isbn 3 ( 200+ items found )
+    //      0123456789
  */
 
-
 /*  Isbn Class:
-        This class uses the Google Book API, to try and match user data with scanned barcodes (ISBN codes).
+        This class uses the Google Book API, to request data based on either a scanned barcode, or a specific ISBN number.
+        After the request, it is evaluated and broken down, either to add/remove things for the user there collection.
+        Or if the admin used it, to pre-fill item forms, to potentially make adding them a little bit easier.
+
+        The choice for the Google Book API was made, because its a free to use API, that has a fair amount of data in it.
+        Idealy this should have been a paid Book API that is kept up-to-date, and maybe also a similar type of API for music/movies/board games etc.
  */
 
 namespace App\Core;
@@ -33,13 +27,14 @@ namespace App\Core;
 use App\Core\App;
 
 class Isbn {
-    protected $base_url = 'https://www.googleapis.com/books/v1/volumes?q=';     // Base API url, used to query data.
-    protected $req_url;                                                         // Empty request URL, that needs to be set.
-    protected $requested;                                                       // The un-filtered API data, converted from string to array.
-    protected $checked;                                                         // The checked API data.
-    protected $errors;                                                          // A place to store errors that need to be returned.
-    protected $titles = ['Titles'];                                             // To store titles if more then 1 item was found.
-    protected $isbns = [];                                                      // To store the isbn code from the API request.
+    /* Base variable for processing the request, and parsing its data. */
+    protected $base_url = 'https://www.googleapis.com/books/v1/volumes?q=';
+    protected $req_url;
+    protected $requested;
+    protected $checked;
+    protected $errors;
+    protected $titles = ['Titles'];
+    protected $isbns = [];
 
     /*  set_url($isbn):
             This function simply adds the isbn value, at the end of the url string, so we can request data from the Google API.
@@ -142,8 +137,7 @@ class Isbn {
     /*  check_items($index):
             This functions checks if the returned API results, have a match based on the items names, inside the current reeks.
             If a match is found, it will also seperate the ISBN numbers, so we can compare those at a later stage.
-                $index
-                $rIndex (Int)   - The index of the currently selected Reeks.
+                $index (Int)   - The index of the currently selected Reeks.
                 $rItems (Array) - Then items that belong to the currently selected Reeks.
 
             Return Value:
@@ -183,11 +177,13 @@ class Isbn {
     }
 
     /*  process_choice($title):
+            This function attempts to get the ISBN numbers associated with the provided item title.
+            And is used in tandem with the check_items() function.
      */
     protected function process_choice($title) {
         /* I start by looping over all checked items, */
         foreach($this->checked as $key => $item) {
-            /* Check if we are dealing with one of more stored items, and grabe volume info based on that knowledge. */
+            /* Check if we are dealing with one of more stored items, and grab volume info based on that knowledge. */
             if(array_key_exists(0, $this->checked)) {
                 $cItem = $this->checked[$key]['volumeInfo'];
             } else {
@@ -221,6 +217,7 @@ class Isbn {
     }
 
     /* get_choice($title):
+            This function gets a entire item, based on a item its title, and is used when a user has confirmed a title choice.
      */
     protected function get_choice($title) {
         /* Set checked to all requested items. */
@@ -248,19 +245,15 @@ class Isbn {
         return FALSE;
     }
 
-    /*  startRequest($isbn, $reeks): W.I.P.
+    /*  startRequest($isbn, $reeks):
             This is the start of the Google API request, it will do the request in parts, so its easier to debug issues.
             Because the scope is so wide, it has a variable return value, strongly depending on what route it hits.
+            Most comments are also left inside the function, because of the various outcomes.
                 $isbn (Int)             - The isbn code from the scanner or the search button.
                 $reeks (Int)            - The index value of the currently selected reeks.
                 $request (Bool)         - The result of the API request.
                 $check (Int)            - The result of the data check, to see how much the request returned.
                 $iCheck (Array/Bool)    - The result of the item check, so i know of the item is in the current reeks.
-
-            Return Value:
-                On error (String)           - With all errors, there is a string being returned that can be used as user feedback.
-                On multiple items (Array)   - An array of titles is returned for user selection, this is only being used for the admin user.
-                On single item (Array)      - An id pair is returned, to evaluate its collection status.
      */
     public function startRequest($isbn, $reeks, $admin = FALSE) {
         /* If the request URL could not be set, i store a error for user feedback. */
@@ -282,7 +275,7 @@ class Isbn {
             return $this->errors;
         }
 
-        /* Check the requested data, for how many items are there. */
+        /* Check the requested data, for how many items there are. */
         $check = $this->check_data();
 
         /* If the request returned 0 items, return the check_data() error to the caller. */
@@ -331,7 +324,7 @@ class Isbn {
     }
 
     /*  confirmChoice($isbn, $title):
-            ...
+            This function deals with processing a title choice made by the user, atm this is only relevant for the Administrator.
      */
     public function confirmChoice($data) {
         /* If the request URL could not be set, i store a error for user feedback. */
