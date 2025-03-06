@@ -42,7 +42,11 @@ class SessionMan {
     protected $savePath = '../tmp/sessions/';
     protected $browser;
 
-    /*  configSession(): Set all required session settings and paths. */
+    /*  configSession():
+            Set all required session settings and paths, session files are stored in a temp folder, this requires seperate php instances to work properly.\
+            For now a session_start() is still included, to always start the session as soon as possible.
+            And it also contains a bit of header code, to resolve a issue with certain browsers no dealing well with session flashing (firefox for example).
+     */
     public function configSession() {
         $adress = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
@@ -67,7 +71,7 @@ class SessionMan {
             session_save_path($this->savePath);
         }
 
-        session_start();    // Soonest point i can activate the user session
+        session_start();
 
         // Cant use this in the live version atm, so i have uncommneted it untill i know a better solution
         // /* Set browser name if not set, requires 'browscap' file to work, cause it needs to parse the user-agent */
@@ -90,8 +94,14 @@ class SessionMan {
         return;
     }
 
+    /*  setBrowser($agent):
+            This is a temp test function, that uses the 'HTTP_USER_AGENT' to parse the browser name.
+            This requirs an up-to-date browscap.ini file, to be included in the php install, so for my live enviroment this is not yet included.
+            In the future this function migh even just be removed, depending on how i can solve the caching issues, that seem to come with session flashing.
+     */
     protected function setBrowser($agent) {
         $this->browser = get_browser($agent, TRUE)['browser'];
+        return;
     }
 
     /*  setVariable($data):
@@ -111,12 +121,13 @@ class SessionMan {
                 $_SESSION[$name][$key] = $value;
             }
         }
+
         return;
     }
 
     /*  remVar($name, $keys):
             This function was created to remove specific session data, so i can reset triggers when there no longer required.
-            Normaly clearing the _flash memory is enough, but some logic might require more specific actions, to reset a certain state/behavior.
+            Normaly clearing the _flash memory is enough, but some logic might require more specific actions, to reset a certain states and/or behaviors.
                 $name (String)      - The name of the Session store the item(s) are in.
                 $key (String\Array) - The content i want removed/reset, where the $keys array holds simple strings, that associate with the session keys.
 
@@ -134,91 +145,51 @@ class SessionMan {
                 }
             }
         }
+
         return;
     }
 
-    /* Potentially redundant atm. */
-    /*  checkVariable($store, $key):
-            For certain processes, i need to be able to check if certain variables are set, or a combination of variables.
-            Mostly designed to see if i can unset a variable, and not mess up the workflow of the App.
-                $store  - String        -> The name of the store, for example 'page-data'.
-                $keys   - Assoc Array   -> The keys in the store, that i need to know are set or not, can be a single key.
-
-            Return Value: Boolean.
-     */
-    public function checkVariable( $store, $keys = [] ) {
-        /* Look for the session store that as requested. */
-        if( isset( $_SESSION[$store] ) ) {
-            /* Loop over all entries in set store, and if the key was a string compare it with entry and return true. */
-            foreach( $_SESSION[$store] as $entry => $value ) {
-                if( is_string($keys) && $keys == $entry ) {
-                    return TRUE;
-                /* Loop over the keys array, and compare it with the entry from the outer foreach, return true if it matches. */
-                } else {
-                    foreach($keys as $key) {
-                        if($key === $entry) {
-                            return TRUE;
-                        }
-                    }
-                }
-            }
-            /* If no matches are found return false. */
-            return FALSE;
-        /* If there was not session store set, i also return false. */
-        } else {
-            return FALSE;
-        }
-    }
-
-    /*  has($key): Function to check if something is set inside the session. */
-    public function has($key) {
-        return (bool) static::get($key);
-    }
-
-    /*  put($key, $value): Function to simply put something in the session. */
-    public function put($key, $value) {
-        return $_SESSION[$key] = $value;
-    }
-
-    /*  getFlash($key, $default): Get a specific key from the flash, with a default return that is null. */
-    public static function get($key, $default = null) {
-        return $_SESSION['_flash'][$key] ?? $_SESSION[$key] ?? $default;
-    }
-
     /*  flash($key, $value):
-            Flash temp data into the session, so it can stay for a limited amount of time.
-            When the data is unflashed, is direct via specific tags (like for a redirect), so it most of it stays across redirects and page-refreshes.
-                $sKey   (string/assoc array)        - Either a key i want to set, or a array of keys/pairs that needs to be set.
-                $sValue (null/string/assoc array)   - The value i want to store, or a array that needs to be nested.
+            Flash temp data into the session, so it can stay for a limited amount of time, and be used across page-refreshes.
+                $sKey   (string/assoc or multi/assoc array) - Either a key i want to set, or a array that needs to be set.
+                $sValue (null/string/assoc array)           - The value i want to store, or a array that needs to be nested.
 
             Return Value: none.
      */
     public function flash($sKey, $sValue=null) {
-        if($sValue == null) {                                       // For when i pass in a array that was pre-compiled,
-            foreach($sKey as $key => $value) {                      // i loop over said array data,
-                $_SESSION['_flash'][$key] = $value;                 // and set the key and value into the _flash memory,
+        /* In some cases a 'flash' array was easier, this loops over said associative array ($sKey) and loads it properly into the flash. */
+        if($sValue == null) { 
+            foreach($sKey as $key => $value) {
+                $_SESSION['_flash'][$key] = $value;
             }
-            return;                                                 // and return to caller if all items are stored.
-        } else {                                                    // If i dint pre-compile a array,
-            if(is_array($sValue)) {                                 // check if the value parameter is a array,
-                foreach($sValue as $lKey => $lValue) {              // then loop over said data,
-                    $_SESSION['_flash'][$sKey][$lKey] = $lValue;    // and set keys and value in the correct way,
+        /* In other cases its either a key + value, or key + associative array, so the loop changes a bit. */
+        } else {
+            if(is_array($sValue)) {
+                foreach($sValue as $lKey => $lValue) {
+                    $_SESSION['_flash'][$sKey][$lKey] = $lValue;
                 }
-                return;                                             // and then return to caller.
-            } else {                                                // In some case i just pass in a single key and value,
-                return $_SESSION['_flash'][$sKey] = $sValue;        // i can just inject that straight into the _flash memory.
+            } else {
+                $_SESSION['_flash'][$sKey] = $sValue;
             }
         }
+
+        return;
     }
 
-    /*  unflash(): Remove temp data from session. */
+    /*  unflash():
+            Remove all flash data from session.
+     */
     public function unflash() {
         unset($_SESSION['_flash']);
+        return;
     }
 
-    /*  flush(): Function to simple clear the entire $_SESSION variable. */
+    /*  flush():
+            Function to simple clear the entire $_SESSION variable.
+     */
     public function flush() {
         session_unset();
+        return;
     }
 
     /*  destroy():
