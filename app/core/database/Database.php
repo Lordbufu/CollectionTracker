@@ -267,8 +267,13 @@ class Database {
         return $this->statement->errorCode();
     }
 
-    // W.I.P. Stuff below here, i dont think im actually using this atm ?
-    // Intended to find a specific key, from a single search result (item name, index etc..)
+    /*  find($key):
+            This function is desgined to request specific key values, from database queries.
+            For example, i can find a 'reeks-index' value for a specific items record, if i already have a item-name or item-index.
+                $key (String)   - The name of the database column, that i need the value of.
+            
+            Return Value: Variable (String/Blob/Int).
+     */
     public function find($key) {
         $this->result = $this->statement->fetch();
 
