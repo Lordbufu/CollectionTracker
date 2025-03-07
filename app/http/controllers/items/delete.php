@@ -9,7 +9,7 @@ if(isset($_POST['iIndex']) && $_POST['rIndex']) {
         'Item_Reeks' => $_POST['rIndex']
     ];
 
-    $itemName = App::resolve('items')->getName($ids);
+    $itemName = App::resolve('items')->getKey($ids, 'Item_Naam');
 }
 
 // temp error handeling or missing form inputs.

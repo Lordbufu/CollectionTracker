@@ -76,7 +76,7 @@ if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
 }
 
 /* Get the item name for feedback messages, and evaluate the items collection state. */
-$iName = App::resolve('items')->getName($apiRequest);
+$iName = App::resolve('items')->getKey($apiRequest, 'Item_Naam');
 $aanwezig = App::resolve('collectie')->evalColl($apiRequest);
 
 /*  If the evaluation had a eror,

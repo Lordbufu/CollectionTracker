@@ -2,41 +2,29 @@
 
 use App\Core\App;
 
-/* Store the old item name, if the user came from the edit action */
-if(!empty($_POST['iIndex']) && !empty($_POST['rIndex'])) {
-    $oldName = App::resolve('items')->getName([
-        'Item_Index' => $_POST['iIndex'],
-        'Item_Reeks' => $_POST['rIndex']
-    ]);
-}
-
-/* Store the POST data as oldForm data for all request types. */
-$oldForm = [
-    '_method' => $_POST['_method'],
-    'rIndex' => $_POST['rIndex'],
-    'iIndex' => $_POST['iIndex'] ?? '',
-    'naam' => $_POST['naam'],
-    'nummer' => $_POST['nummer'],
-    'datum' => $_POST['datum'],
-    'autheur' => $_POST['autheur'],
-    'isbn' => $_POST['isbn'],
-    'opmerking' => $_POST['opmerking']
+/* Store the ids required for the database actions later down the line. */
+$ids = [
+    'Item_Index' => $_POST['iIndex'],
+    'Item_Reeks' => $_POST['rIndex']
 ];
 
-/* Store post as temp, and set cover state to false. */
-$temp = $_POST;
+/* Validate the POST data first. */
+$validate = App::resolve('form')::validate($_POST);
+
+/* Store the user input as old input for error paths, and new for storing it in the database. */
+$oInput = $_POST;
+$uInput = App::resolve('process')->store('items', $_POST);
+
+/* Deal with the potentially uploaded image file, or the stored image file in either the session or database. */
 $plaatje = FALSE;
 
-/* If cover input was set, convert it to a base64 string, and change the cover state to true. */
-if($_FILES['cover']['error'] === 0) {
+if($_FILES['cover']['error'] === 0) {                                               // Check if user input was used,
     $file = App::resolve('file')->procFile($_FILES['cover']);
     $plaatje = TRUE;
-/* If no cover input was used, but a new cover was stored in the session flash, attempt to process that file. */
-} elseif(isset($_SESSION['_flash']['newCover'])){
+} elseif(isset($_SESSION['_flash']['newCover'])) {                                  // check if new file was set in the session,
     $file = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
     $plaatje = TRUE;
-/* If no cover input was used, attempt to request the image from the databse, and change the cover state to true. */
-} else {
+} else {                                                                            // or attempt to load from database if nothing was found otherwhise.
     $file = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
     ])->find('Item_Plaatje');
@@ -44,46 +32,60 @@ if($_FILES['cover']['error'] === 0) {
     $plaatje = TRUE;
 }
 
-/* If no image was found, store user feedback in the _flash memory. */
-if(!$plaatje) {
-    App::resolve('session')->flash('feedback', [
-        'file-error' => $file
-    ]);
-/* If no errors, store the cover in temp and oldForm. */
-} else {
-    $temp['cover'] = $file;
-    $oldForm['cover'] = $file;
-}
+/* If any error happened during validation or the image processing, store them properly and redirect to the pop-in. */
+if(is_array($validate) || !$plaatje) {
+    if(!$plaatje && !is_array($validate)) {
+        $validate = ['file-error' => $file];
+    } else {
+        $validate['file-error'] = $file;
+    }
 
-/* Attempt to update the item using the unfiltered data. */
-if(isset($oldName)) {
-    $store = App::resolve('items')->updateItems($temp);
-} else {
-    $store = App::resolve('items')->createItem($temp);
-}
+    $flash = [
+        'oldForm' => $oInput,
+        'feedback' => $validate
+    ];
 
-/* Evalute the updat attempt, and store user feedback if problematic. */
-if(is_string($store)) {
-    App::resolve('session')->flash('feedback', [
-        'error' => $store
-    ]);
-}
-
-/* If any errors are stored, set the oldItem to the _flash memory, and redirect to the pop-in perserving said memory. */
-if(isset($_SESSION['_flash']['feedback'])) {
-    App::resolve('session')->flash('oldForm', $oldForm);
+    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/* If no errors and a old name was stored, provide feedback on what item was updated. */
-if(isset($oldName) && $oldName !== $_POST['naam']) {
+/* Store the cover image if it was processed */
+$oInput['cover'] = $file;
+$uInput['Item_Plaatje'] = $file;
+
+/* Store the name of the edited item, as is stored in the DB before we update the record. */
+$oldName = App::resolve('items')->getKey($ids, 'Item_Naam');
+
+/* Attempt to update the item record, and store feedback and redirect on errors. */
+$store = App::resolve('items')->updateItems($uInput);
+
+if(is_string($store)) {
+    $flash = [
+        'feedback' => [
+            'error' => $store
+        ],
+        'oldForm' => $oInput
+    ];
+
+    App::resolve('session')->flash($flash);
+    return App::redirect('beheer#items-maken-pop-in', TRUE);
+}
+
+/* Clear old form session data if any was set, to prevent issues when adding new items after this operation. */
+if(isset($_SESSION['_flash']['oldItem'])) {
+    App::resolve('session')->remVar('_flash', 'oldItem');
+} else if(isset($_SESSION['_flash']['oldForm'])) {
+    App::resolve('session')->remVar('_flash', 'oldForm');
+}
+
+/* Perpare the correct user feedback, based on if the item name changed or not. */
+if($oldName !== $_POST['naam']) {
     App::resolve('session')->flash('feedback', [
         'klaar' => "Het item: {$oldName} \n Is voor uw aangepast met de naam: {$_POST['naam']} !"
     ]);
-/* Else provide feedback that the new item was added from the isbn scan functions. */
 } else {
     App::resolve('session')->flash('feedback', [
-        'klaar' => "Het item: {$oldForm['naam']} \n is toegevoegd aan de huidige reeks !"
+        'klaar' => "Het item: {$oldName} \n is aangepast in de huidige reeks !"
     ]);
 }
 
