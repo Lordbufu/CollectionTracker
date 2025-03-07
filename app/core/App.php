@@ -78,6 +78,7 @@ class App {
             'form' => function() { return new FormValidator; },
             'file' => function() { return new FileHandler; },
             'auth' => function() { return new Authenticator; },
+            'process'=> function() {return new ProcessPost; },
             'reeks' => function() { return new Reeks; },
             'items' => function() { return new Items; },
             'collectie' => function() { return new Collectie; }
