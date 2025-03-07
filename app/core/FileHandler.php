@@ -59,8 +59,8 @@ class FileHandler {
                 $inpFile (File/Array)   - The file as presented by the HTML input.
 
             Return Value:
-                On success: base64 string.
-                On failure: error string.
+                On success: String.
+                On failure: Associative Array .
      */
     public function procFile($inpFile) {
         if(!is_array($inpFile)) {
@@ -74,7 +74,7 @@ class FileHandler {
         }
 
         if($this->setString()) {
-            return (is_string($this->convFile)) ? $this->convFile : App::resolve('errors')->getError('fileHand', 'no-string');
+            return (is_string($this->convFile)) ? $this->convFile : ['error' => App::resolve('errors')->getError('fileHand', 'no-string')];
         }
     }
 

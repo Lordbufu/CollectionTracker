@@ -57,7 +57,7 @@
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT
             ],
             'version' => [
-                'live' => 'V2.1.06'
+                'live' => 'V2.1.a2'
             ]
         ]
     ];

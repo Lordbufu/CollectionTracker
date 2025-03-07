@@ -1,10 +1,16 @@
 Global TODO List:
-    - Review the 'newCover' in the 'controllers\items\edit.php' file.
-    - Review a error path in the 'controllers\scan\search.php', it seems redundant to error check the returned result twice.
+    - Review all controllers once more, and the main object core classes (Items, Reeks, Collectie):
+        - Start inserting all the missing form validation code, as i have skipped doing those on most actions.
+        - Replace any key searches for name/index etc to a single getKey() function like in Items.
+        - Prepare the Reeks class for dealing with the newly added reeks cover data.
+            - Proll change the database code and table to be longblob instead of just blob ?
+        - Adjust the core classes to deal with the added validation and post processing code.
     - See if i can make a more interesting complex password check, atm it seem very dumb.
-    - Add the newly added Reeks cover to all related view, and pop-ins/templates.
-        - And while doing so, add all controller related code, and class related code where needed.
+    - Adjust JS input validation, to be inline with string lengths set in the FormValidator class.
+
+    ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
+    - Review what i am doing with the version noted in the config.php, i proll had a plan for that, but never actually used it ?
     - The 'Isbn' core class, still needs more clean up, and potentially improvements.
         - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
-    - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
+        - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.

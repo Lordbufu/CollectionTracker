@@ -137,7 +137,7 @@ class SessionMan {
         if(!is_array($keys)) {
             unset($_SESSION[$name][$keys]);
         } else {
-            foreach($_SESSION[$name] as $oKey) {
+            foreach($_SESSION[$name] as $oKey => $oValue) {
                 foreach($keys as $iKey) {
                     if($oKey == $iKey) {
                         unset($_SESSION[$name][$iKey]);

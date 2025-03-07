@@ -39,21 +39,21 @@ class Items {
             
             Return Value: None.
      */
-    protected function dupCheck($ids) {
+    protected function dupCheck($data) {
         $this->duplicate = FALSE;
 
-        if(!$this->setItems(['Item_Reeks' => $ids['Item_Reeks']])) {
+        if(!$this->setItems(['Item_Reeks' => $data['Item_Reeks']])) {
             return App::resolve('errors')->getError('items', 'find-error');
         }
 
         /* Loop over all stored items, and compare the stored names vs the edited name; */
         foreach($this->items as $key => $value) {
-            if($value['Item_Naam'] === $ids['Item_Naam']) {
+            if($value['Item_Naam'] === $data['Item_Naam']) {
                 /* If a reeks id was passed in, and its doesnt match, the item name is duplicate; */
-                if(isset($ids['Item_Reeks']) && (int) $ids['Item_Reeks'] !== $value['Item_Reeks']) {
+                if(isset($data['Item_Reeks']) && (int) $data['Item_Reeks'] !== $value['Item_Reeks']) {
                     $this->duplicate = TRUE;
                 /* If the id wasnt set, its also duplicate. */
-                } elseif(!isset($ids['Item_Reeks'])) {
+                } elseif(!isset($data['Item_Reeks'])) {
                     $this->duplicate = TRUE;
                 }
             }
@@ -101,36 +101,17 @@ class Items {
                 On success - Boolean.
      */
     public function createItem($data) {
-        $ids = [
-            'Item_Reeks' => $data['rIndex']
-        ];
+        $check = $this->dupCheck($data);
 
-        $check = $this->dupCheck($ids);
-
-        if(is_string($check)) {
-            return $check;
+        if(is_string($check) || $this->duplicate) {
+            return (is_string($check)) ? $check : App::resolve('errors')->getError('items', 'duplicate');
         }
-
-        if($this->duplicate) {
-            return App::resolve('errors')->getError('items', 'duplicate');
-        }
-
-        $dbData = [
-            'Item_Reeks' => $data['rIndex'],
-            'Item_Nummer' => empty($data['nummer']) ? 0 : $data['nummer'],
-            'Item_Auth' => $data['autheur'],
-            'Item_Naam' => $data['naam'],
-            'Item_Plaatje' => $data['cover'],
-            'Item_Uitgd' => empty($data['datum']) ? date('Y-m-d') : $data['datum'],
-            'Item_Isbn' => $data['isbn'],
-            'Item_Opm' => $data['opmerking']
-        ];
 
         $store = App::resolve('database')->prepQuery(
             'insert',
             'items',
             null,
-            $dbData
+            $data
         )->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
@@ -148,32 +129,19 @@ class Items {
                 On success - Boolean.
      */
     public function updateItems($data) {
-        $check = $this->dupCheck([
-            'Item_Reeks' => $data['Item_Reeks'],
-            'Item_Naam' => $data['Item_Naam']
-        ]);
+        $check = $this->dupCheck($data);
 
         if(is_string($check) || $this->duplicate) {
             return (is_string($check)) ? $check : App::resolve('errors')->getError('items', 'duplicate');
         }
 
-        $dbData = [
-            'Item_Nummer' => (int) $data['Item_Nummer'] ?? '',
-            'Item_Auth' => $data['Item_Auth'] ?? '',
-            'Item_Naam' => $data['Item_Naam'],
-            'Item_Plaatje' => $data['Item_Plaatje'] ?? '',
-            'Item_Uitgd' => $data['Item_Uitgd'] ?? '',
-            'Item_Isbn' => $data['Item_Isbn'],
-            'Item_Opm' => $data['Item_Opm'] ?? ''
-        ];
-
         $store = App::resolve('database')->prepQuery(
             'update',
-            'items',
-            [   'Item_Index' => $data['Item_Index'],
+            'items', [
+                'Item_Index' => $data['Item_Index'],
                 'Item_Reeks' => $data['Item_Reeks']
             ],
-            $dbData
+            $data
         )->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;

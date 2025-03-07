@@ -2,71 +2,66 @@
 
 use App\Core\App;
 
-/* Filter the user input, so i can savely return it to the page. */
-$oldFilData = [
-    'rIndex' => $_POST['rIndex'],
-    'naam' => $_POST['naam'],
-    'nummer' => $_POST['nummer'],
-    'datum' => $_POST['datum'],
-    'autheur' => $_POST['autheur'],
-    'isbn' => $_POST['isbn'],
-    'opmerking' => $_POST['opmerking']
-];
+/* Validate the POST data first. */
+$validate = App::resolve('form')::validate($_POST);
 
-/*  Process the cover if one was set via the HTML input,
-    store in file scope variable, for when everything was validated,
-    inlude file string as old form data, for where there are issues validating.
- */
+/* Store the user input raw for pre-filling the form on errors, and store a processed verion for storing in the database. */
+$oInput = $_POST;
+$pInput = App::resolve('process')->store('items', $_POST);
+
+/* Check if a file cover was added via the HTML input or isbn search or barcode scanner, and add it to both the old and processed input. */
+$plaatje = FALSE;
+
 if(!empty($_FILES['cover']) && $_FILES['cover']['error'] === 0) {
     $cover = App::resolve('file')->procFile($_FILES['cover']);
-    $oldFilData['cover'] = $cover ?? '';
-}
-
-/*  Process the cover if one was set via the barcode scanner,
-    inlude file string as old form data, for where there are issues validating.
- */
-if(isset($_SESSION['_flash']['newCover'])) {
+    if(!is_array($cover)) {
+        $oInput['cover'] = $cover ?? '';
+        $pInput['Item_Plaatje'] = $cover;
+        $plaatje = TRUE;
+    }
+} else if(isset($_SESSION['_flash']['newCover'])) {
     $cover = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
-    $oldFilData['cover'] = $cover ?? '';
+    if(!is_array($cover)) {
+        $olInput['cover'] = $cover ?? '';
+        $pInput['Item_Plaatje'] = $cover;
+        $plaatje = TRUE;
+    }
 }
 
-/* Validate the POST data. */
-$form = App::resolve('form')::validate($_POST);
+/* Check for any error in the above process, and prepare the return data, before going back to the pop-in.  */
+if(is_array($validate) || is_string($pInput) || !$plaatje) {
+    $feedback = [];
 
-/*  If validation failed,
-    prep the expected feeback, tags and old formdata in the _flash memory,
-    then redirecting to the pop-in again with the _flash memory intact.
- */
-if(is_array($form)) {
+    /* The order i store things here, is relevant to prevent overwriting already stored errors. */
+    if(is_array($validate)) {
+        $feedback = $validate;
+    }
+    
+    if(is_string($pInput)) {
+        $feedback['process-error'] = $pInput;
+    }
+
+    if(!$plaatje && isset($cover)) {
+        $feedback['cover-error'] = $cover;
+    }
+
     $flash = [
-        'feedback' => $form,
-        'oldForm' => $oldFilData,
+        'feedback' => $feedback,
+        'oldForm' => $oInput,
         'tags' => [
             'pop-in' => 'items-maken'
     ]];
 
     App::resolve('session')->flash($flash);
-    return App::redirect('beheer#items-maken-pop-in', TRUE);
+    return App::redirect('beheer#items-maken-pop-in', TRUE); 
 }
 
-/*  Prep user input and cover image string for the PDO to store it,
-    and then attemp to store it.
- */
-$dbData = $_POST;
+/* Attempt to store the processed input, and deal with any errors after. */
+$store = App::resolve('items')->createItem($pInput);
 
-if(isset($cover)) {
-    $dbData['cover'] = $cover;
-}
-
-$store = App::resolve('items')->createItem($dbData);
-
-/*  If db action failed,
-    prep the expected feeback, tags and old formdata,
-    then redirecting to the pop-in again preserving the _flash memory.
- */
 if(is_string($store)) {
     $flash = [
-        'oldForm' => $oldFilData,
+        'oldForm' => $oInput,
         'feedback' => [
             'error' => $store
         ],
@@ -78,15 +73,10 @@ if(is_string($store)) {
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/*  When the items was store,
-    we prep the correct feedback,
-    and update the 'items' page-data if it was set.
- */
-App::resolve('session')->flash('feedback', [
-    'success' => "Het item: {$oldFilData['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"
-]);
-
+/* If the store had no errors, i start by refreshing the session page-data. */
 if(isset($_SESSION['page-data']['items'])) {
+    unset($_SESSION['page-data']['items']);
+
     App::resolve('session')->setVariable('page-data', [
         'items' => App::resolve('items')->getAllFor([
             'Item_Reeks' => $_POST['rIndex']
@@ -94,21 +84,16 @@ if(isset($_SESSION['page-data']['items'])) {
     ]);
 }
 
-/* Unset any old _flash data that is no longer required, and redirect to the 'beheer'-page preserving the flash data (user feedback). */
+/* Then i clean up all useless _flash data. */
 if(isset($_SESSION['_flash']['tags']['pop-in'])) {
-    if(isset($_SESSION['_flash']['oldForm'])) {
-        unset($_SESSION['_flash']['oldForm']);
-    }
+    $tags = ['oldForm', 'oldItem', 'newCover', 'tags'];
 
-    if(isset($_SESSION['_flash']['oldItem'])) {
-        unset($_SESSION['_flash']['oldItem']);
-    }
-
-    if(isset($_SESSION['_flash']['newCover'])) {
-        unset($_SESSION['_flash']['newCover']);
-    }
-    
-    unset($_SESSION['_flash']['tags']['pop-in']);
+    App::resolve('session')->remVar('_flash', $tags);
 }
+
+/* Then i prepare the user feedback before returning back to default page. */
+App::resolve('session')->flash('feedback', [
+    'success' => "Het item: {$pInput['Item_Naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"
+]);
 
 return App::redirect('beheer', TRUE);

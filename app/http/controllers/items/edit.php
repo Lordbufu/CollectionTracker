@@ -2,12 +2,6 @@
 
 use App\Core\App;
 
-/* Store the ids required for the database actions later down the line. */
-$ids = [
-    'Item_Index' => $_POST['iIndex'],
-    'Item_Reeks' => $_POST['rIndex']
-];
-
 /* Validate the POST data first. */
 $validate = App::resolve('form')::validate($_POST);
 
@@ -19,42 +13,53 @@ $uInput = App::resolve('process')->store('items', $_POST);
 $plaatje = FALSE;
 
 if($_FILES['cover']['error'] === 0) {                                               // Check if user input was used,
-    $file = App::resolve('file')->procFile($_FILES['cover']);
-    $plaatje = TRUE;
+    $cover = App::resolve('file')->procFile($_FILES['cover']);
+    if(!is_array($cover)) {
+        $plaatje = TRUE;
+    }
 } elseif(isset($_SESSION['_flash']['newCover'])) {                                  // check if new file was set in the session,
-    $file = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
-    $plaatje = TRUE;
+    $cover = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
+    if(!is_array($cover)) {
+        $plaatje = TRUE;
+    }
+// Not quite sure yet how to error check this latter part.
 } else {                                                                            // or attempt to load from database if nothing was found otherwhise.
-    $file = App::resolve('database')->prepQuery('select', 'items', [
+    $cover = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
     ])->find('Item_Plaatje');
-
     $plaatje = TRUE;
 }
 
 /* If any error happened during validation or the image processing, store them properly and redirect to the pop-in. */
 if(is_array($validate) || !$plaatje) {
     if(!$plaatje && !is_array($validate)) {
-        $validate = ['file-error' => $file];
+        $validate = ['file-error' => $cover];
     } else {
-        $validate['file-error'] = $file;
+        $validate['file-error'] = $cover;
     }
 
     $flash = [
         'oldForm' => $oInput,
-        'feedback' => $validate
-    ];
+        'feedback' => $validate,
+        'tags' => [
+            'pop-in' => 'items-maken'
+    ]];
 
     App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
 /* Store the cover image if it was processed */
-$oInput['cover'] = $file;
-$uInput['Item_Plaatje'] = $file;
+$oInput['cover'] = $cover;
+$uInput['Item_Plaatje'] = $cover;
 
 /* Store the name of the edited item, as is stored in the DB before we update the record. */
-$oldName = App::resolve('items')->getKey($ids, 'Item_Naam');
+$oldName = App::resolve('items')->getKey([
+        'Item_Index' => $_POST['iIndex'],
+        'Item_Reeks' => $_POST['rIndex']
+    ],
+    'Item_Naam'
+);
 
 /* Attempt to update the item record, and store feedback and redirect on errors. */
 $store = App::resolve('items')->updateItems($uInput);
@@ -64,8 +69,10 @@ if(is_string($store)) {
         'feedback' => [
             'error' => $store
         ],
-        'oldForm' => $oInput
-    ];
+        'oldForm' => $oInput,
+        'tags' => [
+            'pop-in' => 'items-maken'
+    ]];
 
     App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
