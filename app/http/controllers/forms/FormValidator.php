@@ -45,6 +45,11 @@ class FormValidator {
             if($key === 'opmerking' && !App::resolve('validator')::string($value, 1, 254)) {
                 self::$errors['opmerking'] = App::resolve('errors')->getError('validation', 'opmerking');
             }
+
+            /* POST input data are string values, even though isbn is technically a int value when stored. */
+            if($key === 'isbn' && !App::resolve('validator')::string($value, 10, 13)) {
+                self::$errors['isbn'] = App::resolve('erros')->getError('validation', 'isbn');
+            }
         }
 
         $instance = new static ($attributes);
