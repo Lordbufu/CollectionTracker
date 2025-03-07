@@ -46,12 +46,18 @@ class Items {
             return App::resolve('errors')->getError('items', 'find-error');
         }
 
+        /* Loop over all stored items, and compare the stored names vs the edited name; */
         foreach($this->items as $key => $value) {
             if($value['Item_Naam'] === $ids['naam']) {
-                $this->duplicate = TRUE;
+                /* If a reeks id was passed in, and its doesnt match, the item name is duplicate; */
+                if(isset($ids['iReeks']) && (int) $ids['iReeks'] !== $value['Item_Reeks']) {
+                    $this->duplicate = TRUE;
+                /* If the id wasnt set, its also duplicate. */
+                } elseif(!isset($ids['iReeks'])) {
+                    $this->duplicate = TRUE;
+                }
             }
         }
-
         return;
     }
 
@@ -69,6 +75,7 @@ class Items {
         return $this->items;
     }
 
+    /* Potentially Redundant now that im wrote the getKey($ids, $key) function. */
     /*  getName($ids):
             This function simple return the name of a item, based on the provided id pair.
                 $ids (Assoc Arr)    - The id pair to fetch the item we want the name of.
@@ -81,6 +88,19 @@ class Items {
         }
 
         return $this->items[0]['Item_Naam'];
+    }
+
+    /*  getKey($id, $key):
+            This function simple returns a specifc key value, based on another key value (id), for a specific item.
+                $id (Assoc Arr) - The identifier i want to use to find a specific item.
+                $key (String)   - The key i want to have for the logic im using.
+     */
+    public function getKey($id, $key) {
+        return App::resolve('database')->prepQuery(
+            'select',
+            'items',
+            $id
+        )->find($key);
     }
 
     /*  createItem($data):
@@ -134,8 +154,8 @@ class Items {
     /*  updateItems($ids):
             This function attempt to update database item record, with new POST data provided by the user.
                 $data (Assoc Arr)       - The POST data we need to create the new database record.
-                $ids (Assoc Arr)        - An id pair to check if the items is duplicate within the reeks its being added to.
                 $check (String/null)    - A temp store to check if the duplicate check had issue setting the items within a reeks.
+                $uIds (Assoc Arr)        - The id pair, used to update a single record, in this case the item-index and item-reeks.
                 $dbData (Assoc Arr)     - The POST data, prepared for the DB query, filtering out any potential issues.
                 $store (String/null)    - A temp store to evaluate the result of the database operation.
             
@@ -144,12 +164,10 @@ class Items {
                 On success - Boolean.
      */
     public function updateItems($data) {
-        $ids = [
+        $check = $this->dupCheck([
             'iReeks' => $data['rIndex'],
             'naam' => $data['naam']
-        ];
-
-        $check = $this->dupCheck($ids);
+        ]);
 
         if(is_string($check)) {
             return $check;
@@ -158,6 +176,11 @@ class Items {
         if($this->duplicate) {
             return App::resolve('errors')->getError('items', 'duplicate');
         }
+
+        $uId = [
+            'Item_Index' => $this->getKey(['Item_Naam' => $data['naam']], 'Item_Index'),
+            'Item_Reeks' => $data['rIndex']
+        ];
 
         $dbData = [
             'Item_Reeks' => $data['rIndex'],
@@ -173,7 +196,7 @@ class Items {
         $store = App::resolve('database')->prepQuery(
             'update',
             'items',
-            $ids,
+            $uId,
             $dbData
         )->getAll();
 
