@@ -76,7 +76,7 @@ if(isset($_SESSION['_flash']['feedback'])) {
 }
 
 /* If no errors and a old name was stored, provide feedback on what item was updated. */
-if(isset($oldName)) {
+if(isset($oldName) && $oldName !== $_POST['naam']) {
     App::resolve('session')->flash('feedback', [
         'klaar' => "Het item: {$oldName} \n Is voor uw aangepast met de naam: {$_POST['naam']} !"
     ]);
