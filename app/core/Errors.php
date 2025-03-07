@@ -20,7 +20,8 @@ class Errors {
         'pw-sec' => 'Uw wachtwoord bevat aleen letters en\of nummers, gebruik aub een combinatie van verschillende dingen.',
         'naam-input' => 'De naam input voldoet niet aan de eisen, probeer het tussen de 5 en 50 tekens te houden.',
         'autheur' => 'De makers input voldoet niet aan de eisen, probeer het tussen de 7 en 50 tekens te houden.',
-        'opmerking' => 'De opmerking voldoet niet aan de eisen, probeer het tussen de 1 en 254 tekens te houden.'
+        'opmerking' => 'De opmerking voldoet niet aan de eisen, probeer het tussen de 1 en 254 tekens te houden.',
+        'isbn' => 'De ISBN die is ingevoerd, is niet lang genoeg, er worden 10 of 13 cijfers verwacht !'
     ];
 
     /* FileHandler specific errors. */
@@ -76,6 +77,11 @@ class Errors {
     /* Form validation specific errors. */
     protected $forms = [
         'input-missing' => 'Er zijn wat ingevulde gegevens verloren gegaan, probeer het nogmaals!'
+    ];
+
+    /* Processing form data errors. */
+    protected $processing = [
+        'failed' => 'De data die u ingevult heeft, kon niet verwerkt worden, neem contact op met uw administrator als dit blijft gebeuren!'
     ];
 
     /*  getError($object, $type):
