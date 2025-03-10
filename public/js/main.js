@@ -115,7 +115,7 @@ function saveScroll(e) {
     Return Value: Boolean.
 */
 function itemVerwijderen(e) {
-    const rowCol = document.getElementsByClassName('item-tafel-inhoud-' + e.target.id);
+    const rowCol = document.getElementsByClassName('item-tafel-inhoud');
     const rowArr = Array.from(rowCol);
     const conf = confirm('Weet u zeker dat het Item: ' + rowArr[0].children[2].innerHTML + '\n Verwijderen moet worden ?');
 
