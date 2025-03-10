@@ -1,4 +1,5 @@
 Global TODO List:
+    - Keep reviewing the bar scan and isbn search functions, to improve the mess i started on my last set of commits.
     - Review all controllers once more, and the main object core classes (Items, Reeks, Collectie):
         - Start inserting all the missing form validation code, as i have skipped doing those on most actions.
         - Replace any key searches for name/index etc to a single getKey() function like in Items.
@@ -9,6 +10,9 @@ Global TODO List:
     - Adjust JS input validation, to be inline with string lengths set in the FormValidator class.
 
     ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
+    - Review how to deal with to long item\reeks descriptions (opmerking), specifically related to isbn scan/search functions.
+    - Review the 'controllers/scan/confirm.php' code, and figure out a edit item path, as its a add path atm (method = PUT).
+    - Review the 'controllers/scan/confirm.php' code, consider making a seperate class, to process the Google API data into a usefull data.
     - Review what i am doing with the version noted in the config.php, i proll had a plan for that, but never actually used it ?
     - The 'Isbn' core class, still needs more clean up, and potentially improvements.
         - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
