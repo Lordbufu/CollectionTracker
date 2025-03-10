@@ -46,7 +46,8 @@ $router->patch('/itemsM',	'items/edit.php')->only('admin');           // Source 
 $router->delete('/iDel',	'items/delete.php')->only('admin');         // Source = 'http\views\home\templates\admin\items-table-subgrid.php' (item verwijderen knop)
 
 /* Admin Isbn routes */
-$router->put('/iIsbnS',   'scan/search.php')->only('admin');            // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (isbn zoek knop)
+$router->put('/iIsbnS',     'scan/search.php')->only('admin');          // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (create item -> isbn zoek knop)
+$router->patch('/iIsbnS',   'scan/search.php')->only('admin');          // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (edit item -> isbn zoek knop)
 $router->post('/scanConf',  'scan/confirm.php')->only('admin');         // Source = 'http\views\home\pop-ins\isbn-preview-pop-in.php' (bevestigen knop)
 
 /* Shared routes for all logged in user pages. */
