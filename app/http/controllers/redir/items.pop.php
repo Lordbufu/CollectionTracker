@@ -8,10 +8,10 @@ if(isset($_POST['naam'])) {
         'tags' => [
             'pop-in' => 'items-maken',
             'method' => 'PUT',
-            'rIndex' => App::resolve('reeks')->getId([
-                'Reeks_Naam' => $_POST['naam']
-            ])
-    ]];
+            'rIndex' => App::resolve('reeks')->getKey([
+                'Reeks_Naam' => $_POST['naam']],
+                'Reeks_Index'
+    )]];
 }
 
 /* Condition for the item-edit button in the table view. */

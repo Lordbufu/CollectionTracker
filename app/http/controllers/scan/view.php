@@ -6,14 +6,12 @@ use App\Core\App;
 $route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
 /* Store what the name of the current reeks is, trying to use the POST as default, stored as an id for a DB opperations. */
-$ids = [
-    'Reeks_Naam' => $_POST['naam'] ?? $_SESSION['page-data']['huidige-reeks']
-];
+$ids = ['Reeks_Naam' => $_POST['naam'] ?? $_SESSION['page-data']['huidige-reeks']];
 
 /* Prepare the _flash tags required for this pop-in. */
 $tags = [
     'tags' => [
-        'reeks-index' => App::resolve('reeks')->getId($ids),
+        'reeks-index' => App::resolve('reeks')->getKey($id, 'Reeks_Index'),
         'pop-in' => 'bScan'
 ]];
 
