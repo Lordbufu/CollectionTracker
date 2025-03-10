@@ -2,13 +2,9 @@
 
 use App\Core\App;
 
-/* Define redirect keyword, based on wat type of user rights are stored in the session. */
+/* Set the correct re-direct route based on user rights, and make sure the expected input is set. */
 $route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
-/*  Check if all expected input was set,
-    resolve the session class to flash user feedback data, and resolve the forms input-missing error into it,
-    then redirect to the curen user-page preserving the flash data.
- */
 if(!isset($_POST['item-isbn']) || !isset($_POST['reeks-index'])) {
     App::resolve('session')->flash('feedback', [
         'error' => App::resolve('errors')->getError('forms', 'input-missing')
@@ -17,61 +13,45 @@ if(!isset($_POST['item-isbn']) || !isset($_POST['reeks-index'])) {
     return App::redirect($route, TRUE);
 }
 
-/*  Attempt to request data from the Google API with the scanned isbn,
-    if user is admin switch the default function parameter to TRUE.
- */
+/* Depending on the route, parse\request the correct data from the Isbn Core Class. */
 if($route === 'beheer') {
     $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index'], TRUE);
 } else {
     $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index']);
 }
 
-/*  If the expected array isnt returned,
-    resolve the session class to flash user feedback data,
-    and set the returned error into it,
-    then redirect to the gebruik-page preserving the flash data.
- */
-if(!is_array($apiRequest)) {           
-    App::resolve('session')->flash('feedback', [
-        'error' => $apiRequest
-    ]);
+/* If no array is returned or errors where set, i handover the correct user feedback, and redirect to the default page. */
+if(!is_array($apiRequest) || isset($apiRequest['error'])) {
+    if(is_string($apiRequest)) {
+        App::resolve('session')->flash('feedback', [
+            'error' => $apiRequest
+        ]);
+    } else {
+        App::resolve('session')->flash('feedback', [
+            'error' => $apiRequest['error']
+        ]);
+    }
 
     return App::redirect($route, TRUE);
 }
 
-/*  If there was a error matching a single item,
-    to the current reeks items,
-    flash the error for user feedback,
-    and then i redirect to the gebruik-page preserving the flash data.
- */
-if(isset($apiRequest['error'])) {
-    App::resolve('session')->flash('feedback', [
-        'error' => $apiRequest['error']
-    ]);
-
-    return App::redirect($route, TRUE);
-}
-
-/*  If the API request retruned only titles (Administrator only),
-    then i save the choices in the _flash memory,
-    i store a feedback message,
-    and i set the correct tags data to show the pop-in and populate its hidden fields,
-    before i redirect preserving the _flash memory data.
- */
+/* If the Administrator action returend a title choice: */
 if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
     $flash = [
+        /* Store the title choices, and associated user feedback. */
         'isbn-choices' => $apiRequest,
         'feedback' => [
             'choice' => 'Er zijn meerdere items gevonden, maakt aub een keuze die overeenkomt met wat u gescanned heeft !'
         ],
+        /* Tags required to load and pre-fill the next form. */
         'tags' => [
             'pop-in' => 'isbn-preview',
             'isbn-scanned' =>  $_POST['item-isbn'],
             'reeks-index' => $_POST['reeks-index']
     ]];
 
+    /* Flash the data and redirect to the isbn-preview pop-in ending the admin route. */
     App::resolve('session')->flash($flash);
-
     return App::redirect("{$route}#isbn-preview", TRUE);
 }
 
@@ -79,11 +59,7 @@ if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
 $iName = App::resolve('items')->getKey($apiRequest, 'Item_Naam');
 $aanwezig = App::resolve('collectie')->evalColl($apiRequest);
 
-/*  If the evaluation had a eror,
-    flash user feedback data,
-    and set the returned error into it,
-    then redirect to the gebruik-page preserving the flash data.
- */
+/* If the item wasnt evaluated properly, prepare the userfeedback and redirect back to the default user page. */
 if(is_string($aanwezig)) {
     App::resolve('session')->flash('feedback', [
         'error' => $aanwezig
@@ -92,12 +68,7 @@ if(is_string($aanwezig)) {
     return App::redirect($route, TRUE);
 }
 
-/*  If the present tag is still TRUE,
-    i used the collection class to trigger a remove action,
-    and i use the index returned from the API request,
-    i also need to flash user feedback to the session,
-    that tells the user what item was removed using the stored name.
- */
+/* If it said the item was already in the user collection, remove it and add the associated feedback. */
 if($aanwezig) {
     App::resolve('collectie')->remColl([
         'index' => $apiRequest['Item_Index']
@@ -107,12 +78,7 @@ if($aanwezig) {
         'removed' => "Gescanned item: {$iName}. \n Is uit uw collectie verwijderdt!"
     ]);
 
-/*  If the present tag is FALSE,
-    i used the collection class to trigger a add action,
-    and i use the index returned from the API request,
-    i also need to flash user feedback to the session,
-    that tells the user what item was added using the stored name.
- */
+/* If it said the item wasnt in the user collection, add it and add the associated feedback. */
 } else {
     App::resolve('collectie')->addColl([
         'iIndex' => $apiRequest['Item_Index'],
@@ -124,13 +90,9 @@ if($aanwezig) {
     ]);
 }
 
-/*  Regardless of the present state,
-    i need to update the collection data,
-    by simply request all collection data again.
- */
+/* Update the user collectie page-data, and redirect back to the default user page. */
 App::resolve('session')->setVariable('page-data', [
     'collecties' => App::resolve('collectie')->getColl()
 ]);
 
-/* And then i redirect to the gebruik-page preserving the flash data. */
 return App::redirect($route, TRUE);

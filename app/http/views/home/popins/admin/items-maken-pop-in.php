@@ -1,8 +1,15 @@
 <?php   // Ensure the correct data is set, depending on the session _flash content.
     if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
     if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
-    if(isset($_SESSION['_flash']['tags']['rIndex'])) { $store['rIndex'] = $_SESSION['_flash']['tags']['rIndex']; }
-    if(isset($_SESSION['_flash']['tags']['method'])) { $store['method'] = $_SESSION['_flash']['tags']['method']; } ?>
+
+
+    if(isset($_SESSION['_flash']['tags']['rIndex']) && !isset($store['rIndex'])) {
+        $store['rIndex'] = $_SESSION['_flash']['tags']['rIndex'];
+    }
+
+    if(isset($_SESSION['_flash']['tags']['method']) && !isset($store['method'])) {
+        $store['method'] = $_SESSION['_flash']['tags']['method'];
+    } ?>
 
 <div id="items-maken-pop-in" class="modal-cont" >
     <div class="modal-content-cont">
@@ -50,7 +57,7 @@
                     </div>
 
                     <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
-                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="cover" value="<?=isset($store['cover']) ? $store['cover'] : ''?>"/>
+                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="cover" />
                         <?php if(!empty($store['cover'])) : ?>
                             Nieuwe Cover Selecteren
                         <?php else : ?>

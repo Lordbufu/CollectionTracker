@@ -20,12 +20,10 @@ if(!empty($_FILES['cover']) && $_FILES['cover']['error'] === 0) {
         $plaatje = TRUE;
     }
 } else if(isset($_SESSION['_flash']['newCover'])) {
-    $cover = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
-    if(!is_array($cover)) {
-        $olInput['cover'] = $cover ?? '';
-        $pInput['Item_Plaatje'] = $cover;
-        $plaatje = TRUE;
-    }
+    $cover = $_SESSION['_flash']['newCover'];
+    $olInput['cover'] = $cover ?? '';
+    $pInput['Item_Plaatje'] = $cover;
+    $plaatje = TRUE;
 }
 
 /* Check for any error in the above process, and prepare the return data, before going back to the pop-in.  */

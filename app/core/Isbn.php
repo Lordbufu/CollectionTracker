@@ -264,21 +264,18 @@ class Isbn {
         /* If a request URL was set, i attempt to request data from the Google API. */
         $request = $this->request_data();
 
-        /* If the request failed, */
+        /* If the request failed, return the correct error string. */
         if(!$request || isset($this->errors)) {
-            /* and no error were set yet, i return a error for user feedback. */
             if(!isset($this->error)) {
                 return App::resolve('errors')->getError('isbn', 'no-request');
             }
 
-            /* If a error was already set, i return the stored errors to the caller. */
             return $this->errors;
         }
 
-        /* Check the requested data, for how many items there are. */
+        /* Check the requested data, for how many items there are, return errors if 0 items are found. */
         $check = $this->check_data();
 
-        /* If the request returned 0 items, return the check_data() error to the caller. */
         if($check === 0) {
             return $this->errors;
         }
@@ -288,9 +285,9 @@ class Isbn {
             /* check if the items are in the currently selected series, */
             $iCheck = $this->check_items($reeks);
 
-            /* if the check failed, */
+            /* if the check failed or the user is a Administrator, */
             if(!is_array($iCheck) || $admin) {
-                /* and the user is a regular user, i return a no-match error. */
+                /* if the user is a regular user, i return a no-match error. */
                 if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') {
                     return App::resolve('errors')->getError('isbn', 'no-match');        
                 }
@@ -345,18 +342,7 @@ class Isbn {
             return App::resolve('errors')->getError('isbn', 'choice-fail');
         }
 
-        /* Set all potentially usefull info to a new variable. */
-        $newItem = [
-            'title' => (isset($item['title'])) ? $item['title'] : '',
-            'autheurs' => (isset($item['authors'])) ? $item['authors'] : '',
-            'date' => (isset($item['publishedDate'])) ? $item['publishedDate'] : '',
-            'opmerking' => (isset($item['description'])) ? $item['description'] : '',
-            'isbn' => (isset($item['industryIdentifiers'])) ? $item['industryIdentifiers'] : '',
-            'cover' => (isset($item['imageLinks'])) ? $item['imageLinks'] : ''
-        ];
-
-        /* Return all ptentially usefull information to the caller. */
-        return $newItem;
+        return $item;
     }
 }
 ?>

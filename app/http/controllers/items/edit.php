@@ -18,7 +18,7 @@ if($_FILES['cover']['error'] === 0) {                                           
         $plaatje = TRUE;
     }
 } elseif(isset($_SESSION['_flash']['newCover'])) {                                  // check if new file was set in the session,
-    $cover = App::resolve('file')->procUrl($_SESSION['_flash']['newCover']);
+    $cover = $_SESSION['_flash']['newCover'];
     if(!is_array($cover)) {
         $plaatje = TRUE;
     }

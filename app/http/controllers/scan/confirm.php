@@ -15,57 +15,15 @@ if(is_string($store)) {
 }
 
 /* Prep a final item variable, and check if we have an item stored. */
-$finalItem;
+$newItem = App::resolve('procApi')->processData($store);
 
-/* Make sure we store the correct autheurs ... W.I.P. ¿ */
-if(!empty($store['autheurs']) && count($store['autheurs']) > 1) {
-    dd('Deal with multiple autheurs here ¿');
-} else {
-    $finalItem['autheur'] = $store['autheurs'][0] ?? '';
+if(!isset($newItem['rIndex'])) {
+    $newItem['rIndex'] = (int) $_POST['reeks-index'];
 }
-
-/* Store the identifiers (isbn/ean codes), and try to get always get ISBN_13 first. */
-$isbn = $store['isbn'];
-
-if(is_array($isbn)) {
-    foreach($isbn as $okey => $pair) {
-        foreach($pair as $ikey => $value) {
-            if($ikey === 'type' && $value === 'ISBN_13') {
-                $finalItem['isbn'] = $isbn[$okey]['identifier'];
-            }
-
-            if($ikey === 'type' && $value === 'ISBN_10' && !isset($finalItem['isbn'])) {
-                $finalItem['isbn'] = $isbn[$okey]['identifier'];
-            }
-        }
-    }
-// Exception in case a single identifier is slightly different in code.
-} else {
-    dd('Deal with single identifiers here ¿');
-}
-
-/* Check if a cover was returned, and deal with all known solutions, exception is included incase i missed something */
-if(isset($store['cover'])) {
-    $cover = $store['cover'];
-
-    if(isset($cover['thumbnail'])) {
-        $finalItem['cover'] = $cover['thumbnail'];
-    } else if(isset($cover['smallThumbnail'])) {
-        $finalItem['cover'] = $cover['smallThumbnail'];
-    } else {
-        $finalItem['cover'] = 'Exception in cover code, review what went wrong !';
-    }
-}
-
-/* Attempt to set the remaining data to store the item in the database. */
-$finalItem['naam'] = $store['title'] ?? '';
-$finalItem['datum'] = $store['date'] ?? '';
-$finalItem['opmerking'] = $store['opmerking'] ?? '';
-$finalItem['rIndex'] = $_POST['reeks-index'];
 
 $flash = [
-    'oldItem' => $finalItem,
-    'newCover' => $finalItem['cover'],
+    'oldItem' => $newItem,
+    'newCover' => $newItem['cover'],
     'feedback' => [
         'found' => 'Controleer de ingevulde gegevens van Google, het kan zijn dat deze niet helemaal klopt.'
     ],
