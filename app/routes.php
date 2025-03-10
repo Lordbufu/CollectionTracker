@@ -25,9 +25,11 @@ $router->get('/wwReset',	'redir/reset.pop.php')->only('admin');      // Source =
     /* Admin reeks maken. */
 $router->post('/reeksPop',	'redir/reeks.pop.php')->only('admin');      // Source = 'http\views\home\template\admin\controler-subgrid.php'  (reeks maken controller)
 $router->put('/reeksM',	    'reeks/add.php')->only('admin');            // Source = 'http\views\home\pop-ins\admin\reeks-maken-pop-in.php'  (reeks maken form)
+
     /* Admin reeks bewerken. */
 $router->patch('/rEdit',	'redir/reeks.pop.php')->only('admin');      // Source = 'http\views\home\template\admin\reeks-table-subgrid.php' (reeks bewerken knop)
 $router->patch('/reeksM',	'reeks/edit.php')->only('admin');           // Source = 'http\views\home\pop-ins\admin\reeks-maken-pop-in.php'  (reeks bewerken form)
+
     /* Admin reeks and alle bijbehorende links verwijderen. */
 $router->delete('/rDel',	'reeks/delete.php')->only('admin');         // Source = 'http\views\home\template\admin\reeks-table-subgrid.php' (reeks verwijderen knop)
 
@@ -35,14 +37,16 @@ $router->delete('/rDel',	'reeks/delete.php')->only('admin');         // Source =
     /* Admin items maken. */
 $router->post('/itemsPop',	'redir/items.pop.php')->only('admin');      // Source = 'http\views\home\template\admin\controler-subgrid.php' (item toevoegen controller)
 $router->put('/itemsM',	    'items/add.php')->only('admin');            // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (item maken form)
+
     /* Admin items bewerken. */
 $router->patch('/iEdit',	'redir/items.pop.php')->only('admin');      // Source = 'http\views\home\templates\admin\items-table-subgrid.php' (item bewerken knop)
 $router->patch('/itemsM',	'items/edit.php')->only('admin');           // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php'  (item bewerken form)
+
     /* Admin item verwijderen. */
 $router->delete('/iDel',	'items/delete.php')->only('admin');         // Source = 'http\views\home\templates\admin\items-table-subgrid.php' (item verwijderen knop)
 
 /* Admin Isbn routes */
-$router->patch('/iIsbnS',   'scan/search.php')->only('admin');          // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (isbn zoek knop)
+$router->put('/iIsbnS',   'scan/search.php')->only('admin');            // Source = 'http\views\home\pop-ins\admin\items-maken-pop-in.php' (isbn zoek knop)
 $router->post('/scanConf',  'scan/confirm.php')->only('admin');         // Source = 'http\views\home\pop-ins\isbn-preview-pop-in.php' (bevestigen knop)
 
 /* Shared routes for all logged in user pages. */
