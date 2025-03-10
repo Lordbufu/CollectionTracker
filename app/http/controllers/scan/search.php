@@ -3,16 +3,7 @@
 use App\Core\App;
 
 /* Store the relevant POST data incase we need to populate the pop-in again after errors. */
-$oldForm = [
-    'rIndex' => $_POST['rIndex'],
-    'iIndex' => $_POST['iIndex'],
-    'naam' => $_POST['naam'],
-    'nummer' => $_POST['nummer'],
-    'datum' => $_POST['datum'],
-    'autheur' => $_POST['autheur'],
-    'isbn' => $_POST['isbn'],
-    'opmerking' => $_POST['opmerking']
-];
+$oInput = $_POST;
 
 /* Attempt to find the ISBN data in the Google Api. */
 $searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rIndex'], TRUE);
@@ -20,7 +11,7 @@ $searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rInde
 /* If there where errors, store the correct data in the session, before redirecting back to the pop-in. */
 if(is_string($searchResult)) {
     $flash = [
-        'oldForm' => $oldForm,
+        'oldForm' => $oInput,
         'feedback' => [
             'error' => $searchResult
         ],
@@ -35,7 +26,27 @@ if(is_string($searchResult)) {
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/* If a result was found, process said result to present the data to the user for validation. */
+/* Check if i need to present a title choice to the admin. */
+if(isset($searchResult[0]) && $searchResult[0] === 'Titles') {
+    $flash = [
+        'isbn-choices' => $searchResult,
+        'feedback' => [
+            'choice' => 'De volgende titles zijn gevonden, maak aub een keuze !'
+        ],
+        'tags' => [
+            'reeks-index' => $_POST['rIndex'],
+            'isbn-scanned' => $_POST['isbn'],
+            'pop-in' => 'isbn-preview'
+    ]];
+
+    App::resolve('session')->flash($flash);
+    return App::redirect('beheer#isbn-preview', TRUE);
+}
+
+// debug code use for cleaup runs.
+dd($searchResult);
+
+/* If a single result was found, process said result to present the data to the user for validation. */
 if(is_array($searchResult)) {
     $newItem = [
         'iIndex' => $_POST['iIndex'],
@@ -67,7 +78,7 @@ if(is_array($searchResult)) {
 /* This seems redundant, considering there is a error path before setting a new item ? */
 if(!isset($newItem)) {
     $flash = [
-        'oldForm' => $oldForm,
+        'oldForm' => $oInput,
         'feedback' => [
             'error' => App::resolve('errors')->getError('isbn', 'search-error')
         ],
