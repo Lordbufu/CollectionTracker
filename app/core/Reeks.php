@@ -88,6 +88,7 @@ class Reeks {
         return $this->reeks;
     }
 
+    // Replaced with getKey();
     /*  getId($ids):
             This function attempt to get a reeks Index, based on another id pair (like name or autheur).
                 $ids (Assoc Arr)    - The id pair associated with the reeks the id is required for.
@@ -102,6 +103,7 @@ class Reeks {
         return $this->reeks[0]['Reeks_Index'];
     }
 
+    // Replaced with getKey();
     /*  getName($ids):
             This function attempts to get a reeks name, based on other id pairs (like index or autheur)
                 $ids (Assoc Arr)    - The id pair associate with the Reeks that we need the name of.
@@ -114,6 +116,16 @@ class Reeks {
         }
 
         return $this->reeks[0]['Reeks_Naam'];
+    }
+
+    /*  getKey($id, $key):
+     */
+    public function getKey($id, $key) {
+        return App::resolve('database')->prepQuery(
+            'select',
+            'reeks',
+            $id
+        )->find($key);
     }
 
     /*  createReeks($data):
