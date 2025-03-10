@@ -1,20 +1,8 @@
 <?php   // Ensure the correct data is set, depending on the session _flash content.
-    if(isset($_SESSION['_flash']['oldForm'])) {
-        $store = $_SESSION['_flash']['oldForm'];
-    }
-
-    if(isset($_SESSION['_flash']['oldItem'])) {
-        $store = $_SESSION['_flash']['oldItem'];
-    }
-
-    if(isset($_SESSION['_flash']['tags']['rIndex'])) {
-        $store['rIndex'] = $_SESSION['_flash']['tags']['rIndex'];
-    }
-
-    if(isset($_SESSION['_flash']['tags']['method'])) {
-        $store['method'] = $_SESSION['_flash']['tags']['method'];
-    }
-?>
+    if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
+    if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
+    if(isset($_SESSION['_flash']['tags']['rIndex'])) { $store['rIndex'] = $_SESSION['_flash']['tags']['rIndex']; }
+    if(isset($_SESSION['_flash']['tags']['method'])) { $store['method'] = $_SESSION['_flash']['tags']['method']; } ?>
 
 <div id="items-maken-pop-in" class="modal-cont" >
     <div class="modal-content-cont">
@@ -33,57 +21,56 @@
                     <input class="modal-form-hidden" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden" name="rIndex" value="<?=$store['rIndex'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden" name="iIndex" value="<?=$store['iIndex'] ?? ''?>" hidden/>
-                        <p id="modal-small-text" class="modal-small-text" > De album naam & isbn zijn verplichte velden </p>
+                    <p id="modal-small-text" class="modal-small-text" > De album naam & isbn zijn verplichte velden </p>
 
-                        <label class="modal-form-label">
-                            <input type="text" class="modal-form-input" id="item-naam-inp" name="naam" value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>" placeholder="" autocomplete="on" required/>
-                            <span class="modal-form-span">Item Naam</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input type="text" class="modal-form-input" id="item-naam-inp" name="naam" value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>" placeholder="" autocomplete="on" required/>
+                        <span class="modal-form-span">Item Naam</span>
+                    </label>
 
-                        <label class="modal-form-label">
-                            <input type="number" min="0" class="modal-form-input" name="nummer" value="<?=isset($store['nummer']) ? $store['nummer'] : ''?>" placeholder="" autocomplete="on"/>
-                            <span class="modal-form-span">Item Nummer</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input type="number" min="0" class="modal-form-input" name="nummer" value="<?=isset($store['nummer']) ? $store['nummer'] : ''?>" placeholder="" autocomplete="on"/>
+                        <span class="modal-form-span">Item Nummer</span>
+                    </label>
 
-                        <label class="modal-form-label">
-                            <input type="date" class="modal-form-input" name="datum" value="<?=isset($store['datum']) ? $store['datum'] : ''?>" placeholder="" autocomplete="on"/>
-                            <span class="modal-form-span">Item Uitg-datum</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input type="date" class="modal-form-input" name="datum" value="<?=isset($store['datum']) ? $store['datum'] : ''?>" placeholder="" autocomplete="on"/>
+                        <span class="modal-form-span">Item Uitg-datum</span>
+                    </label>
 
-                        <label class="modal-form-label">
-                            <input type="text" class="modal-form-input" name="autheur" value="<?=isset($store['autheur']) ? inpFilt($store['autheur']) : ''?>" placeholder="" autocomplete="on"/>
-                            <span class="modal-form-span">Item Autheur</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input type="text" class="modal-form-input" name="autheur" value="<?=isset($store['autheur']) ? inpFilt($store['autheur']) : ''?>" placeholder="" autocomplete="on"/>
+                        <span class="modal-form-span">Item Autheur</span>
+                    </label>
 
-                        <div class="modal-item-cover" id="modal-item-cover">
-                            <?php if(!empty($store['cover'])) : ?>
-                            <img class="modal-item-cover-img" src="<?=$store['cover']?>">
-                            <?php endif; ?>
-                        </div>
+                    <div class="modal-item-cover" id="modal-item-cover">
+                        <?php if(!empty($store['cover'])) : ?>
+                        <img class="modal-item-cover-img" src="<?=$store['cover']?>">
+                        <?php endif; ?>
+                    </div>
 
-                        <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
-                            <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="cover" value="<?=isset($store['cover']) ? $store['cover'] : ''?>"/>
-                            <?php if(!empty($store['cover'])) : ?>
-                                Nieuwe Cover Selecteren
-                            <?php else : ?>
-                                Selecteer een Item Cover
-                            <?php endif; ?>
-                        </label>
+                    <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
+                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="cover" value="<?=isset($store['cover']) ? $store['cover'] : ''?>"/>
+                        <?php if(!empty($store['cover'])) : ?>
+                            Nieuwe Cover Selecteren
+                        <?php else : ?>
+                            Selecteer een Item Cover
+                        <?php endif; ?>
+                    </label>
 
-                        <label class="modal-form-label">
-                            <input class="modal-form-input" id="item-isbn-inp" name="isbn" value="<?=isset($store['isbn']) ? $store['isbn'] : '0'?>" placeholder="" autocomplete="on" required/>
-                            <span class="modal-form-span">Item ISBN</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input class="modal-form-input" id="item-isbn-inp" name="isbn" value="<?=isset($store['isbn']) ? $store['isbn'] : '0'?>" placeholder="" autocomplete="on" required/>
+                        <span class="modal-form-span">Item ISBN</span>
+                    </label>
 
-                        <label class="modal-form-label">
-                            <input class="modal-form-input" name="opmerking" value="<?=isset($store['opmerking']) ? inpFilt($store['opmerking']) : ''?>" placeholder="" autocomplete="on"/>
-                            <span class="modal-form-span">Item Opmerking</span>
-                        </label>
+                    <label class="modal-form-label">
+                        <input class="modal-form-input" name="opmerking" value="<?=isset($store['opmerking']) ? inpFilt($store['opmerking']) : ''?>" placeholder="" autocomplete="on"/>
+                        <span class="modal-form-span">Item Opmerking</span>
+                    </label>
 
-                        <div class="butt-box" id="butt-box">
-                            <input class="modal-form-button button" id="item-maken-submit" type="submit" value="Bevestigen"/>
-                        </div>
-
+                    <div class="butt-box" id="butt-box">
+                        <input class="modal-form-button button" id="item-maken-submit" type="submit" value="Bevestigen"/>
+                    </div>
             </div>
 
             <div class="modal-form-right-cont">
