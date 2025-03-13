@@ -1,15 +1,9 @@
 Global TODO List:
-    - Keep reviewing the bar scan and isbn search functions, to improve the mess i started on my last set of commits.
-    - Review all controllers once more, and the main object core classes (Items, Reeks, Collectie):
-        - Start inserting all the missing form validation code, as i have skipped doing those on most actions.
-        - Replace any key searches for name/index etc to a single getKey() function like in Items.
-        - Prepare the Reeks class for dealing with the newly added reeks cover data.
-            - Proll change the database code and table to be longblob instead of just blob ?
-        - Adjust the core classes to deal with the added validation and post processing code.
+    - Keep reviewing the bar scan and isbn search functions.
     - See if i can make a more interesting complex password check, atm it seem very dumb.
-    - Adjust JS input validation, to be inline with string lengths set in the FormValidator class.
 
     ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
+    - Adjust JS input validation, to be inline with string lengths set in the FormValidator class.
     - Review how to deal with to long item\reeks descriptions (opmerking), specifically related to isbn scan/search functions.
     - Review the 'controllers/scan/confirm.php' code, and figure out a edit item path, as its a add path atm (method = PUT).
     - Review the 'controllers/scan/confirm.php' code, consider making a seperate class, to process the Google API data into a usefull data.
@@ -18,3 +12,4 @@ Global TODO List:
         - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
         - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
+    - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
