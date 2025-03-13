@@ -15,9 +15,10 @@ if(is_string($store)) {
 }
 
 /* Flash user-feedback about the item being removed, and update the collection page-data. */
-$iName = App::resolve('items')->getName([
-    'Item_Index' => $_POST['index']
-]);
+$iName = App::resolve('items')->getKey([
+    'Item_Index' => $_POST['index']],
+    'Item_Naam'
+);
 
 App::resolve('session')->flash('feedback', [
     'removed' => "Het item: {$iName}. \n  Is uit uw collectie verwijderdt."

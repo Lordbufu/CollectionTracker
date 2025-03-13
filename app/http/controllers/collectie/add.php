@@ -5,10 +5,11 @@ use App\Core\App;
 /* If the expected inputs are set, create a collection data array. */
 if(isset($_POST['index']) && isset($_SESSION['page-data']['huidige-reeks'])) {
     $collData = [
-        'iIndex' => $_POST['index'],
-        'rIndex' => App::resolve('reeks')->getId([
-            'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']
-        ])
+        'iIndex' => (int) $_POST['index'],
+        'rIndex' => App::resolve('reeks')->getKey([
+            'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']],
+            'Reeks_Index'
+        )
     ];
 }
 
@@ -40,9 +41,10 @@ if(is_string($store)) {
 }
 
 /* Get the item name of the item that was added, prepare the correct user feedback and refresh the collection data before redirecting back to the user page */
-$iName = App::resolve('items')->getName([
-    'Item_Index' => $_POST['index']
-]);
+$iName = App::resolve('items')->getKey([
+    'Item_Index' => $_POST['index']],
+    'Item_Naam'
+);
 
 App::resolve('session')->flash('feedback', [
     'added' => "Het item: {$iName}. \n  Is aan uw collectie toegevoegd."
