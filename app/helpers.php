@@ -1,7 +1,6 @@
 <?php
 
-/* This is a left over file from the tutorial, this might still be moved to App later on, but might also remain here as is. */
-
+/* Easy access dump and die function. */
 function dd($value) {
     echo "<pre>";
     var_dump($value);
@@ -10,10 +9,12 @@ function dd($value) {
     die();
 }
 
+/* Easy access function to set the projects base folder. */
 function base_path($path) {
     return __DIR__ . '/../' . $path;
 }
 
+/* Easy access input filter option, to filter teks befor using it in HTML. */
 function inpFilt($string) {
     return htmlspecialchars($string);
 }
