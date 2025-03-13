@@ -29,9 +29,10 @@ if(isset($_POST['close']) || isset($_POST['return'])) {
 
 /*  If a Reeks was selected, ensures all items are up-to-date. */
 if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $rId = App::resolve('reeks')->getId([
-        'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']
-    ]);
+    $rId = App::resolve('reeks')->getKey([
+        'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']],
+        'Reeks_Index'
+    );
 
     $iRequest = App::resolve('items')->getAllFor([
         'Item_Reeks' => $rId
