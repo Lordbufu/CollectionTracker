@@ -88,37 +88,10 @@ class Reeks {
         return $this->reeks;
     }
 
-    // Replaced with getKey();
-    /*  getId($ids):
-            This function attempt to get a reeks Index, based on another id pair (like name or autheur).
-                $ids (Assoc Arr)    - The id pair associated with the reeks the id is required for.
-            
-            Return Value: Int.
-     */
-    public function getId($ids) {
-        if(!isset($this->reeks)) {
-            $this->setReeks($ids);
-        }
-
-        return $this->reeks[0]['Reeks_Index'];
-    }
-
-    // Replaced with getKey();
-    /*  getName($ids):
-            This function attempts to get a reeks name, based on other id pairs (like index or autheur)
-                $ids (Assoc Arr)    - The id pair associate with the Reeks that we need the name of.
-            
-            Return Value: String.
-     */
-    public function getName($ids) {
-        if(!isset($this->reeks)) {
-            $this->setReeks($ids);
-        }
-
-        return $this->reeks[0]['Reeks_Naam'];
-    }
-
     /*  getKey($id, $key):
+            This function used the database find function, to get a specific key from a specific reeks.
+                $id (Assoc Arr) - The identifier pair associated with the reeks i want a key of.
+                $key (String)   - The name of the database kolumn (key) i want.
      */
     public function getKey($id, $key) {
         return App::resolve('database')->prepQuery(
@@ -152,7 +125,8 @@ class Reeks {
         $dbData = [
             'Reeks_Naam' => $data['naam'],
             'Reeks_Maker' => $data['makers'],
-            'Reeks_Opmerk' => $data['opmerking']
+            'Reeks_Opmerk' => $data['opmerking'],
+            'Reeks_Plaatje' => $data['plaatje']
         ];
 
         $store = App::resolve('database')->prepQuery('insert', 'reeks', $dbData)->getAll();
@@ -185,7 +159,8 @@ class Reeks {
         $dbData = [
             'Reeks_Naam' => $data['naam'],
             'Reeks_Maker' => $data['makers'],
-            'Reeks_Opmerk' => $data['opmerking']
+            'Reeks_Opmerk' => $data['opmerking'],
+            'Reeks_Plaatje' => $data['plaatje']
         ];
 
         $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $dbData)->getAll();
