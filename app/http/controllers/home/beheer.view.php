@@ -7,14 +7,10 @@ if(isset($_SESSION['_flash']['login']) || isset($_SESSION['_flash']['tags']['red
     App::resolve('session')->remVar('_flash', 'redirect');
 }
 
-/* Request the newest reeks data, and refresh the stored reeks data with the newly requested data. */
-$rRequest = App::resolve('reeks')->getAllReeks();
-
-if(is_array($rRequest)) {
-    App::resolve('session')->setVariable('page-data', [
-        'reeks' => $rRequest
-    ]);
-}
+/* Refresh any reeks data stored in the session page-data. */
+App::resolve('session')->setVariable('page-data', [
+    'reeks' => App::resolve('reeks')->getAllReeks()
+]);
 
 /* Check if any kind of back/return/close button was pressed, and clean up the session, before redirectin to the users home page. */
 if(isset($_POST['close']) || isset($_POST['return'])) {
@@ -29,17 +25,13 @@ if(isset($_POST['close']) || isset($_POST['return'])) {
 
 /*  If a Reeks was selected, ensures all items are up-to-date. */
 if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $rId = App::resolve('reeks')->getKey([
-        'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']],
-        'Reeks_Index'
-    );
-
-    $iRequest = App::resolve('items')->getAllFor([
-        'Item_Reeks' => $rId
-    ]);
-
     App::resolve('session')->setVariable('page-data', [
-        'items' => $iRequest
+        'items' => App::resolve('items')->getAllFor([
+            'Item_Reeks' => App::resolve('reeks')->getKey([
+                'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']],
+                'Reeks_Index'
+            )
+        ])
     ]);
 }
 
