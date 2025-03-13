@@ -34,9 +34,24 @@ class ProcessPost {
     }
 
     /*  reeks($data):
+            This function processes all reeks related post data, and prepares a data array that can be used to insert or update.
+                $data (Assoc Arr)   - The POST data from the controller.
+            
+            Return Value: None.
      */
     protected function reeks($data) {
+        $this->new = [
+            'Reeks_Naam' => $data['naam'],
+            'Reeks_Makers' => $data['makers'],
+            'Reeks_Opmerk' => $data['opmerking']
+        ];
 
+        /* Add the index if it was set ? ... not sure this is even relevant */
+        if(isset($data['rIndex']) && !empty($data['rIndex'])) {
+            $this->new['Reeks_Index'] = $data['rIndex'];
+        }
+
+        return;
     }
 
     /*  collectie($data):
