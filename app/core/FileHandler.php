@@ -64,12 +64,12 @@ class FileHandler {
      */
     public function procFile($inpFile) {
         if(!is_array($inpFile)) {
-            return App::resolve('errors')->getError('fileHand', 'no-file');
+            return ['error' => App::resolve('errors')->getError('fileHand', 'no-file')];
         }
 
         if($this->setFile($inpFile)) {
             if(!$this->extractData()) {
-                return App::resolve('errors')->getError('fileHand', 'proc-fail');
+                return ['error' => App::resolve('errors')->getError('fileHand', 'proc-fail')];
             }
         }
 
