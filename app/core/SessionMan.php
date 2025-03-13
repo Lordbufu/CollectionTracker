@@ -28,6 +28,7 @@
                     'feedback'      - User feedback messages, for telling the user what happened.
                     'oldForm'       - Previous filled in form data, that has been sanitised before returning.
                     'oldItem'       - For when a item/reeks is being edited, this will contain the most current data to pre-fill the forms.
+                    'newItem'       - A newly set item, that was populated via the ISBN class functions.
                     'isbn-choices'  - A choice of titles, if a scanned bar-code provided more then 1 match (admin only). (potentially redundant)
                     'tags'          - A few simple examples (sanitised if it was a user input):
                                 'pop-in'    - A array with the pop-in name that needs to be required.
@@ -38,9 +39,8 @@
 namespace App\Core;
 
 class SessionMan {
-    /* Original Code from the project */
+    /* Pre-defined save path. */
     protected $savePath = '../tmp/sessions/';
-    protected $browser;
 
     /*  configSession():
             Set all required session settings and paths, session files are stored in a temp folder, this requires seperate php instances to work properly.\
@@ -73,34 +73,11 @@ class SessionMan {
 
         session_start();
 
-        // Cant use this in the live version atm, so i have uncommneted it untill i know a better solution
-        // /* Set browser name if not set, requires 'browscap' file to work, cause it needs to parse the user-agent */
-        // if(!isset($this->browser)) {
-        //     $this->setBrowser($_SERVER['HTTP_USER_AGENT']);
-        // }
-
-        // /* If the browser is firefox, change the cache controle to solve JS issues. */
-        // if($this->browser === 'Firefox') {
-        //     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-        //     header("Cache-Control: post-check=0, pre-check=0", false);                  
-        //     header("Pragma: no-cache");
-        // }
-
-        // Debug section, to see if browser detection was the problem.
+        // Header setting, to remove a issue with browser caching and session flashing.
         header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
         header("Cache-Control: post-check=0, pre-check=0", false);                  
         header("Pragma: no-cache");
 
-        return;
-    }
-
-    /*  setBrowser($agent):
-            This is a temp test function, that uses the 'HTTP_USER_AGENT' to parse the browser name.
-            This requirs an up-to-date browscap.ini file, to be included in the php install, so for my live enviroment this is not yet included.
-            In the future this function migh even just be removed, depending on how i can solve the caching issues, that seem to come with session flashing.
-     */
-    protected function setBrowser($agent) {
-        $this->browser = get_browser($agent, TRUE)['browser'];
         return;
     }
 

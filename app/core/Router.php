@@ -65,9 +65,4 @@ class Router {
 
         die();
     }
-
-    // Currently not used ??
-    public function previousUrl() {
-        return $_SERVER['HTTP_REFERER'];
-    }
 }
