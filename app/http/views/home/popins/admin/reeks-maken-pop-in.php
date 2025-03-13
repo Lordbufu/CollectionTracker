@@ -1,6 +1,7 @@
 <?php // Ensure the correct data is set, depending on the session _flash content.
 if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
 if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
+if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['newReeks']; }
 
 if(isset($_SESSION['_flash']['tags']['rNaam']) && !isset($store['naam'])) {
     $store['naam'] = $_SESSION['_flash']['tags']['rNaam'];

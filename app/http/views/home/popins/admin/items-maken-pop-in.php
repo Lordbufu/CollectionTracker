@@ -1,8 +1,8 @@
 <?php   // Ensure the correct data is set, depending on the session _flash content.
     if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
     if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
-
-
+    if(isset($_SESSION['_flash']['newItem'])) { $store = $_SESSION['_flash']['newItem']; }
+    
     if(isset($_SESSION['_flash']['tags']['rIndex']) && !isset($store['rIndex'])) {
         $store['rIndex'] = $_SESSION['_flash']['tags']['rIndex'];
     }
@@ -28,7 +28,7 @@
                     <input class="modal-form-hidden" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden" name="rIndex" value="<?=$store['rIndex'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden" name="iIndex" value="<?=$store['iIndex'] ?? ''?>" hidden/>
-                    <p id="modal-small-text" class="modal-small-text" > De album naam & isbn zijn verplichte velden </p>
+                    <p id="modal-small-text" class="modal-small-text" >De album naam & isbn zijn verplichte velden</p>
 
                     <label class="modal-form-label">
                         <input type="text" class="modal-form-input" id="item-naam-inp" name="naam" value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>" placeholder="" autocomplete="on" required/>
