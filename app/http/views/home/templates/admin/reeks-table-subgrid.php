@@ -1,4 +1,4 @@
-<?php
+<?php // Ensure the correct data is set, depending on the session _flash content.
 if(isset($_SESSION['page-data']['huidige-reeks'])) {
     $hReek = inpFilt($_SESSION['page-data']['huidige-reeks']);
 }
@@ -19,6 +19,7 @@ if(isset($_SESSION['page-data']['reeks'])) {
         <th style="border: 0px;"></th>
         <th style="border: 0px;"></th>
         <th>Reeks Naam</th>
+        <th>Reeks Plaatje</th>
         <th class="reeksAuthTitle">Reeks Makers</th>
         <th class="reeksOpmTitle">Reeks Opmerking</th>
         <th>Reeks Items</th>
@@ -53,6 +54,11 @@ if($reeks) :
         </th>
 
         <th class="reeks-naam"><?=inpFilt($value['Reeks_Naam'])?></th>
+        <th class="reeks-cover">
+            <?php if(!empty($value['Reeks_Plaatje'])) : ?>
+            <img id="reeks-cover-img" class="reeks-cover-img" src="<?=$value['Reeks_Plaatje']?>" alt="reeks-cover"/>
+            <?php endif; ?>
+        </th>
         <th class="reeks-maker"><?=inpFilt($value['Reeks_Maker'])?></th>
         <th class="reeks-opmerk"><?=inpFilt($value['Reeks_Opmerk'])?></th>
         <th class="reeks-items"><?=$value['Item_Aantal']?></th>

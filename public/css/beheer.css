@@ -137,7 +137,7 @@
     font-weight: normal;
 }
 
-.reeks-naam, .reeks-maker, .reeks-opmerk, .reeks-items, .reeks-gebruikers {
+.reeks-naam, .reeks-maker, .reeks-opmerk, .reeks-items, .reeks-cover, .reeks-gebruikers {
     border: var(--main-border-body);
     font-weight: normal;
     padding: 0.1em;

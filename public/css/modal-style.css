@@ -108,8 +108,12 @@
     padding: 0.4em;
 }
 
-/* Remove file input display */
+/* Remove file input displays */
 #item-cover-inp {
+    display: none;
+}
+
+#reeks-cover-inp {
     display: none;
 }
 
@@ -200,7 +204,24 @@
     cursor: pointer;
 }
 
-/* Item Cover related stuff, also used in some table previews */
+/* Item\Reeks Cover related stuff, also used in some table previews */
+.reeks-cover {
+    border: var(--main-border-body);
+    height: 4em;
+    width: 3.3em;
+}
+
+.reeks-cover-img {
+    width: 3.2em;
+    height: 3.9em;
+}
+
+.modal-reeks-cover-img {
+    height: 7.4em;
+    width: 6.4em;
+    margin: 0;
+}
+
 .item-cover {
     border: var(--main-border-body);
     height: 4em;
