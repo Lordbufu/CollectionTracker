@@ -141,7 +141,7 @@
         }
         return true;
     }
-
+        
     /*  coverInpCheck(e):
             The Event function for the cover input, to change the preview and text in related pop-ins.
             It also checks if the Image file is not larger then 4MB, using the albCovCheck.
@@ -186,7 +186,7 @@
     searchSubm.addEventListener('click', submitIsbnSearch);
 
     /*  submitIsbnSearch(e):
-            This simple removes the required tag from the name inputs so i can submit only the ISBN that needs to be searched.
+        This simple removes the required tag from the name inputs so i can submit only the ISBN that needs to be searched.
      */
     function submitIsbnSearch(e) {
         itemNaamInp.removeAttribute('required');

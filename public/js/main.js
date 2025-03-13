@@ -37,12 +37,14 @@ document.onreadystatechange = () => {
         /* Elements and listen events for pop-in buttons */
         const modalFormButt = document.getElementsByClassName('modal-form-button');
         const modalFormButtArr = Array.from(modalFormButt);
+
         for(key in modalFormButtArr) {
             modalFormButtArr[key].addEventListener('click', saveScroll);
         }
 
         const popInClButt = document.getElementsByClassName('modal-header-close');
         const clButtArr = Array.from(popInClButt);
+
         for(key in clButtArr) {
             clButtArr[key].addEventListener('click', saveScroll);
         }
@@ -52,9 +54,6 @@ document.onreadystatechange = () => {
             initStatic();
         }
 
-        // Temp code, incase i want to add JS based on the browser URL/pathname
-        // if(window.location.pathname === '/gebruik') { console.log('gebruik'); }
-        // if(window.location.pathname === '/beheer') { console.log('beheer'); }
     }
 }
 
@@ -142,24 +141,24 @@ function itemVerwijderen(e) {
         
         Return Value: None.
  */
-function naamCheck(e) { // store current input value and element style.
+function naamCheck(e) {
     const uInp = e.target.value;
     const elStyle = e.target.style;
 
-    if(uInp !== '' && uInp !== null && uInp !== undefined) {    // change style and switch checked state.
+    if(uInp !== '' && uInp !== null && uInp !== undefined) {
         elStyle.outline = '3px solid green';
         naamChecked = true;
 
-        if(e.target.id === 'reeks-maken-naam') {    // enable reeks maken button.
+        if(e.target.id === 'reeks-maken-naam') {
             return reeksMakenSubmit.disabled = false;
         }
 
         if(e.target.id === 'item-maken-naam') {
-            if(isbnChecked) {   // enable item maken button.
+            if(isbnChecked) {
                 return itemMakenSubm.disabled = false;
             }
     }
-    } else {    // disable buttons and change style.
+    } else {
         naamChecked = false;
 
         if(e.target.id === 'reeks-maken-naam') {
@@ -187,29 +186,29 @@ function naamCheck(e) { // store current input value and element style.
 
         Return Value: None.
     */
-function isbnCheck(e) { // store current input value and element style.
+function isbnCheck(e) {
     const uInp = e.target.value
     const elStyle = e.target.style;
 
-    if(uInp !== '' && uInp !== null && uInp !== undefined) {    // filter isbn and check for letters.
+    if(uInp !== '' && uInp !== null && uInp !== undefined) {
         const isbn = uInp.replace(/-/g, '');
         const filter = /[a-zA-z]/g;
         const letters = filter.test(isbn);
 
-        if(!letters && isbn === '0' || isbn.length === 10 || isbn.length === 13) {  //change style & state, and store filtered isbn.
+        if(!letters && isbn === '0' || isbn.length === 10 || isbn.length === 13) {
             elStyle.outline = '3px solid green';
             e.target.value = isbn;
             isbnChecked = true;
-            if(naamChecked) {   // enable button.
+            if(naamChecked) {
                 return itemMakenSubm.disabled = false;
             }
             return;
-        } else {    // disable button and change style & state.
+        } else {
             isbnChecked = false;
             itemMakenSubm.disabled = true;
             return elStyle.outline = '3px solid red';
         }
-    } else {    // disable button and change style & state.
+    } else {
         isbnChecked = false,
         itemMakenSubm.disabled = true;
         return elStyle.outline = '3px solid red';
