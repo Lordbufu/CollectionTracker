@@ -4,9 +4,10 @@ use App\Core\App;
 
 /* Check if index was set, and request/store all required data for both the success and fail scenario. */
 if(isset($_POST['index'])) {
-    $oldName = App::resolve('reeks')->getName([
-        'Reeks_Index' => $_POST['index']
-    ]);
+    $oldName = App::resolve('reeks')->getKey([
+        'Reeks_Index' => $_POST['index']],
+        'Reeks_Naam'
+    );
 
     $ids = [
         'Reeks_Index' => $_POST['index']
