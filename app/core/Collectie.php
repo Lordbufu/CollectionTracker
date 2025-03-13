@@ -74,22 +74,12 @@ class Collectie {
         }
 
         /* Check if index is duplicate, return error if this is the case. */
-        $id = [
-            'Item_Index' => (int)$data['iIndex']
-        ];
-
-        if($this->evalColl($id)) {
+        if($this->evalColl(['Item_Index' => $data['Item_Index']])) {
             return App::resolve('errors')->getError('collectie', 'dup-error');
         }
 
         /* Attempt to set item to user its collection data. */
-        $dbStore = App::resolve('database')->prepQuery('insert',
-            'collectie', [
-                'Gebr_Index' => $this->uId['Gebr_Index'],
-                'Item_Index' => $data['iIndex'],
-                'Reeks_Index' => $data['rIndex']
-            ]
-        )->getAll();
+        $dbStore = App::resolve('database')->prepQuery('insert', 'collectie', $data)->getAll();
 
         /* Return the result of the above add attempt. */
         return (is_string($dbStore)) ? $dbStore : TRUE;
@@ -105,13 +95,7 @@ class Collectie {
      */
     public function remColl($data) {
         /* Attempt to remove item from user its collection data. */
-        $dbStore = App::resolve('database')->prepQuery(
-            'delete',
-            'collectie', [
-                'Gebr_Index' => $this->uId['Gebr_Index'],
-                'Item_Index' => $data['index']
-            ]
-        )->getAll();
+        $dbStore = App::resolve('database')->prepQuery('delete', 'collectie', $data)->getAll();
 
         /* Return the result of the above remove attempt. */
         return (is_string($dbStore)) ? $dbStore : TRUE;

@@ -2,34 +2,26 @@
 
 use App\Core\App;
 
-/* If the expected inputs are set, create a collection data array. */
-if(isset($_POST['index']) && isset($_SESSION['page-data']['huidige-reeks'])) {
-    $collData = [
-        'iIndex' => (int) $_POST['index'],
-        'rIndex' => App::resolve('reeks')->getKey([
-            'Reeks_Naam' => $_SESSION['page-data']['huidige-reeks']],
-            'Reeks_Index'
-        )
-    ];
+/* Set POST as user input and add the user id. */
+$uInput = $_POST;
+
+if(!isset($uInput['Gebr_Index'])) {
+    $uInput['Gebr_Index'] = $_SESSION['user']['id'];
 }
 
-/* If the array data wasnt set, or if the reek index resolved to a error, store the correct input and redirect back to the user page. */
-if(!isset($collData) || is_string($collData['rIndex'])) {
-    if(!isset($collData)) {
-        App::resolve('session')->flash('feedback', [
-            'error' => App::resolve('errors')->getError('forms', 'input-missing')
-        ]);
-    } else {
-        App::resolve('session')->flash('feedback', [
-            'error' => $collData['rIndex']
-        ]);
-    }
+/* Attempt to process the user input, for database operations. */
+$process = App::resolve('process')->store('collectie', $uInput);
+
+if(is_string($process)) {
+    App::resolve('session')->flash('feedback', [
+        'error' => App::resolve('errors')->getError('forms', 'input-missing')
+    ]);
 
     return App::redirect('gebruik', TRUE);
 }
 
 /* Attemp to add the item to the user collection. */
-$store = App::resolve('collectie')->addColl($collData);
+$store = App::resolve('collectie')->addColl($process);
 
 /* Store user feedback on error, and redirect back to the user page. */
 if(is_string($store)) {
@@ -39,6 +31,9 @@ if(is_string($store)) {
 
     return App::redirect('gebruik', TRUE);
 }
+
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Get the item name of the item that was added, prepare the correct user feedback and refresh the collection data before redirecting back to the user page */
 $iName = App::resolve('items')->getKey([

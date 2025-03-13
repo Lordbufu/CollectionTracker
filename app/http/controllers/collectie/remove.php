@@ -2,8 +2,21 @@
 
 use App\Core\App;
 
+/* Set POST as user input and add the user id. */
+$uInput = $_POST;
+
+if(!isset($uInput['Gebr_Index'])) {
+    $uInput['Gebr_Index'] = $_SESSION['user']['id'];
+}
+
+/* Attempt to process the user input, for database operations. */
+$process = App::resolve('process')->store('collectie', $uInput);
+
 /* Attempt to remove the item to the collection using the POST data. */
-$store = App::resolve('collectie')->remColl($_POST);
+$store = App::resolve('collectie')->remColl([
+    'Gebr_Index' => $process['Gebr_Index'],
+    'Item_Index' => $process['Item_Index']
+]);
 
 /* If removing the item failed, store user feedback and redirect back to the user page. */
 if(is_string($store)) {
@@ -13,6 +26,9 @@ if(is_string($store)) {
 
     return App::redirect('gebruik', TRUE);
 }
+
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Flash user-feedback about the item being removed, and update the collection page-data. */
 $iName = App::resolve('items')->getKey([

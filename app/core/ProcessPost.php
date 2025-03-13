@@ -2,11 +2,13 @@
 
 namespace App\Core;
 
+use App\Core\App;
+
 class ProcessPost {
     protected $new;
 
     /*  items($data):
-            This function processes all items related post data, and prepares a data array that can be used to insert or update.
+            This function processes all items related post data, and prepares a data array that can be used to interact with the database.
                 $data (Assoc Arr)   - The POST data from the controller.
             
             Return Value: None.
@@ -34,7 +36,7 @@ class ProcessPost {
     }
 
     /*  reeks($data):
-            This function processes all reeks related post data, and prepares a data array that can be used to insert or update.
+            This function processes all reeks related post data, and prepares a data array that can be used to interact with the database.
                 $data (Assoc Arr)   - The POST data from the controller.
             
             Return Value: None.
@@ -55,9 +57,21 @@ class ProcessPost {
     }
 
     /*  collectie($data):
+            This function processes all collectie related post data, and prepares a data array that can be used to interact with the database.
+                $data (Assoc Arr)   - The POST data from the controller.
+            
+            Return Value: None.
      */
     protected function collectie($data) {
+        $this->new = [
+            'Gebr_Index' => $data['Gebr_Index'],
+            'Item_Index' => (int) $_POST['index'],
+            'Reeks_Index' => App::resolve('items')->getKey([
+                'Item_Index' => $data['index']],
+                'Item_Reeks'
+        )];
 
+        return;
     }
 
     /*  store($object, $data):
