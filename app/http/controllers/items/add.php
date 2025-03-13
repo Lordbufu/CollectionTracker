@@ -19,11 +19,6 @@ if(!empty($_FILES['cover']) && $_FILES['cover']['error'] === 0) {
         $pInput['Item_Plaatje'] = $cover;
         $plaatje = TRUE;
     }
-} else if(isset($_SESSION['_flash']['newCover'])) {
-    $cover = $_SESSION['_flash']['newCover'];
-    $olInput['cover'] = $cover ?? '';
-    $pInput['Item_Plaatje'] = $cover;
-    $plaatje = TRUE;
 }
 
 /* Check for any error in the above process, and prepare the return data, before going back to the pop-in.  */
@@ -82,12 +77,8 @@ if(isset($_SESSION['page-data']['items'])) {
     ]);
 }
 
-/* Then i clean up all useless _flash data. */
-if(isset($_SESSION['_flash']['tags']['pop-in'])) {
-    $tags = ['oldForm', 'oldItem', 'newCover', 'tags'];
-
-    App::resolve('session')->remVar('_flash', $tags);
-}
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Then i prepare the user feedback before returning back to default page. */
 App::resolve('session')->flash('feedback', [

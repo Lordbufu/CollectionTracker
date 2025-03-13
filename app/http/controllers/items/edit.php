@@ -17,12 +17,6 @@ if($_FILES['cover']['error'] === 0) {                                           
     if(!is_array($cover)) {
         $plaatje = TRUE;
     }
-} elseif(isset($_SESSION['_flash']['newCover'])) {                                  // check if new file was set in the session,
-    $cover = $_SESSION['_flash']['newCover'];
-    if(!is_array($cover)) {
-        $plaatje = TRUE;
-    }
-// Not quite sure yet how to error check this latter part.
 } else {                                                                            // or attempt to load from database if nothing was found otherwhise.
     $cover = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
@@ -78,12 +72,8 @@ if(is_string($store)) {
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/* Clear old form session data if any was set, to prevent issues when adding new items after this operation. */
-if(isset($_SESSION['_flash']['oldItem'])) {
-    App::resolve('session')->remVar('_flash', 'oldItem');
-} else if(isset($_SESSION['_flash']['oldForm'])) {
-    App::resolve('session')->remVar('_flash', 'oldForm');
-}
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Perpare the correct user feedback, based on if the item name changed or not. */
 if($oldName !== $_POST['naam']) {

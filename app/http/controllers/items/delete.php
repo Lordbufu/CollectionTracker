@@ -27,7 +27,10 @@ if(is_string($dbStore)) {
     return App::redirect('beheer', TRUE);
 }
 
-/* If there was no error, store the correct feedback before returning tot he page. */
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
+
+/* Store the correct feedback before returning tot he page. */
 App::resolve('session')->flash('feedback', [
     'success' => "Het item: {$itemName}. is verwijdert !"
 ]);
