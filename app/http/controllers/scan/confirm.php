@@ -22,8 +22,7 @@ if(!isset($newItem['rIndex'])) {
 }
 
 $flash = [
-    'oldItem' => $newItem,
-    'newCover' => $newItem['cover'],
+    'newItem' => $newItem,
     'feedback' => [
         'found' => 'Controleer de ingevulde gegevens van Google, het kan zijn dat deze niet helemaal klopt.'
     ],
@@ -31,6 +30,9 @@ $flash = [
         'method' => 'PUT',
         'pop-in' => 'items-maken'
 ]];
+
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Always flash the outcome of the above evaluation, and redirect back to the items-maken pop-in or beheer page. */
 App::resolve('session')->flash($flash);

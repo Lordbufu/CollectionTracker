@@ -69,8 +69,7 @@ if(!isset($newItem['naam']) && !isset($newItem['isbn'])) {
 
 /* Prepare all the correct session data, and redirect to the pop-in to present the results to the user. */
 $flash = [
-    'oldForm' => $newItem,
-    'newCover' => $newItem['cover'],
+    'newItem' => $newItem,
     'feedback' => [
         'gevonden' => 'De data die is gevonden is ingevult, controleer of deze klopt met wat er verwacht wordt !'
     ],
@@ -78,14 +77,9 @@ $flash = [
         'pop-in' => 'items-maken'
 ]];
 
-/* Unset any 'old form' data i had stored during this process, to prevent unexpected behavior. */
-if(isset($_SESSION['_flash']['oldItem'])) {
-    unset($_SESSION['_flash']['oldItem']);
-}
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
-if(isset($_SESSION['_flash']['oldForm'])) {
-    unset($_SESSION['_flash']['oldForm']);
-}
 
 /* Flash the new data, and redirect to the correct pop-in, preserving said flash data. */
 App::resolve('session')->flash($flash);

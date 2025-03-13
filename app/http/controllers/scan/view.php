@@ -11,5 +11,6 @@ $tags = [                                                                       
         'pop-in' => 'bScan'                                                         // Store the pop-in name i want to load.
 ]];
 
+App::resolve('session')->unflash();                                                 // Clear old session _flash data.
 App::resolve('session')->flash($tags);                                              // Store the '_flash' memory in the session.
 return App::redirect("{$route}#item-scan-pop-in", TRUE);                            // Redirect to the correct pop-in, preserving the session _flash memory.
