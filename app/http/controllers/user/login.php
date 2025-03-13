@@ -43,27 +43,20 @@ if(!$auth) {
     return App::redirect('home#login-pop-in', TRUE);
 }
 
-/* If a user was set from the database, get the user data, and store a welcome message in the '_flash'. */
-if(isset($_SESSION['user']['id'])) {
-    $user = App::resolve('user')->getUser([
-        'Gebr_Index' => $_SESSION['user']['id']
-    ]);
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
-    $userName = $user['Gebr_Naam'];
+/* Set the correct re-direct route based on user rights, and make sure the expected input is set. */
+$route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
-    App::resolve('session')->flash('feedback', [
-        'login' => "Welcome: {$userName}, Uw login is geslaagd."
-    ]);
-}
+/* Get user name, and set a welcome message for the user. */
+$userName = App::resolve('user')->getName([
+    'Gebr_Index' => $_SESSION['user']['id']
+]);
 
-/* If the user is a regular user, unset the pop-in tag, and redirect to the correct controller. */
-if($user['Gebr_Rechten'] === 'User') {
-    unset($_SESSION['_flash']['tags']['pop-in']);
-    return App::redirect('gebruik', TRUE);
-}
+App::resolve('session')->flash('feedback', [
+    'login' => "Welcome: {$userName}, Uw login is geslaagd."
+]);
 
-/* If the user is a administrator user, unset the pop-in tag, and redirect to the correct controller. */
-if($user['Gebr_Rechten'] === 'Admin') {
-    unset($_SESSION['_flash']['tags']['pop-in']);
-    return App::redirect('beheer', TRUE);
-}
+/* Redirect based on the route that was set. */
+return App::redirect($route, TRUE);

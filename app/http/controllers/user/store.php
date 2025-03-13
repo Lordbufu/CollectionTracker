@@ -37,13 +37,6 @@ if(is_string($user)) {
     return App::redirect('#account-maken-pop-in');
 }
 
-/* Unset any 'redundant' session tags that might need to be removed */
-if(isset($_SESSION['_flash'])) {
-    App::resolve('session')->remVar('_flash', [
-        'register', 'oldForm'
-    ]);
-}
-
 $uName = App::resolve('user')->getName([
     'Gebr_Email' => $_POST['email']
 ]);
@@ -56,6 +49,9 @@ $flash = [
         'user-created' => "De Gebruiker: {$uName}. <br> Is aangemaakt, en u kan nu inloggen!"
     ]
 ];
+
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Store a tag for the login pop-in, the user feedback, and redirect to the user login pop-in. */
 App::resolve('session')->flash($flash);
