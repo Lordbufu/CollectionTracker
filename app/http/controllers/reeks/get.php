@@ -7,10 +7,8 @@ if(isset($_POST['naam'])) {
     $reeks = App::resolve('reeks')->getSingReeks([
         'Reeks_Naam' => $_POST['naam']
     ]);
-}
-
 /* If a index was in the post, we use that to set the reeks data. */
-if(isset($_POST['index'])) {
+} else if(isset($_POST['index'])) {
     $reeks = App::resolve('reeks')->getSingReeks([
         'Reeks_Index' => $_POST['index']
     ]);
@@ -34,6 +32,9 @@ if(!is_string($items)) {
         'items' => $items
     ]);
 }
+
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
 
 /* Switch the user rights, and perform additional logic, and redirect to the correct page keeping the _flash data. */
 switch($_SESSION['user']['rights']) {
