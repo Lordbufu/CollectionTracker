@@ -40,6 +40,9 @@ if(isset($_POST['iIndex'])) {
     ]];
 }
 
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
+
 /* Store the prepared flash data, and redirect to the 'items-maken-pop-in', preserving the _flash data. */
 App::resolve('session')->flash($flash);
 

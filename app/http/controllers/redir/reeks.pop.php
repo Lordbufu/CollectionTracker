@@ -34,6 +34,9 @@ if(isset($_POST['index']) && isset($_POST['_method'])) {
     ]];
 }
 
+/* Clear old session _flash data. */
+App::resolve('session')->unflash();
+
 /* Set the _flash data, and redirect the reeks-maken-pop-in. */
 App::resolve('session')->flash($flash);
 return App::redirect('beheer#reeks-maken-pop-in', TRUE);
