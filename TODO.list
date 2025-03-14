@@ -1,4 +1,5 @@
 Global TODO List:
+    - Write the admin password reset code, a i seem to have forgotten about that.
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
     - See if i can make a more interesting complex password check, atm it seem very dumb.
 
