@@ -56,5 +56,5 @@ $router->post('/selReeks',	'reeks/get.php')->only('auth');             // Select
 $router->post('/scanPop',	'scan/view.php')->only('auth');             // The barcode scan pop-in trigger route.
 $router->post('/bCodeScan',	'scan/get.php')->only('auth');              // Barcode scan pop-in scan-trigger
 
-/* Route for showing album details on mobile devices */ // Still needs to be re-factored.
-// $router->post('details',		'')->only('user');
+/* Test route for showing album details on mobile devices */
+$router->post('details',		'mobile/test.php')->only('user');
