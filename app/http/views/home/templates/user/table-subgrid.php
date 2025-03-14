@@ -65,14 +65,13 @@ if(isset($_SESSION['page-data']['collecties'])) { $coll = $_SESSION['page-data']
 <script>
     /* Create a trigger on the item-name column for each item, that opens the extra details pop-in on mobile devices only. */
     if(localDevice === 'mobile') {
-        const nameEl = document.getElementsByClassName('item-naam');
-        let tempEl = Array.from(nameEl);
+        const nameEl = document.getElementsByClassName('item-naam'); let tempEl = Array.from(nameEl);
         tempEl.forEach((item, index, arr) => { arr[index].addEventListener('click', viewDetails); });
     }
+
     /* Assing a listenEvent to all checkboxes on the page */
-    const chBox = document.getElementsByClassName('item-aanw-checkbox');
-    chBoxArr = Array.from(chBox);
+    const chBox = document.getElementsByClassName('item-aanw-checkbox'); chBoxArr = Array.from(chBox);
     chBoxArr.forEach( (item, index, arr) => { arr[index].addEventListener('change', checkBox); });
     /* checkBox(e): Checkbox listenEvent that simply submits the form. */
-    function checkBox(e) { saveScroll(e), return e.target.closest('form').submit(); }
+    function checkBox(e) { saveScroll(e); return e.target.closest('form').submit(); }
 </script>

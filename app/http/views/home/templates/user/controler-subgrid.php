@@ -7,21 +7,18 @@ if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReeks = inpFilt($_SESSION
         <label for="reeks-sel" class="reeks-sel-lab">Reeks Selecteren:</label>
         <select class="reeks-sel" name="naam" id="reeks-sel" required>
             <option class="reeks-sel-opt" value="">Selecteer een reeks</option>        
-<?php   // Loop over all items and see if it matches a current selection if that was already made.
+    <?php   // Loop over all items and see if it matches a current selection if that was already made.
     if(isset($store)) :
         foreach($store as $key => $value) :
             if(isset($hReeks)) :
                 if(inpFilt($value['Reeks_Naam']) === $hReeks) :
-?>
+    ?>
             <option class="reeks-sel-opt" selected><?=inpFilt($value['Reeks_Naam'])?></option>
-<?php           else : ?>
+    <?php else : ?>
             <option class="reeks-sel-opt"><?=inpFilt($value['Reeks_Naam'])?></option>
-<?php           endif;
-            else : ?>
+    <?php endif; else : ?>
             <option class="reeks-sel-opt"><?=inpFilt($value['Reeks_Naam'])?></option>
-<?php       endif;
-        endforeach;
-    endif; ?>
+    <?php endif; endforeach; endif; ?>
         </select>
         <input class="reeks-sel-subm button" id="reeks-sel-subm" type="submit" value="Selecteer"/>
     </form>

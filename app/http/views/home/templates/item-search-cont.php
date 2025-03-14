@@ -42,16 +42,13 @@
 </style>
 <script>
     /* Listen Event for the item search input, and a input state disabled by default. */
-    document.getElementById('item-zoek-inp').addEventListener('input', itemZoek);
-    if(itemZoekInp) { itemZoekInp.disabled = true; }
-
+    let itemZoekInp = document.getElementById('item-zoek-inp'); itemZoekInp.addEventListener('input', itemZoek); if(itemZoekInp) { itemZoekInp.disabled = true; }
     /* All checkboxes and there listen events. */
     let chb1 = document.getElementById('item-zoek-naam-inp'); chb1.addEventListener('change', checkBoxSearch);
     let chb2 = document.getElementById('item-zoek-nr-inp'); chb2.addEventListener('change', checkBoxSearch);
     let chb3 = document.getElementById('item-zoek-isbn-inp'); chb3.addEventListener('change', checkBoxSearch);
     /* The span that is the text in side the search input. */
     let span = document.getElementById('item-zoek-span');
-
     if(localStorage.checkState) {
         /* Store keys & values to reduce code clutter. */
         const stateKey = JSON.parse(localStorage.checkState)[0], stateVal = JSON.parse(localStorage.checkState)[1];
@@ -64,7 +61,6 @@
         /* End logic by removing the stored data. */
         localStorage.removeItem('checkState');
     }
-
     /* checkBoxSearch(event): Adding some JS magic to the scearch option checkboxes, to make them work in a meaningfull way. */
     function checkBoxSearch(event) {
         /* Create a array from the checkbox id and state, and store that inside the browser. */
@@ -88,13 +84,11 @@
         /* If no target was checked, replace the input span tekst, and disable the input. */
         } else { span.innerHTML = 'Selecteer een zoek optie ..'; return itemZoekInp.disabled = true; }
     }
-
     /* itemZoek(event): Searches the items displayed on the page, matching them on a letter by letter basis. */
     function itemZoek(e) {
         /* Convert user input to uppercase, get all the table rows, and create empty variables that im going to need. */
         const filter = itemZoekInp.value.toUpperCase(), tafelRows = document.querySelectorAll('.item-tafel-inhoud');
         let itemNaam, itemNr, itemIsbn;
-
         /* We are searching on a name basis */
         if(chb1.checked === true) {
             tafelRows.forEach((item, index) => {
