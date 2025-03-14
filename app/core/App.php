@@ -11,6 +11,7 @@ use App\Http\Forms\FormValidator;
 /*  App Class: This class handels all default app behavior, including a init function, that will prepare the App for use. */
 class App {
     /* Global stores used for the App */
+    protected static $config;
     protected static $classMap;
     protected static $envString;
     protected static $container;
@@ -32,8 +33,8 @@ class App {
         $cont = new Container();
 
         $cont->bind('database', function () {
-            $config = require base_path('config.php');
-            $envConf = $config[self::$envString];
+            self::$config = require base_path('config.php');
+            $envConf = self::$config[self::$envString];
 
             return new Database($envConf);
         });
@@ -63,10 +64,7 @@ class App {
         return is_object(self::$container);
     }
 
-    /*  initClassMap():
-            This function only sets the class map array, to the global $classMap.
-            Allowing me to auto-load all these classes, into the app service container.
-     */
+    /* initClassMap(): This function only sets the class map array, to the global $classMap. Allowing me to auto-load all these classes, into the app service container. */
     protected static function initClassMap() {
         $clMap = [
             'router' => function() { return new Router; },
@@ -102,38 +100,14 @@ class App {
         return $fileContent;
     }
 
-    /*  SetContainer($container):
-            This function sets the passed-in $container, as the App service $container.
-            In general this sets the $bindings from the Container class, meaning that class is bound to the service container.
-     */
-    public static function setContainer($container) {
-        self::$container = $container;
-    }
-
-    /*  container():
-            This function returns the app container as is, without resolving a specific key in it.
-
-            Return Value: Object.
-     */
-    public static function container() {
-        return self::$container;
-    }
-
-    /*  bind($key, $resolver):
-            This function is a pass-true to the Container->bind($key, $resolver) function.
-     */
-    public static function bind($key, $resolver) {
-        self::$container->bind($key, $resolver);
-    }
-
-    /*  resolve($key):
-            A inherited function from the Container class, with the exact same profile.
-
-            Return Value: Object\Class.
-     */
-    public static function resolve($key) {
-        return self::$container->resolve($key);
-    }
+    /* SetContainer($container): This function sets the passed-in $container, as the App service $container. */
+    public static function setContainer($container) { self::$container = $container; }
+    /* container(): This function returns the app container (object) as is, without resolving a specific key in it. */
+    public static function container() { return self::$container; }
+    /* bind($key, $resolver): This function is a pass-true to the Container->bind($key, $resolver) function. */
+    public static function bind($key, $resolver) { self::$container->bind($key, $resolver); }
+    /* resolve($key): A inherited function from the Container class, with the exact same profile. */
+    public static function resolve($key) { return self::$container->resolve($key); }
 
     /*  checkDevice():
             This function uses the browser user agent, to detect what device is being used.
@@ -160,18 +134,8 @@ class App {
         }
     }
 
-    /*  setVersion():
-            Attempt to set version of the App, based on the string value in the version.txt.
-
-            Return Value: String.
-     */
-    public static function setVersion() {
-        $versionFile = fopen('../version.txt', 'r');
-        $version = fread($versionFile, filesize('../version.txt'));
-        fclose($versionFile);
-
-        return $version;
-    }
+    /* setVersion(): Attempt to set version of the App, based on the string value in the config.phh for the enviroment being used. */
+    public static function setVersion() { return self::$config[self::$envString]['version']; }
 
     /*  view($path, $attributes=[]):
             This function requires the correct view, so the page can be rendered, and an empty array to pass data to the page.

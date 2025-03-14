@@ -18,9 +18,7 @@
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ],
-            'version' => [
-                'production' => 'V2.1 Alpha'
-            ]
+            'version' => 'V2.1 Alpha'
         ],
         /* Hotfix specific settings, not sure if usefull but included it never the less */
         'hotfix' => [
@@ -37,9 +35,7 @@
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ],
-            'version' => [
-                'hotfix' => 'V2.1.1 Hotfixes'
-            ]
+            'version' => 'V2.1.1 Hotfixes'
         ],
         /* Live specific settings */
         'live' => [
@@ -56,9 +52,7 @@
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT
             ],
-            'version' => [
-                'live' => 'V2.1.a2'
-            ]
+            'version' => 'V2.1.a2'
         ]
     ];
 ?>
