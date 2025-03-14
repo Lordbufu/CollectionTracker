@@ -1,5 +1,4 @@
 Global TODO List:
-    - Keep reviewing the bar scan and isbn search functions.
     - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
     - See if i can make a more interesting complex password check, atm it seem very dumb.
 
@@ -7,5 +6,5 @@ Global TODO List:
     - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
         - But how do i deal with very long descriptions from the Google API or user input, when there is no indication of what the input count is ?
         - How should i better deal with the feedback here, since the user cant see the length before submitting, and there is no indication of the limit iether.
-    - If i find some extra time, i should rework the ISBN class, right now its just seems overly complex.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
+    - If i find some extra time, i should rework the ISBN class, right now its just seems overly complex.

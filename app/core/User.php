@@ -41,9 +41,9 @@ class User {
                 On success - Boolean.
      */
     public function createUser($data) {
-        if(isset($data['naam']) && isset($data['email']) && isset($data['wachtwoord'])) {
+        if(isset($data['gebr-naam']) && isset($data['email']) && isset($data['wachtwoord'])) {
             $sqlData = [
-                'Gebr_Naam' => $data['naam'],
+                'Gebr_Naam' => $data['gebr-naam'],
                 'Gebr_Email' => $data['email'],
                 'Gebr_WachtW' => password_hash($data['wachtwoord'], PASSWORD_BCRYPT),
                 'Gebr_Rechten' => 'User'
