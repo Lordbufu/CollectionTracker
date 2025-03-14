@@ -1,18 +1,4 @@
 <?php
-/*
-    // Debug info, for testing the isbn manual search functions.
-    // Optional isbn 1:
-    //      9781875750214 -> returns only 1 result
-
-    // Optional isbn 2
-    //      9020667505
-    //      9789020642506
-    //          De Kameleon in het goud
-
-    // Optional isbn 3 ( 200+ items found )
-    //      0123456789
- */
-
 /*  Isbn Class:
         This class uses the Google Book API, to request data based on either a scanned barcode, or a specific ISBN number.
         After the request, it is evaluated and broken down, either to add/remove things for the user there collection.
@@ -37,48 +23,40 @@ class Isbn {
     protected $isbns = [];
 
     /*  set_url($isbn):
-            This function simply adds the isbn value, at the end of the url string, so we can request data from the Google API.
-            It also set a increases the default amount of items that is returned/show, incase there are more result found.
-            Though its likely that a max of 40 items per request, is going to be overkill for default operations.
+            This function prepares the url for the Google Book API Request, incl the search parameters, returning the max amount of results.
                 $isbn (String)  - The ISBN number as parsed from the scanned barcode, or manual user request.
             
             Return Value: Boolean.
      */
     protected function set_url($isbn) {
-        /* If no request url was set, i use the base url to make it, together with the provide isbn code. */
         if(!isset($req_url)) {
             $this->req_url = $this->base_url . 'ISBN:' . $isbn;
             $this->req_url = $this->req_url . '&startIndex=0&maxResults=40';
         }
 
-        /* If the request url is the correct length (isbn_10 = 88 / isbn_13 = 91), return TRUE to caller. */
-        if(strlen($this->req_url) === 88 || strlen($this->req_url) === 91) {
+        if(strlen($this->req_url) === 88 || strlen($this->req_url) === 91) {    // Check if the lenght makes sense for a isbn 10 and 13 value.
             return TRUE;
         }
         
-        /* If something was wrong, return FALSE to caller. */
         return FALSE;
     }
 
     /*  request_data():
-            This function simply requests, and parses the initial API request.
+            This function simply requests, and parses the initial API request, for further processing.
                 $content (String)   - The unfiltered data request from the Google API.
             
             Return Value: None.
      */
     protected function request_data() {
-        /* If API data was not stored yet, i get it as a string, and then convert it to associative array data. */
         if(!isset($this->requested)) {
             $content = file_get_contents($this->req_url);
             $this->requested = json_decode($content, TRUE);
         }
 
-        /* If for some reason no array data was store, return FALSE to the caller. */
         if(!is_array($this->requested)) {
             return FALSE;
         }
 
-        /* If all is well, i return TRUE to the caller. */
         return TRUE;
     }
 
@@ -115,22 +93,19 @@ class Isbn {
     /*  get_titles():
             Very straight forward function, that simply gets all the titles in the checked request data.
 
-            Return Value: None.
+            Return Value: Boolean.
      */
     protected function get_titles() {
-        /* Loop over all checked items, store the titel of each item in the titles variable for later us. */
         foreach($this->checked as $key => $item) {
             if(isset($this->checked[$key]['volumeInfo']['title'])) {
                 array_push($this->titles, $this->checked[$key]['volumeInfo']['title']);
             }
         }
 
-        /* If no titles where stored, return FALSE to the caller. */
         if($this->titles === 1) {
             return FALSE;
         }
 
-        /* If all is well return TRUE to the caller. */
         return TRUE;
     }
 
@@ -145,35 +120,22 @@ class Isbn {
                 On failure -> Boolean (FALSE)
      */
     protected function check_items($index) {
-        /* Request all items associated with the requested reeks. */
-        $rItems = App::resolve('items')->getAllFor([
-            'Item_Reeks' => $index
-        ]);
+        $rItems = App::resolve('items')->getAllFor(['Item_Reeks' => $index]);
 
-        /* The loop over all reeks items, and right after that over all stored titles. */
-        foreach($rItems as $iKey => $iValue) {
+        foreach($rItems as $iKey => $iValue) {                                      // Start looping over all the reeks items.
             foreach($this->titles as $item) {
-                /* If the item name of the reeks item, matches a stored title from the API request, */
-                if($iValue['Item_Naam'] == $item) {
-                    /* I need to process the said item, to ensure only that items is tored in '$checked' */
+                if($iValue['Item_Naam'] == $item) {                                 // Compare the item names.
                     $isbn = $this->process_choice($item);
-                    /* Then i need to store the reeks item its isbn tag as a string (either ISBN_10 or ISBN_13). */
                     $string = 'ISBN_' . strlen($iValue['Item_Isbn']);
 
-                    /* Then i compare the reeks items its isbn value, against the matching isbn type value from the API request. */
-                    if($iValue['Item_Isbn'] === $isbn[$string]) {
-                        /* And if they match i return the reeks item its indexes to the caller. */
-                        return [
-                            'Item_Index' => $iValue['Item_Index'],
-                            'Item_Reeks' => $iValue['Item_Reeks']
-                        ];
+                    if($iValue['Item_Isbn'] === $isbn[$string]) {                   // Compare isbn value, if matching return id's for db operations.
+                        return ['Item_Index' => $iValue['Item_Index'], 'Item_Reeks' => $iValue['Item_Reeks']];
                     }
                 }
             }
         }
 
-        /* If no match was found, i return FALSE to the caller. */
-        return FALSE;
+        return FALSE;                                                               // Return false if nothing matches.
     }
 
     /*  process_choice($title):
@@ -181,68 +143,44 @@ class Isbn {
             And is used in tandem with the check_items() function.
      */
     protected function process_choice($title) {
-        /* I start by looping over all checked items, */
+        /* I start by looping over all checked items, check if we are dealing with one of more stored items, and grab volume info based on that knowledge. */
         foreach($this->checked as $key => $item) {
-            /* Check if we are dealing with one of more stored items, and grab volume info based on that knowledge. */
             if(array_key_exists(0, $this->checked)) {
                 $cItem = $this->checked[$key]['volumeInfo'];
             } else {
                 $cItem = $this->checked['volumeInfo'];
             }
             
-            /* and comp the requested title against the provided title. */
+            /* Compare the requested title against the provided title, and store the relevant id's if matching. */
             if($cItem['title'] === $title) {
-                /* If there is a match, i loop over the requested identifiers, */
                 foreach($cItem['industryIdentifiers'] as $key => $value) {
-                    /* And store the ISBN_10 globally. */
-                    if($value['type'] === 'ISBN_10') {
-                        $this->isbns[$value['type']] = $value['identifier'];
-                    }
-
-                    /* And store the ISBN_13 globally. */
-                    if($value['type'] === 'ISBN_13') {
-                        $this->isbns[$value['type']] = $value['identifier'];
-                    }
+                    if($value['type'] === 'ISBN_10') { $this->isbns[$value['type']] = $value['identifier']; }
+                    if($value['type'] === 'ISBN_13') { $this->isbns[$value['type']] = $value['identifier']; }
                 }
             }
         }
 
-        /* If no isbn numbers where found, i store a invalid tag globally. */
-        if(empty($this->isbns)) {
-            $this->isbns['invalid'] = TRUE;
-        }
-
-        /* Regardless of the outcome, i return the stored isbn array. */
-        return $this->isbns;
+        if(empty($this->isbns)) { $this->isbns['invalid'] = TRUE; }     // If no isbn numbers where found, i store a invalid tag globally.
+        return $this->isbns;                                            // Always the isbn variable.
     }
 
     /* get_choice($title):
             This function gets a entire item, based on a item its title, and is used when a user has confirmed a title choice.
      */
     protected function get_choice($title) {
-        /* Set checked to all requested items. */
-        if(!isset($this->checked)) {
-            $this->checked = $this->requested['items'];
-        }
+        if(!isset($this->checked)) { $this->checked = $this->requested['items']; }      // Set checked to all requested items.
         
-        /* I start by looping over all checked items, */
-        foreach($this->checked as $key => $item) {
-            /* Check if we are dealing with one of more stored items, and grabe volume info based on that knowledge. */
+        foreach($this->checked as $key => $item) {                                      // Loop over the checked items, and store the information i need\want.
             if(array_key_exists(0, $this->checked)) {
                 $cItem = $this->checked[$key]['volumeInfo'];
             } else {
                 $cItem = $this->checked['volumeInfo'];
             }
 
-            /* and comp the requested title against the provided title. */
-            if($cItem['title'] == $title) {
-                /* Return the entire matched item to the caller. */
-                return $cItem;
-            }
+            if($cItem['title'] == $title) { return $cItem; }                            // If the title matches, return the entire matched item to the caller.
         }
 
-        /* Return false if no match was found. */
-        return FALSE;
+        return FALSE;                                                                   // Return false if no match was found.
     }
 
     /*  startRequest($isbn, $reeks):
@@ -257,10 +195,8 @@ class Isbn {
      */
     public function startRequest($isbn, $reeks, $admin = FALSE) {
         /* If the request URL could not be set, i store a error for user feedback. */
-        if(!$this->set_url($isbn)) {
-            $this->errors = App::resolve('errors')->getError('isbn', 'no-request');
-        }
-
+        if(!$this->set_url($isbn)) { $this->errors = App::resolve('errors')->getError('isbn', 'no-request'); }
+        
         /* If a request URL was set, i attempt to request data from the Google API. */
         $request = $this->request_data();
 

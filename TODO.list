@@ -7,7 +7,5 @@ Global TODO List:
     - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
         - But how do i deal with very long descriptions from the Google API or user input, when there is no indication of what the input count is ?
         - How should i better deal with the feedback here, since the user cant see the length before submitting, and there is no indication of the limit iether.
-    - The 'Isbn' core class, still needs more clean up, and potentially improvements.
-        - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
-        - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
+    - If i find some extra time, i should rework the ISBN class, right now its just seems overly complex.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.

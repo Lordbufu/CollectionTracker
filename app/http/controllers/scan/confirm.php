@@ -6,10 +6,7 @@ use App\Core\App;
 $store = App::resolve('isbn')->confirmChoice($_POST);
 
 if(is_string($store)) {
-    App::resolve('session')->flash('feedback', [
-        'fail' => $store
-    ]);
-
+    App::resolve('session')->flash('feedback', ['fail' => $store]);
     return App::redirect('beheer', TRUE);
 }
 

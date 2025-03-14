@@ -1,4 +1,4 @@
-<?php if(isset($_SESSION['_flash']['isbn-choices'])) { $store = $_SESSION['_flash']['isbn-choices']; $store['index'] = $_SESSION['_flash']['tags']['reeks-index']; $store['isbn'] = $_SESSION['_flash']['tags']['isbn-scanned']; unset($_SESSION['_flash']['tags']); } ?>
+<?php if(isset($_SESSION['_flash']['isbn-choices'])) { $store = $_SESSION['_flash']['isbn-choices']; unset($_SESSION['_flash']['tags']); } ?>
 <div id="isbn-preview" class="modal-cont">
     <div class="modal-content-cont">
         <div class="modal-header-cont">
