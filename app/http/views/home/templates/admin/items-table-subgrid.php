@@ -1,17 +1,7 @@
 <?php // Store the correct data from the session.
-if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']);
-}
-
-if(isset($_SESSION['page-data']['items'])) {
-    $store = $_SESSION['page-data']['items'];
-}
-?>
-
-<div class="table-header">
-    <h2 class="table-header-text"><?='Alle items in: ' . $hReeks ?? 'Selecteer een Reeks'?></h2>
-</div>
-
+if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']); }
+if(isset($_SESSION['page-data']['items'])) { $store = $_SESSION['page-data']['items']; } ?>
+<div class="table-header"> <h2 class="table-header-text"><?='Alle items in: ' . $hReeks ?? 'Selecteer een Reeks'?></h2> </div>
 <table class="items-table">
     <tr class="items-table-titles">
         <th style="border: 0px;"></th>
@@ -24,10 +14,7 @@ if(isset($_SESSION['page-data']['items'])) {
         <th>ISBN</th>
         <th class="item-opmTitle">Opmerking</th>
     </tr>
-
-<?php   // Loop over all stored items.
-foreach($store as $key => $value) : ?>
-
+<?php foreach($store as $key => $value) : ?>
     <tr class="item-tafel-inhoud">
         <th class="item-bew">
             <form class="item-bewerken-form" method="POST" action="/iEdit">
@@ -36,7 +23,6 @@ foreach($store as $key => $value) : ?>
                 <input class="item-bew-butt button" id="<?=$value['Item_Index']?>" type="submit" value=""/>
             </form>
         </th>
-
         <th class="item-verw">
             <form class="item-verw-form" method="POST" action="/iDel">
                 <input class="item-verw-method" name="_method" value="DELETE" hidden/>
@@ -45,7 +31,6 @@ foreach($store as $key => $value) : ?>
                 <input class="item-verw-butt" id="<?=$value['Item_Index']?>" type="submit" value="" onclick="return itemVerwijderen(event)"/>
             </form>
         </th>
-
         <th class="item-naam"><?=inpFilt($value['Item_Naam'])?></th>
         <th class="item-nummer"><?=$value['Item_Nummer']?></th>
         <th class="item-uitgave"><?=$value['Item_Uitgd']?></th>
@@ -57,22 +42,20 @@ foreach($store as $key => $value) : ?>
         </th>
         <th class="item-isbn"><?=$value['Item_Isbn']?></th>
         <th class="item-opm"><?=inpFilt($value['Item_Opm'])?></th>
-
     </tr>
-<?php
-    endforeach; ?>
+<?php endforeach; ?>
 </table>
-
 <script>
-    const bewButt = document.getElementsByClassName('item-bew-butt');
-    const bewButtArr = Array.from(bewButt);
-    for(key in bewButtArr) {
-        bewButtArr[key].addEventListener('click', saveScroll);
-    }
-
-    const verwButt = document.getElementsByClassName('item-verwijderen-butt');
-    const verwButtArr = Array.from(verwButt);
-    for(key in verwButtArr) {
-        verwButtArr[key].addEventListener('click', saveScroll);
+    /* Add listen events to all edit buttons. */
+    const bewButt = document.getElementsByClassName('item-bew-butt'), bewButtArr = Array.from(bewButt);
+    for(key in bewButtArr) { bewButtArr[key].addEventListener('click', saveScroll); }
+    /* Add listen events to all delete buttons. */
+    const verwButt = document.getElementsByClassName('item-verwijderen-butt'), verwButtArr = Array.from(verwButt);
+    for(key in verwButtArr) { verwButtArr[key].addEventListener('click', saveScroll); }
+    /* itemVerwijderen(e): A simple confirmation check, that displays the item name, and triggers the submit button base on said confirmation. */
+    function itemVerwijderen(e) {
+        /* Get item table rows, convert that to an array, and use that for formulate the confirmation check box. */
+        const rowCol = document.getElementsByClassName('item-tafel-inhoud'), rowArr = Array.from(rowCol), conf = confirm('Weet u zeker dat het Item: ' + rowArr[0].children[2].innerHTML + '\n Verwijderen moet worden ?');
+        if(conf) { return true; } else { if(sessionStorage.scrollPos)  { sessionStorage.removeItem('scrollPos'); } return false; }
     }
 </script>

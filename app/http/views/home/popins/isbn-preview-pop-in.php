@@ -1,10 +1,4 @@
-<?php if(isset($_SESSION['_flash']['isbn-choices'])) {
-    $store = $_SESSION['_flash']['isbn-choices'];
-    $store['index'] = $_SESSION['_flash']['tags']['reeks-index'];
-    $store['isbn'] = $_SESSION['_flash']['tags']['isbn-scanned'];
-    unset($_SESSION['_flash']['tags']);
-} ?>
-
+<?php if(isset($_SESSION['_flash']['isbn-choices'])) { $store = $_SESSION['_flash']['isbn-choices']; $store['index'] = $_SESSION['_flash']['tags']['reeks-index']; $store['isbn'] = $_SESSION['_flash']['tags']['isbn-scanned']; unset($_SESSION['_flash']['tags']); } ?>
 <div id="isbn-preview" class="modal-cont">
     <div class="modal-content-cont">
         <div class="modal-header-cont">
@@ -21,7 +15,6 @@
             </form>
             <?php endif; ?>
         </div>
-
         <div class="modal-body">
             <form class="modal-form" enctype="multipart/form-data" method="post" action="/scanConf">
                 <input class="modal-form-isbn" name="isbn-choice" value="<?=$store['isbn']?>" hidden/>
@@ -36,7 +29,6 @@
                         <?php   endif;
                             endforeach; ?>
                     </select>
-
                     <div class="butt-box">
                         <input class="modal-form-button button" id="prevSubm" type="submit" value="Bevestigen"/>
                     </div>
@@ -44,11 +36,6 @@
                 <div class="modal-form-right-cont"></div>
             </form>
         </div>
-        
     </div>
 </div>
-
-<script>
-    const prevSubm = document.getElementById('prevSubm');
-    prevSubm.addEventListener('click', saveScroll);
-</script>
+<script> const prevSubm = document.getElementById('prevSubm'); prevSubm.addEventListener('click', saveScroll); </script>

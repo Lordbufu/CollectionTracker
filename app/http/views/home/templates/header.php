@@ -12,9 +12,7 @@
 if(isset($_SESSION['_flash']['tags']['pop-in'])) :
 	if($_SESSION['_flash']['tags']['pop-in'] === 'bScan') : ?>
 		<script src="js/html5-qrcode.min.js"></script>
-<?php
-	endif;
-endif; ?>
+<?php endif; endif; ?>
 
 <?php // Attempt to load all css and js based on the uri and stored user.
 switch($_SERVER["REQUEST_URI"]) :
@@ -27,8 +25,7 @@ switch($_SERVER["REQUEST_URI"]) :
 			<link rel="stylesheet" type="text/css" href="css/home-ipad.css" >
 <?php	else : ?>
 			<script src="js/static-elements.js"></script>
-<?php	endif;
-		break;
+<?php	endif; break;
 	// case for default home page -> '/home':
 	case '/home':
 		if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'guest') : ?>
@@ -39,9 +36,7 @@ switch($_SERVER["REQUEST_URI"]) :
 				<link rel="stylesheet" type="text/css" href="css/home-ipad.css" >
 <?php		else : ?>
 				<script src="js/static-elements.js"></script>
-<?php		endif;
-		endif;
-		break;
+<?php		endif; endif; break;
 	// case for default user page -> '/gebruik':
 	case '/gebruik':
 		// Loop for the 'user' user, the gebruik page.
@@ -53,9 +48,7 @@ switch($_SERVER["REQUEST_URI"]) :
 				<link rel="stylesheet" type="text/css" href="css/gebruik-ipad.css" >
 <?php		else : ?>
 				<script src="js/static-elements.js"></script>
-<?php		endif;
-		endif;
-		break;
+<?php		endif; endif; break;
 	// case for default administrator page -> '/beheer':
 	case '/beheer':
 		if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') : ?>
@@ -66,10 +59,7 @@ switch($_SERVER["REQUEST_URI"]) :
 				<link rel="stylesheet" type="text/css" href="css/beheer-ipad.css" >
 <?php		else : ?>
 				<script src="js/static-elements.js"></script>
-<?php		endif;
-		endif;
-		break;
-	endswitch; ?>
+<?php		endif; endif; break; endswitch; ?>
 
 
 <?php // Store device type in browser storage, for JS script triggers.

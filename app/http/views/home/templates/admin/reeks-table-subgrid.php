@@ -1,19 +1,8 @@
 <?php // Ensure the correct data is set, depending on the session _flash content.
-if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $hReek = inpFilt($_SESSION['page-data']['huidige-reeks']);
-}
-
-if(isset($_SESSION['page-data']['reeks'])) {
-    $reeks = $_SESSION['page-data']['reeks'];
-}
-?>
-
-<div class="table-header">
-    <h2 class="table-header-text"><?=$hReeks ?? 'Selecteer een Reeks'?></h2>
-</div>
-
+if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReek = inpFilt($_SESSION['page-data']['huidige-reeks']); }
+if(isset($_SESSION['page-data']['reeks'])) { $reeks = $_SESSION['page-data']['reeks']; } ?>
+<div class="table-header"> <h2 class="table-header-text"><?=$hReeks ?? 'Selecteer een Reeks'?></h2> </div>
 <table class="reeks-table">
-
     <tr class="reeks-table-titles">
         <th style="border: 0px;"></th>
         <th style="border: 0px;"></th>
@@ -24,9 +13,7 @@ if(isset($_SESSION['page-data']['reeks'])) {
         <th class="reeksOpmTitle">Reeks Opmerking</th>
         <th>Reeks Items</th>
     </tr>
-
-<?php   // Loop over the reeks data is there is any
-if($reeks) :
+<?php if($reeks) :
     foreach($reeks as $key => $value) : ?>
     <tr class="reeks-table-cont-<?=$value['Reeks_Index']?>">
         <th class="reeks-view">
@@ -35,7 +22,6 @@ if($reeks) :
                 <input class="reeks-view-butt" type="submit" value=""/>
             </form>
         </th>
-
         <th class="reeks-bew">
             <form class="reeks-edit-form" method="post" action="/rEdit">
                 <input class="reeks-edit-form-method" name="_method" value="PATCH" hidden/>
@@ -43,7 +29,6 @@ if($reeks) :
                 <input class="reeks-edit-butt" id="reeks-edit-butt" type="submit" value=""/>
             </form>
         </th>
-
         <th class="reeks-del">
             <form class="reeks-edit-form" method="post" action="/rDel">
                 <input class="reeks-del-form-method" name="_method" value="DELETE" hidden/>
@@ -52,7 +37,6 @@ if($reeks) :
                 <input class="reeks-del-butt" id="<?=$value['Reeks_Index']?>" value="" onclick="return reeksVerwijderen(event)"/>
             </form>
         </th>
-
         <th class="reeks-naam"><?=inpFilt($value['Reeks_Naam'])?></th>
         <th class="reeks-cover">
             <?php if(!empty($value['Reeks_Plaatje'])) : ?>
@@ -63,46 +47,18 @@ if($reeks) :
         <th class="reeks-opmerk"><?=inpFilt($value['Reeks_Opmerk'])?></th>
         <th class="reeks-items"><?=$value['Item_Aantal']?></th>
     </tr>
-<?php
-    endforeach;
-endif; ?>
+<?php endforeach; endif; ?>
 </table>
-
 <script>
     /* Elements, button states and listen events for editing a serie */
-    const serieBewButt = document.getElementsByClassName('reeks-edit-butt');
-    const serieBewButtArr = Array.from(serieBewButt);
-    for(key in serieBewButtArr) {
-        serieBewButtArr[key].addEventListener('click', saveScroll);
-    }
-
+    const serieBewButt = document.getElementsByClassName('reeks-edit-butt'), serieBewButtArr = Array.from(serieBewButt);
+    for(key in serieBewButtArr) { serieBewButtArr[key].addEventListener('click', saveScroll); }
     /* Elements and listen events for removing series */
-    const serieVerButt = document.getElementsByClassName('reeks-del-butt');
-    const serieVerButtArr = Array.from(serieVerButt);
-    for(key in serieVerButtArr) {
-        serieVerButtArr[key].addEventListener('click', saveScroll);
-    }
-
-    /*  serieVerwijderen(e:
-        A simple confirmation check, that displays the serie name, and triggers the submit button base on said confirmation.
-            rowCol  - The table row in witch the button was pressed.
-            rowArr  - The table row in array format for easier access.
-            conf    - The confirmation box when the button is pressed.
-
-        Return Value: Boolean.
-     */
+    const serieVerButt = document.getElementsByClassName('reeks-del-butt'), serieVerButtArr = Array.from(serieVerButt);
+    for(key in serieVerButtArr) { serieVerButtArr[key].addEventListener('click', saveScroll); }
+    /* serieVerwijderen(e): A simple confirmation check, that displays the serie name, and triggers the submit button base on said confirmation. */
     function reeksVerwijderen(e) {        
-        const rowCol = document.getElementsByClassName('reeks-table-cont-' + e.target.id );
-        const rowArr = Array.from(rowCol);
-        const conf = confirm('Weet u zeker dat de Serie: ' + rowArr[0].children[3].innerHTML + '\n Haar albums en alle collectie data wilt verwijderen ?');
-
-        if(conf) {
-            return e.target.closest('form').submit();
-        } else {
-            if(sessionStorage.scrollPos) {
-                sessionStorage.removeItem('scrollPos');
-            }
-            return false;
-        }
+        const rowCol = document.getElementsByClassName('reeks-table-cont-' + e.target.id ), rowArr = Array.from(rowCol), conf = confirm('Weet u zeker dat de Serie: ' + rowArr[0].children[3].innerHTML + '\n Haar albums en alle collectie data wilt verwijderen ?');
+        if(conf) { return e.target.closest('form').submit(); } else { if(sessionStorage.scrollPos) { sessionStorage.removeItem('scrollPos'); } return false; }
     }
 </script>

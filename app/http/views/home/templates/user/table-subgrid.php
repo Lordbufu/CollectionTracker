@@ -1,23 +1,11 @@
 <?php // Store the correct data from the session.
-if(isset($_SESSION['page-data']['huidige-reeks'])) {
-    $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']);
-}
+if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']); }
+if(isset($_SESSION['page-data']['items'])) { $items = $_SESSION['page-data']['items']; }
+if(isset($_SESSION['page-data']['collecties'])) { $coll = $_SESSION['page-data']['collecties']; } ?>
 
-if(isset($_SESSION['page-data']['items'])) {
-    $items = $_SESSION['page-data']['items'];
-}
-
-if(isset($_SESSION['page-data']['collecties'])) {
-    $coll = $_SESSION['page-data']['collecties'];
-}
-?>
-
-<div class="table-header">
-    <h2 class="gebruik-weerg-header"><?=$hReeks ?? 'Selecteer een Reeks'?></h2>
-</div>
+<div class="table-header"> <h2 class="gebruik-weerg-header"><?=$hReeks ?? 'Selecteer een Reeks'?></h2> </div>
 
 <table class="item-table">
-
     <tr class="item-table-titles">
         <th>Aanwezig</th>
         <th>Item Naam</th>
@@ -29,20 +17,12 @@ if(isset($_SESSION['page-data']['collecties'])) {
         <th class="itemOpmTitle">Opmerking</th>
     </tr>
 
-<?php // Loop over all loaded item, and set collection status to false.
-if(isset($items)) :
+<?php if(isset($items)) :
     foreach($items as $key => $value) :
         $aanw = false; ?>
         <tr class="item-tafel-inhoud" id="items-table-content-<?=$value['Item_Index']?>">
             <th class="item-aanw">
-<?php   // If item is in colllection, set state to true
-        foreach($coll as $iKey => $iValue) {
-            if($iValue['Item_Index'] === $value['Item_Index']) {
-                $aanw = true;
-            }
-        }
-
-        // Render the correct 'slider' based on the collection status.
+<?php foreach($coll as $iKey => $iValue) { if($iValue['Item_Index'] === $value['Item_Index']) { $aanw = true; } }
         if(!$aanw) : ?>
                 <form class="item-aanw-form" method="post" action="/colAdd">
                     <input class="item-aanw-form-method" name="_method" value="PUT" hidden/>
@@ -53,7 +33,6 @@ if(isset($items)) :
                     </label>
                 </form>
 <?php   else : ?>
-
                 <form class="item-aanw-form" method="post" action="/colRem">
                     <input class="item-aanw-form-method" name="_method" value="DELETE" hidden/>
                     <input class="item-aanw-form-index" name="index" value="<?=$value['Item_Index']?>" hidden/>
@@ -88,22 +67,12 @@ if(isset($items)) :
     if(localDevice === 'mobile') {
         const nameEl = document.getElementsByClassName('item-naam');
         let tempEl = Array.from(nameEl);
-
-        tempEl.forEach((item, index, arr) => {
-            arr[index].addEventListener('click', viewDetails);
-        });
+        tempEl.forEach((item, index, arr) => { arr[index].addEventListener('click', viewDetails); });
     }
-    
     /* Assing a listenEvent to all checkboxes on the page */
     const chBox = document.getElementsByClassName('item-aanw-checkbox');
     chBoxArr = Array.from(chBox);
-    chBoxArr.forEach( (item, index, arr) => {
-        arr[index].addEventListener('change', checkBox);
-    });
-
-    /*  checkBox(e): Checkbox listenEvent that simply submits the form. */
-    function checkBox(e) {
-        saveScroll(e);
-        return e.target.closest('form').submit();
-    }
+    chBoxArr.forEach( (item, index, arr) => { arr[index].addEventListener('change', checkBox); });
+    /* checkBox(e): Checkbox listenEvent that simply submits the form. */
+    function checkBox(e) { saveScroll(e), return e.target.closest('form').submit(); }
 </script>
