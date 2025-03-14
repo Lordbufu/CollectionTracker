@@ -6,20 +6,17 @@ use App\Core\App;
 if(isset($_POST['naam'])) {
     $flash = [
         'tags' => [
-            'pop-in' => 'items-maken',
-            'method' => 'PUT',
-            'rIndex' => App::resolve('reeks')->getKey([
-                'Reeks_Naam' => $_POST['naam']],
-                'Reeks_Index'
-    )]];
+            'oldItem' => [
+                'method' => 'PUT',
+                'rIndex' => App::resolve('reeks')->getKey(['Reeks_Naam' => $_POST['naam']], 'Reeks_Index')
+            ],
+            'pop-in' => 'items-maken'
+    ]];
 }
 
 /* Condition for the item-edit button in the table view. */
 if(isset($_POST['iIndex'])) {
-    $item = App::resolve('items')->getAllFor([
-        'Item_Index' => $_POST['iIndex']
-    ])[0];
-    
+    $item = App::resolve('items')->getAllFor(['Item_Index' => $_POST['iIndex']])[0];
     $editItem = [
         'rIndex' => $item['Item_Reeks'],
         'iIndex' => $item['Item_Index'],
@@ -29,21 +26,18 @@ if(isset($_POST['iIndex'])) {
         'autheur' => $item['Item_Auth'],
         'cover' => $item['Item_Plaatje'],
         'isbn' => $item['Item_Isbn'],
-        'opmerking' => $item['Item_Opm']
+        'opmerking' => $item['Item_Opm'],
+        'method' => $_POST['_method']
     ];
 
     $flash = [
         'oldItem' => $editItem,
         'tags' => [
-            'pop-in' => 'items-maken',
-            'method' => $_POST['_method']
+            'pop-in' => 'items-maken'
     ]];
 }
 
-/* Clear old session _flash data. */
+/* Clear old session _flash data, set the new flash data, and redirect to the pop-in. */
 App::resolve('session')->unflash();
-
-/* Store the prepared flash data, and redirect to the 'items-maken-pop-in', preserving the _flash data. */
 App::resolve('session')->flash($flash);
-
 return App::redirect('beheer#items-maken-pop-in', TRUE);

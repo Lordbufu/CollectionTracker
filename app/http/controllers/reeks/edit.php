@@ -4,15 +4,8 @@ use App\Core\App;
 
 /* Check if index was set, and request/store all required data for both the success and fail scenario. */
 if(isset($_POST['index'])) {
-    $oldName = App::resolve('reeks')->getKey([
-        'Reeks_Index' => $_POST['index']],
-        'Reeks_Naam'
-    );
-
-    $ids = [
-        'Reeks_Index' => $_POST['index']
-    ];
-
+    $ids = ['Reeks_Index' => $_POST['index']];
+    $oldName = App::resolve('reeks')->getKey(['Reeks_Index' => $_POST['index']], 'Reeks_Naam');
     $oldForm = [
         'method' => $_POST['_method'],
         'index' => $_POST['index'],
@@ -31,16 +24,14 @@ if(isset($oldName)) {
 
 /* If reeks was not stored properly, prep the correct _flash data and user feedback, before returning to the pop-in again. */
 if(is_string($store)) {
-    $flash = [
+    App::resolve('session')->flash([
         'oldForm' => $oldForm,
         'feedback' => [
             'error' => $store
         ],
         'tags' => [
             'pop-in' => 'reeks-maken'
-    ]];
-
-    App::resolve('session')->flash($flash);
+    ]]);
     return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
 

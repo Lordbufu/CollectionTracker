@@ -2,7 +2,7 @@
 
 use App\Core\App;
 
-/* Sotre raw input for pre-filling the form agian after errors. */
+/* Store raw input for pre-filling the form agian after errors. */
 $oInput = [
     'method' => $_POST['_method'],
     'naam' => $_POST['naam'],
@@ -59,19 +59,13 @@ if(is_string($store)) {
     return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
 
-/* Clear old session _flash data. */
+/* Clear old session _flash data, update the session page-data for the 'reeks' key, provide usefull feedback, and redirect to the default 'beheer' page. */
 App::resolve('session')->unflash();
 
-/* Update the session page-data for the 'reeks' key. */
 if(isset($_SESSION['page-data']['reeks'])) {
-    App::resolve('session')->setVariable('page-data', [
-        'reeks' => App::resolve('reeks')->getAllReeks()
-    ]);
+    unset($_SESSION['page-data']['reeks']);
+    App::resolve('session')->setVariable('page-data', ['reeks' => App::resolve('reeks')->getAllReeks()]);
 }
 
-/* Provide usefull feedback, and redirect to the default 'beheer' page. */
-App::resolve('session')->flash('feedback', [
-    'success' => "De reeks: {$oldFilData['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"
-]);
-
+App::resolve('session')->flash('feedback', ['success' => "De reeks: {$oldFilData['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
 return App::redirect('beheer', TRUE);

@@ -26,26 +26,17 @@ if(is_array($validate) || is_string($pInput) || !$plaatje) {
     $feedback = [];
 
     /* The order i store things here, is relevant to prevent overwriting already stored errors. */
-    if(is_array($validate)) {
-        $feedback = $validate;
-    }
-    
-    if(is_string($pInput)) {
-        $feedback['process-error'] = $pInput;
-    }
+    if(is_array($validate)) { $feedback = $validate; }
+    if(is_string($pInput)) { $feedback['process-error'] = $pInput; }
+    if(!$plaatje && isset($cover)) { $feedback['cover-error'] = $cover; }
 
-    if(!$plaatje && isset($cover)) {
-        $feedback['cover-error'] = $cover;
-    }
-
-    $flash = [
+    App::resolve('session')->flash([
         'feedback' => $feedback,
         'oldForm' => $oInput,
         'tags' => [
             'pop-in' => 'items-maken'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE); 
 }
 
@@ -53,36 +44,25 @@ if(is_array($validate) || is_string($pInput) || !$plaatje) {
 $store = App::resolve('items')->createItem($pInput);
 
 if(is_string($store)) {
-    $flash = [
+    App::resolve('session')->flash([
         'oldForm' => $oInput,
         'feedback' => [
             'error' => $store
         ],
         'tags' => [
             'pop-in' => 'items-maken'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
 /* If the store had no errors, i start by refreshing the session page-data. */
 if(isset($_SESSION['page-data']['items'])) {
     unset($_SESSION['page-data']['items']);
-
-    App::resolve('session')->setVariable('page-data', [
-        'items' => App::resolve('items')->getAllFor([
-            'Item_Reeks' => $_POST['rIndex']
-        ])
-    ]);
+    App::resolve('session')->setVariable('page-data', ['items' => App::resolve('items')->getAllFor(['Item_Reeks' => $_POST['rIndex']])]);
 }
 
-/* Clear old session _flash data. */
+/* Clear old session _flash data, then prepare the user feedback before returning back to default page. */
 App::resolve('session')->unflash();
-
-/* Then i prepare the user feedback before returning back to default page. */
-App::resolve('session')->flash('feedback', [
-    'success' => "Het item: {$pInput['Item_Naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"
-]);
-
+App::resolve('session')->flash('feedback', ['success' => "Het item: {$pInput['Item_Naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
 return App::redirect('beheer', TRUE);

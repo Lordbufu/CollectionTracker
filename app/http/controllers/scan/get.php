@@ -6,10 +6,7 @@ use App\Core\App;
 $route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
 if(!isset($_POST['item-isbn']) || !isset($_POST['reeks-index'])) {
-    App::resolve('session')->flash('feedback', [
-        'error' => App::resolve('errors')->getError('forms', 'input-missing')
-    ]);
-
+    App::resolve('session')->flash('feedback', ['error' => App::resolve('errors')->getError('forms', 'input-missing')]);
     return App::redirect($route, TRUE);
 }
 
@@ -23,13 +20,9 @@ if($route === 'beheer') {
 /* If no array is returned or errors where set, i handover the correct user feedback, and redirect to the default page. */
 if(!is_array($apiRequest) || isset($apiRequest['error'])) {
     if(is_string($apiRequest)) {
-        App::resolve('session')->flash('feedback', [
-            'error' => $apiRequest
-        ]);
+        App::resolve('session')->flash('feedback', ['error' => $apiRequest]);
     } else {
-        App::resolve('session')->flash('feedback', [
-            'error' => $apiRequest['error']
-        ]);
+        App::resolve('session')->flash('feedback', ['error' => $apiRequest['error']]);
     }
 
     return App::redirect($route, TRUE);
@@ -37,21 +30,18 @@ if(!is_array($apiRequest) || isset($apiRequest['error'])) {
 
 /* If the Administrator action returend a title choice: */
 if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
-    $flash = [
-        /* Store the title choices, and associated user feedback. */
+    $apiRequest['isbn-scanned'] = $_POST['item-isbn'];
+    $apiRequest['reeks-index'] = $_POST['reeks-index'];
+
+    App::resolve('session')->flash([
         'isbn-choices' => $apiRequest,
         'feedback' => [
             'choice' => 'Er zijn meerdere items gevonden, maakt aub een keuze die overeenkomt met wat u gescanned heeft !'
         ],
-        /* Tags required to load and pre-fill the next form. */
         'tags' => [
-            'pop-in' => 'isbn-preview',
-            'isbn-scanned' =>  $_POST['item-isbn'],
-            'reeks-index' => $_POST['reeks-index']
-    ]];
+            'pop-in' => 'isbn-preview'
+    ]]);
 
-    /* Flash the data and redirect to the isbn-preview pop-in ending the admin route. */
-    App::resolve('session')->flash($flash);
     return App::redirect("{$route}#isbn-preview", TRUE);
 }
 
@@ -61,38 +51,21 @@ $aanwezig = App::resolve('collectie')->evalColl($apiRequest);
 
 /* If the item wasnt evaluated properly, prepare the userfeedback and redirect back to the default user page. */
 if(is_string($aanwezig)) {
-    App::resolve('session')->flash('feedback', [
-        'error' => $aanwezig
-    ]);
-
+    App::resolve('session')->flash('feedback', ['error' => $aanwezig]);
     return App::redirect($route, TRUE);
 }
 
 /* If it said the item was already in the user collection, remove it and add the associated feedback. */
 if($aanwezig) {
-    App::resolve('collectie')->remColl([
-        'index' => $apiRequest['Item_Index']
-    ]);
-
-    App::resolve('session')->flash('feedback', [
-        'removed' => "Gescanned item: {$iName}. \n Is uit uw collectie verwijderdt!"
-    ]);
-
+    App::resolve('collectie')->remColl(['index' => $apiRequest['Item_Index']]);
+    App::resolve('session')->flash('feedback', ['removed' => "Gescanned item: {$iName}. \n Is uit uw collectie verwijderdt!"]);
 /* If it said the item wasnt in the user collection, add it and add the associated feedback. */
 } else {
-    App::resolve('collectie')->addColl([
-        'iIndex' => $apiRequest['Item_Index'],
-        'rIndex' => $apiRequest['Item_Reeks']
-    ]);
-
-    App::resolve('session')->flash('feedback', [
-        'added' => "Gescanned item: {$iName}. \n Is aan uw collectie toegevoegd!"
-    ]);
+    App::resolve('collectie')->addColl(['iIndex' => $apiRequest['Item_Index'], 'rIndex' => $apiRequest['Item_Reeks']]);
+    App::resolve('session')->flash('feedback', [ 'added' => "Gescanned item: {$iName}. \n Is aan uw collectie toegevoegd!"]);
 }
 
 /* Update the user collectie page-data, and redirect back to the default user page. */
-App::resolve('session')->setVariable('page-data', [
-    'collecties' => App::resolve('collectie')->getColl()
-]);
-
+if(isset($_SESSION['page-data']['collecties'])) { unset($_SESSION['page-data']['collecties']); }
+App::resolve('session')->setVariable('page-data', ['collecties' => App::resolve('collectie')->getColl()]);
 return App::redirect($route, TRUE);

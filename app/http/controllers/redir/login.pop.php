@@ -2,12 +2,7 @@
 
 use App\Core\App;
 
-/* Clear old session _flash data. */
+/* Clear old session _flash data, set the pop-in tag, and redirect to the pop=-in. */
 App::resolve('session')->unflash();
-
-/* To reduce page clutter, the pop-ins have been gated behind a session _flash tag. */
-App::resolve('session')->flash('tags', [
-    'pop-in' => 'login'
-]);
-
+App::resolve('session')->flash('tags', ['pop-in' => 'login']);
 return App::redirect('home#login-pop-in', TRUE);

@@ -11,6 +11,7 @@ class FormValidator {
     /*  validate($attributes):
             This function links the validator to form validation, and provides meaningfull errors that can serve as user feedback.
                 $attributes (Assoc Arr) - The data that needs to be validated, usually the entire POST.
+                $stringKeys_# (Array)   - The key names i want to check, to combine similar validations.
             
             Return Value:
                 On failure - String.
@@ -18,6 +19,9 @@ class FormValidator {
      */
     public static function validate($attributes) {
         foreach($attributes as $key => $value) {
+            $stringKeys_1 = ['wachtwoord', 'gebr-naam'];
+            $stringKeys_2 = ['naam', 'autheur'];
+
             if($key === 'email' && !App::resolve('validator')::email($value)) {
                 self::$errors['email'] = App::resolve('errors')->getError('validation', 'user-mail');
             }
@@ -26,20 +30,20 @@ class FormValidator {
                 self::$errors['secure'] = App::resolve('errors')->getError('validation', 'pw-sec');
             }
 
-            if($key === 'wachtwoord' && !App::resolve('validator')::string($value, 7, 35)) {
-                self::$errors['password'] = App::resolve('errors')->getError('validation', 'user-pw');
+            if(in_array($key, $stringKeys_1) && !App::resolve('validator')::string($value, 7, 35)) {
+                if($key === 'wachtwoord') {
+                    self::$errors['password'] = App::resolve('errors')->getError('validation', 'user-pw');
+                } else {
+                    self::$errors['gebr-naam'] = App::resolve('errors')->getError('validation', 'user-name');
+                }
             }
 
-            if($key === 'gebr-naam' && !App::resolve('validator')::string($value, 5, 25)) {
-                self::$errors['gebr-naam'] = App::resolve('errors')->getError('validation', 'user-name');
-            }
-
-            if($key === 'naam' && !App::resolve('validator')::string($value, 5, 50)) {
-                self::$errors['naam'] = App::resolve('errors')->getError('validation', 'naam-input');
-            }
-
-            if($key === 'autheur' && !App::resolve('validator')::string($value, 7, 50)) {
-                self::$errors['makers'] = App::resolve('errors')->getError('validation', 'autheur');
+            if(in_array($key, $stringKeys_2) && !App::resolve('validator')::string($value, 7, 50)) {
+                if($key === 'naam') {
+                    self::$errors['naam'] = App::resolve('errors')->getError('validation', 'naam-input');
+                } else {
+                    self::$errors['makers'] = App::resolve('errors')->getError('validation', 'autheur');
+                }
             }
 
             if($key === 'opmerking' && !App::resolve('validator')::string($value, 1, 254)) {

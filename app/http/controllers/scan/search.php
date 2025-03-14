@@ -10,36 +10,33 @@ $searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rInde
 
 /* If there where errors, store the correct data in the session, before redirecting back to the pop-in. */
 if(is_string($searchResult)) {
-    $flash = [
+    App::resolve('session')->flash([
         'oldForm' => $oInput,
         'feedback' => [
             'error' => $searchResult
         ],
         'tags' => [
-            'method' => $_POST['_method'],
-            'rIndex' => $_POST['rIndex'],
             'pop-in' => 'items-maken'
-    ]];
-
-    App::resolve('session')->flash($flash);
+    ]]);
 
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
 /* Check if i need to present a title choice to the user. */
 if(isset($searchResult[0]) && $searchResult[0] === 'Titles') {
-    $flash = [
+    /* Ensure the right POST data is passed on. */
+    $searchResult['method'] = $_POST['method'];
+    $searchResult['rIndex'] = (int) $_POST['rIndex'];
+
+    App::resolve('session')->flash([
         'isbn-choices' => $searchResult,
         'feedback' => [
             'choice' => 'De volgende titles zijn gevonden, maak aub een keuze !'
         ],
         'tags' => [
-            'reeks-index' => $_POST['rIndex'],
-            'isbn-scanned' => $_POST['isbn'],
             'pop-in' => 'isbn-preview'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#isbn-preview', TRUE);
 }
 
@@ -54,33 +51,27 @@ $newItem['method'] = $_POST['_method'];
 
 /* If no relevant item data was parsed previously, i throw a search error, although im not sure its even relevant at this point. */
 if(!isset($newItem['naam']) && !isset($newItem['isbn'])) {
-    $flash = [
+    App::resolve('session')->flash([
         'oldForm' => $oInput,
         'feedback' => [
             'error' => App::resolve('errors')->getError('isbn', 'search-error')
         ],
         'tags' => [
             'pop-in' => 'items-maken'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/* Prepare all the correct session data, and redirect to the pop-in to present the results to the user. */
-$flash = [
+/* Clear old session _flash data, flash the new data, and redirect to the correct pop-in, preserving said flash data. */
+App::resolve('session')->unflash();
+App::resolve('session')->flash([
     'newItem' => $newItem,
     'feedback' => [
         'gevonden' => 'De data die is gevonden is ingevult, controleer of deze klopt met wat er verwacht wordt !'
     ],
     'tags' => [
         'pop-in' => 'items-maken'
-]];
+]]);
 
-/* Clear old session _flash data. */
-App::resolve('session')->unflash();
-
-
-/* Flash the new data, and redirect to the correct pop-in, preserving said flash data. */
-App::resolve('session')->flash($flash);
 return App::redirect('beheer#items-maken-pop-in', TRUE);

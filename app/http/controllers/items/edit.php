@@ -12,12 +12,12 @@ $uInput = App::resolve('process')->store('items', $_POST);
 /* Deal with the potentially uploaded image file, or the stored image file in either the session or database. */
 $plaatje = FALSE;
 
-if($_FILES['cover']['error'] === 0) {                                               // Check if user input was used,
+if($_FILES['cover']['error'] === 0) {
     $cover = App::resolve('file')->procFile($_FILES['cover']);
     if(!is_array($cover)) {
         $plaatje = TRUE;
     }
-} else {                                                                            // or attempt to load from database if nothing was found otherwhise.
+} else {
     $cover = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
     ])->find('Item_Plaatje');
@@ -32,14 +32,13 @@ if(is_array($validate) || !$plaatje) {
         $validate['file-error'] = $cover;
     }
 
-    $flash = [
+    App::resolve('session')->flash([
         'oldForm' => $oInput,
         'feedback' => $validate,
         'tags' => [
             'pop-in' => 'items-maken'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
@@ -59,23 +58,21 @@ $oldName = App::resolve('items')->getKey([
 $store = App::resolve('items')->updateItems($uInput);
 
 if(is_string($store)) {
-    $flash = [
+    App::resolve('session')->flash([
+        'oldForm' => $oInput,
         'feedback' => [
             'error' => $store
         ],
-        'oldForm' => $oInput,
         'tags' => [
             'pop-in' => 'items-maken'
-    ]];
+    ]]);
 
-    App::resolve('session')->flash($flash);
     return App::redirect('beheer#items-maken-pop-in', TRUE);
 }
 
-/* Clear old session _flash data. */
+/* Clear old session _flash data, perpare the correct user feedback, based on if the item name changed or not. */
 App::resolve('session')->unflash();
 
-/* Perpare the correct user feedback, based on if the item name changed or not. */
 if($oldName !== $_POST['naam']) {
     App::resolve('session')->flash('feedback', [
         'klaar' => "Het item: {$oldName} \n Is voor uw aangepast met de naam: {$_POST['naam']} !"
