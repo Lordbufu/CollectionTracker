@@ -1,15 +1,13 @@
 Global TODO List:
     - Keep reviewing the bar scan and isbn search functions.
+    - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
     - See if i can make a more interesting complex password check, atm it seem very dumb.
 
     ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
-    - Adjust JS input validation, to be inline with string lengths set in the FormValidator class.
-    - Review how to deal with to long item\reeks descriptions (opmerking), specifically related to isbn scan/search functions.
-    - Review the 'controllers/scan/confirm.php' code, and figure out a edit item path, as its a add path atm (method = PUT).
-    - Review the 'controllers/scan/confirm.php' code, consider making a seperate class, to process the Google API data into a usefull data.
-    - Review what i am doing with the version noted in the config.php, i proll had a plan for that, but never actually used it ?
+    - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
+        - But how do i deal with very long descriptions from the Google API or user input, when there is no indication of what the input count is ?
+        - How should i better deal with the feedback here, since the user cant see the length before submitting, and there is no indication of the limit iether.
     - The 'Isbn' core class, still needs more clean up, and potentially improvements.
         - For now it works as expected, but seems overly complex, and is still missing a way to deal with (for example), multiple writers.
         - Review how to deal with multiple autheurs/writers, in the scan controllers (confirm.php).
-    - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.

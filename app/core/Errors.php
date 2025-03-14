@@ -14,7 +14,7 @@ class Errors {
 
     /* Validation specific errors. */
     protected $validation = [
-        'user-name' => 'Uw gebruikers naam voldoet niet aan de eisen, zorg dat het tussen de 5 en 25 tekens is.',
+        'user-name' => 'Uw gebruikers naam voldoet niet aan de eisen, zorg dat het tussen de 5 en 35 tekens is.',
         'user-mail' => 'Het Email adress dat u opgegeven heeft, is geen geldig email adress.',
         'user-pw' => 'Het wachtwoord voldoet niet aan de gestelde eisen, zorg dat het tussen de 7 en 35 tekens is.',
         'pw-sec' => 'Uw wachtwoord bevat aleen letters en\of nummers, gebruik aub een combinatie van verschillende dingen.',
