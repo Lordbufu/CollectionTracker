@@ -15,7 +15,7 @@ if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['newRee
         <div class="modal-body">
             <div class="modal-form-left-cont">
                 <form class="modal-form" enctype="multipart/form-data" method="post" action="/reeksM">
-                    <p id="modal-small-text" class="modal-small-text" > De serie naam is een verplicht veld </p>
+                    <p id="modal-small-text" class="modal-small-text" >De reeks naam is een verplicht veld.</p>
                     <input class="modal-form-hidden-method" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
                     <input class="modal-form-hidden-index" name="index" value="<?=$store['index'] ?? ''?>" hidden/>
                     <label class="modal-form-label">
