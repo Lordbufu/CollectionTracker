@@ -13,6 +13,7 @@
                     <input type="email" class="modal-form-input" id="emailField" name="email" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">E-mail</span>
                 </label>
+                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 1 hoofdletter, een getal, een speciaal teken en in totaal 7 tekens lang zijn.</p>
                 <label class="modal-form-label">
                     <input type="password" class="modal-form-input" id="resetVeld1" name="wachtwoord1" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">Nieuw Wachtwoord</span>
@@ -26,7 +27,6 @@
                 </div>
             </form>
         </div>
-        
     </div>
 </div>
 <script>

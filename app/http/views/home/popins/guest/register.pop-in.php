@@ -1,12 +1,11 @@
-<?php // Ensure the old form data is set, when the controller returned it on errors.
-if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; } ?>
-<div id="account-maken-pop-in" class="modal-cont" >
+<?php if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; } ?>
+<div id="account-maken-pop-in" class="modal-cont">
     <div class="modal-content-cont">
         <div class="modal-header-cont">
             <h3 class="modal-header-text" >Account Aanmaken</h3>
             <form class="modal-header-close-form" method="post" action="/home">
-                <input class="modal-header-input" name="return" value="back" hidden />
-                <input class="modal-header-close" type="submit" value="&times;" />
+                <input class="modal-header-input" name="return" value="back" hidden/>
+                <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
         </div>
         <div class="modal-body">
@@ -20,6 +19,7 @@ if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldFor
                     <input type="email" class="modal-form-input" name="email" placeholder="" autocomplete="on" value="<?= isset($store['email']) ? $store['email'] : '' ?>" required>
                     <span class="modal-form-span">E-Mail</span>
                 </label>
+                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 1 hoofdletter, een getal, een speciaal teken en in totaal 7 tekens lang zijn.</p>
                 <label class="modal-form-label">
                     <input type="password" class="modal-form-input" id="pwInp1" name="wachtwoord" autocomplete="on" placeholder="" required>
                     <span class="modal-form-span">Wachtwoord Invoeren</span>

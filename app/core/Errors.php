@@ -16,7 +16,7 @@ class Errors {
     protected $validation = [
         'user-name' => 'Uw gebruikers naam voldoet niet aan de eisen, zorg dat het tussen de 5 en 35 tekens is.',
         'user-mail' => 'Het Email adress dat u opgegeven heeft, is geen geldig email adress.',
-        'user-pw' => 'Het wachtwoord voldoet niet aan de gestelde eisen, zorg dat het tussen de 7 en 35 tekens is.',
+        'user-pw' => 'Het wachtwoord voldoet niet aan de gestelde eisen, zorg dat het tussen de 7 en 35 tekens is, en moet complex genoeg zijn.',
         'pw-sec' => 'Uw wachtwoord bevat aleen letters en\of nummers, gebruik aub een combinatie van verschillende dingen.',
         'naam-input' => 'De naam input voldoet niet aan de eisen, probeer het tussen de 5 en 50 tekens te houden.',
         'autheur' => 'De makers input voldoet niet aan de eisen, probeer het tussen de 7 en 50 tekens te houden.',

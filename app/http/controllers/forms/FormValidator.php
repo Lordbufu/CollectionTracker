@@ -32,7 +32,10 @@ class FormValidator {
 
             if(in_array($key, $stringKeys_1) && !App::resolve('validator')::string($value, 7, 35)) {
                 if($key === 'wachtwoord') {
-                    self::$errors['password'] = App::resolve('errors')->getError('validation', 'user-pw');
+                    $complex = App::resolve('validator')::complex($value);
+                    if(!$complex) {
+                        self::$errors['password'] = App::resolve('errors')->getError('validation', 'user-pw');
+                    }
                 } else {
                     self::$errors['gebr-naam'] = App::resolve('errors')->getError('validation', 'user-name');
                 }

@@ -36,4 +36,20 @@ class Validator {
     public static function pwSecure(string $value): bool {
         return !ctype_alnum($value);
     }
+
+    /*  complex($value):
+            This function checks if the password is complex enough, i only used a basic regex nothing to complex.
+            The regex explained:
+                - Has minimum 8 characters in length. Adjust it by modifying {8,}
+                - At least one uppercase English letter. You can remove this condition by removing (?=.*?[A-Z])
+                - At least one lowercase English letter.  You can remove this condition by removing (?=.*?[a-z])
+                - At least one digit. You can remove this condition by removing (?=.*?[0-9])
+                - At least one special character,  You can remove this condition by removing (?=.*?[#?!@$%^&*-])
+            
+            Return Value: Boolean.
+     */
+    public static function complex(string $value): bool {
+        $regex = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{7,}$/";
+        return perg_match($regex, $value);
+    }
 }
