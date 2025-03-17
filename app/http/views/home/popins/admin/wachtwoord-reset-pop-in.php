@@ -9,17 +9,17 @@
         </div>
         <div class="modal-body" id="modal-body" >
             <form class="modal-form" id="ww-reset-form" method="post" action="/aReset">
-            <input type="text" class="modal-form-input" name="_method" placeholder="" value="PATCH" hidden>
+                <input type="text" class="modal-form-input" name="_method" placeholder="" value="PATCH" hidden>
                 <label class="modal-form-label">
                     <input type="email" class="modal-form-input" id="emailField" name="email" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">E-mail</span>
                 </label>
                 <label class="modal-form-label">
-                    <input type="password" class="modal-form-input" id="resetVeld1" name="wachtwoord1" placeholder="" autocomplete="on" required>
+                    <input type="password" class="modal-form-input" id="pwInp1" name="wachtwoord1" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">Nieuw Wachtwoord</span>
                 </label>
                 <label class="modal-form-label">
-                    <input type="password" class="modal-form-input" id="resetVeld2" name="wachtwoord2" placeholder="" autocomplete="on" required>
+                    <input type="password" class="modal-form-input" id="pwInp2" name="wachtwoord2" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">Wachtwoord Bevestigen</span>
                 </label>
                 <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 7 tekens lang zijn, en 1 hoofdletter + getal & speciaal teken bevatten.</p>
@@ -30,11 +30,12 @@
         </div>
     </div>
 </div>
+
 <script>
-    /* Elements and listen events for the user password reset */
-    const resetVeld2 = document.getElementById('resetVeld2'); resetVeld2.addEventListener('input', pwChecker), pwSubButt = document.getElementById('reset-submit'), pwSubButt.disabled = true;
-    /* pwChecker(e): For visual confirmation, that both password entered are equal, and allowing submit only if they are. */
-    function pwChecker(e) { const resetVeld1 = document.getElementById('resetVeld1'); if(e.target.value === resetVeld1.value) { return e.target.style.outline = '3px solid green', pwSubButt.disabled = false; } else { return e.target.style.outline = '3px solid red', pwSubButt.disabled = true; } }
-    /* aResetBev(e): This function asks for user confirmation, before submitting the Admin password reset form. */
-    function aResetBev( e ) { const conf = confirm("Weet u zeker dat het wachtwoord van: "+ emailField.value +" veranderd moet worden ?"); if(conf) { return true; } else { return false; } }
+    let submButt= document.getElementById('reset-submit');
+    submButt.disabled = true;
+    let pwInp1 = document.getElementById('pwInp1');
+    pwInp1.addEventListener('input', validateInput);
+    let pwInp2 = document.getElementById('pwInp2');
+    pwInp2.addEventListener('input', validateInput);
 </script>

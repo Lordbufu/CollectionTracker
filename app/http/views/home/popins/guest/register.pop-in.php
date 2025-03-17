@@ -12,7 +12,7 @@
             <form class="modal-form" method="post" action="/register" >
                 <input type="text" class="modal-form-input" name="_method" placeholder="" value="PUT" hidden>
                 <label class="modal-form-label">
-                    <input class="modal-form-input" id="regNameInp" type="text" name="gebr-naam" placeholder="" autocomplete="on" value="<?= isset($store['gebr-naam']) ? inpFilt($store['gebr-naam']) : '' ?>" required>
+                    <input class="modal-form-input" id="nameInp" type="text" name="gebr-naam" placeholder="" autocomplete="on" value="<?= isset($store['gebr-naam']) ? inpFilt($store['gebr-naam']) : '' ?>" required>
                     <span class="modal-form-span">Gebruikers Naam</span>
                 </label>
                 <label class="modal-form-label">
@@ -40,6 +40,7 @@
         </div>
     </div>
 </div>
+
 <div id="gebr-overeenkomst" class="modal-cont">
     <div class="modal-content-cont">
         <div class="modal-header-cont">
@@ -75,19 +76,27 @@
         </div>
     </div>
 </div>
+
 <script>
     /* Events required for account registration */
-    const pwInp1 = document.getElementById('pwInp1'), pwInp2 = document.getElementById('pwInp2'), chBox = document.getElementById('chBox'), submButt = document.getElementById('reg-submit'), regNameInput = document.getElementById('regNameInp');
-    pwInp1.addEventListener('input', pwCheck), pwInp2.addEventListener('input', pwCheck), chBox.addEventListener('change', checkBox), regNameInput.addEventListener('input', userNaamCheck);
+    let chBox = document.getElementById('chBox');
+    let submButt = document.getElementById('reg-submit');
+    chBox.addEventListener('change', checkBox);
+    /* Validate the user name input */
+    let nameInp = document.getElementById('nameInp');
+    nameInp.addEventListener('input', validateInput);
+    /* Validate the user passwords */
+    let pwInp1 = document.getElementById('pwInp1');
+    let pwInp2 = document.getElementById('pwInp2');
+    pwInp1.addEventListener('input', validateInput);
+    pwInp2.addEventListener('input', validateInput);
     /* States required for account registration */
-    submButt.disabled = true; let pwChecked = false; let inputChecked = false;
-    /*  pwCheck(e): This function checks the users password input, and changes the button states and input style. */
-    function pwCheck(e) { if(pwInp1.value === pwInp2.value) { pwChecked = true, pwInp1.style.outline = '3px solid green', pwInp2.style.outline = '3px solid green'; if(inputChecked) { return submButt.disabled = false; } } else { return pwChecked = false, pwInp1.style.outline = '3px solid red', pwInp2.style.outline = '3px solid red', submButt.disabled = true; } }
-    /*  checkBox(e): This function checks the users input on the user agreement checkbox, similar to the pwCheck function. */
-    function checkBox(e) { if(e.target.checked) { inputChecked = e.target.checked; if(pwChecked) { return submButt.disabled = false; } } else { return inputChecked = e.target.checked, submButt.disabled = true; } }
-    /* userNaamCheck(e): Simple validate for the name inputs, with some visual feedback. */
-    function userNaamCheck(e) { const uInp = e.target.value, elStyle = e.target.style; if(uInp !== '' && uInp !== null && uInp !== undefined) { if(uInp.length >= 7 && uInp.length <= 35) { return elStyle.outline = '3px solid green'; } else { return elStyle.outline = '3px solid red'; } } }
+    let pwChecked = false;
+    nameChecked = false;
+    checkbChecked = false;
+    submButt.disabled = true;
 </script>
+
 <style>
     .modal-body { display: inline-flex; }
     .modal-form { display: block; }

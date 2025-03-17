@@ -1,5 +1,6 @@
 Global TODO List:
-    - Create JS listen events for all form validation events, so the user can see if the input is still correct.
+    - Create JS listen events for all form validation events, so the user can see if the input is still correct (already started).
+        - Finish the login form validation.
         - Give the input a green ouline if good, give it a red outline is bad.
         - This does not included complex logic, just string lengt etc.
     - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
