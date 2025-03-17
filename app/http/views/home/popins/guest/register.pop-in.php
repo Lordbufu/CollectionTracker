@@ -19,7 +19,6 @@
                     <input type="email" class="modal-form-input" name="email" placeholder="" autocomplete="on" value="<?= isset($store['email']) ? $store['email'] : '' ?>" required>
                     <span class="modal-form-span">E-Mail</span>
                 </label>
-                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 1 hoofdletter, een getal, een speciaal teken en in totaal 7 tekens lang zijn.</p>
                 <label class="modal-form-label">
                     <input type="password" class="modal-form-input" id="pwInp1" name="wachtwoord" autocomplete="on" placeholder="" required>
                     <span class="modal-form-span">Wachtwoord Invoeren</span>
@@ -28,6 +27,7 @@
                     <input type="password" class="modal-form-input" id="pwInp2" name="wachtwoord-bev" autocomplete="on" placeholder="" required>
                     <span class="modal-form-span">Wachtwoord Bevestigen</span>
                 </label>
+                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 7 tekens lang zijn, en 1 hoofdletter + getal & speciaal teken bevatten.</p>
                 <div class="butt-box">
                     <label class="modal-form-agree-text" for="chBox">
                         <input type="checkbox" class="modal-form-checkbox" id="chBox">

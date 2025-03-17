@@ -20,7 +20,7 @@ $router->delete('/colRem',	'collectie/remove.php')->only('user');      // Source
 $router->get('/beheer',		'home/beheer.view.php')->only('admin');		// Initial Source = 'http\controllers\user\login.php'
 $router->post('/beheer',	'home/beheer.view.php')->only('admin');		// Various sources, mostly return\close buttons.
 $router->get('/wwReset',	'redir/reset.pop.php')->only('admin');      // Source = 'http\views\home\template\admin\banner-subgrid.php' (Wachtw Reset knop)
-$router->post('/aReset',	'user/reset.php')->only('admin');           // Source = 'http\views\home\popins\admin\wachtwoord-reset-pop-in.php' (form submit button)
+$router->patch('/aReset',	'user/reset.php')->only('admin');           // Source = 'http\views\home\popins\admin\wachtwoord-reset-pop-in.php' (form submit button)
 
 /* Admin reeks actions */
     /* Admin reeks maken. */

@@ -72,6 +72,32 @@ class User {
         return TRUE;
     }
 
+    /* updateUser($data):
+            Fairly straight forward update querry, to change a specific user there password.
+                $data (Assoc Arr)       - The POST data from the password change request, as recieved by the controller itself.
+                $sqlData (Assoc Array)  - The user data prepared for the PDO request.
+                $userId (Assoc Array)   - The email adress from the user that needs its password changed.
+                $store (String/null)    - A temp store to evaluate the database opperation.
+            
+            Return Value:
+                On failure - String.
+                On success - Boolean.
+     */
+    public function updateUser($data) {
+        if(isset($data['email'])) {
+            $sqlData = ['Gebr_WachtW' => password_hash($data['wachtwoord1'], PASSWORD_BCRYPT)];
+            $userId = ['Gebr_Email' => $data['email']];
+        }
+
+        $store = App::resolve('database')->prepQuery('update', 'gebruikers', $userId, $sqlData)->getAll();
+
+        if(is_string($store)) {
+            return App::resolve('errors')->getError('database', 'store-error');
+        }
+
+        return TRUE;
+    }
+
     /*  getName($id):
             This function simple attempts to retrieve the user name, based on a provided id pair.
                 $ids (Assoc Arr)    - The id pair that is associated with the record we want the name of.

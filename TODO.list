@@ -1,10 +1,12 @@
 Global TODO List:
-    - Write the admin password reset code, a i seem to have forgotten about that.
-    - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
-
-    ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
+    - Create JS listen events for all form validation events, so the user can see if the input is still correct.
+        - Give the input a green ouline if good, give it a red outline is bad.
+        - This does not included complex logic, just string lengt etc.
     - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
         - But how do i deal with very long descriptions from the Google API or user input, when there is no indication of what the input count is ?
-        - How should i better deal with the feedback here, since the user cant see the length before submitting, and there is no indication of the limit iether.
+    - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
+    - Review if i want the default user, to be able to change there own password.
+
+    ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
     - If i find some extra time, i should rework the ISBN class, right now its just seems overly complex.

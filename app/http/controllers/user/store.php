@@ -2,7 +2,7 @@
 
 use App\Core\App;
 
-/* Store the POST data as user input, and remove the pw from it, and validate the POST data. */
+/* Store the POST data as user input, remove the pw from it, and validate the POST data. */
 $uInput = $_POST;
 unset($uInput['wachtwoord']);
 unset($uInput['wachtwoord-bev']);

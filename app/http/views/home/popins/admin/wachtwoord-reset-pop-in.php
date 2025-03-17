@@ -9,11 +9,11 @@
         </div>
         <div class="modal-body" id="modal-body" >
             <form class="modal-form" id="ww-reset-form" method="post" action="/aReset">
+            <input type="text" class="modal-form-input" name="_method" placeholder="" value="PATCH" hidden>
                 <label class="modal-form-label">
                     <input type="email" class="modal-form-input" id="emailField" name="email" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">E-mail</span>
                 </label>
-                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 1 hoofdletter, een getal, een speciaal teken en in totaal 7 tekens lang zijn.</p>
                 <label class="modal-form-label">
                     <input type="password" class="modal-form-input" id="resetVeld1" name="wachtwoord1" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">Nieuw Wachtwoord</span>
@@ -22,6 +22,7 @@
                     <input type="password" class="modal-form-input" id="resetVeld2" name="wachtwoord2" placeholder="" autocomplete="on" required>
                     <span class="modal-form-span">Wachtwoord Bevestigen</span>
                 </label>
+                <p id="modal-small-text" class="modal-small-text" >Uw wachtwoord moet minimaal 7 tekens lang zijn, en 1 hoofdletter + getal & speciaal teken bevatten.</p>
                 <div class="butt-box" id="butt-box">
                     <input class="modal-form-button button" id="reset-submit" type="submit" value="Bevestigen" onclick="return aResetBev(event)" >
                 </div>
