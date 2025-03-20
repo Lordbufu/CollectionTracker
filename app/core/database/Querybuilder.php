@@ -79,9 +79,17 @@ class QueryBuilder {
         /* Concatinate the data part of the querry (SET). */
         foreach($data as $key => $value) {
             if(!isset($update)) {
-                $update = $key . '=' . "'" . $value . "'";
-            } elseif(isset($update)) {
-                $update = $update . ', ' . $key . '=' . "'" . $value . "'";
+                $update = sprintf(
+                    "%s='%s'",
+                    $key,
+                    $value
+                );
+            } else {
+                $update = $update . sprintf(
+                    ", %s='%s'",
+                    $key,
+                    $value
+                );
             }
         }
 
@@ -105,6 +113,8 @@ class QueryBuilder {
                 ':' . implode(array_keys(array_slice($ids, 0, 1)))
             );
         }
+
+        //dd($sql);
 
         return $sql;
     }
