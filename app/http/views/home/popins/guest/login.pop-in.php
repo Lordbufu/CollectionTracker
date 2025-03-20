@@ -58,9 +58,8 @@
     const pwInp = document.getElementById('pwInp1'); pwInp.addEventListener('input', logVal);
     /* Form submision element, and its initial state. */
     const submButt = document.getElementById('submButt'); submButt.disabled = true;
-
     /* logVal(e): Check if the input is long enough to pass validation, and show the result via the input outline. */
-    function logVal(e) { caller = e.target.id, value = e.target.value; if(valLength('regular', value.length)) { if(caller === 'nameInp' && valLength('regular', pwInp.value.length)) { submButt.disabled = false; } if(caller === 'pwInp1' && valLength('regular', nemInp.value.length)) { submButt.disabled = false; } e.target.style.outline = '3px solid green'; } if(!valLength('regular', value.length)) { submButt.disabled = true, e.target.style.outline = '3px solid red'; } return; }
+    function logVal(e) { caller = e.target.id, value = e.target.value; if(valLength('regular', value.length)) { if(caller === 'nameInp' && valLength('regular', pwInp.value.length)) { submButt.disabled = false; } if(caller === 'pwInp1' && valLength('regular', nameInp.value.length)) { submButt.disabled = false; } e.target.style.outline = '3px solid green'; } if(!valLength('regular', value.length)) { submButt.disabled = true, e.target.style.outline = '3px solid red'; } return; }
 </script>
 
 <style>
