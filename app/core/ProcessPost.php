@@ -42,11 +42,11 @@ class ProcessPost {
             Return Value: None.
      */
     protected function reeks($data) {
-        $this->new = [
-            'Reeks_Naam' => $data['naam'],
-            'Reeks_Maker' => $data['maker'],
-            'Reeks_Opmerk' => $data['opmerking']
-        ];
+        $this->new['Reeks_Naam'] = $data['naam'];
+
+        if(isset($data['maker'])) { $this->new['Reeks_Maker'] = $data['maker']; }
+        if(isset($data['opmerking'])) { $this->new['Reeks_Opmerk'] = $data['opmerking']; }
+        if(isset($data['plaatje'])) { $this->new['Reeks_Plaatje'] = $data['plaatje']; }
 
         /* Add the index if it was set ? ... not sure this is even relevant */
         if(isset($data['rIndex']) && !empty($data['rIndex'])) {
