@@ -4,35 +4,50 @@ use App\Core\App;
 
 /* Store the user input as is, for pre-filling the form on errors. */
 $oInput = $_POST;
-/* Validate the form data, and process the post data for the database operation. */
-$form = App::resolve('form')::validate($_POST);
-$uInput = App::resolve('process')->store('reeks', $_POST);
 
-/* Store the old reeks name for later, and store the index for the the update operation. */
-$oldName = App::resolve('reeks')->getKey(['Reeks_Index' => $_POST['index']], 'Reeks_Naam');
-$ids = ['Reeks_Index' => $_POST['index']];
+/* Remove non-required empty inputs. */
+if(empty($_POST['index'])) { unset($oInput['index']); }
+if(empty($_POST['maker'])) { unset($oInput['maker']); }
+if(empty($_POST['opmerking'])) { unset($oInput['opmerking']); }
 
 /* Deal with image data next, so it can be included during errors. */
 $plaatje = FALSE;
 
+/* Check for included user input files. */
 if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
     $cover = App::resolve('file')->procFile($_FILES['plaatje']);
     if(!is_array($cover)) {
         $oInput['plaatje'] = $cover;
-        $uInput['Reeks_Plaatje'] = $cover;
-        $plaatje = TRUE;
+    } else {
+        $plaatje = $cover;
+    }
+/* Attempt to request any stored cover images, but ignore if nothing was returned */
+} else if(isset($_POST['index'])) {
+    $cover = App::resolve('reeks')->getKey(['Reeks_Index' => $_POST['index']], 'Reeks_Plaatje');
+    if(isset($cover)) {
+        $oInput['plaatje'] = $cover;
+    } else if(!empty($cover)) {
+        $plaatje = $cover;
     }
 }
 
-/* Attempt to catch errors in all possible variations so far. */
-if(is_array($form) || !$plaatje || is_string($uInput)) {
-    /* Deal with all possible error combinations with the cover image. */
-    if(!$plaatje && is_array($form)) { $form['plaatje-error'] = $cover['error']; }
-    if(!$plaatje && is_string($uInput)) { $form = ['error-1' => $cover, 'error-2' => $uInput]; }
-    if(!$plaatje) { $form = $cover; }
-    /* Deal with the remaining $uInput error combinations. */
-    if(is_array($form) && is_string($uInput)) { $form['input-error'] = $uInput; }
-    if(is_string($uInput)) { $form = ['input-error' => $uInput]; }
+/* Validate the form data, and process the post data for the database operation. */
+$form = App::resolve('form')::validate($oInput);
+$uInput = App::resolve('process')->store('reeks', $oInput);
+
+/* Check if there were any errors so far. */
+if(is_array($form) || is_array($plaatje) || is_string($plaatje) || is_string($uInput)) {
+    /* If there are cover image errrors, append them correctly in $form for user feedback, preserving any form errors. */
+    if(is_array($plaatje) || is_string($plaatje)) {
+        if(is_string($plaatje)){
+            $form['plaatje-error'] = $plaatje;
+        } else {
+            $form['plaatje-error'] = $plaatje['error'];
+        }
+    /* Store any user input processing error in the same way as above, appending it to other errors.*/
+    } else if(is_string($uInput)) {
+        $form['uInput-error'] = $form;
+    }
 
     App::resolve('session')->flash([
         'feedback' => $form,
@@ -43,6 +58,10 @@ if(is_array($form) || !$plaatje || is_string($uInput)) {
 
     return App::redirect('beheer#reeks-maken-pop-in', TRUE);
 }
+
+/* Store the old reeks name for later, and store the index for the the update operation. */
+$oldName = App::resolve('reeks')->getKey(['Reeks_Index' => $_POST['index']], 'Reeks_Naam');
+$ids = ['Reeks_Index' => $_POST['index']];
 
 /* If a oldName was set, attemp to update the reeks, if not store a input missing error for user feedback. */
 if(isset($oldName)) {
