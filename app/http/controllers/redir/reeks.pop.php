@@ -23,11 +23,10 @@ if(isset($_POST['index']) && isset($_POST['_method'])) {
     $flash = [
         'oldItem' => [
             'method' => $_POST['_method'],
-            'index' => $reeks['Reeks_Index'],
             'naam' => $reeks['Reeks_Naam'],
-            'makers' => $reeks['Reeks_Maker'],
-            'opmerking' => $reeks['Reeks_Opmerk']
-        ],
+            'maker' => $reeks['Reeks_Maker'],
+            'plaatje' => $reeks['Reeks_Plaatje'],
+            'opmerking' => $reeks['Reeks_Opmerk']],
         'tags' => [
             'pop-in' => 'reeks-maken'
     ]];

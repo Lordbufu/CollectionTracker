@@ -6,7 +6,7 @@ use App\Core\App;
 $oInput = [
     'method' => $_POST['_method'],
     'naam' => $_POST['naam'],
-    'makers' => $_POST['makers'],
+    'maker' => $_POST['maker'],
     'opmerking' => $_POST['opmerking']
 ];
 
@@ -26,12 +26,15 @@ if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
     }
 }
 
-if(is_array($form) || !$plaatje) {
-    if(!$plaatje && is_array($form)) {
-        $form['plaatje'] = $cover['error'];
-    } else {
-        $form = $cover;
-    }
+/* Attempt to catch errors in all possible variations so far. */
+if(is_array($form) || !$plaatje || is_string($uInput)) {
+    /* Deal with all possible error combinations with the cover image. */
+    if(!$plaatje && is_array($form)) { $form['plaatje-error'] = $cover['error']; }
+    if(!$plaatje && is_string($uInput)) { $form = ['error-1' => $cover, 'error-2' => $uInput]; }
+    if(!$plaatje) { $form = $cover; }
+    /* Deal with the remaining $uInput error combinations. */
+    if(is_array($form) && is_string($uInput)) { $form['input-error'] = $uInput; }
+    if(is_string($uInput)) { $form = ['input-error' => $uInput]; }
 
     App::resolve('session')->flash([
         'feedback' => $form,
@@ -51,7 +54,7 @@ if(is_string($store)) {
         'feedback' => [
             'error' => $store
         ],
-        'oldForm' => $oldFilData,
+        'oldForm' => $oInput,
         'tags' =>[
             'pop-in' => 'reeks-maken'
     ]]);
@@ -67,5 +70,5 @@ if(isset($_SESSION['page-data']['reeks'])) {
     App::resolve('session')->setVariable('page-data', ['reeks' => App::resolve('reeks')->getAllReeks()]);
 }
 
-App::resolve('session')->flash('feedback', ['success' => "De reeks: {$oldFilData['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
+App::resolve('session')->flash('feedback', ['success' => "De reeks: {$oInput['naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
 return App::redirect('beheer', TRUE);
