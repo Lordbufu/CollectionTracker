@@ -22,8 +22,8 @@ class CreateDb {
         return $sql = "CREATE TABLE `reeks` (
             `Reeks_Index` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Reeks index.',
             `Reeks_Naam` tinytext NOT NULL COMMENT 'Reeks naam.',
-            `Reeks_Maker` tinytext NOT NULL COMMENT 'Uitgever, Tekenaar etc',
-            `Reeks_Opmerk` tinytext NOT NULL COMMENT 'Korte opmerking, niet account specifiek.',
+            `Reeks_Maker` tinytext DEFAULT NULL COMMENT 'Uitgever, Tekenaar etc',
+            `Reeks_Opmerk` tinytext DEFAULT NULL COMMENT 'Korte opmerking, niet account specifiek.',
             `Reeks_Cover` blob DEFAULT NULL COMMENT 'Cover plaatje van de hele reeks.',
             PRIMARY KEY (`Reeks_Index`) COMMENT 'Primary index key voor Reeksen.'
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tafel voor de Reeks.'";
