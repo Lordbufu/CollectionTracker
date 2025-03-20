@@ -23,6 +23,7 @@ if(isset($_POST['index']) && isset($_POST['_method'])) {
     $flash = [
         'oldItem' => [
             'method' => $_POST['_method'],
+            'index' => $_POST['index'],
             'naam' => $reeks['Reeks_Naam'],
             'maker' => $reeks['Reeks_Maker'],
             'plaatje' => $reeks['Reeks_Plaatje'],
