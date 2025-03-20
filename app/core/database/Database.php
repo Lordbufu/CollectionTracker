@@ -31,7 +31,6 @@ class Database {
         try {
             $dsn = 'mysql:' . http_build_query($config['database'], '', ';');
             $cred = $config['credentials'];
-
             $this->connection = new PDO($dsn, $cred['username'], $cred['password'], $config['options']);
         } catch(PDOException $e) {
             $this->errors['init-error'] = $e->getMessage();
@@ -191,6 +190,8 @@ class Database {
         if(!empty($ids)) {                                                              /* And just $ids to catch the last few cases. */
             return $this->executeQuery($ids);
         }
+
+        return $this->executeQuery($ids);
     }
 
     /*  getAll():
