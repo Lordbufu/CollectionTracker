@@ -116,20 +116,13 @@ class Reeks {
             $this->setReeks();
         }
 
-        $this->checkDup($data['naam']);
+        $this->checkDup($data['Reeks_Naam']);
 
         if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        $dbData = [
-            'Reeks_Naam' => $data['naam'],
-            'Reeks_Maker' => $data['makers'],
-            'Reeks_Opmerk' => $data['opmerking'],
-            'Reeks_Plaatje' => $data['plaatje']
-        ];
-
-        $store = App::resolve('database')->prepQuery('insert', 'reeks', $dbData)->getAll();
+        $store = App::resolve('database')->prepQuery('insert', 'reeks', $data)->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
     }
@@ -150,20 +143,13 @@ class Reeks {
             $this->setReeks();
         }
 
-        $this->checkDup($data['naam'], $data['index']);
+        $this->checkDup($data['Reeks_Naam'], $ids['Reeks_Index']);
 
         if($this->duplicate) {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        $dbData = [
-            'Reeks_Naam' => $data['naam'],
-            'Reeks_Maker' => $data['makers'],
-            'Reeks_Opmerk' => $data['opmerking'],
-            'Reeks_Plaatje' => $data['plaatje']
-        ];
-
-        $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $dbData)->getAll();
+        $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $data)->getAll();
 
         return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
     }
