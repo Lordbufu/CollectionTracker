@@ -81,7 +81,7 @@ class QueryBuilder {
             if(!isset($update)) {
                 $update = $key . '=' . "'" . $value . "'";
             } elseif(isset($update)) {
-                $update = $update . ', ' . $key . ' = ' . "'" . $value . "'";
+                $update = $update . ', ' . $key . '=' . "'" . $value . "'";
             }
         }
 
