@@ -45,7 +45,7 @@ class FormValidator {
                 if($key === 'naam') {
                     self::$errors['naam'] = App::resolve('errors')->getError('validation', 'naam-input');
                 } else {
-                    self::$errors['makers'] = App::resolve('errors')->getError('validation', 'autheur');
+                    self::$errors['maker'] = App::resolve('errors')->getError('validation', 'autheur');
                 }
             }
 

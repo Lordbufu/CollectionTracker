@@ -4,6 +4,7 @@
 
 <div id="reeks-maken-pop-in" class="modal-cont" >
     <div class="modal-content-cont">
+
         <div class="modal-header-cont">
             <h3 class="modal-header-text">Reeks Maken</h3>
 
@@ -11,7 +12,6 @@
                 <input class="modal-header-input" name="close" value="back" hidden/>
                 <input class="modal-header-close" type="submit" value="&times;"/>
             </form>
-
         </div>
 
         <div class="modal-body">
@@ -28,7 +28,7 @@
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="autheurs" name="makers" placeholder="" autocomplete="on" value="<?=isset($store['makers']) ? inpFilt($store['makers']) : ''?>"/>
+                        <input type="text" class="modal-form-input" id="autheurs" name="maker" placeholder="" autocomplete="on" value="<?=isset($store['maker']) ? inpFilt($store['maker']) : ''?>"/>
                         <span class="modal-form-span">Makers/Artiesten</span>
                     </label>
 
@@ -38,14 +38,14 @@
                     </label>
 
                     <div class="modal-reeks-cover" id="modal-reeks-cover">
-                        <?php if(!empty($store['cover'])) : ?>
-                        <img class="modal-reeks-cover-img" src="<?=$store['cover']?>">
+                        <?php if(!empty($store['plaatje'])) : ?>
+                        <img class="modal-reeks-cover-img" src="<?=$store['plaatje']?>">
                         <?php endif; ?>
                     </div>
 
                     <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
                         <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="reeks-cover-inp" name="plaatje" />
-                        <?php if(!empty($store['cover'])) : ?>
+                        <?php if(!empty($store['plaatje'])) : ?>
                             Nieuwe Cover Selecteren
                         <?php else : ?>
                             Selecteer een Item Cover
@@ -56,8 +56,10 @@
                         <input class="modal-form-button button" id="reeks-maken-submit" type="submit" value="Bevestigen">
                     </div>
                 </form>
+
             </div>
         </div>
+
     </div>
 </div>
 
@@ -72,7 +74,7 @@
     /* albCovCheck(e): This function simply checks the files size, and is triggered with the on-change coverInpCheck. */
     function albCovCheck(e) { const file = e.target.files; if(file[0].size > 4096000) { displayMessage('Bestand is te groot, graag iets van 4MB of kleiner.'); e.target.value = ''; return false; } return true; }
     /* coverInpCheck(e): The Event function for the cover input, to change the preview and text in related pop-ins. */
-    function coverInpCheck(e) { const imgEl = document.createElement('img'), imageFile = e.target.files[0], check = albCovCheck(e); let labEl = '', triggerEl = ''; if(check) { imgEl.src = URL.createObjectURL(imageFile), imgEl.className = 'modal-reeks-cover-img', imgEl.id = 'reeks-cover-img'; if(e.target.id === 'reeks-cover-inp') { let divCov = document.getElementById('modal-reeks-cover'); divCov.innerHTML = ''; divCov.appendChild(imgEl); labEl = document.getElementById('modal-form-cov-lab'), triggerEl = document.getElementById('modal-form-reeks-cov-trigger'); if(triggerEl.hidden) { triggerEl.hidden = false; } } labEl.innerHTML = 'Nieuwe Cover Selecteren', labEl.appendChild(e.target); return; } }
+    function coverInpCheck(e) { const imgEl = document.createElement('img'); const imageFile = e.target.files[0]; const check = albCovCheck(e); let labEl = ''; if(check) { imgEl.src = URL.createObjectURL(imageFile); imgEl.className = 'modal-reeks-cover-img'; imgEl.id = 'reeks-cover-img'; if(e.target.id === 'reeks-cover-inp') { let divCov = document.getElementById('modal-reeks-cover'); divCov.innerHTML = ''; divCov.appendChild(imgEl); labEl = document.getElementById('modal-form-cov-lab'); } return labEl.innerHTML = 'Nieuwe Cover Selecteren', labEl.appendChild(e.target); } }
 </script>
 
 <style>
