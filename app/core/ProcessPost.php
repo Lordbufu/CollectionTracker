@@ -44,7 +44,7 @@ class ProcessPost {
     protected function reeks($data) {
         $this->new = [
             'Reeks_Naam' => $data['naam'],
-            'Reeks_Makers' => $data['makers'],
+            'Reeks_Maker' => $data['maker'],
             'Reeks_Opmerk' => $data['opmerking']
         ];
 
