@@ -245,7 +245,7 @@ function checkState(name) {
 function valLength(type, length) {
     switch(type) {
         case 'special': // special String (10-13 length): item isbn.
-            if(length === 10 && length === 13) { return true; } else { return false; }
+            if(length === 10 || length === 13) { return true; } else { return false; }
         case 'regular': // regular String (7-35 length): user name + passwords.
             if(length >= 7 && length <=35) { return true; } else { return false; }
         case 'long':    // long String (7-50 length): Item\Reeks name + autheur.
