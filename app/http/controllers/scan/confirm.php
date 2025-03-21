@@ -13,16 +13,19 @@ if(is_string($store)) {
 /* Prep a final item variable, and check if we have an item stored. */
 $newItem = App::resolve('procApi')->processData($store);
 if(!isset($newItem['rIndex'])) { $newItem['rIndex'] = (int) $_POST['reeks-index']; }
-if(!isset($newItem['method'])) { $newItem['method'] = 'PUT'; }
+if(!isset($newItem['method'])) { $newItem['_method'] = 'PUT'; }
 
 /* Clear old session _flash data, flash the new data, and redirect back to the item-maken pop-in. */
 App::resolve('session')->unflash();
+App::resolve('session')->setVariable('page-data', ['temp-cover' => $newItem['plaatje']]);
 App::resolve('session')->flash([
     'newItem' => $newItem,
+    'temp-cover' => $newItem['plaatje'],
     'feedback' => [
         'found' => 'Controleer de ingevulde gegevens van Google, het kan zijn dat deze niet helemaal klopt.'
     ],
     'tags' => [
         'pop-in' => 'items-maken'
 ]]);
+
 return App::redirect('beheer#items-maken-pop-in', TRUE);

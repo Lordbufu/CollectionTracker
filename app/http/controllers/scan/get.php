@@ -5,11 +5,6 @@ use App\Core\App;
 /* Set the correct re-direct route based on user rights, and make sure the expected input is set. */
 $route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
-if(!isset($_POST['item-isbn']) || !isset($_POST['reeks-index'])) {
-    App::resolve('session')->flash('feedback', ['error' => App::resolve('errors')->getError('forms', 'input-missing')]);
-    return App::redirect($route, TRUE);
-}
-
 /* Depending on the route, parse\request the correct data from the Isbn Core Class. */
 if($route === 'beheer') {
     $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index'], TRUE);
@@ -30,8 +25,8 @@ if(!is_array($apiRequest) || isset($apiRequest['error'])) {
 
 /* If the Administrator action returend a title choice: */
 if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
-    $apiRequest['isbn-scanned'] = $_POST['item-isbn'];
-    $apiRequest['reeks-index'] = $_POST['reeks-index'];
+    $apiRequest['isbn'] = $_POST['item-isbn'];
+    $apiRequest['index'] = $_POST['reeks-index'];
 
     App::resolve('session')->flash([
         'isbn-choices' => $apiRequest,
