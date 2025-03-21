@@ -22,7 +22,7 @@ if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
         $plaatje = $cover;
     }
 /* Attempt to request any stored cover images, but ignore if nothing was returned */
-} else if(isset($_POST['index'])) {
+} else if($_FILES['plaatje']['error'] !== 0 && isset($_POST['index'])) {
     $cover = App::resolve('reeks')->getKey(['Reeks_Index' => $_POST['index']], 'Reeks_Plaatje');
     if(isset($cover)) {
         $oInput['plaatje'] = $cover;

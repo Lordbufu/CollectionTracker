@@ -19,14 +19,16 @@ $plaatje = FALSE;
 
 if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
     $cover = App::resolve('file')->procFile($_FILES['plaatje']);
-
     if(!is_array($cover)) {
         $oInput['plaatje'] = $cover;
         $plaatje = TRUE;
     } else {
         $plaatje = $cover;
     }
-} else if(!isset($_FILES['plaatje'])) {
+} else if($_FILES['plaatje']['error'] !== 0 && isset($_SESSION['page-data']['temp-cover'])) {
+    $oInput['plaatje'] = $_SESSION['page-data']['temp-cover'];
+    unset($_SESSION['page-data']['temp-cover']);
+} else {
     $cover = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
     ])->find('Item_Plaatje');

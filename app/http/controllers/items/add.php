@@ -25,6 +25,9 @@ if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
     } else {
         $plaatje = $cover;
     }
+} else if($_FILES['plaatje']['error'] !== 0  && isset($_SESSION['page-data']['temp-cover'])){
+    $oInput['plaatje'] = $_SESSION['page-data']['temp-cover'];
+    unset($_SESSION['page-data']['temp-cover']);
 }
 
 /* Validate the POST data, and process it for the database operation. */
@@ -74,5 +77,5 @@ if(isset($_SESSION['page-data']['items'])) {
 
 /* Clear old session _flash data, then prepare the user feedback before returning back to default page. */
 App::resolve('session')->unflash();
-App::resolve('session')->flash('feedback', ['success' => "Het item: {$oInput['Item_Naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
+App::resolve('session')->flash('feedback', ['success' => "Het item: {$uInput['Item_Naam']} \n Is aangemaakt en zou nu in de lijst moeten staan!"]);
 return App::redirect('beheer', TRUE);
