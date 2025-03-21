@@ -14,13 +14,11 @@ class ProcessPost {
             Return Value: None.
      */
     protected function items($data) {
+        /* Set required data first, cant make a new record without these. */
         $this->new = [
-            'Item_Auth' => $data['autheur'] ?? '',
+            'Item_Reeks' => $data['rIndex'],
             'Item_Naam' => $data['naam'],
-            'Item_Nummer' => empty($data['nummer']) ? 0 : (int) $data['nummer'],
-            'Item_Uitgd' => empty($data['datum']) ? date('Y-m-d') : $data['datum'],
-            'Item_Isbn' => $data['isbn'],
-            'Item_Opm' => $data['opmerking'] ?? ''
+            'Item_Isbn' => $data['isbn']
         ];
 
         /* Add the index values, depending on witch where set, rather then leaving a empty value. */
@@ -28,9 +26,12 @@ class ProcessPost {
             $this->new['Item_Index'] = $data['iIndex'];
         }
 
-        if(isset($data['rIndex']) && !empty($data['rIndex'])) {
-            $this->new['Item_Reeks'] = $data['rIndex'];
-        }
+        /* Not required inputs, only add if set. */
+        if(isset($data['nummer'])) { $this->new['Item_Nummer'] = $data['nummer']; }
+        if(isset($data['datum'])) { $this->new['Item_Uitgd'] = $data['datum']; }
+        if(isset($data['autheur'])) { $this->new['Item_Auth'] = $data['autheur']; }
+        if(isset($data['opmerking'])) { $this->new['Item_Opm'] = $data['opmerking']; }
+        if(isset($data['plaatje'])) { $this->new['Item_Plaatje'] = $data['plaatje']; }
 
         return;
     }
