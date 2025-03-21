@@ -22,12 +22,26 @@ class ProcessApiReq {
      */
     public function processData($data) {
         foreach($data as $oKey => $oValue) {
-            /* Deal with the item title. */
-            if($oKey === 'title') { $this->add('naam', $oValue); }
-            /* Deal with the item publish date. */
+            /* Deal with the item publish date, no need to truncate. */
             if($oKey === 'publishedDate') { $this->add('datum', $oValue); }
-            /* Deal with the item description. */
-            if($oKey === 'description') { $this->add('opmerking', $oValue); }
+
+            /* Deal with the item title, and truncate anything greate then .. length. */
+            if($oKey === 'title') {
+                if(strlen($oValue) > 50) {
+                    $this->add('naam', substr($oValue, 0, 50));
+                } else {
+                    $this->add('naam', $oValue);
+                }
+            }
+
+            /* Deal with the item description, and truncate anything greate then 254 length. */
+            if($oKey === 'description') {
+                if(strlen($oValue) > 254) {
+                    $this->add('opmerking', substr($oValue, 0, 254));
+                } else {
+                    $this->add('opmerking', $oValue);
+                }
+            }
 
             /* Deal with the item author(s). */
             if($oKey === 'authors') {
@@ -36,6 +50,8 @@ class ProcessApiReq {
                     if(!isset($this->new['autheur'])) { $this->add('autheur', $name); }
                     /* If something was set, add the previous autheur first and add ', '  between the entries. */
                     if(isset($this->new['autheur'])) { $this->add('autheur', $this->new['autheur'] . ', ' . $name); }
+                    /* Truncate the string, if its longer then the formvalidation allows. */
+                    if(strlen($this->new['autheur'])) { $this->add('autheur', substr($this->new['autheur'], 0, 50)); }
                 }
             }
 
@@ -55,8 +71,8 @@ class ProcessApiReq {
             /* Deal with processing the image links in the correct order, incl converting it to a base64 blob */
             if($oKey === 'imageLinks') {
                 foreach($oValue as $iKey => $iValue) {
-                    if($iKey === 'thumbnail') { $this->add('cover', App::resolve('file')->procUrl($iValue)); }
-                    if($iKey === 'smallThumbnail') { $this->add('cover', App::resolve('file')->procUrl($iValue)); }
+                    if($iKey === 'thumbnail') { $this->add('plaatje', App::resolve('file')->procUrl($iValue)); }
+                    if($iKey === 'smallThumbnail') { $this->add('plaatje', App::resolve('file')->procUrl($iValue)); }
                 }
             }
         }
