@@ -2,49 +2,60 @@
 
 use App\Core\App;
 
-/* Validate the POST data first. */
-$validate = App::resolve('form')::validate($_POST);
-
-/* Store the user input as old input for error paths, and new for storing it in the database. */
+/* Store the user input as is, for pre-filling the form on errors. */
 $oInput = $_POST;
-$uInput = App::resolve('process')->store('items', $_POST);
 
-/* Deal with the potentially uploaded image file, or the stored image file in either the session or database. */
+/* Clean any non-required not set or empty inputs. */
+if(!isset($_POST['_method']) || empty($_POST['_method'])) { unset($oInput['_method']); }
+if(!isset($_POST['rIndex']) || empty($_POST['rIndex'])) { unset($oInput['rIndex']); }
+if(!isset($_POST['iIndex']) || empty($_POST['iIndex'])) { unset($oInput['iIndex']); }
+if(!isset($_POST['nummer']) || empty($_POST['nummer'])) { unset($oInput['nummer']); }
+if(!isset($_POST['datum']) || empty($_POST['datum'])) { unset($oInput['datum']); }
+if(!isset($_POST['autheur']) || empty($_POST['autheur'])) { unset($oInput['autheur']); }
+if(!isset($_POST['opmerking']) || empty($_POST['opmerking'])) { unset($oInput['opmerking']); }
+
+/* Deal with image data next, so it can be included during errors. */
 $plaatje = FALSE;
 
-if($_FILES['cover']['error'] === 0) {
-    $cover = App::resolve('file')->procFile($_FILES['cover']);
+if(!empty($_FILES['plaatje']) && $_FILES['plaatje']['error'] === 0) {
+    $cover = App::resolve('file')->procFile($_FILES['plaatje']);
+
     if(!is_array($cover)) {
+        $oInput['plaatje'] = $cover;
         $plaatje = TRUE;
+    } else {
+        $plaatje = $cover;
     }
-} else {
+} else if(!isset($_FILES['plaatje'])) {
     $cover = App::resolve('database')->prepQuery('select', 'items', [
         'Item_Index' => $_POST['iIndex']
     ])->find('Item_Plaatje');
+    $oInput['plaatje'] = $cover;
     $plaatje = TRUE;
 }
 
-/* If any error happened during validation or the image processing, store them properly and redirect to the pop-in. */
-if(is_array($validate) || !$plaatje) {
-    if(!$plaatje && !is_array($validate)) {
-        $validate = ['file-error' => $cover];
-    } else {
-        $validate['file-error'] = $cover;
-    }
+/* Validate the POST data, and process it for the database operation. */
+$form = App::resolve('form')::validate($oInput);
+$uInput = App::resolve('process')->store('items', $oInput);
+
+/* Check if there were any errors so far, and append them to a array in the correct order. */
+if(is_array($form) || is_array($plaatje) || is_string($plaatje) || is_string($uInput)) {
+    $feedback = [];
+    
+    if(is_array($form)) { $feedback = $form; }
+    if(is_array($plaatje)) { $feedback['plaatje-error'] = $plaatje['error']; }
+    if(is_string($plaatje)) { $feedback['plaatje-error'] = $plaatje; }
+    if(is_string($uInput)) { $feedback['process-error'] = $uInput; }
 
     App::resolve('session')->flash([
-        'oldForm' => $oInput,
-        'feedback' => $validate,
+        'feedback' => $feedback,
+        'oldItem' => $oInput,
         'tags' => [
             'pop-in' => 'items-maken'
     ]]);
 
-    return App::redirect('beheer#items-maken-pop-in', TRUE);
+    return App::redirect('beheer#items-maken-pop-in', TRUE); 
 }
-
-/* Store the cover image if it was processed */
-$oInput['cover'] = $cover;
-$uInput['Item_Plaatje'] = $cover;
 
 /* Store the name of the edited item, as is stored in the DB before we update the record. */
 $oldName = App::resolve('items')->getKey([
@@ -59,7 +70,7 @@ $store = App::resolve('items')->updateItems($uInput);
 
 if(is_string($store)) {
     App::resolve('session')->flash([
-        'oldForm' => $oInput,
+        'oldItem' => $oInput,
         'feedback' => [
             'error' => $store
         ],

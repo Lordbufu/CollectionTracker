@@ -5,11 +5,11 @@ use App\Core\App;
 /* Condition for the 'item-toevoegen' controller menu. */
 if(isset($_POST['naam'])) {
     $flash = [
+        'newItem' => [
+            '_method' => 'PUT',
+            'rIndex' => App::resolve('reeks')->getKey(['Reeks_Naam' => $_POST['naam']], 'Reeks_Index')
+        ],
         'tags' => [
-            'oldItem' => [
-                'method' => 'PUT',
-                'rIndex' => App::resolve('reeks')->getKey(['Reeks_Naam' => $_POST['naam']], 'Reeks_Index')
-            ],
             'pop-in' => 'items-maken'
     ]];
 }
@@ -24,10 +24,10 @@ if(isset($_POST['iIndex'])) {
         'nummer' => $item['Item_Nummer'],
         'datum' => $item['Item_Uitgd'],
         'autheur' => $item['Item_Auth'],
-        'cover' => $item['Item_Plaatje'],
+        'plaatje' => $item['Item_Plaatje'],
         'isbn' => $item['Item_Isbn'],
         'opmerking' => $item['Item_Opm'],
-        'method' => $_POST['_method']
+        '_method' => $_POST['_method']
     ];
 
     $flash = [
