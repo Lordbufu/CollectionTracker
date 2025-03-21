@@ -48,16 +48,19 @@ class Items {
 
         /* Loop over all stored items, and compare the stored names vs the edited name; */
         foreach($this->items as $key => $value) {
-            if($value['Item_Naam'] === $data['Item_Naam']) {
+            if($value['Item_Naam'] === $data['Item_Naam']) {                
                 /* If a reeks id was passed in, and its doesnt match, the item name is duplicate; */
-                if(isset($data['Item_Reeks']) && (int) $data['Item_Reeks'] !== $value['Item_Reeks']) {
-                    $this->duplicate = TRUE;
+                if(isset($data['Item_Reeks']) && $data['Item_Reeks'] !== $value['Item_Reeks']) {
+                    if(!isset($data['Item_Index'])) {
+                        $this->duplicate = TRUE;
+                    }
                 /* If the id wasnt set, its also duplicate. */
                 } elseif(!isset($data['Item_Reeks'])) {
                     $this->duplicate = TRUE;
                 }
             }
         }
+
         return;
     }
 
