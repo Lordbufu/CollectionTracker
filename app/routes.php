@@ -54,7 +54,7 @@ $router->post('/scanConf',  'scan/confirm.php')->only('admin');         // Sourc
 /* Shared routes for all logged in user pages. */
 $router->get('/logout',		'user/logout.php')->only('auth');           // 'Afmelden' banner menu button.
 $router->post('/selReeks',	'reeks/get.php')->only('auth');             // Select/View a reeks buttons.
-$router->post('/scanPop',	'scan/view.php')->only('auth');             // The barcode scan pop-in trigger route.
+$router->post('/scanPop',	'redir/scan.pop.php')->only('auth');        // The barcode scan pop-in trigger route.
 $router->post('/bCodeScan',	'scan/get.php')->only('auth');              // Barcode scan pop-in scan-trigger
 
 /* Test route for showing album details on mobile devices */
