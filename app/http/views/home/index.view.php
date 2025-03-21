@@ -13,8 +13,15 @@
             <?php if(isset($_SESSION['user']['rights'])) { require "templates/{$_SESSION['user']['rights']}/controler-subgrid.php"; } ?>
         </div>
         <div class="sub-grid-3">
-            <?php if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] != 'admin') {
+            <?php
+                if(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'guest') {
                     require "templates/{$_SESSION['user']['rights']}/table-subgrid.php";
+                } elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'user') {
+                    if(!isset($_SESSION['page-data']['huidige-reeks'])) {
+                        require "templates/{$_SESSION['user']['rights']}/reeks-preview.php";
+                    } else {
+                        require "templates/{$_SESSION['user']['rights']}/table-subgrid.php";
+                    }                    
                 } elseif(isset($_SESSION['user']['rights']) && $_SESSION['user']['rights'] === 'admin') {
                     if(!isset($_SESSION['page-data']['huidige-reeks'])) {
                         require "templates/{$_SESSION['user']['rights']}/reeks-table-subgrid.php";

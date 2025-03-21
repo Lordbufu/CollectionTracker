@@ -1,16 +1,9 @@
 Global TODO List:
-    - Exclude empty non-required fields from form-validation, for both item and reeks actions.
-        - Atm all validation errors are returned, i need to find a way to include a proper 'if set' interaction to these.
-        - Reeks code has been re-factored so far.
-            - Need to compare the error loop from add to cleaner edit controller.
-    - Review how to deal with to long strings in general, atm i give feedback that its to long or short.
-        - But how do i deal with very long descriptions from the Google API or user input, when there is no indication of what the input count is ?
-    - Review if 'more-info-mobile' is still relevant or usefull, atm most of it is not correctly implemented yet.
     - Review if i want the default user, to be able to change there own password.
     - Request feedback on the any extra visual validation requirments.
-    - Consider replacing the add/update Item and Reeks class code, to use getErrorCode instead of getAll.
-        - Or i need to find a better way to catch certain errors, so proper error strings are returned during PDO issues.
 
     ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
+    - Consider replacing the add/update Item and Reeks class code, to use getErrorCode instead of getAll.
+        - Or i need to find a better way to catch certain errors, so proper error strings are returned during PDO issues.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
     - If i find some extra time, i should rework the ISBN class, right now its just seems overly complex.

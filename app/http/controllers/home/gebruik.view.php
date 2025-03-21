@@ -10,6 +10,13 @@ if(isset($_SESSION['_flash']['login']) || !isset($_SESSION['_flash']['tags']['re
     App::resolve('session')->unflash();
 }
 
+/* Specific reset for return to the default user view. */
+if(isset($_POST['return']) && isset($_POST['reset'])) {
+    App::resolve('session')->remVar('page-data', 'huidige-reeks');
+    App::resolve('session')->remVar('page-data', 'items');
+    App::resolve('session')->remVar('_flash', 'tags');
+}
+
 /* Always attempt to load the most current reeks data. */
 App::resolve('session')->setVariable('page-data', ['reeks' => App::resolve('reeks')->getAllReeks()]);
 
