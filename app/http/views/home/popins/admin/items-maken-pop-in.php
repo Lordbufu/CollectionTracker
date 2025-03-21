@@ -1,6 +1,6 @@
-<?php if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
-    if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
-    if(isset($_SESSION['_flash']['newItem'])) { $store = $_SESSION['_flash']['newItem']; } ?>
+<?php if(isset($_SESSION['_flash']['oldForm'])) { $iStore = $_SESSION['_flash']['oldForm']; }
+    if(isset($_SESSION['_flash']['oldItem'])) { $iStore = $_SESSION['_flash']['oldItem']; }
+    if(isset($_SESSION['_flash']['newItem'])) { $iStore = $_SESSION['_flash']['newItem']; } ?>
 
 <div id="items-maken-pop-in" class="modal-cont" >
     <div class="modal-content-cont">
@@ -16,40 +16,40 @@
         <div class="modal-body">
             <div class="modal-form-left-cont" id="modal-form-left-cont">
                 <form class="modal-form" enctype="multipart/form-data" method="post" action="/itemsM">
-                    <input class="modal-form-hidden" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
-                    <input class="modal-form-hidden" name="rIndex" value="<?=$store['rIndex'] ?? ''?>" hidden/>
-                    <input class="modal-form-hidden" name="iIndex" value="<?=$store['iIndex'] ?? ''?>" hidden/>
-                    <p id="modal-small-text" class="modal-small-text" >De itemn naam & isbn zijn verplichte velden</p>
+                    <input class="modal-form-hidden" name="_method" value="<?=$iStore['_method'] ?? ''?>" hidden/>
+                    <input class="modal-form-hidden" name="rIndex" value="<?=$iStore['rIndex'] ?? ''?>" hidden/>
+                    <input class="modal-form-hidden" name="iIndex" value="<?=$iStore['iIndex'] ?? ''?>" hidden/>
+                    <p id="modal-small-text" class="modal-small-text" >De item naam & isbn zijn verplichte velden</p>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="item-maken-naam" name="naam" value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>" placeholder="" autocomplete="on" required/>
+                        <input type="text" class="modal-form-input" id="item-maken-naam" name="naam" value="<?=isset($iStore['naam']) ? inpFilt($iStore['naam']) : ''?>" placeholder="" autocomplete="on" required/>
                         <span class="modal-form-span">Item Naam</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="number" min="0" class="modal-form-input" name="nummer" value="<?=isset($store['nummer']) ? $store['nummer'] : ''?>" placeholder="" autocomplete="on"/>
+                        <input type="number" min="0" class="modal-form-input" name="nummer" value="<?=isset($iStore['nummer']) ? $iStore['nummer'] : ''?>" placeholder="" autocomplete="on"/>
                         <span class="modal-form-span">Item Nummer</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="date" class="modal-form-input" name="datum" value="<?=isset($store['datum']) ? $store['datum'] : ''?>" placeholder="" autocomplete="on"/>
+                        <input type="date" class="modal-form-input" name="datum" value="<?=isset($iStore['datum']) ? $iStore['datum'] : ''?>" placeholder="" autocomplete="on"/>
                         <span class="modal-form-span">Item Uitg-datum</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="autheurs" name="autheur" value="<?=isset($store['autheur']) ? inpFilt($store['autheur']) : ''?>" placeholder="" autocomplete="on"/>
+                        <input type="text" class="modal-form-input" id="autheurs" name="autheur" value="<?=isset($iStore['autheur']) ? inpFilt($iStore['autheur']) : ''?>" placeholder="" autocomplete="on"/>
                         <span class="modal-form-span">Item Autheur</span>
                     </label>
 
                     <div class="modal-item-cover" id="modal-item-cover">
-                        <?php if(!empty($store['cover'])) : ?>
-                        <img class="modal-item-cover-img" src="<?=$store['cover']?>">
+                        <?php if(!empty($iStore['plaatje'])) : ?>
+                        <img class="modal-item-cover-img" src="<?=$iStore['plaatje']?>">
                         <?php endif; ?>
                     </div>
 
                     <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
-                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="cover" />
-                        <?php if(!empty($store['cover'])) : ?>
+                        <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="item-cover-inp" name="plaatje" />
+                        <?php if(!empty($iStore['plaatje'])) : ?>
                             Nieuwe Cover Selecteren
                         <?php else : ?>
                             Selecteer een Item Cover
@@ -57,12 +57,12 @@
                     </label>
 
                     <label class="modal-form-label">
-                        <input class="modal-form-input" id="item-maken-isbn" name="isbn" value="<?=isset($store['isbn']) ? $store['isbn'] : '0'?>" placeholder="" autocomplete="on" required/>
+                        <input class="modal-form-input" id="item-maken-isbn" name="isbn" value="<?=isset($iStore['isbn']) ? $iStore['isbn'] : '0'?>" placeholder="" autocomplete="on" required/>
                         <span class="modal-form-span">Item ISBN</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input class="modal-form-input" id="itemOpm" name="opmerking" value="<?=isset($store['opmerking']) ? inpFilt($store['opmerking']) : ''?>" placeholder="" autocomplete="on"/>
+                        <input class="modal-form-input" id="itemOpm" name="opmerking" value="<?=isset($iStore['opmerking']) ? inpFilt($iStore['opmerking']) : ''?>" placeholder="" autocomplete="on"/>
                         <span class="modal-form-span">Item Opmerking</span>
                     </label>
 
@@ -76,7 +76,7 @@
                     <div class="modal-form-fake-trigger"></div>
                     <div class="modal-form-fake-trigger"></div>
                     <div class="modal-form-fake-trigger"></div>
-                    <?php if(!empty($store['cover'])) : ?>
+                    <?php if(!empty($iStore['plaatje'])) : ?>
                     <div class="modal-form-cov-trigger" id="modal-form-item-cov-trigger"></div>
                     <?php else : ?>
                     <div class="modal-form-cov-trigger" id="modal-form-item-cov-trigger" hidden></div>
@@ -106,8 +106,8 @@
     let naamChecked = false, isbnChecked = false;
 
     /* (Optional) Extra visual validation, incase more indication is required considering the form validation i used in PhP. */
-    const itemAutheur = document.getElementById('autheurs'); itemAutheur.addEventListener('change', validateInput);
-    const itemOpm = document.getElementById('itemOpm'); itemOpm.addEventListener('change', validateInput);
+    // const itemAutheur = document.getElementById('autheurs'); itemAutheur.addEventListener('change', validateInput);
+    // const itemOpm = document.getElementById('itemOpm'); itemOpm.addEventListener('change', validateInput);
 
     /* albCovCheck(e): This function simply checks the files size, and is triggered with the on-change coverInpCheck. */
     function albCovCheck(e) { const file = e.target.files; if(file[0].size > 4096000) { displayMessage('Bestand is te groot, graag iets van 4MB of kleiner.'); e.target.value = ''; return false; } return true; }
