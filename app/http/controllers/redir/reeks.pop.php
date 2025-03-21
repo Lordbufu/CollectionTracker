@@ -6,7 +6,7 @@ use App\Core\App;
 if(isset($_POST['naam'])) {
     $flash = [
         'newReeks' => [
-            'method' => 'PUT',
+            '_method' => 'PUT',
             'naam' => $_POST['naam']
         ],
         'tags' => [
@@ -22,7 +22,7 @@ if(isset($_POST['index']) && isset($_POST['_method'])) {
 
     $flash = [
         'oldItem' => [
-            'method' => $_POST['_method'],
+            '_method' => $_POST['_method'],
             'index' => $_POST['index'],
             'naam' => $reeks['Reeks_Naam'],
             'maker' => $reeks['Reeks_Maker'],

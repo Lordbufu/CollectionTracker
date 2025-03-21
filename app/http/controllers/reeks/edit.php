@@ -37,20 +37,15 @@ $uInput = App::resolve('process')->store('reeks', $oInput);
 
 /* Check if there were any errors so far. */
 if(is_array($form) || is_array($plaatje) || is_string($plaatje) || is_string($uInput)) {
-    /* If there are cover image errrors, append them correctly in $form for user feedback, preserving any form errors. */
-    if(is_array($plaatje) || is_string($plaatje)) {
-        if(is_string($plaatje)){
-            $form['plaatje-error'] = $plaatje;
-        } else {
-            $form['plaatje-error'] = $plaatje['error'];
-        }
-    /* Store any user input processing error in the same way as above, appending it to other errors.*/
-    } else if(is_string($uInput)) {
-        $form['uInput-error'] = $form;
-    }
+    $feedback = [];
+    
+    if(is_array($form)) { $feedback = $form; }
+    if(is_array($plaatje)) { $feedback['plaatje-error'] = $plaatje['error']; }
+    if(is_string($plaatje)) { $feedback['plaatje-error'] = $plaatje; }
+    if(is_string($uInput)) { $feedback['process-error'] = $uInput; }
 
     App::resolve('session')->flash([
-        'feedback' => $form,
+        'feedback' => $feedback,
         'oldForm' => $oInput,
         'tags' => [
             'pop-in' => 'reeks-maken'
