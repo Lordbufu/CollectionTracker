@@ -1,6 +1,6 @@
-<?php if(isset($_SESSION['_flash']['oldForm'])) { $store = $_SESSION['_flash']['oldForm']; }
-    if(isset($_SESSION['_flash']['oldItem'])) { $store = $_SESSION['_flash']['oldItem']; }
-    if(isset($_SESSION['_flash']['newReeks'])) { $store = $_SESSION['_flash']['newReeks']; } ?>
+<?php if(isset($_SESSION['_flash']['oldForm'])) { $rStore = $_SESSION['_flash']['oldForm']; }
+    if(isset($_SESSION['_flash']['oldItem'])) { $rStore = $_SESSION['_flash']['oldItem']; }
+    if(isset($_SESSION['_flash']['newReeks'])) { $rStore = $_SESSION['_flash']['newReeks']; } ?>
 
 <div id="reeks-maken-pop-in" class="modal-cont" >
     <div class="modal-content-cont">
@@ -19,33 +19,33 @@
 
                 <form class="modal-form" enctype="multipart/form-data" method="post" action="/reeksM">
                     <p id="modal-small-text" class="modal-small-text" >De reeks naam is een verplicht veld.</p>
-                    <input class="modal-form-hidden-method" name="_method" value="<?=$store['method'] ?? ''?>" hidden/>
-                    <input class="modal-form-hidden-index" name="index" value="<?=$store['index'] ?? ''?>" hidden/>
+                    <input class="modal-form-hidden-method" name="_method" value="<?=$rStore['_method'] ?? ''?>" hidden/>
+                    <input class="modal-form-hidden-index" name="index" value="<?=$rStore['index'] ?? ''?>" hidden/>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=isset($store['naam']) ? inpFilt($store['naam']) : ''?>"/>
+                        <input type="text" class="modal-form-input" id="reeks-maken-naam" name="naam" placeholder="" autocomplete="on" required value="<?=isset($rStore['naam']) ? inpFilt($rStore['naam']) : ''?>"/>
                         <span class="modal-form-span">Reeks Naam</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="autheurs" name="maker" placeholder="" autocomplete="on" value="<?=isset($store['maker']) ? inpFilt($store['maker']) : ''?>"/>
+                        <input type="text" class="modal-form-input" id="autheurs" name="maker" placeholder="" autocomplete="on" value="<?=isset($rStore['maker']) ? inpFilt($rStore['maker']) : ''?>"/>
                         <span class="modal-form-span">Makers/Artiesten</span>
                     </label>
 
                     <label class="modal-form-label">
-                        <input type="text" class="modal-form-input" id="reeksOpm" name="opmerking" placeholder="" autocomplete="on" value="<?=isset($store['opmerking']) ? inpFilt($store['opmerking']) : ''?>"/>
+                        <input type="text" class="modal-form-input" id="reeksOpm" name="opmerking" placeholder="" autocomplete="on" value="<?=isset($rStore['opmerking']) ? inpFilt($rStore['opmerking']) : ''?>"/>
                         <span class="modal-form-span">Opmerking/Notitie</span>
                     </label>
 
                     <div class="modal-reeks-cover" id="modal-reeks-cover">
-                        <?php if(!empty($store['plaatje'])) : ?>
-                        <img class="modal-reeks-cover-img" src="<?=$store['plaatje']?>">
+                        <?php if(!empty($rStore['plaatje'])) : ?>
+                        <img class="modal-reeks-cover-img" src="<?=$rStore['plaatje']?>">
                         <?php endif; ?>
                     </div>
 
                     <label class="modal-form-cov-lab button" id="modal-form-cov-lab">
                         <input type="file" accept="jpg, png, jpeg, gif" class="modal-form-input" id="reeks-cover-inp" name="plaatje" />
-                        <?php if(!empty($store['plaatje'])) : ?>
+                        <?php if(!empty($rStore['plaatje'])) : ?>
                             Nieuwe Cover Selecteren
                         <?php else : ?>
                             Selecteer een Item Cover
