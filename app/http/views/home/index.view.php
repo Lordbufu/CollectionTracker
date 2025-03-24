@@ -30,8 +30,7 @@
                     }
                 } ?>
         </div>
-    <?php   if($_SESSION['user']['rights'] === 'user' && $device === 'mobile') { require "popins/{$_SESSION['user']['rights']}/more-info-mobile.php"; }
-            if(isset($_SESSION['_flash']['tags']['pop-in']) && isset($_SESSION['user']['rights'])) {
+    <?php   if(isset($_SESSION['_flash']['tags']['pop-in']) && isset($_SESSION['user']['rights'])) {
                 if($_SESSION['_flash']['tags']['pop-in'] === 'register') { require "popins/{$_SESSION['user']['rights']}/register.pop-in.php"; }
                 if($_SESSION['_flash']['tags']['pop-in'] === 'login') { require "popins/{$_SESSION['user']['rights']}/login.pop-in.php"; }
                 if($_SESSION['_flash']['tags']['pop-in'] === 'ww-reset') { require "popins/{$_SESSION['user']['rights']}/wachtwoord-reset-pop-in.php"; }
