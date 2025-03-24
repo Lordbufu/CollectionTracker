@@ -1,13 +1,7 @@
 /* Changes specific to normal orientation */
 @media only screen and not (orientation: landscape) {
-    .sub-grid-2 {
-        grid-template-areas: "cont1 cont2 cont3";
-        grid-template-columns: 33% 33% 33%;
-    }
-
-    .contr-cont-1, .contr-cont-2, .contr-cont-3 {
-        width: 15em;
-    }
+    .sub-grid-2 { grid-template-areas: "cont1 cont2 cont3"; grid-template-columns: 33% 33% 33%; }
+    .contr-cont-1, .contr-cont-2, .contr-cont-3 { width: 15em; }
 }
 
 /* Changes specific to landscape orientation

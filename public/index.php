@@ -36,29 +36,3 @@ try {
 if(!isset($_SESSION['_flash']['tags']['redirect'])) {
     App::resolve('session')->unflash();
 }
-
-// Potentially usefull documentation, atm mostly a reminder for me:
-    // Select query testing:
-        // $selectIds = [ 'Gebr_Naam' => 'test' ];
-        // $selectResult = App::resolve('database')->prepQuery('select', 'gebruikers', $selectIds)->getSingle();
-        // dd($selectResult);
-    // Insert query testing: TODO: Might needs a seperate function to check if the results was null ?
-        // $insertData = [ 'Gebr_Index' => 2460, 'Alb_Index' => 25 ];
-        // $insertResult = App::resolve('database')->prepQuery('insert', 'collecties', null, $insertData)->getAll();    // result is null
-        // dd($insertResult);
-    // Update query testing: TODO: Might needs a seperate function to check if the results was null ?
-        // $updateId = [ 'Gebr_Index' => 2460 ];
-        // $updateData = ['Alb_Index' => 26 ];
-        // $updateResult = App::resolve('database')->prepQuery('update', 'collecties', $updateId, $updateData)->getAll();
-        // dd($updateResult);
-    // Delete query testing: TODO: Might needs a seperate function to check if the results was null ?      
-        // $deleteIds = [ 'Gebr_Index' => 2460, 'Alb_Index' => 26 ];  
-        // $deleteResult = App::resolve('database')->prepQuery('delete', 'collecties', $deleteIds)->getAll();
-        // dd($deleteResult);
-    // Count query testing (incl seperate return function):
-        // $countIds = 1;
-        // $countResults = App::resolve('database')->prepQuery('count', null, $countIds)->countItems();
-        // dd($countResults);
-    // testTable query testing (incl seperate return function):
-        // $testCode = App::resolve('database')->prepQuery('testTable', 'gebruiker')->getErrorCode();
-        // dd($testCode); // (Expected error code = 42S02)

@@ -1,125 +1,47 @@
 /* Main banner button styles */
-.banner-reg-butt, .banner-log-butt {
-    height: 1.5em;
-    width: 5em;
-    align-content: center;
-    font-size: 0.8em;
-}
-
+.banner-reg-butt, .banner-log-butt { height: 1.5em; width: 5em; align-content: center; font-size: 0.8em; }
 /* Rescale the subgrid row height */
-.sub-grid-2 {
-    grid-template-rows: 20em;
-}
-
+.sub-grid-2 { grid-template-rows: 20em; }
 /* Create a sub-grid for the text content */
-.contr-cont-2 {
-    display: grid;
-    grid-template-areas: "header" "intro" "info";
-    grid-template-columns: 100%;
-    grid-template-rows: 20% 40% 40%;
-}
-
+.contr-cont-2 { display: grid; grid-template-areas: "header" "intro" "info"; grid-template-columns: 100%; grid-template-rows: 20% 40% 40%; }
 /* Assign the header/title to the correct subgrid */
-.content-header {
-    grid-area: header;
-    align-content: center;
-}
-
+.content-header { grid-area: header; align-content: center; }
 /* Assign the intro text to the correct subgrid */
-.content-intro {
-    grid-area: intro;
-    align-content: center;
-    padding: 0.2em 4em;
-    line-height: 1.6;
-}
-
+.content-intro { grid-area: intro; align-content: center; padding: 0.2em 4em; line-height: 1.6; }
 /* Assign the info text to the correct subgrid */
-.content-info {
-    grid-area: info;
-    align-content: center;
-    padding: 0.2em 4em;
-    line-height: 1.6;
-}
-
+.content-info { grid-area: info; align-content: center; padding: 0.2em 4em; line-height: 1.6; }
 /* Make the example images scale based on view width (vw) */
-.img-1, .img-2, .img-3, .img-4, .img-5, .img-6 {
-    width: calc(.250 * 50vw);
-    height: calc(.250 * 50vw);
-    margin: var(--main-margin);
-}
-
+.img-1, .img-2, .img-3, .img-4, .img-5, .img-6 { width: calc(.250 * 50vw); height: calc(.250 * 50vw); margin: var(--main-margin); }
 /* Add a bit of padding to the table header/title */
-.table-header {
-    padding: 0.4em
- }
-
+.table-header { padding: 0.4em }
 /* Add a bit of padding to the table template */
-.table-templ {
-    padding: 0.4em;
-}
-
+.table-templ { padding: 0.4em; }
 /* Pop-in specific */
 /* Set body to flex, to display the text sections correctly */
-.modal-body {
-    display: inline-flex;
-    flex-direction: column;
-}
-
+.modal-body { display: inline-flex; flex-direction: column; }
 /* Align the button inside the container */
-.butt-box {
-    align-items: center;
-}
-
+.butt-box { align-items: center; }
 /* Adjust container size to make it fit */
-.modal-body ol {
-    width: 85%;
-}
+.modal-body ol { width: 85%; }
 
 /* Small adjustments for smaller screen widths */
 @media only screen and ( width <= 1500px ) {
-	.sub-grid-2 {
-        grid-template-columns: auto 60% auto;
-    }
-
-    .content-intro {
-        padding: 0.2em 2em;
-    }
-
-    .content-info {
-        padding: 0.2em 2em;
-    }
+	.sub-grid-2 { grid-template-columns: auto 60% auto; }
+    .content-intro { padding: 0.2em 2em; }
+    .content-info { padding: 0.2em 2em; }
 }
 
 /* Small adjustments for smaller screen widths */
 @media only screen and ( width <= 1280px ) {
-	.sub-grid-2 {
-        grid-template-columns: auto 70% auto;
-    }
-
-    .content-intro {
-        padding: 0.2em 2em;
-    }
-
-    .content-info {
-        padding: 0.2em 2em;
-    }
-
-	.sub-grid-3 {
-        grid-template-columns: 75%;
-    }
+	.sub-grid-2 { grid-template-columns: auto 70% auto; }
+    .content-intro { padding: 0.2em 2em; }
+    .content-info { padding: 0.2em 2em; }
+	.sub-grid-3 { grid-template-columns: 75%; }
 }
 
 /* Small adjustments for smaller screen widths */
 @media only screen and ( width <= 1000px ) {
-	.sub-grid-2 {
-        grid-template-columns: 0 100% 0;
-    }
-
-    .content-intro {
-        padding: 0.2em 2em;
-    }
-
-    .content-info {
-        padding: 0.2em 2em;
-    }
+	.sub-grid-2 { grid-template-columns: 0 100% 0; }
+    .content-intro { padding: 0.2em 2em; }
+    .content-info { padding: 0.2em 2em; }
 }
