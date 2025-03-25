@@ -78,6 +78,8 @@ class Authenticator {
         /* If the user was set, verify the provided password against the store password, and login the user with the local function. */
         if($verify) {
             $login = $this->login($this->user);
+        } else {
+            return FALSE;
         }
 
         /* If the login was set, and not true, the login failed. */
