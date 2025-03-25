@@ -14,16 +14,9 @@ class Items {
      */
     protected function setItems($ids = null) {
         if(!isset($ids)) {
-            $this->items = App::resolve('database')->prepQuery(
-                'select',
-                'items'
-            )->getAll();
+            $this->items = App::resolve('database')->prepQuery('select', 'items')->getAll();
         } else {
-            $this->items = App::resolve('database')->prepQuery(
-                'select',
-                'items',
-                $ids
-            )->getAll();
+            $this->items = App::resolve('database')->prepQuery('select', 'items', $ids)->getAll();
         }
 
         if(!is_array($this->items)) {
@@ -84,11 +77,7 @@ class Items {
                 $key (String)   - The key i want to have for the logic im using.
      */
     public function getKey($id, $key) {
-        return App::resolve('database')->prepQuery(
-            'select',
-            'items',
-            $id
-        )->find($key);
+        return App::resolve('database')->prepQuery('select', 'items', $id)->find($key);
     }
 
     /*  createItem($data):
@@ -106,18 +95,11 @@ class Items {
     public function createItem($data) {
         $check = $this->dupCheck($data);
 
-        if(is_string($check) || $this->duplicate) {
-            return (is_string($check)) ? $check : App::resolve('errors')->getError('items', 'duplicate');
-        }
+        return (is_string($check) || $this->duplicate) ? $check : App::resolve('errors')->getError('items', 'duplicate');
 
-        $store = App::resolve('database')->prepQuery(
-            'insert',
-            'items',
-            null,
-            $data
-        )->getAll();
+        $store = App::resolve('database')->prepQuery( 'insert', 'items', null, $data)->getErrorCode();
 
-        return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('items', 'store-error');
     }
 
     /*  updateItems($ids):
@@ -134,20 +116,16 @@ class Items {
     public function updateItems($data) {
         $check = $this->dupCheck($data);
 
-        if(is_string($check) || $this->duplicate) {
-            return (is_string($check)) ? $check : App::resolve('errors')->getError('items', 'duplicate');
-        }
+        return (is_string($check)|| $this->duplicate) ? $check : App::resolve('errors')->getError('items', 'duplicate');
 
-        $store = App::resolve('database')->prepQuery(
-            'update',
-            'items', [
-                'Item_Index' => $data['Item_Index'],
-                'Item_Reeks' => $data['Item_Reeks']
-            ],
-            $data
-        )->getAll();
+        $ids = [
+            'Item_Index' => $data['Item_Index'],
+            'Item_Reeks' => $data['Item_Reeks']
+        ];
 
-        return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
+        $store = App::resolve('database')->prepQuery( 'update', 'items', $ids, $data)->getErrorCode();
+
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('items', 'store-error');
     }
 
     /*  remItems($ids):
@@ -160,12 +138,8 @@ class Items {
                 On success - Boolean.
      */
     public function remItems($ids) {
-        $store = App::resolve('database')->prepQuery(
-            'delete',
-            'items',
-            $ids
-        )->getAll();
+        $store = App::resolve('database')->prepQuery('delete', 'items', $ids)->getErrorCode();
 
-        return is_string($store) ? App::resolve('errors')->getError('items', 'rem-fail') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('items', 'rem-fail');
     }
 }

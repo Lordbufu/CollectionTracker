@@ -94,11 +94,7 @@ class Reeks {
                 $key (String)   - The name of the database kolumn (key) i want.
      */
     public function getKey($id, $key) {
-        return App::resolve('database')->prepQuery(
-            'select',
-            'reeks',
-            $id
-        )->find($key);
+        return App::resolve('database')->prepQuery('select', 'reeks', $id)->find($key);
     }
 
     /*  createReeks($data):
@@ -122,9 +118,9 @@ class Reeks {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        $store = App::resolve('database')->prepQuery('insert', 'reeks', $data)->getAll();
+        $store = App::resolve('database')->prepQuery('insert', 'reeks', $data)->getErrorCode();
 
-        return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('items', 'store-error');
     }
 
     /*  updateReeks($ids, $data):
@@ -149,9 +145,9 @@ class Reeks {
             return App::resolve('errors')->getError('reeks', 'duplicate');
         }
 
-        $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $data)->getAll();
+        $store = App::resolve('database')->prepQuery('update', 'reeks', $ids, $data)->getErrorCode();
 
-        return is_string($store) ? App::resolve('errors')->getError('items', 'store-error') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('items', 'store-error');
     }
 
     /*  remReeks($ids):
@@ -164,12 +160,8 @@ class Reeks {
                 On success - Boolean.
      */
     public function remReeks($ids) {
-        $store = App::resolve('database')->prepQuery('delete', 'reeks', $ids)->getAll();
+        $store = App::resolve('database')->prepQuery('delete', 'reeks', $ids)->getErrorCode();
 
-        if(is_string($store)) {
-            return App::resolve('errors')->getError('reeks', 'rem-fail');
-        }
-
-        return is_string($store) ? App::resolve('errors')->getError('reeks', 'rem-fail') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('reeks', 'rem-fail');
     }
 }

@@ -27,11 +27,7 @@ class Collectie {
                 On success -> Boolean.
      */
     protected function setColl() {
-        $this->collectie = App::resolve('database')->prepQuery(
-            'select',
-            'collectie',
-            $this->uId
-        )->getAll();
+        $this->collectie = App::resolve('database')->prepQuery('select', 'collectie', $this->uId)->getAll();
 
         $error = App::resolve('errors')->getError('collectie', 'set-error');
 
@@ -79,10 +75,10 @@ class Collectie {
         }
 
         /* Attempt to set item to user its collection data. */
-        $dbStore = App::resolve('database')->prepQuery('insert', 'collectie', $data)->getAll();
+        $store = App::resolve('database')->prepQuery('insert', 'collectie', $data)->getErrorCode();
 
         /* Return the result of the above add attempt. */
-        return (is_string($dbStore)) ? $dbStore : TRUE;
+        return ($store === '00000') ? TRUE : $store;
     }
 
     /*  remColl($data):
@@ -95,10 +91,10 @@ class Collectie {
      */
     public function remColl($data) {
         /* Attempt to remove item from user its collection data. */
-        $dbStore = App::resolve('database')->prepQuery('delete', 'collectie', $data)->getAll();
+        $store = App::resolve('database')->prepQuery('delete', 'collectie', $data)->getErrorCode();
 
         /* Return the result of the above remove attempt. */
-        return (is_string($dbStore)) ? $dbStore : TRUE;
+        return ($store === '00000') ? TRUE : $store;
     }
 
     /*  evalColl($data):
@@ -139,12 +135,8 @@ class Collectie {
                 On success  - Boolean.
      */
     public function remCollAdmin($ids) {
-        $dbStore = App::resolve('database')->prepQuery(
-            'delete',
-            'collectie',
-            $ids
-        )->getAll();
+        $store = App::resolve('database')->prepQuery('delete', 'collectie', $ids)->getErrorCode();
 
-        return (is_string($dbStore)) ? App::resolve('errors')->getError('collectie', 'rem-fail') : TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('collectie', 'rem-fail');
     }
 }

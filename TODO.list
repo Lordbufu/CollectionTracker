@@ -2,7 +2,5 @@ Global TODO List:
     ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
     - Review if i want the default user, to be able to change there own password.
     - Request feedback on the any extra visual validation requirments.
-    - Consider replacing the add/update Item and Reeks class code, to use getErrorCode instead of getAll.
-        - Or i need to find a better way to catch certain errors, so proper error strings are returned during PDO issues.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
     - If i find some extra time, i should rework the ISBN class, right now its just seems way to complex.

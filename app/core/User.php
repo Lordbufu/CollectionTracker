@@ -89,13 +89,9 @@ class User {
             $userId = ['Gebr_Email' => $data['email']];
         }
 
-        $store = App::resolve('database')->prepQuery('update', 'gebruikers', $userId, $sqlData)->getAll();
+        $store = App::resolve('database')->prepQuery('update', 'gebruikers', $userId, $sqlData)->getErrorCode();
 
-        if(is_string($store)) {
-            return App::resolve('errors')->getError('database', 'store-error');
-        }
-
-        return TRUE;
+        return ($store === '00000') ? TRUE : App::resolve('errors')->getError('database', 'store-error');
     }
 
     /*  getName($id):
