@@ -41,6 +41,30 @@
 
 <script>
     let submButt= document.getElementById('reset-submit'); submButt.disabled = true;
-    let pwInp1 = document.getElementById('pwInp1'); pwInp1.addEventListener('input', validateInput);
-    let pwInp2 = document.getElementById('pwInp2'); pwInp2.addEventListener('input', validateInput);
+    let pwInp1 = document.getElementById('pwInp1'); pwInp1.addEventListener('input', validateReset);
+    let pwInp2 = document.getElementById('pwInp2'); pwInp2.addEventListener('input', validateReset);
+
+    function validateReset(e) {
+        if(e.target.value !== '' && valLength('regular', e.target.value.length)) {
+            if(e.target.id === 'pwInp1') {
+                e.target.style.outline = '3px solid green';
+            }
+
+            if(e.target.id === 'pwInp2') {
+                e.target.style.outline = '3px solid green';
+            }
+
+            if(pwInp1.value === pwInp2.value) {
+                submButt.disabled = false;
+            }
+
+            return;
+        }
+
+        if(!valLength('regular', e.target.value.length)) {
+            e.target.style.outline = '3px solid red';
+            submButt.disabled = true;
+            return;
+        }
+    }
 </script>
