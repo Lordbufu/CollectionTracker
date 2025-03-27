@@ -75,6 +75,21 @@ class ProcessPost {
         return;
     }
 
+    /*  scan($data):
+            This function processes the barcode or isbn search data, and preps said data for for the remaining logic.
+                $data (Assoc Arr)   - The POST data from the controller.
+            
+            Return Value: None.
+     */
+    protected function scan($data) {
+        $this->new = [
+            'isbn' => (int) $data['isbn-choice'],
+            'title' => $data['title-choice']
+        ];
+
+        return;
+    }
+
     /*  store($object, $data):
             This function will attempt to store the POST data in the global $new store.
             And will return the result of said operation, the error path isnt possible atm, but there for when i know how i wanne do that.
