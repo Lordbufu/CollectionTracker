@@ -3,4 +3,3 @@ Global TODO List:
     - Review if i want the default user, to be able to change there own password.
     - Request feedback on the any extra visual validation requirments.
     - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
-    - If i find some extra time, i should rework the ISBN class, right now its just seems way to complex.
