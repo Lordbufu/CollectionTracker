@@ -12,7 +12,9 @@ class ProcessApiReq {
             
             Return Value: None.
      */
-    protected function add($key, $value) { $this->new[$key] = $value; }
+    protected function add($key, $value) {
+        $this->new[$key] = $value;
+    }
 
     /*  processData($data):
             This function take the Google API data, and prepares it for the item-maken pop-in, so the data can be used to add things to the database.
@@ -23,7 +25,9 @@ class ProcessApiReq {
     public function processData($data) {
         foreach($data as $oKey => $oValue) {
             /* Deal with the item publish date, no need to truncate. */
-            if($oKey === 'publishedDate') { $this->add('datum', $oValue); }
+            if($oKey === 'publishedDate') {
+                $this->add('datum', $oValue);
+            }
 
             /* Deal with the item title, and truncate anything greate then .. length. */
             if($oKey === 'title') {
@@ -47,11 +51,19 @@ class ProcessApiReq {
             if($oKey === 'authors') {
                 foreach($oValue as $name) {
                     /* If nothing was set, add the name only. */
-                    if(!isset($this->new['autheur'])) { $this->add('autheur', $name); }
+                    if(!isset($this->new['autheur'])) {
+                        $this->add('autheur', $name);
+                    }
+
                     /* If something was set, add the previous autheur first and add ', '  between the entries. */
-                    if(isset($this->new['autheur'])) { $this->add('autheur', $this->new['autheur'] . ', ' . $name); }
+                    if(isset($this->new['autheur']) && $this->new['autheur'] !== $name) {
+                        $this->add('autheur', $this->new['autheur'] . ', ' . $name);
+                    }
+
                     /* Truncate the string, if its longer then the formvalidation allows. */
-                    if(strlen($this->new['autheur'])) { $this->add('autheur', substr($this->new['autheur'], 0, 50)); }
+                    if(strlen($this->new['autheur'])) {
+                        $this->add('autheur', substr($this->new['autheur'], 0, 50));
+                    }
                 }
             }
 
@@ -59,20 +71,32 @@ class ProcessApiReq {
             if($oKey === 'industryIdentifiers') {
                 foreach($oValue as $pair){
                     foreach($pair as $iKey => $iValue) {
-                        if($iKey === 'type' && $iValue === 'ISBN_13') { $this->add('isbn', $pair['identifier']); }
-                        if($iKey === 'type' && $iValue === 'ISBN_10' && !isset($this->new['isbn'])) { $this->add('isbn', $pair['identifier']); }
+                        if($iKey === 'type' && $iValue === 'ISBN_13') {
+                            $this->add('isbn', $pair['identifier']);
+                        }
+
+                        if($iKey === 'type' && $iValue === 'ISBN_10' && !isset($this->new['isbn'])) {
+                            $this->add('isbn', $pair['identifier']);
+                        }
                     }
                 }
 
                 /* If no ISBN was found, witch would be odd, store at least a 0. */
-                if(!isset($this->new['isbn'])) { $this->add('isbn', 0); }
+                if(!isset($this->new['isbn'])) {
+                    $this->add('isbn', 0);
+                }
             }
 
             /* Deal with processing the image links in the correct order, incl converting it to a base64 blob */
             if($oKey === 'imageLinks') {
                 foreach($oValue as $iKey => $iValue) {
-                    if($iKey === 'thumbnail') { $this->add('plaatje', App::resolve('file')->procUrl($iValue)); }
-                    if($iKey === 'smallThumbnail') { $this->add('plaatje', App::resolve('file')->procUrl($iValue)); }
+                    if($iKey === 'thumbnail') {
+                        $this->add('plaatje', App::resolve('file')->procUrl($iValue));
+                    }
+
+                    if($iKey === 'smallThumbnail') {
+                        $this->add('plaatje', App::resolve('file')->procUrl($iValue));
+                    }
                 }
             }
         }
