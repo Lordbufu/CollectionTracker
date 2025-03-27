@@ -6,7 +6,7 @@ use App\Core\App;
 $oInput = $_POST;
 
 /* Attempt to find the ISBN data in the Google Api. */
-$searchResult = App::resolve('isbn')->startRequest($_POST['isbn'], $_POST['rIndex'], TRUE);
+$searchResult = App::resolve('isbn')->startRequest($_POST['isbn']);
 
 /* If there where errors, store the correct data in the session, before redirecting back to the pop-in. */
 if(is_string($searchResult)) {
@@ -25,9 +25,11 @@ if(is_string($searchResult)) {
 /* Check if i need to present a title choice to the user. */
 if(isset($searchResult[0]) && $searchResult[0] === 'Titles') {
     /* Ensure the right POST data is passed on. */
-    $searchResult['method'] = $_POST['method'];
-    $searchResult['rIndex'] = (int) $_POST['rIndex'];
+    $searchResult['_method'] = $_POST['_method'];
+    $searchResult['index'] = (int) $_POST['rIndex'];
+    $searchResult['isbn'] = (int) $_POST['isbn'];
 
+    App::resolve('session')->setVariable('page-data', ['oldItem' => $oInput]);
     App::resolve('session')->flash([
         'isbn-choices' => $searchResult,
         'feedback' => [
