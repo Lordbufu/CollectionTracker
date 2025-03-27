@@ -31,7 +31,7 @@
                         <option class="modal-form-title-options" value="">Selecteer een title</option>
                         <?php   // Ignore the 'Titles', 'isbn' & 'index' entries.
                             foreach($store as $key => $value) :
-                                if($key != 0 && $key !== 'isbn' && $key !== 'index') : ?>
+                                if($key != 0 && $key !== 'isbn' && $key !== 'index' && $key !== '_method') : ?>
                         <option class="modal-form-title-options"><?=$value?></option>
                         <?php   endif;
                             endforeach; ?>
