@@ -95,7 +95,13 @@ class Items {
     public function createItem($data) {
         $check = $this->dupCheck($data);
 
-        return (is_string($check) || $this->duplicate) ? $check : App::resolve('errors')->getError('items', 'duplicate');
+        if(is_string($check) || $this->duplicate) {
+            if(is_string($check)) {
+                return $check;
+            } else {
+                return App::resolve('errors')->getError('items', 'duplicate');
+            }
+        }
 
         $store = App::resolve('database')->prepQuery( 'insert', 'items', null, $data)->getErrorCode();
 
@@ -116,7 +122,13 @@ class Items {
     public function updateItems($data) {
         $check = $this->dupCheck($data);
 
-        return (is_string($check)|| $this->duplicate) ? $check : App::resolve('errors')->getError('items', 'duplicate');
+        if(is_string($check) || $this->duplicate) {
+            if(is_string($check)) {
+                return $check;
+            } else {
+                return App::resolve('errors')->getError('items', 'duplicate');
+            }
+        }
 
         $ids = [
             'Item_Index' => $data['Item_Index'],
