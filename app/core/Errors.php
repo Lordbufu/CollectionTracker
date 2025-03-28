@@ -68,10 +68,9 @@ class Errors {
     /* Isbn (barcode scan) specific errors. */
     protected $isbn = [
         'no-items' => 'Er zijn geen items gevonden in de Google API voor deze barcode, probeer aub een andere!',
-        'no-request' => 'Er is geen verzoek gedaan bij de Google API, neem contact op met uw Administrator!',
-        'no-match' => 'Er zijn geen items in deze reeks gevonden, die overeenkomen met de gescande ISBN!',
+        'tomany-items' => 'Er zijn te veel items gevonden voor de huidige actie, de API is helaas niet perfect.',
         'search-error' => 'Er ging iets mis tijdens het zoeken op die ISBN nummer, probeer het aub nogmaals.',
-        'choice-fail' => 'De google API werkt wat raar soms, probeer het aub nogmaals.'
+        'choice-fail' => 'De Google API werkt wat raar soms, probeer het aub nogmaals.'
     ];
 
     /* Form validation specific errors. */
