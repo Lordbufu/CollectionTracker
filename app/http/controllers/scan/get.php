@@ -2,14 +2,16 @@
 
 use App\Core\App;
 
+$oInput = $_POST;
+
 /* Set the correct re-direct route based on user rights, and make sure the expected input is set. */
 $route = ($_SESSION['user']['rights'] === 'user') ? 'gebruik' : 'beheer';
 
 /* Depending on the route, parse\request the correct data from the Isbn Core Class. */
 if($route === 'beheer') {
-    $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index'], TRUE);
+    $apiRequest = App::resolve('isbn')->complexRequest($_POST['isbn']);
 } else {
-    $apiRequest = App::resolve('isbn')->startRequest($_POST['item-isbn'], $_POST['reeks-index']);
+    $apiRequest = App::resolve('isbn')->easyRequest($_POST['isbn']);
 }
 
 /* If no array is returned or errors where set, i handover the correct user feedback, and redirect to the default page. */
@@ -25,8 +27,9 @@ if(!is_array($apiRequest) || isset($apiRequest['error'])) {
 
 /* If the Administrator action returend a title choice: */
 if(isset($apiRequest[0]) && $apiRequest[0] === 'Titles') {
-    $apiRequest['isbn'] = $_POST['item-isbn'];
-    $apiRequest['index'] = $_POST['reeks-index'];
+    /* Inlude the post data required to finish the confirm action after this choice. */
+    $apiRequest['isbn'] = $_POST['isbn'];
+    $apiRequest['rIndex'] = $_POST['rIndex'];
 
     App::resolve('session')->flash([
         'isbn-choices' => $apiRequest,
@@ -50,17 +53,37 @@ if(is_string($aanwezig)) {
     return App::redirect($route, TRUE);
 }
 
+/* Unflash the flash memory. */
+App::resolve('session')->unflash();
+
 /* If it said the item was already in the user collection, remove it and add the associated feedback. */
 if($aanwezig) {
-    App::resolve('collectie')->remColl(['index' => $apiRequest['Item_Index']]);
-    App::resolve('session')->flash('feedback', ['removed' => "Gescanned item: {$iName}. \n Is uit uw collectie verwijderdt!"]);
+    App::resolve('collectie')->remColl([
+        'index' => $apiRequest['Item_Index']
+    ]);
+
+    App::resolve('session')->flash('feedback', [
+        'removed' => "Gescanned item: {$iName}. \n Is uit uw collectie verwijderdt!"
+    ]);
 /* If it said the item wasnt in the user collection, add it and add the associated feedback. */
 } else {
-    App::resolve('collectie')->addColl(['iIndex' => $apiRequest['Item_Index'], 'rIndex' => $apiRequest['Item_Reeks']]);
-    App::resolve('session')->flash('feedback', [ 'added' => "Gescanned item: {$iName}. \n Is aan uw collectie toegevoegd!"]);
+    App::resolve('collectie')->addColl([
+        'iIndex' => $apiRequest['Item_Index'],
+        'rIndex' => $apiRequest['Item_Reeks']
+    ]);
+
+    App::resolve('session')->flash('feedback', [
+        'added' => "Gescanned item: {$iName}. \n Is aan uw collectie toegevoegd!"
+    ]);
 }
 
 /* Update the user collectie page-data, and redirect back to the default user page. */
-if(isset($_SESSION['page-data']['collecties'])) { unset($_SESSION['page-data']['collecties']); }
-App::resolve('session')->setVariable('page-data', ['collecties' => App::resolve('collectie')->getColl()]);
+if(isset($_SESSION['page-data']['collecties'])) {
+    unset($_SESSION['page-data']['collecties']);
+}
+
+App::resolve('session')->setVariable('page-data', [
+    'collecties' => App::resolve('collectie')->getColl()
+]);
+
 return App::redirect($route, TRUE);

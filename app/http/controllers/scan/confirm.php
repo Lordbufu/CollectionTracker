@@ -23,27 +23,6 @@ if(!isset($newItem['_method']) && !empty($_POST['_method'])) {
     $newItem['_method'] = 'PUT';
 }
 
-if(isset($_SESSION['page-data']['oldItem'])) {
-    $oInput = $_SESSION['page-data']['oldItem'];
-
-    if(!isset($newItem['iIndex']) && !empty($oInput['iIndex'])) {
-        $newItem['iIndex'] = $oInput['iIndex'];
-        $newItem['_method'] = 'PATCH';
-    }
-
-    if(!isset($newItem['datum']) && !empty($oInput['datum'])) {
-        $newItem['datum'] = $oInput['datum'];
-    }
-
-    if(!isset($newItem['nummer']) && !empty($oInput['nummer'])) {
-        $newItem['nummer'] = $oInput['nummer'];
-    }
-
-    if(!isset($newItem['opmerking']) && !empty($oInput['opmerking'])) {
-        $newItem['opmerking'] = $oInput['opmerking'];
-    }
-}
-
 /* Clear old session _flash data, flash the new data, and redirect back to the item-maken pop-in. */
 App::resolve('session')->unflash();
 App::resolve('session')->setVariable('page-data', ['temp-cover' => $newItem['plaatje']]);
@@ -57,5 +36,4 @@ App::resolve('session')->flash([
         'pop-in' => 'items-maken'
 ]]);
 
-unset($_SESSION['page-data']['oldItem']);
 return App::redirect('beheer#items-maken-pop-in', TRUE);

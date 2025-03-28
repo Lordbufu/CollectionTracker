@@ -6,7 +6,7 @@ use App\Core\App;
 $oInput = $_POST;
 
 /* Attempt to find the ISBN data in the Google Api. */
-$searchResult = App::resolve('isbn')->startRequest($_POST['isbn']);
+$searchResult = App::resolve('isbn')->easyRequest($_POST['isbn']);
 
 /* If there where errors, store the correct data in the session, before redirecting back to the pop-in. */
 if(is_string($searchResult)) {
