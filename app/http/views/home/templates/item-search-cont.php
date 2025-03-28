@@ -1,6 +1,7 @@
 <form class="item-zoek-form" onsubmit="event.preventDefault()">
     <label class="item-zoek-lab" for="item-zoek-inp">Item Zoeken:</label>
         <div class="search-opt-cont">
+            
             <div class="search-opt-naam-cont">
                 <label class="search-opt-naam-lab" for="item-zoek-naam-inp">Naam:</label> <br>
                 <label class="item-zoek-naam" for="item-zoek-naam-inp">
@@ -8,6 +9,7 @@
                     <span class="item-zoek-naam-slider"> </span>
                 </label>
             </div>
+
             <div class="search-opt-itemNr-cont">
                 <label class="search-opt-itemNr-lab" for="item-zoek-nr-inp">Item Nr:</label> <br>
                 <label class="item-zoek-nr" for="item-zoek-nr-inp">
@@ -15,6 +17,7 @@
                     <span class="item-zoek-nr-slider"></span>
                 </label>
             </div>
+
             <div class="search-opt-isbn-cont">
                 <label class="search-opt-isbn-lab" for="item-zoek-isbn-inp">Item Isbn:</label> <br>
                 <label class="item-zoek-isbn" for="item-zoek-isbn-inp">
@@ -23,11 +26,13 @@
                 </label>
             </div>
         </div>
+
     <label class="modal-form-label" for="item-zoek-inp">
         <input class="modal-form-input" id="item-zoek-inp" type="text" placeholder="" />
         <span class="modal-form-span" id="item-zoek-span">Zoek naar items..</span>
     </label>
 </form>
+
 <style>
     .item-zoek-form { display: grid; justify-items: center; margin: 0.1em 0.2em; }
     .item-zoek-lab { font-weight: bold; }
@@ -40,6 +45,7 @@
     .item-zoek-naam-inp:checked + .item-zoek-naam-slider, .item-zoek-nr-inp:checked + .item-zoek-nr-slider, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider { background-color: var(--main-slid-backgr-2); }
     .item-zoek-naam-inp:checked + .item-zoek-naam-slider:before, .item-zoek-nr-inp:checked + .item-zoek-nr-slider:before, .item-zoek-isbn-inp:checked + .item-zoek-isbn-slider:before { -webkit-transform: translateX(1.5em); -ms-transform: translateX(1.5em); transform: translateX(1.5em); }
 </style>
+
 <script>
     /* Listen Event for the item search input, and a input state disabled by default. */
     let itemZoekInp = document.getElementById('item-zoek-inp'); itemZoekInp.addEventListener('input', itemZoek); if(itemZoekInp) { itemZoekInp.disabled = true; }
