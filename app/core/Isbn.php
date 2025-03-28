@@ -5,12 +5,10 @@ namespace App\Core;
 use App\Core\App;
 
 class Isbn {
-    /* Global data variables, for requesting/parsing and processing the API request. */
     protected $reqUrl;
     protected $stringData;
     protected $jsonData;
     protected $checkedData;
-    /* Global detection variables, to detect errors or title choices. */
     protected $errors;
     protected $titles;
 
@@ -122,31 +120,6 @@ class Isbn {
         return;
     }
 
-    /*  startRequest($isbn):
-            This function deal with the initial Google API request logic.
-            And delegates the remaining process to the controller, regardless of the user or path it took.
-                $isbn (String)  - The isbn that needs to be searched for in the Google Books API.
-
-            Return Value: Associative Array.
-     */
-    public function startRequest($isbn) {
-        if(!$this->setUrl($isbn)) {
-            return $this->errors;
-        }
-
-        $this->processData();
-
-        if(isset($this->errors)) {
-            return $this->errors;
-        }
-
-        if(isset($this->titles)) {
-            return $this->titles;
-        }
-
-        return $this->checkedData['volumeInfo'];
-    }
-
     /*  confirmChoice($data):
             This function is dealing with returning the correct items, after a title choice was made by the user.
                 $data (Assoc Arr)   - Both the isbn that was searched, and the title choice that was made.
@@ -158,7 +131,7 @@ class Isbn {
         /* Ensure the current data, is at the same point as it was during the initial startRequest() call. */
         if(!isset($this->checkedData)) {
             if(!$this->setUrl($data['isbn'])) {
-                return $this->errors;
+                return $this->errors['set-error'];
             }
 
             if($this->getData()) {
@@ -179,5 +152,61 @@ class Isbn {
 
         /* Return a error if nothing was found. */
         return App::resolve('errors')->getError('isbn', 'choice-fail');
+    }
+
+    /*  complexRequest($isbn):
+            Intended to be used for scanning barcodes as a Administrator, trying to add a item to a reeks.
+            When there are more then 1 item returned, it will work in tandem with confirmChoice, to present the admin with a item choice.
+                $isbn (String)  - The ISBN number that was scanned by the user.
+            
+            Return Value:
+                On failure  - String.
+                On choices  - Array.
+                On Success  - Assoc Array.
+     */
+    public function complexRequest($isbn) {
+        if(!$this->setUrl($isbn)) {                 // Get API data based on isbn,
+            return $this->errors['set-error'];      // return error on failures.
+        }
+
+        $this->processData();                       // Proccess the parsed data,
+
+        if(isset($this->errors)) {
+            return $this->errors['parse-error'];    // return feedback on 0 results,
+        }
+
+        if(isset($this->titles)) {
+            return $this->titles;                   // return title choice on more then 1 result,
+        }
+
+        return $this->checkedData['volumeInfo'];    // return item on single result,
+    }
+
+    /*  easyRequest($isbn):
+            Intended for the regular user scan, or when using the isbn search option as a administrator.
+            These to use cases do not use the titel choice, as the Google Book API isnt very accurate with certain ISBN's.
+            Leading to issues with not finding items, after a user choice was made.
+                $isbn (String)  - The ISBN number that was scanned by the user.
+
+            Return Value:
+                On failure  - String.
+                On Success  - Assoc Array.
+     */
+    public function easyRequest($isbn) {
+        if(!$this->setUrl($isbn)) {                 // Get API data based on isbn,
+            return $this->errors['set-error'];      // return error on failures.
+        }
+
+        $this->processData();                       // Proccess the parsed data,
+
+        if(isset($this->errors) || isset($this->titles)) {
+            if(isset($this->titles)) {
+                $this->errors['parse-error'] = App::resolve('errors')->getError('isbn', 'tomany-items'); 
+            }
+
+            return $this->errors['parse-error'];    // return feedback on 0 and more then 1 result,
+        }
+
+        return $this->checkedData['volumeInfo'];    // return item on single result.        
     }
 }
