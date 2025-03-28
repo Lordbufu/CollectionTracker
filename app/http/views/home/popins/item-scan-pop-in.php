@@ -21,8 +21,8 @@
                 </div>
             </div>
             <form class="modal-form" id="scan-form" action="/bCodeScan" method="post" hidden>
-                <input type="text" class="modal-form-indexS" name="reeks-index" value="<?=$_SESSION['_flash']['tags']['reeks-index'] ?? ''?>" hidden/>
-                <input type="text" class="modal-form-indexS" id='item-isbn' name="item-isbn" value hidden/>
+                <input type="text" class="modal-form-indexS" name="rIndex" value="<?=$_SESSION['_flash']['tags']['reeks-index'] ?? ''?>" hidden/>
+                <input type="text" class="modal-form-indexS" id='item-isbn' name="isbn" value hidden/>
             </form>
         </div>
     </div>

@@ -25,13 +25,13 @@
 
                 <form class="modal-form" enctype="multipart/form-data" method="post" action="/scanConf">
                     <input class="modal-form-isbn" name="isbn-choice" value="<?=$store['isbn']?>" hidden/>
-                    <input class="modal-form-serie-index" name="reeks-index" value="<?=$store['index']?>" hidden/>
+                    <input class="modal-form-serie-index" name="reeks-index" value="<?=$store['rIndex']?>" hidden/>
 
                     <select class="modal-form-select" name="title-choice" id="item-choice" required>
                         <option class="modal-form-title-options" value="">Selecteer een title</option>
                         <?php   // Ignore the 'Titles', 'isbn' & 'index' entries.
                             foreach($store as $key => $value) :
-                                if($key != 0 && $key !== 'isbn' && $key !== 'index' && $key !== '_method') : ?>
+                                if($key != 0 && $key !== 'isbn' && $key !== 'rIndex' && $key !== '_method') : ?>
                         <option class="modal-form-title-options"><?=$value?></option>
                         <?php   endif;
                             endforeach; ?>
