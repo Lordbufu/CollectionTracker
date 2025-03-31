@@ -35,7 +35,7 @@
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ],
-            'version' => 'V2.2.1'
+            'version' => 'V2.2.1-hf'
         ],
         /* Live specific settings */
         'live' => [
@@ -52,7 +52,7 @@
             'options' => [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT
             ],
-            'version' => 'V2.2.0'
+            'version' => 'V2.2.1-hf'
         ]
     ];
 ?>
