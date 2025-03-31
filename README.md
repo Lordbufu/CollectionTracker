@@ -40,3 +40,12 @@ And before hosting the website, the following composer command should be execute
 	'composer dump-autoload'
 
 A few images to show how the project looks like when its live, and has a populated database:
+![Project-Homepage](https://github.com/user-attachments/assets/2028b050-a76a-49d3-ab85-7cda45fae05c)
+
+![Project-Admin-Reekspage](https://github.com/user-attachments/assets/2fa59894-7ec5-4e2a-9aa4-bf772bcfdf7b)
+
+![Project-Admin-Itemspage](https://github.com/user-attachments/assets/d2351497-63c8-4f1b-b3ee-88ab0a2e5fc6)
+
+![Project-User-Reekspage](https://github.com/user-attachments/assets/35b9ccfa-d644-4039-a1ae-964d11b440ab)
+
+![Project-User-Itemspage](https://github.com/user-attachments/assets/0fd4c358-e290-4bd6-bebb-9d66a4d23a6b)
