@@ -1,0 +1,35 @@
+/* Adjust the feedback container size, so its look more normal */
+.message-container { left: 20%; right: 20%; }
+
+/* Changes specific to normal orientation */
+@media only screen and not (orientation: landscape) {
+    /* Make the text content take up more screen space */
+    .sub-grid-2 { grid-template-columns: 0 100% 0; }
+    /* More margin to remove ugly white space */
+    .contr-cont-2 { margin-top: 1em; }
+    /* More margin to remove ugly white space */
+    .content-header { margin-bottom: 2em; }
+    /* More margin to remove ugly white space */
+    .content-intro { margin-bottom: 2em; line-height: 1.4; }
+    /* More margin to remove ugly white space */
+    .content-info { margin-bottom: 2em; line-height: 1.4; }
+    /* Change the example images sub-grid to fit on screen a but better */
+    .sub-grid-3 { grid-template-columns: 75%; margin-top: 2em; margin-bottom: 2em; }
+    /* Make the example images, auto-adjust based on view width (vw) */
+    .img-1, .img-2, .img-3, .img-4, .img-5, .img-6 { width: calc(.450 * 50vw); height: calc(.450 * 50vw); }
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) {
+    /* Adjust the header title margins */
+    .header-text { margin: 0.5em 0; margin-right: 10%; }
+    /* Adjust info text grid columns to make it fit on page */
+    .sub-grid-2 { grid-template-columns: 10% 80% 10%; }
+    /* Set a better margin for the content header */
+    .content-header { margin: 0.2em 0; }
+    /* Make the example images, auto-adjust based on view width (vw) */
+    .img-1, .img-2, .img-3, .img-4, .img-5, .img-6 { width: calc(.350 * 50vw); height: calc(.350 * 50vw); }
+    /* Pop-in specific */
+    /* Create some spacing betwen text and elements */
+    .modal-body { padding: 0.4em; width: fit-content; }
+}

@@ -1,0 +1,70 @@
+        <!-- Modal pop-in example:
+                This template features a main container, that can be triggered via the css focus tag, using the html id tag.
+                The modal-cont is also the transparant background, while the modal-content-cont from the actual pop-in body (background).
+                There is header container, to reflect what said pop-in is for, and to include a close button.
+                The modal-body is where the main content goes, in this example im using a form to submit user inputs.
+                The main content is split in 2 container, one for the left and one for the right side.
+                This is because i have a button besides one of the inputs, that tries to parse a google API to pre-fill data.
+        -->
+        <div id="" class="" >
+
+            <!-- The main pop-in content container -->
+            <div class="" id="" >
+
+                <!-- A header container -->
+                <div class="" id="" >
+
+                    <!-- The header text section -->
+                    <h3 class="" id="" > </h3>
+
+                    <!-- A form and close button to return to the main page -->
+                    <form class="" id="" method="" action="" >
+                        <input class="" id="" name="" value="" hidden/>
+                        <input class="" id="" type="" value="&times;" />
+                    </form>
+
+                </div>
+
+                <!-- The pop-in body container for the main content  -->
+                <div class="" id="" >
+
+                    <!-- A form to submit data -->
+                    <form class="" id="" enctype="" method="" action="" >
+
+                        <!-- A spot to include hidden form data -->
+                        <input class="" id="" name="" hidden />
+
+                        <!-- A container to create left and right side content -->
+                        <div class="" id="" >
+
+                            <!-- Repeat-able input data, with a label and span to create placeholder text, that goes to above the input when selected. -->
+                            <label class="" id="" >
+                                <input type="" class="" id="" name="" placeholder="" autocomplete="" required />
+                                <span class="" id="" > Placeholder text </span>
+                            </label>
+
+                            <!-- A button container, where the submit button and other submit related elements go (confirm checkboxes, etc). -->
+                            <div class="" id="" >
+                                <input class="" id="" type="" value="" />
+                            </div>
+
+                        </div>
+
+                        <!-- The right side content container, outside the form so it doesnt confict with form submit buttons.  -->
+                        <div class="" id="" >
+
+                            <!-- A fake trigger container to align the content -->
+                            <div class="" id="" > </div>
+
+                            <!-- An example of a button -->
+                            <button class="" id="" type="" > ... </button>
+
+                        </div>
+
+                    </form>
+                    
+                </div>
+
+            </div>
+
+        </div>

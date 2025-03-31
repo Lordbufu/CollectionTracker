@@ -1,0 +1,14 @@
+/* Changes specific to not landscape orientation */
+@media only screen and not (orientation: landscape) {
+    /* Adjust the columns to make the controllers fit */
+    .sub-grid-2 { grid-template-areas: "cont1 cont2" "cont3 cont4"; grid-template-columns: 50% 50%; grid-template-rows: 50% 50%; grid-row-gap: 0.2em; }
+    /* Center this controller a bit more */
+    .contr-cont-3 { margin-left: 20em; }
+    /* Remove less relevant columns and titles */
+    .reeksOpmTitle, .reeks-opmerk { display: none; }
+    /* Place the pop-ins a bit higher on the screen. */
+    .modal-content-cont { top: 5em; }
+}
+
+/* Changes specific to landscape orientation */
+@media only screen and (orientation: landscape) { }
