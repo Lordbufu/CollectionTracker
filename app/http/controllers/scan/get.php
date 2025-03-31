@@ -17,9 +17,13 @@ if($route === 'beheer') {
 /* If no array is returned or errors where set, i handover the correct user feedback, and redirect to the default page. */
 if(!is_array($apiRequest) || isset($apiRequest['error'])) {
     if(is_string($apiRequest)) {
-        App::resolve('session')->flash('feedback', ['error' => $apiRequest]);
+        App::resolve('session')->flash('feedback', [
+            'error' => $apiRequest
+        ]);
     } else {
-        App::resolve('session')->flash('feedback', ['error' => $apiRequest['error']]);
+        App::resolve('session')->flash('feedback', [
+            'error' => $apiRequest['error']
+        ]);
     }
 
     return App::redirect($route, TRUE);
@@ -49,7 +53,9 @@ $aanwezig = App::resolve('collectie')->evalColl($apiRequest);
 
 /* If the item wasnt evaluated properly, prepare the userfeedback and redirect back to the default user page. */
 if(is_string($aanwezig)) {
-    App::resolve('session')->flash('feedback', ['error' => $aanwezig]);
+    App::resolve('session')->flash('feedback', [
+        'error' => $aanwezig
+    ]);
     return App::redirect($route, TRUE);
 }
 
