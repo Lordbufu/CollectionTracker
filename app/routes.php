@@ -11,12 +11,12 @@ $router->post('/login',		'user/login.php')->only('guest');           // Source =
 /* Routes for the regular users only. */
 $router->get('/gebruik',	'home/gebruik.view.php')->only('user');     // Initial Source = 'http\controllers\user\login.php'
 $router->post('/gebruik',	'home/gebruik.view.php')->only('user');     // Various sources, mostly pop-in close buttons.
+$router->patch('/uReset',	'user/reset.php')->only('user');            // Source = 'http\views\home\popins\admin\wachtwoord-reset-pop-in.php' (form submit button)
 $router->put('/colAdd',     'collectie/add.php')->only('user');         // Source = 'http\views\home\template\user\table-subgrid.php' (add/remove switch)
 $router->delete('/colRem',	'collectie/remove.php')->only('user');      // Source = 'http\views\home\template\user\table-subgrid.php' (add/remove switch)
 /* Routes for the admin users only. */
 $router->get('/beheer',		'home/beheer.view.php')->only('admin');		// Initial Source = 'http\controllers\user\login.php'
 $router->post('/beheer',	'home/beheer.view.php')->only('admin');		// Various sources, mostly return\close buttons.
-$router->get('/wwReset',	'redir/reset.pop.php')->only('admin');      // Source = 'http\views\home\template\admin\banner-subgrid.php' (Wachtw Reset knop)
 $router->patch('/aReset',	'user/reset.php')->only('admin');           // Source = 'http\views\home\popins\admin\wachtwoord-reset-pop-in.php' (form submit button)
 /* Admin reeks actions */
     /* Admin reeks maken. */
@@ -44,4 +44,5 @@ $router->post('/scanConf',  'scan/confirm.php')->only('admin');         // Sourc
 $router->get('/logout',		'user/logout.php')->only('auth');           // 'Afmelden' banner menu button.
 $router->post('/selReeks',	'reeks/get.php')->only('auth');             // Select/View a reeks buttons.
 $router->post('/scanPop',	'redir/scan.pop.php')->only('auth');        // The barcode scan pop-in trigger route.
-$router->post('/bCodeScan',	'scan/get.php')->only('auth');              // Barcode scan pop-in scan-trigger
+$router->post('/bCodeScan',	'scan/get.php')->only('auth');              // Barcode scan pop-in scan-trigger.
+$router->get('/wwReset',	'redir/reset.pop.php')->only('auth');       // Banner Wachtw Reset knop.

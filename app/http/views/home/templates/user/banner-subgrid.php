@@ -1,6 +1,10 @@
 <?php if(isset($_SESSION['page-data']['huidige-reeks'])) { $hReeks = inpFilt($_SESSION['page-data']['huidige-reeks']); } ?>
 
 <div class="banner-butt">
+    <form class="ww-reset-form" id="ww-reset-banner" method="get" action="/wwReset">
+        <button id="ww-reset-butt" class="banner-reset-butt button" type="submit">Wachtw Reset</button>
+    </form>
+
     <form class="logoff-form" method="get" action="/logout">
         <input class="logoff-butt button" type="submit" value="Afmelden" />
     </form>
@@ -17,3 +21,7 @@
 <div class="banner-head">
     <h1 class="header-text">Collectie Tracker: Gebruik</h1>
 </div>
+
+<style>
+    .banner-reset-butt { height: 2em; }
+</style>

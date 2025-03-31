@@ -31,7 +31,7 @@
     let itemIsbn = document.getElementById('item-isbn'), scanForm = document.getElementById('scan-form');
     let config = {
         fps: 10,
-        //supportedScanTypes: [ Html5QrcodeScanType.SCAN_TYPE_CAMERA ]  // uncommented for testing purposes atm.
+        supportedScanTypes: [ Html5QrcodeScanType.SCAN_TYPE_CAMERA ]
     };
     html5QrcodeScanner = new Html5QrcodeScanner('reader', config), html5QrcodeScanner.render(onScanSuccess, onScanError);
     /* onScanSuccess(decodedText, decodedResult): Using the qrcode scanning API, i take the ISBN/EAN number of a barcode. And store that in the form, so the backend code can querry google, and then parse any usefull data. */

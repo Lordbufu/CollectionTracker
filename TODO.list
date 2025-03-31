@@ -1,5 +1,6 @@
 Global TODO List:
-    ## This should likely be done last, as its possible i cant resolve this in a way that i would prefer to have it ##
-    - Review if i want the default user, to be able to change there own password.
-    - Request feedback on the any extra visual validation requirments.
-    - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in.
+    - Review if i want the default user, to be able to change there own password (code already finished, just need to push/upload it).
+    - Request feedback on the any extra visual validation requirments (so far feedback is positive).
+    - Remove the uncommented JS section, to allow for image uploads to the barcode scanner pop-in (Done).
+    - Update the readme on github, to reflect that the project is finished, and adding some meaningfull tekst. (Done)
+    - Update version number to the new 'live' version, removing the beta/testing status, and updating the current version data in the footer.

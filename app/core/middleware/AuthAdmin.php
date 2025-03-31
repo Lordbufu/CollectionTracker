@@ -7,13 +7,11 @@ use App\Core\App;
 /* AuthAdmin: Specifically targets the Admin user.*/
 class AuthAdmin {
     public function handle() {
-        /* If no user data is set, or the user isnt a administrator, set a redirect tag for JS and return to caller.. */
-        if(!isset($_SESSION['user']['rights']) || $_SESSION['user']['rights'] !== 'admin') {
-            App::resolve('session')->setVariable('page-data', [
+        /* If no user id was set, or the rights are not set correctly, redirect to the 'home' page. */
+        if(!isset($_SESSION['user']['id']) || $_SESSION['user']['rights'] !== 'admin') {
+            return App::resolve('session')->setVariable('page-data', [
                 'reset' => TRUE
             ]);
-
-            return;
         }
     }
 }

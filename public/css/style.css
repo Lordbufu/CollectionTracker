@@ -32,7 +32,7 @@
 /* Main container styles, starting with a flex layout */
 .main-flex { display: flex; flex-direction: column; margin: var(--main-margin); padding: 0; font-family: Arial, sans-serif; text-align: center; }
 /* First sub-grid, for all header\banner content */
-.sub-grid-1 { display: grid; grid-template-areas: "buttons header"; grid-template-columns: 10% 90%; border: var(--main-border-body); border-radius: var(--main-border-rad); background-color: var(--main-backgr-col); align-items: center; justify-content: center; padding: 0.2em; height: 4em; }
+.sub-grid-1 { display: grid; grid-template-areas: "buttons header"; grid-template-columns: 10% 90%; border: var(--main-border-body); border-radius: var(--main-border-rad); background-color: var(--main-backgr-col); align-items: center; justify-content: center; padding: 0.2em; }
 /* The header\banner button area, flex for better positioning */
 .banner-butt { grid-area: buttons; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 /* The header\title container */

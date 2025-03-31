@@ -84,9 +84,14 @@ class User {
                 On success - Boolean.
      */
     public function updateUser($data) {
-        if(isset($data['email'])) {
-            $sqlData = ['Gebr_WachtW' => password_hash($data['wachtwoord1'], PASSWORD_BCRYPT)];
+        $sqlData = ['Gebr_WachtW' => password_hash($data['wachtwoord2'], PASSWORD_BCRYPT)];
+
+        if(isset($data['email'])) {    
             $userId = ['Gebr_Email' => $data['email']];
+        }
+
+        if(isset($data['Gebr_Index'])) {
+            $userId = ['Gebr_Index' => $data['Gebr_Index']];
         }
 
         $store = App::resolve('database')->prepQuery('update', 'gebruikers', $userId, $sqlData)->getErrorCode();
@@ -105,6 +110,6 @@ class User {
             $this->setUser($ids);
         }
 
-        return is_string($this->user) ? App::resolve('errors')->getError('user', 'user-fetch') : $this->user['Gebr_Naam'];
+        return is_string($this->user) ? ['error' => App::resolve('errors')->getError('user', 'user-fetch')] : $this->user['Gebr_Naam'];
     }
 }
