@@ -35,9 +35,12 @@ The 2 important things one should consider/do, have been listed below the requir
 
 The database details in 'config.php', should be updated to what ever your enviroment settings are.
 
-And before hosting the website, the following composer command should be executed from the projects root:
+And before hosting the website, the following composer commands should be executed from the projects root:
 
 	'composer dump-autoload'
+	'composer require psr/cache'
+    'composer require psr/simple-cache'
+    'composer require mobiledetect/mobiledetectlib'
 
 A few images to show how the project looks like when its live, and has a populated database:
 ![Project-Homepage](https://github.com/user-attachments/assets/2028b050-a76a-49d3-ab85-7cda45fae05c)
