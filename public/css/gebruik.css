@@ -1,4 +1,5 @@
-.logoff-butt, .banner-back-butt { width: 6em; height: 2em; }
+/* .sub-grid-1 { height: auto; } */
+.banner-logoff-butt, .banner-back-butt, .banner-reset-butt { height: 1.5em; width: 7.1em; }
 .sub-grid-2 { grid-template-columns: 17% 17% 17%; justify-content: center; justify-items: center; }
 .contr-cont-1, .contr-cont-2, .contr-cont-3 { display: flex; flex-direction: column; border: var(--main-border-body); border-radius: var(--main-border-rad); width: 16.5em; height: 7em; padding: 0 0.2em; align-items: center; justify-content: center; }
 .reeks-sel-form { display: grid; margin: 0.1em 0.2em; }

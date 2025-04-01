@@ -6,7 +6,7 @@
     </form>
 
     <form class="logoff-form" method="get" action="/logout">
-        <input class="logoff-butt button" type="submit" value="Afmelden" />
+        <input class="banner-logoff-butt button" type="submit" value="Afmelden" />
     </form>
 
     <?php if(isset($hReeks)) : ?>
@@ -21,7 +21,3 @@
 <div class="banner-head">
     <h1 class="header-text">Collectie Tracker: Gebruik</h1>
 </div>
-
-<style>
-    .banner-reset-butt { height: 2em; }
-</style>
