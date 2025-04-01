@@ -5,8 +5,9 @@ namespace App\Core\Middleware;
 class Middleware {
     /* Middleware map, to link classes to specific keys. */
     public const MAP = [
-        'auth' => Auth::class,
         'guest' => Guest::class,
+        'all' => All::class,
+        'auth' => Auth::class,
         'user' => AuthUser::class,
         'admin' => AuthAdmin::class
     ];

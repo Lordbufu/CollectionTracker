@@ -2,7 +2,7 @@
 /* Routes for the public landing page. */
 $router->get('/',			'index.php');                               // Landing-page for all other types of users (that dont get the 'guest' tag).
 /* Authenticated user homepage routes. */
-$router->get('/home',		'home/view.php')->only('guest');            // Initial Source = 'http\controllers\index.php'
+$router->get('/home',		'home/view.php')->only('all');              // Initial Source = 'http\controllers\index.php'
 $router->post('/home',		'home/view.php')->only('guest');            // Source = 'http\views\home\popins\guest\' (pop-in close routes)
 $router->get('/register',	'redir/reg.pop.php')->only('guest');        // Source = 'http\views\home\templates\guest\banner-subgrid.php'
 $router->get('/login',		'redir/login.pop.php')->only('guest');      // Source = 'http\views\home\templates\guest\banner-subgrid.php'
