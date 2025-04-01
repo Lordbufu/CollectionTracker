@@ -52,6 +52,11 @@ if(isset($_SESSION['page-data']['collecties'])) {
     unset($_SESSION['page-data']['collecties']);
 }
 
+/* Sometimes a error happens, not sure why but this solves it ? */
+if(!isset($_SESSION['user']['id'])) {
+    return App::redirect('');
+}
+
 App::resolve('session')->setVariable('page-data', [
     'collecties' => App::resolve('collectie')->getColl([
         'Gebr_Index' => $_SESSION['user']['id']
